@@ -93,4 +93,4 @@ class InvalidCredentialsException(OAuth2Exception):
 
 
 class InsecureTransportError(OAuth2Exception):
-    error_description = 'OAuth 2 MUST utilize https.'
+    error_description = "OAuth 2 MUST utilize https."

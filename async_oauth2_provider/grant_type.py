@@ -3,11 +3,16 @@ from base64 import b64decode
 from http import HTTPStatus
 from typing import Type
 
-from async_oauth2_provider.utils import get_authorization_scheme_param, is_secure_transport
+from async_oauth2_provider.utils import (
+    get_authorization_scheme_param,
+    is_secure_transport,
+)
 
 from async_oauth2_provider.exceptions import (
-    AuthorizationCodeExpiredException, InsecureTransportError,
-    InvalidAuthorizationCodeException, InvalidCredentialsException,
+    AuthorizationCodeExpiredException,
+    InsecureTransportError,
+    InvalidAuthorizationCodeException,
+    InvalidCredentialsException,
     MissingAuthorizationCodeException,
     InvalidGrantTypeException,
     InvalidRefreshTokenException,
