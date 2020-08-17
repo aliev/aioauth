@@ -1,0 +1,2 @@
+pydantic==1.6.1
+Authlib==0.14.3
