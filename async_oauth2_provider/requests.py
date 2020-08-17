@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from pydantic.networks import AnyHttpUrl
 
 
-class OAuth2Query(BaseModel):
+class Query(BaseModel):
     client_id: str
     redirect_uri: Optional[AnyHttpUrl]
     response_type: Optional[ResponseType]
@@ -12,7 +12,7 @@ class OAuth2Query(BaseModel):
     scope: Optional[str]
 
 
-class Request(BaseModel):
+class Post(BaseModel):
     grant_type: Optional[GrantType]
     redirect_uri: Optional[AnyHttpUrl]
     scope: Optional[str]
@@ -22,4 +22,10 @@ class Request(BaseModel):
     code: Optional[str]
     client_id: Optional[str]
     client_secret: Optional[str]
+
+
+class Request(BaseModel):
     headers: dict = {}
+    query: Optional[Query]
+    post: Optional[Post]
+    url: AnyHttpUrl

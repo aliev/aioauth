@@ -1,15 +1,17 @@
+import binascii
+from base64 import b64decode
 from http import HTTPStatus
 from typing import Type
 
+from async_oauth2_provider.utils import get_authorization_scheme_param, is_secure_transport
+
 from async_oauth2_provider.exceptions import (
-    AuthorizationCodeExpiredException,
-    InvalidAuthorizationCodeException,
+    AuthorizationCodeExpiredException, InsecureTransportError,
+    InvalidAuthorizationCodeException, InvalidCredentialsException,
     MissingAuthorizationCodeException,
     InvalidGrantTypeException,
     InvalidRefreshTokenException,
     InvalidUsernameOrPasswordException,
-    MissingClientIdException,
-    MissingClientSecretException,
     MissingGrantTypeException,
     InvalidClientException,
     MissingPasswordException,
@@ -32,12 +34,11 @@ from async_oauth2_provider.request_validators import (
 
 class GrantTypeBase:
     grant_type: GrantType
-    request_validator_class: Type[BaseRequestValidator]
+    request_validator_class: Type[BaseRequestValidator] = BaseRequestValidator
 
-    def __init__(
-        self, request_validator_class: Type[BaseRequestValidator] = BaseRequestValidator
-    ):
-        self.request_validator_class = request_validator_class
+    def __init__(self, request_validator_class: Type[BaseRequestValidator] = None):
+        if request_validator_class is not None:
+            self.request_validator_class = request_validator_class
 
     async def __call__(self, request: Request) -> Response:
         rv = self.get_request_validator(request)
@@ -46,6 +47,7 @@ class GrantTypeBase:
             await self.validate_request(request, rv)
         except OAuth2Exception as exc:
             return Response(
+                headers=exc.headers,
                 status_code=exc.status_code,
                 body=ErrorResponse(
                     error=exc.error, error_description=exc.error_description,
@@ -66,26 +68,37 @@ class GrantTypeBase:
         return self.request_validator_class(request)
 
     async def validate_request(self, request: Request, rv: BaseRequestValidator):
-        if not request.grant_type:
+        authorization: str = request.headers.get("authorization", "")
+        scheme, param = get_authorization_scheme_param(authorization)
+
+        if not is_secure_transport(request.url):
+            raise InsecureTransportError()
+
+        if not authorization or scheme.lower() != "basic":
+            raise InvalidCredentialsException()
+
+        try:
+            data = b64decode(param).decode("ascii")
+        except (ValueError, UnicodeDecodeError, binascii.Error):
+            raise InvalidCredentialsException()
+
+        client_id, separator, client_secret = data.partition(":")
+
+        if not separator:
+            raise InvalidCredentialsException()
+
+        if not request.post.grant_type:
             raise MissingGrantTypeException()
 
-        if self.grant_type != request.grant_type:
+        if self.grant_type != request.post.grant_type:
             raise InvalidGrantTypeException()
 
-        if not request.client_id:
-            raise MissingClientIdException()
-
-        if not request.client_secret:
-            raise MissingClientSecretException()
-
-        client = await rv.get_client(
-            client_id=request.client_id, client_secret=request.client_secret
-        )
+        client = await rv.get_client(client_id=client_id, client_secret=client_secret)
 
         if not client:
             raise InvalidClientException()
 
-        if not client.check_grant_type(request.grant_type.value):
+        if not client.check_grant_type(request.post.grant_type.value):
             raise InvalidGrantTypeException()
 
 
@@ -98,10 +111,10 @@ class AuthorizationCodeGrantType(GrantTypeBase):
     ):
         await super().validate_request(request, rv)
 
-        if not request.code:
+        if not request.post.code:
             raise MissingAuthorizationCodeException()
 
-        authorization_code = await rv.get_authorization_code(code=request.code)
+        authorization_code = await rv.get_authorization_code(code=request.post.code)
 
         if not authorization_code:
             raise InvalidAuthorizationCodeException()
@@ -109,7 +122,7 @@ class AuthorizationCodeGrantType(GrantTypeBase):
         if authorization_code.is_expired():
             raise AuthorizationCodeExpiredException()
 
-        await rv.delete_authorization_code(code=request.code)
+        await rv.delete_authorization_code(code=request.post.code)
 
 
 class PasswordGrantType(GrantTypeBase):
@@ -119,13 +132,13 @@ class PasswordGrantType(GrantTypeBase):
     async def validate_request(self, request: Request, rv: PasswordRequestValidator):
         await super().validate_request(request, rv)
 
-        if not request.password:
+        if not request.post.password:
             raise MissingPasswordException()
 
-        if not request.username:
+        if not request.post.username:
             raise MissingUsernameException()
 
-        user = await rv.get_user(request.username, request.password)
+        user = await rv.get_user(request.post.username, request.post.password)
 
         if not user:
             raise InvalidUsernameOrPasswordException()
@@ -140,10 +153,10 @@ class RefreshTokenGrantType(GrantTypeBase):
     ):
         await super().validate_request(request, rv)
 
-        if not request.refresh_token:
+        if not request.post.refresh_token:
             raise MissingRefreshTokenException()
 
-        token = await rv.get_refresh_token(request.refresh_token)
+        token = await rv.get_refresh_token(request.post.refresh_token)
 
         if not token:
             raise InvalidRefreshTokenException()
@@ -151,4 +164,4 @@ class RefreshTokenGrantType(GrantTypeBase):
         if token.refresh_token_expired:
             raise RefreshTokenExpiredException()
 
-        await rv.revoke_token(request.refresh_token)
+        await rv.revoke_token(request.post.refresh_token)
