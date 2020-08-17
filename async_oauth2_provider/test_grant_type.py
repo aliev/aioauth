@@ -1,160 +1,67 @@
-from models import AuthorizationCodeModel, ClientModel, TokenModel, UserModel
+import time
+from async_oauth2_provider.types import GrantType, ResponseType
+from async_oauth2_provider.grant_type import AuthorizationCodeGrantType
+from async_oauth2_provider.models import (
+    AuthorizationCodeModel,
+    ClientModel,
+    TokenModel,
+    UserModel,
+)
+from async_oauth2_provider.request_validators import BaseRequestValidator
 from async_oauth2_provider.requests import Request
-from async_oauth2_provider.base import GrantTypeBase
 import pytest
 
 
-class GrantType(GrantTypeBase):
-    async def get_client(self) -> ClientModel:
-        return ClientModel(client_id="asd", client_secret="asd", client_metadata={},)
-
-    async def get_user(self) -> UserModel:
-        raise NotImplementedError()
-
-    async def get_token(self) -> TokenModel:
-        raise NotImplementedError()
+class RequestValidator(BaseRequestValidator):
+    async def get_client(self, client_id: str, client_secret: str) -> ClientModel:
+        return ClientModel(
+            client_id=client_id,
+            client_secret=client_secret,
+            client_metadata={"grant_types": [GrantType.TYPE_AUTHORIZATION_CODE.value]},
+        )
 
     async def create_token(self) -> TokenModel:
         raise NotImplementedError()
 
-    async def get_authorization_code(self) -> AuthorizationCodeModel:
+    async def get_authorization_code(self, code: str) -> AuthorizationCodeModel:
+        return AuthorizationCodeModel(
+            code=code,
+            client_id=self.request.client_id,
+            redirect_uri="https://google.com",
+            response_type=ResponseType.TYPE_TOKEN,
+            scope="",
+            auth_time=time.time(),
+            code_challenge="123",
+            code_challenge_method="RS256",
+        )
+
+    async def delete_authorization_code(self, code):
+        pass
+
+    async def get_user(
+        self, request: Request, username: str, password: str
+    ) -> UserModel:
         raise NotImplementedError()
 
-    async def delete_authorization_code(
-        self, authorization_code: AuthorizationCodeModel
-    ):
+    async def get_refresh_token(
+        self, request: Request, refresh_token: str
+    ) -> TokenModel:
         raise NotImplementedError()
 
-    async def revoke_token(self, token: TokenModel):
+    async def revoke_token(self, request: Request, refresh_token: str):
         raise NotImplementedError()
 
 
-# @pytest.mark.asyncio
-# async def test_some_asyncio_code():
-#     request = Request(client_id="123", grant_type="authorization_code")
-#     grant_type = GrantType()
-
-#     response = await grant_type.create_token_response(request)
-#     import pdb
-
-#     pdb.set_trace()
-
-
-from oauthlib.oauth2 import RequestValidator, LegacyApplicationServer
-
-
-class SkeletonValidator(RequestValidator):
-
-    # Ordered roughly in order of appearance in the authorization grant flow
-
-    # Pre- and post-authorization.
-
-    def validate_client_id(self, client_id, request, *args, **kwargs):
-        # Simple validity check, does client exist? Not banned?
-        pass
-
-    def validate_redirect_uri(self, client_id, redirect_uri, request, *args, **kwargs):
-        # Is the client allowed to use the supplied redirect_uri? i.e. has
-        # the client previously registered this EXACT redirect uri.
-        pass
-
-    def get_default_redirect_uri(self, client_id, request, *args, **kwargs):
-        # The redirect used if none has been supplied.
-        # Prefer your clients to pre register a redirect uri rather than
-        # supplying one on each authorization request.
-        pass
-
-    def validate_scopes(self, client_id, scopes, client, request, *args, **kwargs):
-        # Is the client allowed to access the requested scopes?
-        pass
-
-    def get_default_scopes(self, client_id, request, *args, **kwargs):
-        # Scopes a client will authorize for if none are supplied in the
-        # authorization request.
-        pass
-
-    def validate_response_type(
-        self, client_id, response_type, client, request, *args, **kwargs
-    ):
-        # Clients should only be allowed to use one type of response type, the
-        # one associated with their one allowed grant type.
-        # In this case it must be "code".
-        pass
-
-    # Post-authorization
-
-    def save_authorization_code(self, client_id, code, request, *args, **kwargs):
-        # Remember to associate it with request.scopes, request.redirect_uri
-        # request.client and request.user (the last is passed in
-        # post_authorization credentials, i.e. { 'user': request.user}.
-        pass
-
-    # Token request
-
-    def client_authentication_required(self, request, *args, **kwargs):
-        # Check if the client provided authentication information that needs to
-        # be validated, e.g. HTTP Basic auth
-        pass
-
-    def authenticate_client(self, request, *args, **kwargs):
-        # Whichever authentication method suits you, HTTP Basic might work
-        pass
-
-    def authenticate_client_id(self, client_id, request, *args, **kwargs):
-        # The client_id must match an existing public (non-confidential) client
-        pass
-
-    def validate_code(self, client_id, code, client, request, *args, **kwargs):
-        # Validate the code belongs to the client. Add associated scopes
-        # and user to request.scopes and request.user.
-        pass
-
-    def confirm_redirect_uri(
-        self, client_id, code, redirect_uri, client, request, *args, **kwargs
-    ):
-        # You did save the redirect uri with the authorization code right?
-        pass
-
-    def validate_grant_type(
-        self, client_id, grant_type, client, request, *args, **kwargs
-    ):
-        # Clients should only be allowed to use one type of grant.
-        # In this case, it must be "authorization_code" or "refresh_token"
-        pass
-
-    def save_bearer_token(self, token, request, *args, **kwargs):
-        # Remember to associate it with request.scopes, request.user and
-        # request.client. The two former will be set when you validate
-        # the authorization code. Don't forget to save both the
-        # access_token and the refresh_token and set expiration for the
-        # access_token to now + expires_in seconds.
-        pass
-
-    def invalidate_authorization_code(self, client_id, code, request, *args, **kwargs):
-        # Authorization codes are use once, invalidate it when a Bearer token
-        # has been acquired.
-        pass
-
-    # Protected resource request
-
-    def validate_bearer_token(self, token, scopes, request):
-        # Remember to check expiration and scope membership
-        pass
-
-    # Token refresh request
-
-    def get_original_scopes(self, refresh_token, request, *args, **kwargs):
-        # Obtain the token associated with the given refresh_token and
-        # return its scopes, these will be passed on to the refreshed
-        # access token if the client did not specify a scope during the
-        # request.
-        pass
-
-
-def test_oauthlib():
-    validator = SkeletonValidator()
-    server = LegacyApplicationServer(validator)
-    server.create_token_response(uri="https://google.com")
+@pytest.mark.asyncio
+async def test_authroization_code_grant_type():
+    request = Request(
+        grant_type=GrantType.TYPE_AUTHORIZATION_CODE,
+        client_id="123",
+        client_secret="123",
+        code="12333",
+    )
+    get_token = AuthorizationCodeGrantType(RequestValidator)
+    response = await get_token(request)
     import pdb
 
     pdb.set_trace()

@@ -9,37 +9,34 @@ from async_oauth2_provider.requests import Request
 
 
 class BaseRequestValidator:
-    async def get_client(
-        self, request: Request, client_id: str, client_secret: str
-    ) -> ClientModel:
+    request: Request
+
+    def __init__(self, request: Request):
+        self.request = request
+
+    async def get_client(self, client_id: str, client_secret: str) -> ClientModel:
         raise NotImplementedError()
 
-    async def create_token(self, request: Request) -> TokenModel:
+    async def create_token(self) -> TokenModel:
         raise NotImplementedError()
 
 
 class AuthorizationCodeRequestValidator(BaseRequestValidator):
-    async def get_authorization_code(
-        self, request: Request, code: str
-    ) -> AuthorizationCodeModel:
+    async def get_authorization_code(self, code: str) -> AuthorizationCodeModel:
         raise NotImplementedError()
 
-    async def delete_authorization_code(self, request: Request, code):
+    async def delete_authorization_code(self, code):
         raise NotImplementedError()
 
 
 class PasswordRequestValidator(BaseRequestValidator):
-    async def get_user(
-        self, request: Request, username: str, password: str
-    ) -> UserModel:
+    async def get_user(self, username: str, password: str) -> UserModel:
         raise NotImplementedError()
 
 
 class RefreshTokenRequestValidator(BaseRequestValidator):
-    async def get_refresh_token(
-        self, request: Request, refresh_token: str
-    ) -> TokenModel:
+    async def get_refresh_token(self, refresh_token: str) -> TokenModel:
         raise NotImplementedError()
 
-    async def revoke_token(self, request: Request, refresh_token: str):
+    async def revoke_token(self, refresh_token: str):
         raise NotImplementedError()
