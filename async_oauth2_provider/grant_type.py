@@ -42,9 +42,7 @@ class GrantTypeBase:
     request_validator_class: Type[BaseRequestValidator] = BaseRequestValidator
 
     def __init__(
-        self,
-        request: Request,
-        request_validator_class: Type[BaseRequestValidator] = None,
+        self, request_validator_class: Type[BaseRequestValidator] = None,
     ):
         if request_validator_class is not None:
             self.request_validator_class = request_validator_class
