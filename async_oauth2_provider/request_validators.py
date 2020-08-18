@@ -17,15 +17,17 @@ class BaseRequestValidator:
     async def get_client(self, client_id: str, client_secret: str) -> ClientModel:
         raise NotImplementedError()
 
-    async def create_token(self) -> TokenModel:
+    async def create_token(self, client_id: str) -> TokenModel:
         raise NotImplementedError()
 
 
 class AuthorizationCodeRequestValidator(BaseRequestValidator):
-    async def get_authorization_code(self, code: str) -> AuthorizationCodeModel:
+    async def get_authorization_code(
+        self, code: str, client_id: str, client_secret: str
+    ) -> AuthorizationCodeModel:
         raise NotImplementedError()
 
-    async def delete_authorization_code(self, code):
+    async def delete_authorization_code(self, code, client_id: str, client_secret: str):
         raise NotImplementedError()
 
 
@@ -35,8 +37,8 @@ class PasswordRequestValidator(BaseRequestValidator):
 
 
 class RefreshTokenRequestValidator(BaseRequestValidator):
-    async def get_refresh_token(self, refresh_token: str) -> TokenModel:
+    async def get_refresh_token(self, refresh_token: str, client_id: str) -> TokenModel:
         raise NotImplementedError()
 
-    async def revoke_token(self, refresh_token: str):
+    async def revoke_token(self, refresh_token: str, client_id: str):
         raise NotImplementedError()

@@ -20,8 +20,6 @@ class Post(BaseModel):
     password: Optional[str]
     refresh_token: Optional[str]
     code: Optional[str]
-    client_id: Optional[str]
-    client_secret: Optional[str]
 
 
 class Request(BaseModel):

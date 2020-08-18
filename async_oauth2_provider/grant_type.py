@@ -1,7 +1,8 @@
 import binascii
 from base64 import b64decode
-from http import HTTPStatus
 from typing import Type
+
+from models import ClientModel
 
 from async_oauth2_provider.utils import (
     get_authorization_scheme_param,
@@ -50,24 +51,29 @@ class GrantTypeBase:
     async def create_token_response(self, request: Request) -> Response:
         request_validator = self.get_request_validator(request)
 
-        await self.validate_request(request, request_validator)
+        try:
+            client = await self.validate_request(request, request_validator)
+        except OAuth2Exception as exc:
+            headers = exc.headers
+            status_code = exc.status_code
+            error = exc.error
+            error_description = exc.error_description
 
-        token = await request_validator.create_token()
+            body = ErrorResponse(error=error, error_description=error_description)
 
-        return Response(status_code=HTTPStatus.OK, body=TokenResponse.from_orm(token))
+            return Response(headers=headers, status_code=status_code, body=body)
 
-    def __str__(self) -> str:
-        return f"<{self.__class__.__name__} {self.grant_type.value}>"
+        token = await request_validator.create_token(client.client_id)
+        token_response = TokenResponse.from_orm(token)
 
-    def __repr__(self) -> str:
-        return self.__str__()
+        return Response(body=token_response)
 
     def get_request_validator(self, request: Request):
         return self.request_validator_class(request)
 
     async def validate_request(
         self, request: Request, request_validator: BaseRequestValidator
-    ):
+    ) -> ClientModel:
         authorization: str = request.headers.get("Authorization", "")
         scheme, param = get_authorization_scheme_param(authorization)
 
@@ -103,6 +109,8 @@ class GrantTypeBase:
         if not client.check_grant_type(request.post.grant_type.value):
             raise InvalidGrantTypeException()
 
+        return client
+
 
 class AuthorizationCodeGrantType(GrantTypeBase):
     grant_type: GrantType = GrantType.TYPE_AUTHORIZATION_CODE
@@ -110,14 +118,16 @@ class AuthorizationCodeGrantType(GrantTypeBase):
 
     async def validate_request(
         self, request: Request, request_validator: AuthorizationCodeRequestValidator
-    ):
-        await super().validate_request(request, request_validator)
+    ) -> ClientModel:
+        client = await super().validate_request(request, request_validator)
 
         if not request.post.code:
             raise MissingAuthorizationCodeException()
 
         authorization_code = await request_validator.get_authorization_code(
-            code=request.post.code
+            code=request.post.code,
+            client_id=client.client_id,
+            client_secret=client.client_secret,
         )
 
         if not authorization_code:
@@ -126,7 +136,13 @@ class AuthorizationCodeGrantType(GrantTypeBase):
         if authorization_code.is_expired():
             raise AuthorizationCodeExpiredException()
 
-        await request_validator.delete_authorization_code(code=request.post.code)
+        await request_validator.delete_authorization_code(
+            code=request.post.code,
+            client_id=client.client_id,
+            client_secret=client.client_secret,
+        )
+
+        return client
 
 
 class PasswordGrantType(GrantTypeBase):
@@ -135,8 +151,8 @@ class PasswordGrantType(GrantTypeBase):
 
     async def validate_request(
         self, request: Request, request_validator: PasswordRequestValidator
-    ):
-        await super().validate_request(request, request_validator)
+    ) -> ClientModel:
+        client = await super().validate_request(request, request_validator)
 
         if not request.post.password:
             raise MissingPasswordException()
@@ -145,11 +161,13 @@ class PasswordGrantType(GrantTypeBase):
             raise MissingUsernameException()
 
         user = await request_validator.get_user(
-            request.post.username, request.post.password
+            username=request.post.username, password=request.post.password
         )
 
         if not user:
             raise InvalidUsernameOrPasswordException()
+
+        return client
 
 
 class RefreshTokenGrantType(GrantTypeBase):
@@ -158,13 +176,15 @@ class RefreshTokenGrantType(GrantTypeBase):
 
     async def validate_request(
         self, request: Request, request_validator: RefreshTokenRequestValidator
-    ):
-        await super().validate_request(request, request_validator)
+    ) -> ClientModel:
+        client = await super().validate_request(request, request_validator)
 
         if not request.post.refresh_token:
             raise MissingRefreshTokenException()
 
-        token = await request_validator.get_refresh_token(request.post.refresh_token)
+        token = await request_validator.get_refresh_token(
+            refresh_token=request.post.refresh_token, client_id=client.client_id
+        )
 
         if not token:
             raise InvalidRefreshTokenException()
@@ -172,7 +192,11 @@ class RefreshTokenGrantType(GrantTypeBase):
         if token.refresh_token_expired:
             raise RefreshTokenExpiredException()
 
-        await request_validator.revoke_token(request.post.refresh_token)
+        await request_validator.revoke_token(
+            refresh_token=request.post.refresh_token, client_id=client.client_id
+        )
+
+        return client
 
 
 class ClientCredentialsGrantType(GrantTypeBase):
@@ -180,38 +204,22 @@ class ClientCredentialsGrantType(GrantTypeBase):
 
 
 class TokenEndpoint:
-    grant_type_classes = {
-        GrantType.TYPE_AUTHORIZATION_CODE: AuthorizationCodeGrantType,
-        GrantType.TYPE_REFRESH_TOKEN: PasswordGrantType,
-        GrantType.TYPE_REFRESH_TOKEN: RefreshTokenGrantType,
-        GrantType.TYPE_CLIENT_CREDENTIALS: ClientCredentialsGrantType,
-    }
+    default_grant_type: Type[GrantTypeBase]
+    grant_types: dict
+    request_validator_class: Type[BaseRequestValidator]
 
-    def __init__(self, request_validator_class: Request, grant_types: dict = {}):
-        self.request_validator_class = request_validator_class
+    def __init__(
+        self,
+        default_grant_type: Type[GrantTypeBase],
+        grant_types: dict,
+        request_validator_class: Type[BaseRequestValidator],
+    ):
+        self.default_grant_type = default_grant_type
         self.grant_types = grant_types
+        self.request_validator_class = request_validator_class
 
-    async def create_token_response(self, request) -> Response:
-        if not request.post.grant_type:
-            raise MissingGrantTypeException()
-
-        if request.post.grant_type not in self.grant_type_classes:
-            raise InvalidGrantTypeException()
-
-        GrantTypeClass = self.grant_type_classes[request.post.grant_type]
-
-        grant_type = GrantTypeClass(self.request_validator_class, request)
-
-        return await grant_type.create_token_response()
-
-    async def __call__(self, request: Request) -> Response:
-        try:
-            return await self.create_token_response(request)
-        except OAuth2Exception as exc:
-            return Response(
-                headers=exc.headers,
-                status_code=exc.status_code,
-                body=ErrorResponse(
-                    error=exc.error, error_description=exc.error_description,
-                ),
-            )
+    async def create_token_response(self, request: Request):
+        grant_type_name = request.post.grant_type
+        grant_type_cls = self.grant_types.get(grant_type_name, self.default_grant_type)
+        grant_type_handler = grant_type_cls(self.request_validator_class)
+        return await grant_type_handler.create_token_response(request)
