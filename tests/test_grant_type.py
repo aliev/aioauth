@@ -7,8 +7,8 @@ from async_oauth2_provider.models import (
     TokenModel,
     UserModel,
 )
-from async_oauth2_provider.request_validators import BaseRequestValidator
-from async_oauth2_provider.requests import Request
+from async_oauth2_provider.request_validators import AuthorizationCodeRequestValidator, BaseRequestValidator
+from async_oauth2_provider.requests import Post, Request
 import pytest
 
 
@@ -52,16 +52,34 @@ class RequestValidator(BaseRequestValidator):
         raise NotImplementedError()
 
 
+
+class AuthorizationCodeRequestValidatorBase(AuthorizationCodeRequestValidator):
+    async def get_client(self, client_id: str, client_secret: str) -> ClientModel:
+        import pdb; pdb.set_trace()
+
+    async def create_token(self) -> TokenModel:
+        raise NotImplementedError()
+
+    async def get_authorization_code(self, code: str) -> AuthorizationCodeModel:
+        raise NotImplementedError()
+
+    async def delete_authorization_code(self, code):
+        raise NotImplementedError()
+
+
 @pytest.mark.asyncio
 async def test_authroization_code_grant_type():
     request = Request(
-        grant_type=GrantType.TYPE_AUTHORIZATION_CODE,
-        client_id="123",
-        client_secret="123",
-        code="12333",
+        url="https://google.com/",
+        headers={
+            "Authorization": "Basic YWRtaW46MTIz"
+        },
+        post=Post(
+            grant_type="authorization_code"
+        )
     )
-    get_token = AuthorizationCodeGrantType(RequestValidator)
-    response = await get_token(request)
-    import pdb
+    grant_type = AuthorizationCodeGrantType(request, AuthorizationCodeRequestValidatorBase)
 
-    pdb.set_trace()
+    response = await grant_type.create_token_response()
+
+    import pdb; pdb.set_trace()

@@ -5,7 +5,7 @@ from pydantic.networks import AnyHttpUrl
 
 
 class Query(BaseModel):
-    client_id: str
+    client_id: Optional[str]
     redirect_uri: Optional[AnyHttpUrl]
     response_type: Optional[ResponseType]
     state: Optional[str]
@@ -26,6 +26,6 @@ class Post(BaseModel):
 
 class Request(BaseModel):
     headers: dict = {}
-    query: Optional[Query]
-    post: Optional[Post]
-    url: AnyHttpUrl
+    query: Optional[Query] = Query()
+    post: Optional[Post] = Post()
+    url: Optional[AnyHttpUrl]
