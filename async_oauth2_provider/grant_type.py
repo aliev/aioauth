@@ -2,7 +2,7 @@ import binascii
 from base64 import b64decode
 from typing import Type
 
-from models import ClientModel
+from models import ClientModel, TokenModel
 
 from async_oauth2_provider.utils import (
     get_authorization_scheme_param,
@@ -23,13 +23,11 @@ from async_oauth2_provider.exceptions import (
     MissingPasswordException,
     MissingRefreshTokenException,
     MissingUsernameException,
-    OAuth2Exception,
     RefreshTokenExpiredException,
 )
 
 from async_oauth2_provider.types import GrantType
 from async_oauth2_provider.requests import Request
-from async_oauth2_provider.responses import ErrorResponse, Response, TokenResponse
 from async_oauth2_provider.request_validators import (
     BaseRequestValidator,
     AuthorizationCodeRequestValidator,
@@ -48,25 +46,10 @@ class GrantTypeBase:
         if request_validator_class is not None:
             self.request_validator_class = request_validator_class
 
-    async def create_token_response(self, request: Request) -> Response:
+    async def create_token(self, request: Request) -> TokenModel:
         request_validator = self.get_request_validator(request)
-
-        try:
-            client = await self.validate_request(request, request_validator)
-        except OAuth2Exception as exc:
-            headers = exc.headers
-            status_code = exc.status_code
-            error = exc.error
-            error_description = exc.error_description
-
-            body = ErrorResponse(error=error, error_description=error_description)
-
-            return Response(headers=headers, status_code=status_code, body=body)
-
-        token = await request_validator.create_token(client.client_id)
-        token_response = TokenResponse.from_orm(token)
-
-        return Response(body=token_response)
+        client = await self.validate_request(request, request_validator)
+        return await request_validator.create_token(client.client_id)
 
     def get_request_validator(self, request: Request):
         return self.request_validator_class(request)

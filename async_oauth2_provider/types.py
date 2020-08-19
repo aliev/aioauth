@@ -20,3 +20,8 @@ class GrantType(Enum):
 class ResponseType(Enum):
     TYPE_TOKEN = "token"
     TYPE_CODE = "code"
+
+
+class RequestType(Enum):
+    METHOD_GET = "GET"
+    METHOD_POST = "POST"
