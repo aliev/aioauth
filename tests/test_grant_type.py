@@ -1,6 +1,6 @@
 import time
 from async_oauth2_provider.types import GrantType, ResponseType
-from async_oauth2_provider.config import oauth2_settings
+from async_oauth2_provider.config import settings
 from authlib.common.security import generate_token
 from async_oauth2_provider.grant_type import (
     AuthorizationCodeGrantType,
@@ -36,7 +36,7 @@ class RequestValidator(BaseRequestValidator):
     async def create_token(self, client_id: str) -> TokenModel:
         return TokenModel(
             client_id=client_id,
-            expires_in=oauth2_settings.TOKEN_EXPIRES_IN,
+            expires_in=settings.TOKEN_EXPIRES_IN,
             access_token=generate_token(42),
             refresh_token=generate_token(48),
             issued_at=time.time(),
@@ -69,7 +69,7 @@ class RequestValidator(BaseRequestValidator):
     async def get_refresh_token(self, refresh_token: str, client_id: str) -> TokenModel:
         return TokenModel(
             client_id=client_id,
-            expires_in=oauth2_settings.TOKEN_EXPIRES_IN,
+            expires_in=settings.TOKEN_EXPIRES_IN,
             access_token=generate_token(42),
             refresh_token=generate_token(48),
             issued_at=time.time(),
@@ -100,4 +100,3 @@ async def test_authroization_code_grant_type():
     )
 
     response = await token_endpoint.create_token_response(request)
-    import pdb; pdb.set_trace()

@@ -10,10 +10,11 @@ from async_oauth2_provider.utils import (
 )
 
 from async_oauth2_provider.exceptions import (
-    AuthorizationCodeExpiredException,
+    AuthorizationCodeExpiredException, HTTPMethodNotAllowed,
     InsecureTransportError,
     InvalidAuthorizationCodeException,
     InvalidCredentialsException,
+    InvalidRedirectUri,
     MissingAuthorizationCodeException,
     InvalidGrantTypeException,
     InvalidRefreshTokenException,
@@ -21,12 +22,13 @@ from async_oauth2_provider.exceptions import (
     MissingGrantTypeException,
     InvalidClientException,
     MissingPasswordException,
+    MissingRedirectUri,
     MissingRefreshTokenException,
     MissingUsernameException,
     RefreshTokenExpiredException,
 )
 
-from async_oauth2_provider.types import GrantType
+from async_oauth2_provider.types import GrantType, RequestType
 from async_oauth2_provider.requests import Request
 from async_oauth2_provider.request_validators import (
     BaseRequestValidator,
@@ -39,6 +41,7 @@ from async_oauth2_provider.request_validators import (
 class GrantTypeBase:
     grant_type: GrantType
     request_validator_class: Type[BaseRequestValidator] = BaseRequestValidator
+    allowed_methods = (RequestType.METHOD_GET, RequestType.METHOD_POST,)
 
     def __init__(
         self, request_validator_class: Type[BaseRequestValidator] = None,
@@ -62,6 +65,9 @@ class GrantTypeBase:
 
         if not is_secure_transport(request.url):
             raise InsecureTransportError()
+
+        if request.method not in self.allowed_methods:
+            raise HTTPMethodNotAllowed()
 
         if not authorization or scheme.lower() != "basic":
             raise InvalidCredentialsException()
@@ -103,6 +109,12 @@ class AuthorizationCodeGrantType(GrantTypeBase):
         self, request: Request, request_validator: AuthorizationCodeRequestValidator
     ) -> ClientModel:
         client = await super().validate_request(request, request_validator)
+
+        if not request.post.redirect_uri:
+            raise MissingRedirectUri()
+
+        if not client.check_redirect_uri(request.post.redirect_uri):
+            raise InvalidRedirectUri()
 
         if not request.post.code:
             raise MissingAuthorizationCodeException()

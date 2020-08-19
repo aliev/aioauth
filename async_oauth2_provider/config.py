@@ -25,4 +25,4 @@ class Settings(BaseSettings):
         case_sensitive = True
 
 
-oauth2_settings = Settings()
+settings = Settings()

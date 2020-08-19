@@ -1,7 +1,6 @@
 from http import HTTPStatus
 from typing import Optional
 
-from responses import Response
 from async_oauth2_provider.types import ErrorType
 
 
@@ -38,12 +37,36 @@ class OAuth2Exception(Exception):
         super().__init__(self.error_description)
 
 
+class MissingScopeException(OAuth2Exception):
+    error_description = "Missing scope"
+
+
+class MissingResponseTypeException(OAuth2Exception):
+    error_description = "Missing response_type"
+
+
+class InvalidResponseTypeException(OAuth2Exception):
+    error_description = "Invalid response_type"
+
+
 class MissingGrantTypeException(OAuth2Exception):
     error_description = "Missing grant_type"
 
 
 class InvalidGrantTypeException(OAuth2Exception):
     error_description = "Invalid grant_type"
+
+
+class MissingClientIdException(OAuth2Exception):
+    error_description = "Missing client_id"
+
+
+class MissingRedirectUri(OAuth2Exception):
+    error_description = "Missing redirect_uri"
+
+
+class InvalidRedirectUri(OAuth2Exception):
+    error_description = "Invalid redirect_uri"
 
 
 class InvalidClientException(OAuth2Exception):
@@ -94,3 +117,7 @@ class InvalidCredentialsException(OAuth2Exception):
 
 class InsecureTransportError(OAuth2Exception):
     error_description = "OAuth 2 MUST utilize https."
+
+
+class HTTPMethodNotAllowed(OAuth2Exception):
+    error_description = "HTTP method is not allowed"

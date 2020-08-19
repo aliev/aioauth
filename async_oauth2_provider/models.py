@@ -1,4 +1,4 @@
-from async_oauth2_provider.config import oauth2_settings
+from async_oauth2_provider.config import settings
 from async_oauth2_provider.types import ResponseType
 import time
 from typing import Any, Optional
@@ -60,9 +60,7 @@ class AuthorizationCodeModel(BaseModel):
     code_challenge_method: str
 
     def is_expired(self):
-        return (
-            self.auth_time + oauth2_settings.AUTHORIZATION_CODE_EXPIRES_IN < time.time()
-        )
+        return self.auth_time + settings.AUTHORIZATION_CODE_EXPIRES_IN < time.time()
 
     class Config:
         orm_mode = True

@@ -29,4 +29,4 @@ class Response(BaseModel):
         "Cache-Control": "no-store",
         "Pragma": "no-cache",
     }
-    body: Union[ErrorResponse, TokenResponse]
+    body: Optional[Union[ErrorResponse, TokenResponse]]

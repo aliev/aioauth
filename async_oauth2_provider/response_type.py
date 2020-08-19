@@ -1,12 +1,21 @@
 from typing import Optional, Type, Union
 
-from models import AuthorizationCodeModel, ClientModel, TokenModel, UserModel
-from async_oauth2_provider.exceptions import InsecureTransportError
+from models import AuthorizationCodeModel, ClientModel, TokenModel
+from async_oauth2_provider.exceptions import (
+    HTTPMethodNotAllowed, InsecureTransportError,
+    InvalidClientException,
+    InvalidRedirectUri,
+    InvalidResponseTypeException,
+    InvalidUsernameOrPasswordException,
+    MissingClientIdException,
+    MissingPasswordException,
+    MissingRedirectUri,
+    MissingResponseTypeException,
+    MissingScopeException,
+    MissingUsernameException,
+)
 
 from async_oauth2_provider.utils import is_secure_transport
-
-from async_oauth2_provider.responses import Response
-
 from async_oauth2_provider.requests import Request
 
 from async_oauth2_provider.request_validators import BaseRequestValidator
@@ -16,6 +25,7 @@ from async_oauth2_provider.types import RequestType, ResponseType
 class ResponseTypeBase:
     response_type: ResponseType
     request_validator_class: Type[BaseRequestValidator] = BaseRequestValidator
+    allowed_methods = (RequestType.METHOD_GET, RequestType.METHOD_POST,)
 
     def __init__(
         self, request_validator_class: Type[BaseRequestValidator] = None,
@@ -29,34 +39,34 @@ class ResponseTypeBase:
         if not is_secure_transport(request.url):
             raise InsecureTransportError()
 
-        if self.response_type != request.query.response_type:
-            raise Exception()
+        if request.method not in self.allowed_methods:
+            raise HTTPMethodNotAllowed()
 
         if not request.query.client_id:
-            raise Exception()
-
-        if not request.query.redirect_uri:
-            raise Exception()
+            raise MissingClientIdException()
 
         if not request.query.response_type:
-            raise Exception()
+            raise MissingResponseTypeException()
 
-        if not request.query.state:
-            raise Exception()
+        if self.response_type != request.query.response_type:
+            raise InvalidResponseTypeException()
+
+        if not request.query.redirect_uri:
+            raise MissingRedirectUri()
 
         if not request.query.scope:
-            raise Exception()
+            raise MissingScopeException()
 
         client = await request_validator.get_client(client_id=request.query.client_id)
 
         if not client:
-            raise Exception()
-
-        if not client.check_response_type(request.query.response_type):
-            raise Exception()
+            raise InvalidClientException()
 
         if not client.check_redirect_uri(request.query.redirect_uri):
-            raise Exception()
+            raise InvalidRedirectUri()
+
+        if not client.check_response_type(request.query.response_type.value):
+            raise InvalidResponseTypeException()
 
         return client
 
@@ -69,16 +79,16 @@ class ResponseTypeBase:
 
         if request.method == RequestType.METHOD_POST:
             if not request.post.username:
-                raise Exception()
+                raise MissingUsernameException()
             if not request.post.password:
-                raise Exception()
+                raise MissingPasswordException()
 
             user = await request_validator.get_user(
                 request.post.username, request.post.password
             )
 
             if not user:
-                raise Exception()
+                raise InvalidUsernameOrPasswordException()
 
         return client
 
@@ -103,7 +113,3 @@ class ResponseTypeAuthorizationCode(ResponseTypeBase):
 
         if request.method == RequestType.METHOD_POST:
             return await request_validator.create_authorization_code(client.client_id)
-
-
-class ResponseTypeEndpoint:
-    pass
