@@ -201,25 +201,3 @@ class RefreshTokenGrantType(GrantTypeBase):
 
 class ClientCredentialsGrantType(GrantTypeBase):
     grant_type: GrantType = GrantType.TYPE_CLIENT_CREDENTIALS
-
-
-class TokenEndpoint:
-    default_grant_type: Type[GrantTypeBase]
-    grant_types: dict
-    request_validator_class: Type[BaseRequestValidator]
-
-    def __init__(
-        self,
-        default_grant_type: Type[GrantTypeBase],
-        grant_types: dict,
-        request_validator_class: Type[BaseRequestValidator],
-    ):
-        self.default_grant_type = default_grant_type
-        self.grant_types = grant_types
-        self.request_validator_class = request_validator_class
-
-    async def create_token_response(self, request: Request):
-        grant_type_name = request.post.grant_type
-        grant_type_cls = self.grant_types.get(grant_type_name, self.default_grant_type)
-        grant_type_handler = grant_type_cls(self.request_validator_class)
-        return await grant_type_handler.create_token_response(request)
