@@ -1,6 +1,7 @@
 from typing import Optional
+import time
 
-from async_oauth2_provider.requests import Query, Request
+from async_oauth2_provider.requests import Post, Query, Request
 from async_oauth2_provider.models import AuthorizationCodeModel, ClientModel, TokenModel, UserModel
 from async_oauth2_provider.request_validators import BaseRequestValidator
 from async_oauth2_provider.types import GrantType, RequestType, ResponseType
@@ -32,10 +33,19 @@ class RequestValidatorClass(BaseRequestValidator):
 
     async def get_user(self, username: str, password: str) -> UserModel:
         # NOTE: Rename to get_user_id
-        raise NotImplementedError()
+        return 1
 
     async def create_authorization_code(self, client_id: str) -> AuthorizationCodeModel:
-        raise NotImplementedError()
+        return AuthorizationCodeModel(
+            code="123",
+            client_id=client_id,
+            redirect_uri="https://google.com",
+            response_type=ResponseType.TYPE_TOKEN,
+            scope="",
+            auth_time=time.time(),
+            code_challenge="123",
+            code_challenge_method="RS256",
+        )
 
 
 @pytest.mark.asyncio
@@ -44,9 +54,15 @@ async def test_response_type():
         client_id="123",
         response_type=ResponseType.TYPE_CODE,
         redirect_uri="https://ownauth.com/callback",
-        scope="asd"
+        scope="asd",
+        state="ssss"
     )
-    request = Request(url="https://google.com", query=query, method=RequestType.METHOD_GET)
+
+    post = Post(
+        username="admin",
+        password="admin"
+    )
+    request = Request(url="https://google.com", query=query, method=RequestType.METHOD_POST, post=post)
     response_type_endpoint = ResponseTypeEndpoint(
         {
             ResponseType.TYPE_CODE: ResponseTypeAuthorizationCode,

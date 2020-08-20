@@ -11,6 +11,15 @@ class ErrorResponse(BaseModel):
     error_uri: Optional[str]
 
 
+class AuthorizationCodeResponse(BaseModel):
+    code: str
+    scope: str
+    state: Optional[str]
+
+    class Config:
+        orm_mode = True
+
+
 class TokenResponse(BaseModel):
     expires_in: int
     refresh_token_expires_in: int
@@ -26,4 +35,4 @@ class TokenResponse(BaseModel):
 class Response(BaseModel):
     status_code: HTTPStatus = HTTPStatus.OK
     headers: Dict[str, str] = default_headers
-    body: Optional[Union[ErrorResponse, TokenResponse]]
+    body: Optional[Union[ErrorResponse, TokenResponse, AuthorizationCodeResponse]]

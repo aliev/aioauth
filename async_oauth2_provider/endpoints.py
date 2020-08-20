@@ -1,6 +1,5 @@
 from http import HTTPStatus
 from typing import Dict, Optional, Type
-from urllib.parse import quote_plus
 from async_oauth2_provider.response_type import ResponseTypeBase
 from async_oauth2_provider.constances import default_headers
 from async_oauth2_provider.types import GrantType, RequestType, ResponseType
@@ -66,7 +65,7 @@ class ResponseTypeEndpoint:
         response_type_handler = response_type_cls(self.request_validator_class)
 
         try:
-            await response_type_handler.create(request)
+            redirect_url = await response_type_handler.get_redirect_url(request)
         except OAuth2Exception as exc:
             headers = exc.headers
             status_code = exc.status_code
@@ -75,9 +74,8 @@ class ResponseTypeEndpoint:
             body = ErrorResponse(error=error, error_description=error_description)
         else:
             body = None
-            url = request.query.redirect_uri
             status_code = HTTPStatus.SEE_OTHER
-            headers = {"location": quote_plus(str(url), safe=":/%#?&=@[]!$&'()*+,;")}
+            headers = {"location": redirect_url}
 
         if request.method == RequestType.METHOD_POST:
             return Response(status_code=status_code, headers=headers, body=body)

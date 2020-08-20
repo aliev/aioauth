@@ -1,6 +1,7 @@
-from typing import Optional, Type, Union
-
-from models import AuthorizationCodeModel, ClientModel, TokenModel
+from typing import Optional, Type
+from urllib.parse import quote_plus, urlencode, quote
+from async_oauth2_provider.models import ClientModel
+from async_oauth2_provider.responses import AuthorizationCodeResponse, TokenResponse
 from async_oauth2_provider.exceptions import (
     HTTPMethodNotAllowed,
     InsecureTransportError,
@@ -77,7 +78,7 @@ class ResponseTypeBase:
     def get_request_validator(self, request: Request):
         return self.request_validator_class(request)
 
-    async def create(self, request: Request):
+    async def get_redirect_url(self, request: Request):
         request_validator = self.get_request_validator(request)
         client = await self.validate_request(request, request_validator)
 
@@ -99,21 +100,33 @@ class ResponseTypeBase:
 
 class ResponseTypeToken(ResponseTypeBase):
     response_type: ResponseType = ResponseType.TYPE_TOKEN
+    response_schema = TokenResponse
 
-    async def create(self, request: Request) -> Optional[TokenModel]:
-        client = await super().create(request)
+    async def get_redirect_url(self, request: Request) -> Optional[str]:
+        client = await super().get_redirect_url(request)
         request_validator = self.get_request_validator(request)
 
         if request.method == RequestType.METHOD_POST:
-            return await request_validator.create_token(client.client_id)
+            token = await request_validator.create_token(client.client_id)
+            body = TokenResponse.from_orm(token)
+            params = urlencode(body.dict(), quote_via=quote)
+            redirect_url = f"{request.query.redirect_uri}?{params}"
+            return quote_plus(str(redirect_url), safe=":/%#?&=@[]!$&'()*+,;")
 
 
 class ResponseTypeAuthorizationCode(ResponseTypeBase):
     response_type: ResponseType = ResponseType.TYPE_CODE
 
-    async def create(self, request: Request) -> Optional[AuthorizationCodeModel]:
-        client = await super().create(request)
+    async def get_redirect_url(self, request: Request) -> Optional[str]:
+        client = await super().get_redirect_url(request)
         request_validator = self.get_request_validator(request)
 
         if request.method == RequestType.METHOD_POST:
-            return await request_validator.create_authorization_code(client.client_id)
+            authorization_code = await request_validator.create_authorization_code(
+                client.client_id
+            )
+            body = AuthorizationCodeResponse.from_orm(authorization_code)
+            params = urlencode(body.dict(), quote_via=quote)
+
+            redirect_url = f"{request.query.redirect_uri}#{params}"
+            return quote_plus(str(redirect_url), safe=":/%#?&=@[]!$&'()*+,;")
