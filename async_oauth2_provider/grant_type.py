@@ -10,7 +10,8 @@ from async_oauth2_provider.utils import (
 )
 
 from async_oauth2_provider.exceptions import (
-    AuthorizationCodeExpiredException, HTTPMethodNotAllowed,
+    AuthorizationCodeExpiredException,
+    HTTPMethodNotAllowed,
     InsecureTransportError,
     InvalidAuthorizationCodeException,
     InvalidCredentialsException,
@@ -41,7 +42,10 @@ from async_oauth2_provider.request_validators import (
 class GrantTypeBase:
     grant_type: GrantType
     request_validator_class: Type[BaseRequestValidator] = BaseRequestValidator
-    allowed_methods = (RequestType.METHOD_GET, RequestType.METHOD_POST,)
+    allowed_methods = (
+        RequestType.METHOD_GET,
+        RequestType.METHOD_POST,
+    )
 
     def __init__(
         self, request_validator_class: Type[BaseRequestValidator] = None,

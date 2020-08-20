@@ -2,7 +2,8 @@ from typing import Optional, Type, Union
 
 from models import AuthorizationCodeModel, ClientModel, TokenModel
 from async_oauth2_provider.exceptions import (
-    HTTPMethodNotAllowed, InsecureTransportError,
+    HTTPMethodNotAllowed,
+    InsecureTransportError,
     InvalidClientException,
     InvalidRedirectUri,
     InvalidResponseTypeException,
@@ -25,7 +26,10 @@ from async_oauth2_provider.types import RequestType, ResponseType
 class ResponseTypeBase:
     response_type: ResponseType
     request_validator_class: Type[BaseRequestValidator] = BaseRequestValidator
-    allowed_methods = (RequestType.METHOD_GET, RequestType.METHOD_POST,)
+    allowed_methods = (
+        RequestType.METHOD_GET,
+        RequestType.METHOD_POST,
+    )
 
     def __init__(
         self, request_validator_class: Type[BaseRequestValidator] = None,

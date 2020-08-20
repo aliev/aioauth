@@ -1,8 +1,9 @@
 from http import HTTPStatus
-from typing import Type
+from typing import Dict, Optional, Type
 from urllib.parse import quote_plus
-from response_type import ResponseTypeBase
-from async_oauth2_provider.types import RequestType
+from async_oauth2_provider.response_type import ResponseTypeBase
+from async_oauth2_provider.constances import default_headers
+from async_oauth2_provider.types import GrantType, RequestType, ResponseType
 from async_oauth2_provider.exceptions import OAuth2Exception
 
 from async_oauth2_provider.responses import ErrorResponse, Response, TokenResponse
@@ -14,13 +15,9 @@ from async_oauth2_provider.request_validators import BaseRequestValidator
 
 
 class TokenEndpoint:
-    default_grant_type: Type[GrantTypeBase]
-    grant_types: dict
-    request_validator_class: Type[BaseRequestValidator]
-
     def __init__(
         self,
-        grant_types: dict,
+        grant_types: Dict[Optional[GrantType], Type[GrantTypeBase]],
         request_validator_class: Type[BaseRequestValidator],
         default_grant_type: Type[GrantTypeBase] = GrantTypeBase,
     ):
@@ -42,18 +39,18 @@ class TokenEndpoint:
             error_description = exc.error_description
 
             body = ErrorResponse(error=error, error_description=error_description)
+        else:
+            headers = default_headers
+            status_code = HTTPStatus.OK
+            body = TokenResponse.from_orm(token)
 
-            return Response(headers=headers, status_code=status_code, body=body)
-
-        token_response = TokenResponse.from_orm(token)
-
-        return Response(body=token_response)
+        return Response(headers=headers, body=body, status_code=status_code)
 
 
 class ResponseTypeEndpoint:
     def __init__(
         self,
-        response_types: dict,
+        response_types: Dict[Optional[ResponseType], Type[ResponseTypeBase]],
         request_validator_class: Type[BaseRequestValidator],
         default_response_type: Type[ResponseTypeBase] = ResponseTypeBase,
     ):
@@ -61,7 +58,7 @@ class ResponseTypeEndpoint:
         self.response_types = response_types
         self.request_validator_class = request_validator_class
 
-    async def create_response(self, request: Request):
+    async def create_authorization_response(self, request: Request):
         response_type_name = request.query.response_type
         response_type_cls = self.response_types.get(
             response_type_name, self.default_response_type
@@ -80,9 +77,7 @@ class ResponseTypeEndpoint:
             body = None
             url = request.query.redirect_uri
             status_code = HTTPStatus.SEE_OTHER
-            headers = {
-                "location": quote_plus(str(url), safe=":/%#?&=@[]!$&'()*+,;")
-            }
+            headers = {"location": quote_plus(str(url), safe=":/%#?&=@[]!$&'()*+,;")}
 
         if request.method == RequestType.METHOD_POST:
             return Response(status_code=status_code, headers=headers, body=body)

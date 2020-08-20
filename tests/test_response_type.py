@@ -55,4 +55,4 @@ async def test_response_type():
         RequestValidatorClass,
     )
 
-    response = await response_type_endpoint.create_response(request)
+    response = await response_type_endpoint.create_authorization_response(request)
