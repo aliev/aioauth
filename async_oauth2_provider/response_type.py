@@ -21,22 +21,21 @@ from async_oauth2_provider.utils import is_secure_transport
 from async_oauth2_provider.requests import Request
 
 from async_oauth2_provider.request_validators import BaseRequestValidator
-from async_oauth2_provider.types import RequestType, ResponseType
+from async_oauth2_provider.types import RequestMethod, ResponseType
 
 
 class ResponseTypeBase:
     response_type: ResponseType
-    request_validator_class: Type[BaseRequestValidator] = BaseRequestValidator
     allowed_methods = (
-        RequestType.METHOD_GET,
-        RequestType.METHOD_POST,
+        RequestMethod.GET,
+        RequestMethod.POST,
     )
 
     def __init__(
-        self, request_validator_class: Type[BaseRequestValidator] = None,
+        self,
+        request_validator_class: Type[BaseRequestValidator] = BaseRequestValidator,
     ):
-        if request_validator_class is not None:
-            self.request_validator_class = request_validator_class
+        self.request_validator_class = request_validator_class
 
     async def validate_request(
         self, request: Request, request_validator: BaseRequestValidator
@@ -82,7 +81,7 @@ class ResponseTypeBase:
         request_validator = self.get_request_validator(request)
         client = await self.validate_request(request, request_validator)
 
-        if request.method == RequestType.METHOD_POST:
+        if request.method == RequestMethod.POST:
             if not request.post.username:
                 raise MissingUsernameException()
             if not request.post.password:
@@ -100,13 +99,12 @@ class ResponseTypeBase:
 
 class ResponseTypeToken(ResponseTypeBase):
     response_type: ResponseType = ResponseType.TYPE_TOKEN
-    response_schema = TokenResponse
 
     async def get_redirect_url(self, request: Request) -> Optional[str]:
         client = await super().get_redirect_url(request)
         request_validator = self.get_request_validator(request)
 
-        if request.method == RequestType.METHOD_POST:
+        if request.method == RequestMethod.POST:
             token = await request_validator.create_token(client.client_id)
             body = TokenResponse.from_orm(token)
             params = urlencode(body.dict(), quote_via=quote)
@@ -121,7 +119,7 @@ class ResponseTypeAuthorizationCode(ResponseTypeBase):
         client = await super().get_redirect_url(request)
         request_validator = self.get_request_validator(request)
 
-        if request.method == RequestType.METHOD_POST:
+        if request.method == RequestMethod.POST:
             authorization_code = await request_validator.create_authorization_code(
                 client.client_id
             )

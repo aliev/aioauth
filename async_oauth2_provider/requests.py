@@ -1,6 +1,6 @@
 from enum import Enum
 from typing import Optional
-from async_oauth2_provider.types import GrantType, RequestType, ResponseType
+from async_oauth2_provider.types import GrantType, RequestMethod, ResponseType
 from pydantic import BaseModel
 from pydantic.networks import AnyHttpUrl
 
@@ -28,4 +28,4 @@ class Request(BaseModel):
     query: Optional[Query] = Query()
     post: Optional[Post] = Post()
     url: Optional[AnyHttpUrl]
-    method: RequestType = RequestType.METHOD_POST
+    method: RequestMethod = RequestMethod.POST

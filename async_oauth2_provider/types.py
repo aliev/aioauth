@@ -22,6 +22,6 @@ class ResponseType(Enum):
     TYPE_CODE = "code"
 
 
-class RequestType(Enum):
-    METHOD_GET = "GET"
-    METHOD_POST = "POST"
+class RequestMethod(Enum):
+    GET = "GET"
+    POST = "POST"

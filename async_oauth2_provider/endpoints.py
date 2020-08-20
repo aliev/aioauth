@@ -2,7 +2,7 @@ from http import HTTPStatus
 from typing import Dict, Optional, Type
 from async_oauth2_provider.response_type import ResponseTypeBase
 from async_oauth2_provider.constances import default_headers
-from async_oauth2_provider.types import GrantType, RequestType, ResponseType
+from async_oauth2_provider.types import GrantType, RequestMethod, ResponseType
 from async_oauth2_provider.exceptions import OAuth2Exception
 
 from async_oauth2_provider.responses import ErrorResponse, Response, TokenResponse
@@ -77,7 +77,7 @@ class ResponseTypeEndpoint:
             status_code = HTTPStatus.SEE_OTHER
             headers = {"location": redirect_url}
 
-        if request.method == RequestType.METHOD_POST:
+        if request.method == RequestMethod.POST:
             return Response(status_code=status_code, headers=headers, body=body)
-        if request.method == RequestType.METHOD_GET:
+        if request.method == RequestMethod.GET:
             return Response(status_code=HTTPStatus.OK)

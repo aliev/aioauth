@@ -29,29 +29,23 @@ from async_oauth2_provider.exceptions import (
     RefreshTokenExpiredException,
 )
 
-from async_oauth2_provider.types import GrantType, RequestType
+from async_oauth2_provider.types import GrantType, RequestMethod
 from async_oauth2_provider.requests import Request
-from async_oauth2_provider.request_validators import (
-    BaseRequestValidator,
-    AuthorizationCodeRequestValidator,
-    PasswordRequestValidator,
-    RefreshTokenRequestValidator,
-)
+from async_oauth2_provider.request_validators import BaseRequestValidator
 
 
 class GrantTypeBase:
     grant_type: GrantType
-    request_validator_class: Type[BaseRequestValidator] = BaseRequestValidator
     allowed_methods = (
-        RequestType.METHOD_GET,
-        RequestType.METHOD_POST,
+        RequestMethod.GET,
+        RequestMethod.POST,
     )
 
     def __init__(
-        self, request_validator_class: Type[BaseRequestValidator] = None,
+        self,
+        request_validator_class: Type[BaseRequestValidator] = BaseRequestValidator,
     ):
-        if request_validator_class is not None:
-            self.request_validator_class = request_validator_class
+        self.request_validator_class = request_validator_class
 
     async def create_token(self, request: Request) -> TokenModel:
         request_validator = self.get_request_validator(request)
@@ -107,10 +101,9 @@ class GrantTypeBase:
 
 class AuthorizationCodeGrantType(GrantTypeBase):
     grant_type: GrantType = GrantType.TYPE_AUTHORIZATION_CODE
-    request_validator_class: Type[AuthorizationCodeRequestValidator]
 
     async def validate_request(
-        self, request: Request, request_validator: AuthorizationCodeRequestValidator
+        self, request: Request, request_validator: BaseRequestValidator
     ) -> ClientModel:
         client = await super().validate_request(request, request_validator)
 
@@ -146,10 +139,9 @@ class AuthorizationCodeGrantType(GrantTypeBase):
 
 class PasswordGrantType(GrantTypeBase):
     grant_type: GrantType = GrantType.TYPE_PASSWORD
-    request_validator: Type[PasswordRequestValidator]
 
     async def validate_request(
-        self, request: Request, request_validator: PasswordRequestValidator
+        self, request: Request, request_validator: BaseRequestValidator
     ) -> ClientModel:
         client = await super().validate_request(request, request_validator)
 
@@ -171,10 +163,9 @@ class PasswordGrantType(GrantTypeBase):
 
 class RefreshTokenGrantType(GrantTypeBase):
     grant_type: GrantType = GrantType.TYPE_REFRESH_TOKEN
-    request_validator: Type[RefreshTokenRequestValidator]
 
     async def validate_request(
-        self, request: Request, request_validator: RefreshTokenRequestValidator
+        self, request: Request, request_validator: BaseRequestValidator
     ) -> ClientModel:
         client = await super().validate_request(request, request_validator)
 

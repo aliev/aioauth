@@ -30,8 +30,6 @@ class BaseRequestValidator:
     async def create_authorization_code(self, client_id: str) -> AuthorizationCodeModel:
         raise NotImplementedError()
 
-
-class AuthorizationCodeRequestValidator(BaseRequestValidator):
     async def get_authorization_code(
         self, code: str, client_id: str, client_secret: str
     ) -> AuthorizationCodeModel:
@@ -40,13 +38,6 @@ class AuthorizationCodeRequestValidator(BaseRequestValidator):
     async def delete_authorization_code(self, code, client_id: str, client_secret: str):
         raise NotImplementedError()
 
-
-class PasswordRequestValidator(BaseRequestValidator):
-    async def get_user(self, username: str, password: str) -> UserModel:
-        raise NotImplementedError()
-
-
-class RefreshTokenRequestValidator(BaseRequestValidator):
     async def get_refresh_token(self, refresh_token: str, client_id: str) -> TokenModel:
         raise NotImplementedError()
 

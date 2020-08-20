@@ -4,7 +4,7 @@ import time
 from async_oauth2_provider.requests import Post, Query, Request
 from async_oauth2_provider.models import AuthorizationCodeModel, ClientModel, TokenModel, UserModel
 from async_oauth2_provider.request_validators import BaseRequestValidator
-from async_oauth2_provider.types import GrantType, RequestType, ResponseType
+from async_oauth2_provider.types import GrantType, RequestMethod, ResponseType
 from async_oauth2_provider.endpoints import ResponseTypeEndpoint
 from async_oauth2_provider.response_type import ResponseTypeToken, ResponseTypeAuthorizationCode
 import pytest
@@ -62,7 +62,7 @@ async def test_response_type():
         username="admin",
         password="admin"
     )
-    request = Request(url="https://google.com", query=query, method=RequestType.METHOD_POST, post=post)
+    request = Request(url="https://google.com", query=query, method=RequestMethod.POST, post=post)
     response_type_endpoint = ResponseTypeEndpoint(
         {
             ResponseType.TYPE_CODE: ResponseTypeAuthorizationCode,
