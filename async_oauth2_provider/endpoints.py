@@ -13,15 +13,18 @@ from async_oauth2_provider.requests import Request
 from async_oauth2_provider.request_validators import BaseRequestValidator
 
 
-class TokenEndpoint:
+class OAuth2Endpoint:
+    default_grant_type: Type[GrantTypeBase] = GrantTypeBase
+    default_response_type: Type[ResponseTypeBase] = ResponseTypeBase
+
     def __init__(
         self,
         grant_types: Dict[Optional[GrantType], Type[GrantTypeBase]],
+        response_types: Dict[Optional[ResponseType], Type[ResponseTypeBase]],
         request_validator_class: Type[BaseRequestValidator],
-        default_grant_type: Type[GrantTypeBase] = GrantTypeBase,
     ):
-        self.default_grant_type = default_grant_type
         self.grant_types = grant_types
+        self.response_types = response_types
         self.request_validator_class = request_validator_class
 
     async def create_token_response(self, request: Request):
@@ -45,18 +48,6 @@ class TokenEndpoint:
 
         return Response(headers=headers, body=body, status_code=status_code)
 
-
-class ResponseTypeEndpoint:
-    def __init__(
-        self,
-        response_types: Dict[Optional[ResponseType], Type[ResponseTypeBase]],
-        request_validator_class: Type[BaseRequestValidator],
-        default_response_type: Type[ResponseTypeBase] = ResponseTypeBase,
-    ):
-        self.default_response_type = default_response_type
-        self.response_types = response_types
-        self.request_validator_class = request_validator_class
-
     async def create_authorization_response(self, request: Request):
         response_type_name = request.query.response_type
         response_type_cls = self.response_types.get(
@@ -65,7 +56,7 @@ class ResponseTypeEndpoint:
         response_type_handler = response_type_cls(self.request_validator_class)
 
         try:
-            redirect_url = await response_type_handler.get_redirect_url(request)
+            redirect_url = await response_type_handler.get_redirect_uri(request)
         except OAuth2Exception as exc:
             headers = exc.headers
             status_code = exc.status_code

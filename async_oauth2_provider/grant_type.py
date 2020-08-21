@@ -2,7 +2,7 @@ import binascii
 from base64 import b64decode
 from typing import Type
 
-from models import ClientModel, TokenModel
+from models import Client, Token
 
 from async_oauth2_provider.utils import (
     get_authorization_scheme_param,
@@ -47,7 +47,7 @@ class GrantTypeBase:
     ):
         self.request_validator_class = request_validator_class
 
-    async def create_token(self, request: Request) -> TokenModel:
+    async def create_token(self, request: Request) -> Token:
         request_validator = self.get_request_validator(request)
         client = await self.validate_request(request, request_validator)
         return await request_validator.create_token(client.client_id)
@@ -57,7 +57,7 @@ class GrantTypeBase:
 
     async def validate_request(
         self, request: Request, request_validator: BaseRequestValidator
-    ) -> ClientModel:
+    ) -> Client:
         authorization: str = request.headers.get("Authorization", "")
         scheme, param = get_authorization_scheme_param(authorization)
 
@@ -104,7 +104,7 @@ class AuthorizationCodeGrantType(GrantTypeBase):
 
     async def validate_request(
         self, request: Request, request_validator: BaseRequestValidator
-    ) -> ClientModel:
+    ) -> Client:
         client = await super().validate_request(request, request_validator)
 
         if not request.post.redirect_uri:
@@ -142,7 +142,7 @@ class PasswordGrantType(GrantTypeBase):
 
     async def validate_request(
         self, request: Request, request_validator: BaseRequestValidator
-    ) -> ClientModel:
+    ) -> Client:
         client = await super().validate_request(request, request_validator)
 
         if not request.post.password:
@@ -166,7 +166,7 @@ class RefreshTokenGrantType(GrantTypeBase):
 
     async def validate_request(
         self, request: Request, request_validator: BaseRequestValidator
-    ) -> ClientModel:
+    ) -> Client:
         client = await super().validate_request(request, request_validator)
 
         if not request.post.refresh_token:

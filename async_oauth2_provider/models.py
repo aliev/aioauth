@@ -1,13 +1,13 @@
+from async_oauth2_provider.utils import list_to_scope, scope_to_list
 from async_oauth2_provider.config import settings
 from async_oauth2_provider.types import ResponseType
 import time
-from typing import Any, Optional
+from typing import Optional
 
-from authlib.oauth2.rfc6749.util import list_to_scope, scope_to_list
 from pydantic import BaseModel
 
 
-class ClientModel(BaseModel):
+class Client(BaseModel):
     client_id: str
     client_secret: str
     client_metadata: dict
@@ -48,7 +48,7 @@ class ClientModel(BaseModel):
         orm_mode = True
 
 
-class AuthorizationCodeModel(BaseModel):
+class AuthorizationCode(BaseModel):
     code: str
     client_id: str
     redirect_uri: str
@@ -66,7 +66,7 @@ class AuthorizationCodeModel(BaseModel):
         orm_mode = True
 
 
-class TokenModel(BaseModel):
+class Token(BaseModel):
     client_id: str
     token_type: Optional[str] = "Bearer"
     access_token: str
@@ -87,10 +87,3 @@ class TokenModel(BaseModel):
 
     class Config:
         orm_mode = True
-
-
-class UserModel(BaseModel):
-    user_id: Any
-
-    class Config:
-        orm_model = True

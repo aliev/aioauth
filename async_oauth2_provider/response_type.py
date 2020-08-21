@@ -1,6 +1,6 @@
 from typing import Optional, Type
 from urllib.parse import quote_plus, urlencode, quote
-from async_oauth2_provider.models import ClientModel
+from async_oauth2_provider.models import Client
 from async_oauth2_provider.responses import AuthorizationCodeResponse, TokenResponse
 from async_oauth2_provider.exceptions import (
     HTTPMethodNotAllowed,
@@ -39,7 +39,7 @@ class ResponseTypeBase:
 
     async def validate_request(
         self, request: Request, request_validator: BaseRequestValidator
-    ) -> ClientModel:
+    ) -> Client:
         if not is_secure_transport(request.url):
             raise InsecureTransportError()
 
@@ -77,7 +77,7 @@ class ResponseTypeBase:
     def get_request_validator(self, request: Request):
         return self.request_validator_class(request)
 
-    async def get_redirect_url(self, request: Request):
+    async def get_redirect_uri(self, request: Request):
         request_validator = self.get_request_validator(request)
         client = await self.validate_request(request, request_validator)
 
@@ -100,8 +100,8 @@ class ResponseTypeBase:
 class ResponseTypeToken(ResponseTypeBase):
     response_type: ResponseType = ResponseType.TYPE_TOKEN
 
-    async def get_redirect_url(self, request: Request) -> Optional[str]:
-        client = await super().get_redirect_url(request)
+    async def get_redirect_uri(self, request: Request) -> Optional[str]:
+        client = await super().get_redirect_uri(request)
         request_validator = self.get_request_validator(request)
 
         if request.method == RequestMethod.POST:
@@ -115,8 +115,8 @@ class ResponseTypeToken(ResponseTypeBase):
 class ResponseTypeAuthorizationCode(ResponseTypeBase):
     response_type: ResponseType = ResponseType.TYPE_CODE
 
-    async def get_redirect_url(self, request: Request) -> Optional[str]:
-        client = await super().get_redirect_url(request)
+    async def get_redirect_uri(self, request: Request) -> Optional[str]:
+        client = await super().get_redirect_uri(request)
         request_validator = self.get_request_validator(request)
 
         if request.method == RequestMethod.POST:

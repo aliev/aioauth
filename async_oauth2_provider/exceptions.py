@@ -121,3 +121,4 @@ class InsecureTransportError(OAuth2Exception):
 
 class HTTPMethodNotAllowed(OAuth2Exception):
     error_description = "HTTP method is not allowed"
+    status_code: HTTPStatus = HTTPStatus.METHOD_NOT_ALLOWED

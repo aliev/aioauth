@@ -2,7 +2,7 @@ from typing import Optional
 import time
 
 from async_oauth2_provider.requests import Post, Query, Request
-from async_oauth2_provider.models import AuthorizationCodeModel, ClientModel, TokenModel, UserModel
+from async_oauth2_provider.models import AuthorizationCode, Client, Token
 from async_oauth2_provider.request_validators import BaseRequestValidator
 from async_oauth2_provider.types import GrantType, RequestMethod, ResponseType
 from async_oauth2_provider.endpoints import ResponseTypeEndpoint
@@ -13,8 +13,8 @@ import pytest
 class RequestValidatorClass(BaseRequestValidator):
     async def get_client(
         self, client_id: str, client_secret: Optional[str] = None
-    ) -> ClientModel:
-        return ClientModel(
+    ) -> Client:
+        return Client(
             client_id=client_id,
             client_secret="123",
             client_metadata={
@@ -28,15 +28,15 @@ class RequestValidatorClass(BaseRequestValidator):
             },
         )
 
-    async def create_token(self, client_id: str) -> TokenModel:
+    async def create_token(self, client_id: str) -> Token:
         raise NotImplementedError()
 
-    async def get_user(self, username: str, password: str) -> UserModel:
+    async def get_user(self, username: str, password: str):
         # NOTE: Rename to get_user_id
         return 1
 
-    async def create_authorization_code(self, client_id: str) -> AuthorizationCodeModel:
-        return AuthorizationCodeModel(
+    async def create_authorization_code(self, client_id: str) -> AuthorizationCode:
+        return AuthorizationCode(
             code="123",
             client_id=client_id,
             redirect_uri="https://google.com",

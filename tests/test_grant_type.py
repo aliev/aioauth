@@ -9,10 +9,9 @@ from async_oauth2_provider.grant_type import (
 )
 from async_oauth2_provider.endpoints import TokenEndpoint
 from async_oauth2_provider.models import (
-    AuthorizationCodeModel,
-    ClientModel,
-    TokenModel,
-    UserModel,
+    AuthorizationCode,
+    Client,
+    Token,
 )
 from async_oauth2_provider.request_validators import BaseRequestValidator
 from async_oauth2_provider.requests import Post, Request
@@ -20,8 +19,8 @@ import pytest
 
 
 class RequestValidator(BaseRequestValidator):
-    async def get_client(self, client_id: str, client_secret: str) -> ClientModel:
-        return ClientModel(
+    async def get_client(self, client_id: str, client_secret: str) -> Client:
+        return Client(
             client_id=client_id,
             client_secret=client_secret,
             client_metadata={
@@ -33,8 +32,8 @@ class RequestValidator(BaseRequestValidator):
             },
         )
 
-    async def create_token(self, client_id: str) -> TokenModel:
-        return TokenModel(
+    async def create_token(self, client_id: str) -> Token:
+        return Token(
             client_id=client_id,
             expires_in=settings.TOKEN_EXPIRES_IN,
             access_token=generate_token(42),
@@ -46,8 +45,8 @@ class RequestValidator(BaseRequestValidator):
 
     async def get_authorization_code(
         self, code: str, client_id: str, client_secret: str
-    ) -> AuthorizationCodeModel:
-        return AuthorizationCodeModel(
+    ) -> AuthorizationCode:
+        return AuthorizationCode(
             code=code,
             client_id=client_id,
             redirect_uri="https://google.com",
@@ -63,11 +62,11 @@ class RequestValidator(BaseRequestValidator):
     ):
         pass
 
-    async def get_user(self, username: str, password: str) -> UserModel:
+    async def get_user(self, username: str, password: str):
         raise NotImplementedError()
 
-    async def get_refresh_token(self, refresh_token: str, client_id: str) -> TokenModel:
-        return TokenModel(
+    async def get_refresh_token(self, refresh_token: str, client_id: str) -> Token:
+        return Token(
             client_id=client_id,
             expires_in=settings.TOKEN_EXPIRES_IN,
             access_token=generate_token(42),
