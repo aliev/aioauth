@@ -94,15 +94,14 @@ class ResponseTypeBase:
             if not user:
                 raise InvalidUsernameOrPasswordException()
 
-        return client
+        return client, request_validator
 
 
 class ResponseTypeToken(ResponseTypeBase):
     response_type: ResponseType = ResponseType.TYPE_TOKEN
 
     async def get_redirect_uri(self, request: Request) -> Optional[str]:
-        client = await super().get_redirect_uri(request)
-        request_validator = self.get_request_validator(request)
+        client, request_validator = await super().get_redirect_uri(request)
 
         if request.method == RequestMethod.POST:
             token = await request_validator.create_token(client.client_id)
@@ -116,8 +115,7 @@ class ResponseTypeAuthorizationCode(ResponseTypeBase):
     response_type: ResponseType = ResponseType.TYPE_CODE
 
     async def get_redirect_uri(self, request: Request) -> Optional[str]:
-        client = await super().get_redirect_uri(request)
-        request_validator = self.get_request_validator(request)
+        client, request_validator = await super().get_redirect_uri(request)
 
         if request.method == RequestMethod.POST:
             authorization_code = await request_validator.create_authorization_code(
