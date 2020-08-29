@@ -7,19 +7,19 @@ from async_oauth2_provider.grant_type import (
     ClientCredentialsGrantType, GrantTypeBase,
     RefreshTokenGrantType,
 )
-from async_oauth2_provider.endpoints import TokenEndpoint
+from async_oauth2_provider.endpoints import OAuth2Endpoint
 from async_oauth2_provider.models import (
     AuthorizationCode,
     Client,
     Token,
 )
 from async_oauth2_provider.request_validators import BaseRequestValidator
-from async_oauth2_provider.requests import Post, Request
+from async_oauth2_provider.requests import Post, Query, Request
 import pytest
 
 
 class RequestValidator(BaseRequestValidator):
-    async def get_client(self, client_id: str, client_secret: str) -> Client:
+    async def get_client(self, client_id: str, client_secret: str = "") -> Client:
         return Client(
             client_id=client_id,
             client_secret=client_secret,
@@ -28,7 +28,9 @@ class RequestValidator(BaseRequestValidator):
                     GrantType.TYPE_AUTHORIZATION_CODE.value,
                     GrantType.TYPE_CLIENT_CREDENTIALS.value,
                     GrantType.TYPE_REFRESH_TOKEN.value,
-                ]
+                ],
+                "redirect_uris": ["https://google.com"],
+                "response_types": ["code", "token"]
             },
         )
 
@@ -57,13 +59,25 @@ class RequestValidator(BaseRequestValidator):
             code_challenge_method="RS256",
         )
 
+    async def create_authorization_code(self, client_id: str) -> AuthorizationCode:
+        return AuthorizationCode(
+            code="12333",
+            client_id=client_id,
+            redirect_uri="https://google.com",
+            response_type=ResponseType.TYPE_TOKEN,
+            scope="",
+            auth_time=time.time(),
+            code_challenge="123",
+            code_challenge_method="RS256",
+        )
+
     async def delete_authorization_code(
         self, code: str, client_id: str, client_secret: str
     ):
         pass
 
     async def get_user(self, username: str, password: str):
-        raise NotImplementedError()
+        return True
 
     async def get_refresh_token(self, refresh_token: str, client_id: str) -> Token:
         return Token(
@@ -84,19 +98,15 @@ class RequestValidator(BaseRequestValidator):
 async def test_authroization_code_grant_type():
     request = Request(
         url="https://google.com/",
-        headers={"Authorization": "Basic YWRtaW46MTIz"},
-        post=Post(grant_type="refresh_token", code="123", refresh_token="111",),
+        # headers={"Authorization": "Basic YWRtaW46MTIz"},
+        post=Post(username="admin", password="admin"),
+        query=Query(client_id="123", response_type="code", redirect_uri="https://google.com", scope="hello", state="test"),
+        method="POST"
     )
 
-    token_endpoint = TokenEndpoint(
-        default_grant_type=GrantTypeBase,
-        grant_types={
-            GrantType.TYPE_AUTHORIZATION_CODE: AuthorizationCodeGrantType,
-            GrantType.TYPE_CLIENT_CREDENTIALS: ClientCredentialsGrantType,
-            GrantType.TYPE_REFRESH_TOKEN: RefreshTokenGrantType,
-        },
-        request_validator_class=RequestValidator,
+    token_endpoint = OAuth2Endpoint(
+        request_validator_cls=RequestValidator,
     )
 
-    response = await token_endpoint.create_token_response(request)
+    response = await token_endpoint.create_authorization_response(request)
     import pdb; pdb.set_trace()

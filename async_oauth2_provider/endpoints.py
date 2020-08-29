@@ -1,36 +1,50 @@
 from http import HTTPStatus
 from typing import Dict, Optional, Type
-from async_oauth2_provider.response_type import ResponseTypeBase
+from async_oauth2_provider.response_type import (
+    ResponseTypeAuthorizationCode,
+    ResponseTypeBase,
+    ResponseTypeToken,
+)
 from async_oauth2_provider.constances import default_headers
 from async_oauth2_provider.types import GrantType, RequestMethod, ResponseType
 from async_oauth2_provider.exceptions import OAuth2Exception
 
 from async_oauth2_provider.responses import ErrorResponse, Response, TokenResponse
 
-from async_oauth2_provider.grant_type import GrantTypeBase
+from async_oauth2_provider.grant_type import (
+    AuthorizationCodeGrantType,
+    ClientCredentialsGrantType,
+    GrantTypeBase,
+    PasswordGrantType,
+    RefreshTokenGrantType,
+)
 
 from async_oauth2_provider.requests import Request
 from async_oauth2_provider.request_validators import BaseRequestValidator
 
 
 class OAuth2Endpoint:
-    default_grant_type: Type[GrantTypeBase] = GrantTypeBase
-    default_response_type: Type[ResponseTypeBase] = ResponseTypeBase
+    response_types = {
+        ResponseType.TYPE_CODE: ResponseTypeAuthorizationCode,
+        ResponseType.TYPE_TOKEN: ResponseTypeToken,
+        None: ResponseTypeAuthorizationCode,  # Default response type
+    }
+    grant_types = {
+        GrantType.TYPE_AUTHORIZATION_CODE: AuthorizationCodeGrantType,
+        GrantType.TYPE_PASSWORD: PasswordGrantType,
+        GrantType.TYPE_CLIENT_CREDENTIALS: ClientCredentialsGrantType,
+        GrantType.TYPE_REFRESH_TOKEN: RefreshTokenGrantType,
+        None: AuthorizationCodeGrantType,  # Default grant type
+    }
 
     def __init__(
-        self,
-        grant_types: Dict[Optional[GrantType], Type[GrantTypeBase]],
-        response_types: Dict[Optional[ResponseType], Type[ResponseTypeBase]],
-        request_validator_class: Type[BaseRequestValidator],
+        self, request_validator_cls: Type[BaseRequestValidator],
     ):
-        self.grant_types = grant_types
-        self.response_types = response_types
-        self.request_validator_class = request_validator_class
+        self.request_validator_cls = request_validator_cls
 
     async def create_token_response(self, request: Request):
-        grant_type_name = request.post.grant_type
-        grant_type_cls = self.grant_types.get(grant_type_name, self.default_grant_type)
-        grant_type_handler = grant_type_cls(self.request_validator_class)
+        grant_type_cls = self.grant_types.get(request.post.grant_type)
+        grant_type_handler = grant_type_cls(self.request_validator_cls)
 
         try:
             token = await grant_type_handler.create_token(request)
@@ -49,11 +63,8 @@ class OAuth2Endpoint:
         return Response(headers=headers, body=body, status_code=status_code)
 
     async def create_authorization_response(self, request: Request):
-        response_type_name = request.query.response_type
-        response_type_cls = self.response_types.get(
-            response_type_name, self.default_response_type
-        )
-        response_type_handler = response_type_cls(self.request_validator_class)
+        response_type_cls = self.response_types.get(request.query.response_type)
+        response_type_handler = response_type_cls(self.request_validator_cls)
 
         try:
             redirect_url = await response_type_handler.get_redirect_uri(request)
@@ -65,10 +76,12 @@ class OAuth2Endpoint:
             body = ErrorResponse(error=error, error_description=error_description)
         else:
             body = None
-            status_code = HTTPStatus.SEE_OTHER
-            headers = {"location": redirect_url}
 
-        if request.method == RequestMethod.POST:
-            return Response(status_code=status_code, headers=headers, body=body)
-        if request.method == RequestMethod.GET:
-            return Response(status_code=HTTPStatus.OK)
+            if request.method == RequestMethod.POST:
+                status_code = HTTPStatus.SEE_OTHER
+                headers = {"location": redirect_url}
+            else:
+                status_code = HTTPStatus.OK
+                headers = {}
+
+        return Response(status_code=status_code, headers=headers, body=body)

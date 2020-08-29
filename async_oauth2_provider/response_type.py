@@ -1,6 +1,6 @@
-from typing import Optional, Type
+from typing import Optional, Type, Union
 from urllib.parse import quote_plus, urlencode, quote
-from async_oauth2_provider.models import Client
+from async_oauth2_provider.models import AuthorizationCode, Client, Token
 from async_oauth2_provider.responses import AuthorizationCodeResponse, TokenResponse
 from async_oauth2_provider.exceptions import (
     HTTPMethodNotAllowed,
@@ -96,6 +96,21 @@ class ResponseTypeBase:
 
         return client, request_validator
 
+    def generate_uri(
+        self,
+        request: Request,
+        response: Union[Type[TokenResponse], Type[AuthorizationCodeResponse]],
+        model: Union[AuthorizationCode, Token],
+        fragment: str
+    ):
+        body = response.from_orm(model)
+        body_dict = body.dict()
+        body_dict["scope"] = request.query.scope
+        body_dict["state"] = request.query.state
+        query_string = urlencode(body_dict, quote_via=quote)
+        redirect_uri = f"{request.query.redirect_uri}{fragment}{query_string}"
+        return quote_plus(str(redirect_uri), safe=":/%#?&=@[]!$&'()*+,;")
+
 
 class ResponseTypeToken(ResponseTypeBase):
     response_type: ResponseType = ResponseType.TYPE_TOKEN
@@ -105,10 +120,7 @@ class ResponseTypeToken(ResponseTypeBase):
 
         if request.method == RequestMethod.POST:
             token = await request_validator.create_token(client.client_id)
-            body = TokenResponse.from_orm(token)
-            params = urlencode(body.dict(), quote_via=quote)
-            redirect_url = f"{request.query.redirect_uri}?{params}"
-            return quote_plus(str(redirect_url), safe=":/%#?&=@[]!$&'()*+,;")
+            return self.generate_uri(request, TokenResponse, token, "#")
 
 
 class ResponseTypeAuthorizationCode(ResponseTypeBase):
@@ -121,8 +133,4 @@ class ResponseTypeAuthorizationCode(ResponseTypeBase):
             authorization_code = await request_validator.create_authorization_code(
                 client.client_id
             )
-            body = AuthorizationCodeResponse.from_orm(authorization_code)
-            params = urlencode(body.dict(), quote_via=quote)
-
-            redirect_url = f"{request.query.redirect_uri}#{params}"
-            return quote_plus(str(redirect_url), safe=":/%#?&=@[]!$&'()*+,;")
+            return self.generate_uri(request, AuthorizationCodeResponse, authorization_code, "?")

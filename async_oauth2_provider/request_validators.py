@@ -13,33 +13,31 @@ class BaseRequestValidator:
         self.request = request
 
     async def get_client(
-        self, client_id: str, client_secret: Optional[str] = None, client=None
+        self, client_id: str, client_secret: Optional[str] = None
     ) -> Client:
-        return Client.from_orm(client)
+        raise NotImplementedError()
 
-    async def create_token(self, client_id: str, token=None) -> Token:
-        return Token.from_orm(token)
+    async def create_token(self, client_id: str) -> Token:
+        raise NotImplementedError()
 
     async def get_user(self, username: str, password: str):
-        ...
+        raise NotImplementedError()
 
-    async def create_authorization_code(
-        self, client_id: str, authorization_code=None
-    ) -> AuthorizationCode:
-        return AuthorizationCode.from_orm(authorization_code)
+    async def create_authorization_code(self, client_id: str) -> AuthorizationCode:
+        raise NotImplementedError()
 
     async def get_authorization_code(
-        self, code: str, client_id: str, client_secret: str, authorization_code=None
+        self, code: str, client_id: str, client_secret: str
     ) -> AuthorizationCode:
-        return AuthorizationCode.from_orm(authorization_code)
+        raise NotImplementedError()
 
     async def delete_authorization_code(self, code, client_id: str, client_secret: str):
-        ...
+        raise NotImplementedError()
 
     async def get_refresh_token(
-        self, refresh_token: str, client_id: str, token=None
+        self, refresh_token: str, client_id: str
     ) -> Token:
-        return Token.from_orm(token)
+        raise NotImplementedError()
 
     async def revoke_token(self, refresh_token: str, client_id: str):
-        ...
+        raise NotImplementedError()
