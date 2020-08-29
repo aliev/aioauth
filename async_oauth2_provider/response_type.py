@@ -101,7 +101,7 @@ class ResponseTypeBase:
         request: Request,
         response: Union[Type[TokenResponse], Type[AuthorizationCodeResponse]],
         model: Union[AuthorizationCode, Token],
-        fragment: str
+        fragment: str,
     ):
         body = response.from_orm(model)
         body_dict = body.dict()
@@ -133,4 +133,6 @@ class ResponseTypeAuthorizationCode(ResponseTypeBase):
             authorization_code = await request_validator.create_authorization_code(
                 client.client_id
             )
-            return self.generate_uri(request, AuthorizationCodeResponse, authorization_code, "?")
+            return self.generate_uri(
+                request, AuthorizationCodeResponse, authorization_code, "?"
+            )

@@ -34,9 +34,7 @@ class BaseRequestValidator:
     async def delete_authorization_code(self, code, client_id: str, client_secret: str):
         raise NotImplementedError()
 
-    async def get_refresh_token(
-        self, refresh_token: str, client_id: str
-    ) -> Token:
+    async def get_refresh_token(self, refresh_token: str, client_id: str) -> Token:
         raise NotImplementedError()
 
     async def revoke_token(self, refresh_token: str, client_id: str):
