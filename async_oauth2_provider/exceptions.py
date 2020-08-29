@@ -37,79 +37,79 @@ class OAuth2Exception(Exception):
         super().__init__(self.error_description)
 
 
-class MissingScopeException(OAuth2Exception):
+class MissingScopeError(OAuth2Exception):
     error_description = "Missing scope"
 
 
-class MissingResponseTypeException(OAuth2Exception):
+class MissingResponseTypeError(OAuth2Exception):
     error_description = "Missing response_type"
 
 
-class InvalidResponseTypeException(OAuth2Exception):
+class InvalidResponseTypeError(OAuth2Exception):
     error_description = "Invalid response_type"
 
 
-class MissingGrantTypeException(OAuth2Exception):
+class MissingGrantTypeError(OAuth2Exception):
     error_description = "Missing grant_type"
 
 
-class InvalidGrantTypeException(OAuth2Exception):
+class InvalidGrantTypeError(OAuth2Exception):
     error_description = "Invalid grant_type"
 
 
-class MissingClientIdException(OAuth2Exception):
+class MissingClientIdError(OAuth2Exception):
     error_description = "Missing client_id"
 
 
-class MissingRedirectUri(OAuth2Exception):
+class MissingRedirectUriError(OAuth2Exception):
     error_description = "Missing redirect_uri"
 
 
-class InvalidRedirectUri(OAuth2Exception):
+class InvalidRedirectUriError(OAuth2Exception):
     error_description = "Invalid redirect_uri"
 
 
-class InvalidClientException(OAuth2Exception):
+class InvalidClientError(OAuth2Exception):
     error_description = "Invalid client_id"
 
 
-class MissingAuthorizationCodeException(OAuth2Exception):
+class MissingAuthorizationCodeError(OAuth2Exception):
     error_description = "Missing code"
 
 
-class MissingUsernameException(OAuth2Exception):
+class MissingUsernameError(OAuth2Exception):
     error_description = "Missing username"
 
 
-class MissingPasswordException(OAuth2Exception):
+class MissingPasswordError(OAuth2Exception):
     error_description = "Missing password"
 
 
-class InvalidUsernameOrPasswordException(OAuth2Exception):
+class InvalidUsernameOrPasswordError(OAuth2Exception):
     error_description = "Invalid username or password"
 
 
-class MissingRefreshTokenException(OAuth2Exception):
+class MissingRefreshTokenError(OAuth2Exception):
     error_description = "Missing refresh_token"
 
 
-class InvalidRefreshTokenException(OAuth2Exception):
+class InvalidRefreshTokenError(OAuth2Exception):
     error_description = "Invalid refresh_token"
 
 
-class RefreshTokenExpiredException(OAuth2Exception):
+class RefreshTokenExpiredError(OAuth2Exception):
     error_description = "Expired refresh_token"
 
 
-class InvalidAuthorizationCodeException(OAuth2Exception):
+class InvalidAuthorizationCodeError(OAuth2Exception):
     error_description = "Invalid authorization code"
 
 
-class AuthorizationCodeExpiredException(OAuth2Exception):
+class AuthorizationCodeExpiredError(OAuth2Exception):
     error_description = "Authorization code expired"
 
 
-class InvalidCredentialsException(OAuth2Exception):
+class InvalidCredentialsError(OAuth2Exception):
     status_code: HTTPStatus = HTTPStatus.UNAUTHORIZED
     headers = {"WWW-Authenticate": "Basic"}
     error_description = "Invalid authentication credentials"
@@ -119,6 +119,6 @@ class InsecureTransportError(OAuth2Exception):
     error_description = "OAuth 2 MUST utilize https."
 
 
-class HTTPMethodNotAllowed(OAuth2Exception):
+class MethodNotAllowedError(OAuth2Exception):
     error_description = "HTTP method is not allowed"
     status_code: HTTPStatus = HTTPStatus.METHOD_NOT_ALLOWED

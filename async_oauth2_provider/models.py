@@ -1,10 +1,11 @@
-from async_oauth2_provider.utils import list_to_scope, scope_to_list
-from async_oauth2_provider.config import settings
-from async_oauth2_provider.types import ResponseType
 import time
 from typing import Optional
 
 from pydantic import BaseModel
+
+from async_oauth2_provider.config import settings
+from async_oauth2_provider.types import CodeChallengeMethod, GrantType, ResponseType
+from async_oauth2_provider.utils import list_to_scope, scope_to_list
 
 
 class Client(BaseModel):
@@ -27,11 +28,11 @@ class Client(BaseModel):
     def check_redirect_uri(self, redirect_uri):
         return redirect_uri in self.redirect_uris
 
-    def check_grant_type(self, grant_type):
-        return grant_type in self.grant_types
+    def check_grant_type(self, grant_type: GrantType):
+        return grant_type.value in self.grant_types
 
-    def check_response_type(self, response_type):
-        return response_type in self.response_types
+    def check_response_type(self, response_type: ResponseType):
+        return response_type.value in self.response_types
 
     @property
     def scope(self):
@@ -56,8 +57,8 @@ class AuthorizationCode(BaseModel):
     scope: str
     nonce: Optional[str]
     auth_time: int
-    code_challenge: str
-    code_challenge_method: str
+    code_challenge: Optional[str]
+    code_challenge_method: CodeChallengeMethod
 
     def is_expired(self):
         return self.auth_time + settings.AUTHORIZATION_CODE_EXPIRES_IN < time.time()
@@ -72,7 +73,7 @@ class Token(BaseModel):
     access_token: str
     refresh_token: str
     scope: str
-    revoked: bool
+    revoked: bool = False
     issued_at: int
     expires_in: int
 

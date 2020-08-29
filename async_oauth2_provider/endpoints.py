@@ -1,26 +1,22 @@
 from http import HTTPStatus
-from typing import Dict, Optional, Type
-from async_oauth2_provider.response_type import (
-    ResponseTypeAuthorizationCode,
-    ResponseTypeBase,
-    ResponseTypeToken,
-)
+from typing import Type
+
 from async_oauth2_provider.constances import default_headers
-from async_oauth2_provider.types import GrantType, RequestMethod, ResponseType
+from async_oauth2_provider.db import DBBase
 from async_oauth2_provider.exceptions import OAuth2Exception
-
-from async_oauth2_provider.responses import ErrorResponse, Response, TokenResponse
-
 from async_oauth2_provider.grant_type import (
     AuthorizationCodeGrantType,
     ClientCredentialsGrantType,
-    GrantTypeBase,
     PasswordGrantType,
     RefreshTokenGrantType,
 )
-
 from async_oauth2_provider.requests import Request
-from async_oauth2_provider.request_validators import BaseRequestValidator
+from async_oauth2_provider.response_type import (
+    ResponseTypeAuthorizationCode,
+    ResponseTypeToken,
+)
+from async_oauth2_provider.responses import ErrorResponse, Response, TokenResponse
+from async_oauth2_provider.types import GrantType, RequestMethod, ResponseType
 
 
 class OAuth2Endpoint:
@@ -38,13 +34,13 @@ class OAuth2Endpoint:
     }
 
     def __init__(
-        self, request_validator_cls: Type[BaseRequestValidator],
+        self, db_class: Type[DBBase],
     ):
-        self.request_validator_cls = request_validator_cls
+        self.db_class = db_class
 
     async def create_token_response(self, request: Request):
         grant_type_cls = self.grant_types.get(request.post.grant_type)
-        grant_type_handler = grant_type_cls(self.request_validator_cls)
+        grant_type_handler = grant_type_cls(self.db_class)
 
         try:
             token = await grant_type_handler.create_token(request)
@@ -64,7 +60,7 @@ class OAuth2Endpoint:
 
     async def create_authorization_response(self, request: Request):
         response_type_cls = self.response_types.get(request.query.response_type)
-        response_type_handler = response_type_cls(self.request_validator_cls)
+        response_type_handler = response_type_cls(self.db_class)
 
         try:
             redirect_url = await response_type_handler.get_redirect_uri(request)

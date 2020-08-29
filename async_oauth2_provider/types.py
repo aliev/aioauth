@@ -25,3 +25,8 @@ class ResponseType(Enum):
 class RequestMethod(Enum):
     GET = "GET"
     POST = "POST"
+
+
+class CodeChallengeMethod(Enum):
+    PLAIN = "plain"
+    S256 = "S256"

@@ -1,8 +1,10 @@
 from enum import Enum
 from typing import Any, Dict, Optional
-from async_oauth2_provider.types import GrantType, RequestMethod, ResponseType
+
 from pydantic import BaseModel
 from pydantic.networks import AnyHttpUrl
+
+from async_oauth2_provider.types import GrantType, RequestMethod, ResponseType
 
 
 class Query(BaseModel):

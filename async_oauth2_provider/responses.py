@@ -1,8 +1,10 @@
-from async_oauth2_provider.types import ErrorType
-from async_oauth2_provider.constances import default_headers
-from typing import Dict, Optional, Union
-from pydantic import BaseModel
 from http import HTTPStatus
+from typing import Dict, Optional, Union
+
+from pydantic import BaseModel
+
+from async_oauth2_provider.constances import default_headers
+from async_oauth2_provider.types import ErrorType
 
 
 class ErrorResponse(BaseModel):

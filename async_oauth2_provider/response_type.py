@@ -1,27 +1,26 @@
 from typing import Optional, Type, Union
-from urllib.parse import quote_plus, urlencode, quote
-from async_oauth2_provider.models import AuthorizationCode, Client, Token
-from async_oauth2_provider.responses import AuthorizationCodeResponse, TokenResponse
+from urllib.parse import quote, quote_plus, urlencode
+
+from async_oauth2_provider.db import DBBase
 from async_oauth2_provider.exceptions import (
-    HTTPMethodNotAllowed,
     InsecureTransportError,
-    InvalidClientException,
-    InvalidRedirectUri,
-    InvalidResponseTypeException,
-    InvalidUsernameOrPasswordException,
-    MissingClientIdException,
-    MissingPasswordException,
-    MissingRedirectUri,
-    MissingResponseTypeException,
-    MissingScopeException,
-    MissingUsernameException,
+    InvalidClientError,
+    InvalidRedirectUriError,
+    InvalidResponseTypeError,
+    InvalidUsernameOrPasswordError,
+    MethodNotAllowedError,
+    MissingClientIdError,
+    MissingPasswordError,
+    MissingRedirectUriError,
+    MissingResponseTypeError,
+    MissingScopeError,
+    MissingUsernameError,
 )
-
-from async_oauth2_provider.utils import is_secure_transport
+from async_oauth2_provider.models import AuthorizationCode, Client, Token
 from async_oauth2_provider.requests import Request
-
-from async_oauth2_provider.request_validators import BaseRequestValidator
+from async_oauth2_provider.responses import AuthorizationCodeResponse, TokenResponse
 from async_oauth2_provider.types import RequestMethod, ResponseType
+from async_oauth2_provider.utils import is_secure_transport
 
 
 class ResponseTypeBase:
@@ -32,69 +31,64 @@ class ResponseTypeBase:
     )
 
     def __init__(
-        self,
-        request_validator_class: Type[BaseRequestValidator] = BaseRequestValidator,
+        self, db_class: Type[DBBase] = DBBase,
     ):
-        self.request_validator_class = request_validator_class
+        self.db_class = db_class
 
-    async def validate_request(
-        self, request: Request, request_validator: BaseRequestValidator
-    ) -> Client:
+    async def validate_request(self, request: Request, db: DBBase) -> Client:
         if not is_secure_transport(request.url):
             raise InsecureTransportError()
 
         if request.method not in self.allowed_methods:
-            raise HTTPMethodNotAllowed()
+            raise MethodNotAllowedError()
 
         if not request.query.client_id:
-            raise MissingClientIdException()
+            raise MissingClientIdError()
 
         if not request.query.response_type:
-            raise MissingResponseTypeException()
+            raise MissingResponseTypeError()
 
         if self.response_type != request.query.response_type:
-            raise InvalidResponseTypeException()
+            raise InvalidResponseTypeError()
 
         if not request.query.redirect_uri:
-            raise MissingRedirectUri()
+            raise MissingRedirectUriError()
 
         if not request.query.scope:
-            raise MissingScopeException()
+            raise MissingScopeError()
 
-        client = await request_validator.get_client(client_id=request.query.client_id)
+        client = await db.get_client(client_id=request.query.client_id)
 
         if not client:
-            raise InvalidClientException()
+            raise InvalidClientError()
 
         if not client.check_redirect_uri(request.query.redirect_uri):
-            raise InvalidRedirectUri()
+            raise InvalidRedirectUriError()
 
-        if not client.check_response_type(request.query.response_type.value):
-            raise InvalidResponseTypeException()
+        if not client.check_response_type(request.query.response_type):
+            raise InvalidResponseTypeError()
 
         return client
 
-    def get_request_validator(self, request: Request):
-        return self.request_validator_class(request)
+    def get_db(self, request: Request):
+        return self.db_class(request)
 
     async def get_redirect_uri(self, request: Request):
-        request_validator = self.get_request_validator(request)
-        client = await self.validate_request(request, request_validator)
+        db = self.get_db(request)
+        client = await self.validate_request(request, db)
 
         if request.method == RequestMethod.POST:
             if not request.post.username:
-                raise MissingUsernameException()
+                raise MissingUsernameError()
             if not request.post.password:
-                raise MissingPasswordException()
+                raise MissingPasswordError()
 
-            user = await request_validator.get_user(
-                request.post.username, request.post.password
-            )
+            user = await db.get_user(request.post.username, request.post.password)
 
             if not user:
-                raise InvalidUsernameOrPasswordException()
+                raise InvalidUsernameOrPasswordError()
 
-        return client, request_validator
+        return client, db
 
     def generate_uri(
         self,
@@ -116,10 +110,10 @@ class ResponseTypeToken(ResponseTypeBase):
     response_type: ResponseType = ResponseType.TYPE_TOKEN
 
     async def get_redirect_uri(self, request: Request) -> Optional[str]:
-        client, request_validator = await super().get_redirect_uri(request)
+        client, db = await super().get_redirect_uri(request)
 
         if request.method == RequestMethod.POST:
-            token = await request_validator.create_token(client.client_id)
+            token = await db.create_token(client.client_id, request.query.scope or "")
             return self.generate_uri(request, TokenResponse, token, "#")
 
 
@@ -127,11 +121,11 @@ class ResponseTypeAuthorizationCode(ResponseTypeBase):
     response_type: ResponseType = ResponseType.TYPE_CODE
 
     async def get_redirect_uri(self, request: Request) -> Optional[str]:
-        client, request_validator = await super().get_redirect_uri(request)
+        client, db = await super().get_redirect_uri(request)
 
         if request.method == RequestMethod.POST:
-            authorization_code = await request_validator.create_authorization_code(
-                client.client_id
+            authorization_code = await db.create_authorization_code(
+                client.client_id, request.query.scope or "", self.response_type,
             )
             return self.generate_uri(
                 request, AuthorizationCodeResponse, authorization_code, "?"

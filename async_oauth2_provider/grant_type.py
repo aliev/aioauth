@@ -4,34 +4,32 @@ from typing import Type
 
 from models import Client, Token
 
+from async_oauth2_provider.db import DBBase
+from async_oauth2_provider.exceptions import (
+    AuthorizationCodeExpiredError,
+    InsecureTransportError,
+    InvalidAuthorizationCodeError,
+    InvalidClientError,
+    InvalidCredentialsError,
+    InvalidGrantTypeError,
+    InvalidRedirectUriError,
+    InvalidRefreshTokenError,
+    InvalidUsernameOrPasswordError,
+    MethodNotAllowedError,
+    MissingAuthorizationCodeError,
+    MissingGrantTypeError,
+    MissingPasswordError,
+    MissingRedirectUriError,
+    MissingRefreshTokenError,
+    MissingUsernameError,
+    RefreshTokenExpiredError,
+)
+from async_oauth2_provider.requests import Request
+from async_oauth2_provider.types import GrantType, RequestMethod
 from async_oauth2_provider.utils import (
     get_authorization_scheme_param,
     is_secure_transport,
 )
-
-from async_oauth2_provider.exceptions import (
-    AuthorizationCodeExpiredException,
-    HTTPMethodNotAllowed,
-    InsecureTransportError,
-    InvalidAuthorizationCodeException,
-    InvalidCredentialsException,
-    InvalidRedirectUri,
-    MissingAuthorizationCodeException,
-    InvalidGrantTypeException,
-    InvalidRefreshTokenException,
-    InvalidUsernameOrPasswordException,
-    MissingGrantTypeException,
-    InvalidClientException,
-    MissingPasswordException,
-    MissingRedirectUri,
-    MissingRefreshTokenException,
-    MissingUsernameException,
-    RefreshTokenExpiredException,
-)
-
-from async_oauth2_provider.types import GrantType, RequestMethod
-from async_oauth2_provider.requests import Request
-from async_oauth2_provider.request_validators import BaseRequestValidator
 
 
 class GrantTypeBase:
@@ -42,22 +40,19 @@ class GrantTypeBase:
     )
 
     def __init__(
-        self,
-        request_validator_class: Type[BaseRequestValidator] = BaseRequestValidator,
+        self, db_class: Type[DBBase] = DBBase,
     ):
-        self.request_validator_class = request_validator_class
+        self.db_class = db_class
 
     async def create_token(self, request: Request) -> Token:
-        request_validator = self.get_request_validator(request)
-        client = await self.validate_request(request, request_validator)
-        return await request_validator.create_token(client.client_id)
+        db = self.get_db(request)
+        client = await self.validate_request(request, db)
+        return await db.create_token(client.client_id, request.post.scope or "")
 
-    def get_request_validator(self, request: Request):
-        return self.request_validator_class(request)
+    def get_db(self, request: Request):
+        return self.db_class(request)
 
-    async def validate_request(
-        self, request: Request, request_validator: BaseRequestValidator
-    ) -> Client:
+    async def validate_request(self, request: Request, db: DBBase) -> Client:
         authorization: str = request.headers.get("Authorization", "")
         scheme, param = get_authorization_scheme_param(authorization)
 
@@ -65,36 +60,34 @@ class GrantTypeBase:
             raise InsecureTransportError()
 
         if request.method not in self.allowed_methods:
-            raise HTTPMethodNotAllowed()
+            raise MethodNotAllowedError()
 
         if not authorization or scheme.lower() != "basic":
-            raise InvalidCredentialsException()
+            raise InvalidCredentialsError()
 
         try:
             data = b64decode(param).decode("ascii")
         except (ValueError, UnicodeDecodeError, binascii.Error):
-            raise InvalidCredentialsException()
+            raise InvalidCredentialsError()
 
         client_id, separator, client_secret = data.partition(":")
 
         if not separator:
-            raise InvalidCredentialsException()
+            raise InvalidCredentialsError()
 
         if not request.post.grant_type:
-            raise MissingGrantTypeException()
+            raise MissingGrantTypeError()
 
         if self.grant_type != request.post.grant_type:
-            raise InvalidGrantTypeException()
+            raise InvalidGrantTypeError()
 
-        client = await request_validator.get_client(
-            client_id=client_id, client_secret=client_secret
-        )
+        client = await db.get_client(client_id=client_id, client_secret=client_secret)
 
         if not client:
-            raise InvalidClientException()
+            raise InvalidClientError()
 
-        if not client.check_grant_type(request.post.grant_type.value):
-            raise InvalidGrantTypeException()
+        if not client.check_grant_type(request.post.grant_type):
+            raise InvalidGrantTypeError()
 
         return client
 
@@ -102,36 +95,30 @@ class GrantTypeBase:
 class AuthorizationCodeGrantType(GrantTypeBase):
     grant_type: GrantType = GrantType.TYPE_AUTHORIZATION_CODE
 
-    async def validate_request(
-        self, request: Request, request_validator: BaseRequestValidator
-    ) -> Client:
-        client = await super().validate_request(request, request_validator)
+    async def validate_request(self, request: Request, db: DBBase) -> Client:
+        client = await super().validate_request(request, db)
 
         if not request.post.redirect_uri:
-            raise MissingRedirectUri()
+            raise MissingRedirectUriError()
 
         if not client.check_redirect_uri(request.post.redirect_uri):
-            raise InvalidRedirectUri()
+            raise InvalidRedirectUriError()
 
         if not request.post.code:
-            raise MissingAuthorizationCodeException()
+            raise MissingAuthorizationCodeError()
 
-        authorization_code = await request_validator.get_authorization_code(
-            code=request.post.code,
-            client_id=client.client_id,
-            client_secret=client.client_secret,
+        authorization_code = await db.get_authorization_code(
+            code=request.post.code, client_id=client.client_id,
         )
 
         if not authorization_code:
-            raise InvalidAuthorizationCodeException()
+            raise InvalidAuthorizationCodeError()
 
         if authorization_code.is_expired():
-            raise AuthorizationCodeExpiredException()
+            raise AuthorizationCodeExpiredError()
 
-        await request_validator.delete_authorization_code(
-            code=request.post.code,
-            client_id=client.client_id,
-            client_secret=client.client_secret,
+        await db.delete_authorization_code(
+            code=request.post.code, client_id=client.client_id,
         )
 
         return client
@@ -140,23 +127,21 @@ class AuthorizationCodeGrantType(GrantTypeBase):
 class PasswordGrantType(GrantTypeBase):
     grant_type: GrantType = GrantType.TYPE_PASSWORD
 
-    async def validate_request(
-        self, request: Request, request_validator: BaseRequestValidator
-    ) -> Client:
-        client = await super().validate_request(request, request_validator)
+    async def validate_request(self, request: Request, db: DBBase) -> Client:
+        client = await super().validate_request(request, db)
 
         if not request.post.password:
-            raise MissingPasswordException()
+            raise MissingPasswordError()
 
         if not request.post.username:
-            raise MissingUsernameException()
+            raise MissingUsernameError()
 
-        user = await request_validator.get_user(
+        user = await db.get_user(
             username=request.post.username, password=request.post.password
         )
 
         if not user:
-            raise InvalidUsernameOrPasswordException()
+            raise InvalidUsernameOrPasswordError()
 
         return client
 
@@ -164,25 +149,23 @@ class PasswordGrantType(GrantTypeBase):
 class RefreshTokenGrantType(GrantTypeBase):
     grant_type: GrantType = GrantType.TYPE_REFRESH_TOKEN
 
-    async def validate_request(
-        self, request: Request, request_validator: BaseRequestValidator
-    ) -> Client:
-        client = await super().validate_request(request, request_validator)
+    async def validate_request(self, request: Request, db: DBBase) -> Client:
+        client = await super().validate_request(request, db)
 
         if not request.post.refresh_token:
-            raise MissingRefreshTokenException()
+            raise MissingRefreshTokenError()
 
-        token = await request_validator.get_refresh_token(
+        token = await db.get_refresh_token(
             refresh_token=request.post.refresh_token, client_id=client.client_id
         )
 
         if not token:
-            raise InvalidRefreshTokenException()
+            raise InvalidRefreshTokenError()
 
         if token.refresh_token_expired:
-            raise RefreshTokenExpiredException()
+            raise RefreshTokenExpiredError()
 
-        await request_validator.revoke_token(
+        await db.revoke_token(
             refresh_token=request.post.refresh_token, client_id=client.client_id
         )
 
