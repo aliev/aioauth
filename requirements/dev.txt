@@ -1,0 +1,24 @@
+-r base.txt
+
+async-asgi-testclient~=1.4.4
+pre-commit~=2.4.0
+black~=19.10b0
+isort~=4.3.21
+flake8~=3.8.2
+flake8-absolute-import~=1.0
+flake8-black~=0.2.0
+flake8-blind-except~=0.1.1
+flake8-builtins~=1.5.3
+flake8-comprehensions~=3.2.3
+flake8-docstrings~=1.5.0
+flake8-mutable~=1.2.0
+flake8-print~=3.1.4
+flake8-quotes~=3.2.0
+flake8-tuple~=0.4.1
+mypy~=0.780
+pytest~=5.4.3
+pytest-asyncio~=0.12.0
+pytest-cov~=2.9.0
+pytest-env~=0.6.2
+pytest-sugar~=0.9.3
+testfixtures~=6.14.1

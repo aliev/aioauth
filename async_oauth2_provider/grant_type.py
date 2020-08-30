@@ -2,8 +2,6 @@ import binascii
 from base64 import b64decode
 from typing import Type
 
-from models import Client, Token
-
 from async_oauth2_provider.db import DBBase
 from async_oauth2_provider.exceptions import (
     AuthorizationCodeExpiredError,
@@ -24,6 +22,7 @@ from async_oauth2_provider.exceptions import (
     MissingUsernameError,
     RefreshTokenExpiredError,
 )
+from async_oauth2_provider.models import Client, Token
 from async_oauth2_provider.requests import Request
 from async_oauth2_provider.types import GrantType, RequestMethod
 from async_oauth2_provider.utils import (
