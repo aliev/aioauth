@@ -49,7 +49,7 @@ class GrantTypeBase:
         scope = client.get_allowed_scope(request.post.scope)
         return await db.create_token(client.client_id, scope)
 
-    def get_db(self, request: Request):
+    def get_db(self, request: Request) -> DBBase:
         return self.db_class(request)
 
     async def validate_request(self, request: Request, db: DBBase) -> Client:

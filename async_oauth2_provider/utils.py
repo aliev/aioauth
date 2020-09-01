@@ -1,10 +1,10 @@
-from typing import AnyStr, List, Optional, Set, Tuple, Union
+from typing import List, Optional, Set, Text, Tuple, Union
 from urllib.parse import quote_plus
 
 from async_oauth2_provider.config import settings
 
 
-def is_secure_transport(uri) -> Union[AnyStr, bool]:
+def is_secure_transport(uri) -> bool:
     """Check if the uri is over ssl."""
     if settings.INSECURE_TRANSPORT:
         return True
@@ -12,15 +12,15 @@ def is_secure_transport(uri) -> Union[AnyStr, bool]:
 
 
 def get_authorization_scheme_param(
-    authorization_header_value: AnyStr,
-) -> Tuple[AnyStr, AnyStr]:
+    authorization_header_value: Text,
+) -> Tuple[Text, Text]:
     if not authorization_header_value:
         return "", ""
     scheme, _, param = authorization_header_value.partition(" ")
     return scheme, param
 
 
-def list_to_scope(scope: Optional[List] = None) -> AnyStr:
+def list_to_scope(scope: Optional[List] = None) -> Text:
     """Convert a list of scopes to a space separated string."""
     if isinstance(scope, str) or scope is None:
         return ""
@@ -32,7 +32,7 @@ def list_to_scope(scope: Optional[List] = None) -> AnyStr:
         )
 
 
-def scope_to_list(scope: Union[AnyStr, List, Set, Tuple]) -> List:
+def scope_to_list(scope: Union[Text, List, Set, Tuple]) -> List:
     """Convert a space separated string to a list of scopes."""
     if isinstance(scope, (tuple, list, set)):
         return [str(s) for s in scope]

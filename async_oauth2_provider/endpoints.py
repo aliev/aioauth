@@ -38,7 +38,7 @@ class OAuth2Endpoint:
     ):
         self.db_class = db_class
 
-    async def create_token_response(self, request: Request):
+    async def create_token_response(self, request: Request) -> Response:
         grant_type_cls = self.grant_types.get(request.post.grant_type)
         grant_type_handler = grant_type_cls(self.db_class)
 
@@ -58,7 +58,7 @@ class OAuth2Endpoint:
 
         return Response(headers=headers, body=body, status_code=status_code)
 
-    async def create_authorization_response(self, request: Request):
+    async def create_authorization_response(self, request: Request) -> Response:
         response_type_cls = self.response_types.get(request.query.response_type)
         response_type_handler = response_type_cls(self.db_class)
 

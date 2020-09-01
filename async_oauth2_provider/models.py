@@ -1,46 +1,41 @@
 import time
-from typing import AnyStr, Optional
+from typing import List, Optional, Text
 
 from async_oauth2_provider.config import settings
 from async_oauth2_provider.types import CodeChallengeMethod, GrantType, ResponseType
 from async_oauth2_provider.utils import list_to_scope, scope_to_list
 from pydantic import BaseModel
+from pydantic.networks import AnyHttpUrl
+
+
+class ClientMetadata(BaseModel):
+    grant_types: List[GrantType] = []
+    response_types: List[ResponseType] = []
+    redirect_uris: List[AnyHttpUrl] = []
+    scope: Text = ""
+
+    class Config:
+        orm_mode = True
 
 
 class Client(BaseModel):
-    client_id: str
-    client_secret: str
-    client_metadata: dict
+    client_id: Text
+    client_secret: Text
+    client_metadata: ClientMetadata
 
-    @property
-    def grant_types(self):
-        return self.client_metadata.get("grant_types", [])
+    def check_redirect_uri(self, redirect_uri) -> bool:
+        return redirect_uri in self.client_metadata.redirect_uris
 
-    @property
-    def redirect_uris(self):
-        return self.client_metadata.get("redirect_uris", [])
+    def check_grant_type(self, grant_type: GrantType) -> bool:
+        return grant_type in self.client_metadata.grant_types
 
-    @property
-    def response_types(self):
-        return self.client_metadata.get("response_types", [])
+    def check_response_type(self, response_type: ResponseType) -> bool:
+        return response_type in self.client_metadata.response_types
 
-    def check_redirect_uri(self, redirect_uri):
-        return redirect_uri in self.redirect_uris
-
-    def check_grant_type(self, grant_type: GrantType):
-        return grant_type.value in self.grant_types
-
-    def check_response_type(self, response_type: ResponseType):
-        return response_type.value in self.response_types
-
-    @property
-    def scope(self):
-        return self.client_metadata.get("scope", "")
-
-    def get_allowed_scope(self, scope) -> AnyStr:
+    def get_allowed_scope(self, scope) -> Text:
         if not scope:
             return ""
-        allowed = set(self.scope.split())
+        allowed = set(self.client_metadata.scope.split())
         scopes = scope_to_list(scope)
         return list_to_scope([s for s in scopes if s in allowed])
 
@@ -49,17 +44,17 @@ class Client(BaseModel):
 
 
 class AuthorizationCode(BaseModel):
-    code: str
-    client_id: str
-    redirect_uri: str
+    code: Text
+    client_id: Text
+    redirect_uri: Text
     response_type: ResponseType
-    scope: str
-    nonce: Optional[str]
+    scope: Text
+    nonce: Optional[Text]
     auth_time: int
-    code_challenge: Optional[str]
+    code_challenge: Optional[Text]
     code_challenge_method: CodeChallengeMethod
 
-    def is_expired(self):
+    def is_expired(self) -> bool:
         return self.auth_time + settings.AUTHORIZATION_CODE_EXPIRES_IN < time.time()
 
     class Config:
@@ -67,22 +62,22 @@ class AuthorizationCode(BaseModel):
 
 
 class Token(BaseModel):
-    client_id: str
-    token_type: Optional[str] = "Bearer"
-    access_token: str
-    refresh_token: str
-    scope: str
+    client_id: Text
+    token_type: Optional[Text] = "Bearer"
+    access_token: Text
+    refresh_token: Text
+    scope: Text
     revoked: bool = False
     issued_at: int
     expires_in: int
 
     @property
-    def refresh_token_expires_in(self):
+    def refresh_token_expires_in(self) -> int:
         expires_at = self.issued_at + self.expires_in * 2
         return expires_at
 
     @property
-    def refresh_token_expired(self):
+    def refresh_token_expired(self) -> bool:
         return self.refresh_token_expires_in < time.time()
 
     class Config:

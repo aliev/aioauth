@@ -2,15 +2,18 @@ from http import HTTPStatus
 
 import pytest
 from async_oauth2_provider.requests import Post, Query, Request
+from async_oauth2_provider.types import ResponseType
+from endpoints import OAuth2Endpoint
+from tests.conftest import Defaults
 
 
 @pytest.mark.asyncio
-async def test_implicit_grant_type(endpoint, defaults):
-    post = Post(username=defaults["username"], password=defaults["password"])
+async def test_implicit_grant_type(endpoint: OAuth2Endpoint, defaults: Defaults):
+    post = Post(username=defaults.username, password=defaults.password)
     query = Query(
-        client_id=defaults["client_id"],
-        response_type="token",
-        redirect_uri=defaults["redirect_uri"],
+        client_id=defaults.client_id,
+        response_type=ResponseType.TYPE_TOKEN,
+        redirect_uri=defaults.redirect_uri,
         scope="hello",
         state="test",
     )
@@ -23,9 +26,9 @@ async def test_implicit_grant_type(endpoint, defaults):
         url="https://google.com/",
         post=Post(username="admin", password="admin"),
         query=Query(
-            client_id=defaults["client_id"],
-            response_type="token",
-            redirect_uri=defaults["redirect_uri"],
+            client_id=defaults.client_id,
+            response_type=ResponseType.TYPE_TOKEN,
+            redirect_uri=defaults.redirect_uri,
             scope="hello",
             state="test",
         ),
