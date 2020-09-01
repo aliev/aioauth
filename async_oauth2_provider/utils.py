@@ -1,4 +1,5 @@
 from typing import AnyStr, List, Optional, Set, Tuple, Union
+from urllib.parse import quote_plus
 
 from async_oauth2_provider.config import settings
 
@@ -19,10 +20,10 @@ def get_authorization_scheme_param(
     return scheme, param
 
 
-def list_to_scope(scope: Optional[List] = None) -> Optional[AnyStr]:
+def list_to_scope(scope: Optional[List] = None) -> AnyStr:
     """Convert a list of scopes to a space separated string."""
     if isinstance(scope, str) or scope is None:
-        return scope
+        return ""
     elif isinstance(scope, (set, tuple, list)):
         return " ".join([str(s) for s in scope])
     else:
@@ -31,11 +32,15 @@ def list_to_scope(scope: Optional[List] = None) -> Optional[AnyStr]:
         )
 
 
-def scope_to_list(scope: Union[AnyStr, List, Set, Tuple]) -> Optional[List]:
+def scope_to_list(scope: Union[AnyStr, List, Set, Tuple]) -> List:
     """Convert a space separated string to a list of scopes."""
     if isinstance(scope, (tuple, list, set)):
         return [str(s) for s in scope]
     elif scope is None:
-        return None
+        return []
     else:
         return scope.strip().split(" ")
+
+
+def safe_uri(redirect_uri):
+    return quote_plus(str(redirect_uri), safe=":/%#?&=@[]!$&'()*+,;")

@@ -1,11 +1,10 @@
 import time
-from typing import Optional
-
-from pydantic import BaseModel
+from typing import AnyStr, Optional
 
 from async_oauth2_provider.config import settings
 from async_oauth2_provider.types import CodeChallengeMethod, GrantType, ResponseType
 from async_oauth2_provider.utils import list_to_scope, scope_to_list
+from pydantic import BaseModel
 
 
 class Client(BaseModel):
@@ -38,7 +37,7 @@ class Client(BaseModel):
     def scope(self):
         return self.client_metadata.get("scope", "")
 
-    def get_allowed_scope(self, scope):
+    def get_allowed_scope(self, scope) -> AnyStr:
         if not scope:
             return ""
         allowed = set(self.scope.split())

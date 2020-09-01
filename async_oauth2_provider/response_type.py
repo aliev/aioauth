@@ -1,5 +1,5 @@
-from typing import Optional, Type, Union
-from urllib.parse import quote, quote_plus, urlencode
+from typing import Optional, Type
+from urllib.parse import quote, urlencode
 
 from async_oauth2_provider.db import DBBase
 from async_oauth2_provider.exceptions import (
@@ -16,11 +16,11 @@ from async_oauth2_provider.exceptions import (
     MissingScopeError,
     MissingUsernameError,
 )
-from async_oauth2_provider.models import AuthorizationCode, Client, Token
+from async_oauth2_provider.models import Client
 from async_oauth2_provider.requests import Request
 from async_oauth2_provider.responses import AuthorizationCodeResponse, TokenResponse
 from async_oauth2_provider.types import RequestMethod, ResponseType
-from async_oauth2_provider.utils import is_secure_transport
+from async_oauth2_provider.utils import is_secure_transport, safe_uri
 
 
 class ResponseTypeBase:
@@ -90,21 +90,6 @@ class ResponseTypeBase:
 
         return client, db
 
-    def generate_uri(
-        self,
-        request: Request,
-        response: Union[Type[TokenResponse], Type[AuthorizationCodeResponse]],
-        model: Union[AuthorizationCode, Token],
-        fragment: str,
-    ):
-        body = response.from_orm(model)
-        body_dict = body.dict()
-        body_dict["scope"] = request.query.scope
-        body_dict["state"] = request.query.state
-        query_string = urlencode(body_dict, quote_via=quote)
-        redirect_uri = f"{request.query.redirect_uri}{fragment}{query_string}"
-        return quote_plus(str(redirect_uri), safe=":/%#?&=@[]!$&'()*+,;")
-
 
 class ResponseTypeToken(ResponseTypeBase):
     response_type: ResponseType = ResponseType.TYPE_TOKEN
@@ -113,8 +98,17 @@ class ResponseTypeToken(ResponseTypeBase):
         client, db = await super().get_redirect_uri(request)
 
         if request.method == RequestMethod.POST:
-            token = await db.create_token(client.client_id, request.query.scope or "")
-            return self.generate_uri(request, TokenResponse, token, "#")
+            scope = client.get_allowed_scope(request.query.scope)
+            token = await db.create_token(client.client_id, scope)
+
+            body = TokenResponse.from_orm(token)
+            body_dict = body.dict()
+            body_dict["scope"] = request.query.scope
+            body_dict["state"] = request.query.state
+            query_string = urlencode(body_dict, quote_via=quote)
+            redirect_uri = f"{request.query.redirect_uri}#{query_string}"
+
+            return safe_uri(redirect_uri)
 
 
 class ResponseTypeAuthorizationCode(ResponseTypeBase):
@@ -124,9 +118,16 @@ class ResponseTypeAuthorizationCode(ResponseTypeBase):
         client, db = await super().get_redirect_uri(request)
 
         if request.method == RequestMethod.POST:
+            scope = client.get_allowed_scope(request.query.scope)
             authorization_code = await db.create_authorization_code(
-                client.client_id, request.query.scope or "", self.response_type,
+                client.client_id, scope, self.response_type,
             )
-            return self.generate_uri(
-                request, AuthorizationCodeResponse, authorization_code, "?"
-            )
+
+            body = AuthorizationCodeResponse.from_orm(authorization_code)
+            body_dict = body.dict()
+            body_dict["scope"] = request.query.scope
+            body_dict["state"] = request.query.state
+            query_string = urlencode(body_dict, quote_via=quote)
+            redirect_uri = f"{request.query.redirect_uri}?{query_string}"
+
+            return safe_uri(redirect_uri)
