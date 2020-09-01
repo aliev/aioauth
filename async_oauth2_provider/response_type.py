@@ -3,12 +3,10 @@ from urllib.parse import quote, urlencode
 
 from async_oauth2_provider.db import DBBase
 from async_oauth2_provider.exceptions import (
-    InsecureTransportError,
     InvalidClientError,
     InvalidRedirectUriError,
     InvalidResponseTypeError,
     InvalidUsernameOrPasswordError,
-    MethodNotAllowedError,
     MissingClientIdError,
     MissingPasswordError,
     MissingRedirectUriError,
@@ -17,18 +15,15 @@ from async_oauth2_provider.exceptions import (
     MissingUsernameError,
 )
 from async_oauth2_provider.models import Client
+from async_oauth2_provider.request_validator import BaseRequestValidator
 from async_oauth2_provider.requests import Request
 from async_oauth2_provider.responses import AuthorizationCodeResponse, TokenResponse
 from async_oauth2_provider.types import RequestMethod, ResponseType
-from async_oauth2_provider.utils import is_secure_transport, safe_uri
+from async_oauth2_provider.utils import safe_uri
 
 
-class ResponseTypeBase:
+class ResponseTypeBase(BaseRequestValidator):
     response_type: ResponseType
-    allowed_methods = (
-        RequestMethod.GET,
-        RequestMethod.POST,
-    )
 
     def __init__(
         self, db_class: Type[DBBase] = DBBase,
@@ -36,11 +31,7 @@ class ResponseTypeBase:
         self.db_class = db_class
 
     async def validate_request(self, request: Request, db: DBBase) -> Client:
-        if not is_secure_transport(request.url):
-            raise InsecureTransportError()
-
-        if request.method not in self.allowed_methods:
-            raise MethodNotAllowedError()
+        await super().validate_request(request)
 
         if not request.query.client_id:
             raise MissingClientIdError()

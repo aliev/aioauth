@@ -5,7 +5,6 @@ from typing import Type
 from async_oauth2_provider.db import DBBase
 from async_oauth2_provider.exceptions import (
     AuthorizationCodeExpiredError,
-    InsecureTransportError,
     InvalidAuthorizationCodeError,
     InvalidClientError,
     InvalidCredentialsError,
@@ -13,7 +12,6 @@ from async_oauth2_provider.exceptions import (
     InvalidRedirectUriError,
     InvalidRefreshTokenError,
     InvalidUsernameOrPasswordError,
-    MethodNotAllowedError,
     MissingAuthorizationCodeError,
     MissingGrantTypeError,
     MissingPasswordError,
@@ -23,20 +21,14 @@ from async_oauth2_provider.exceptions import (
     RefreshTokenExpiredError,
 )
 from async_oauth2_provider.models import Client, Token
+from async_oauth2_provider.request_validator import BaseRequestValidator
 from async_oauth2_provider.requests import Request
-from async_oauth2_provider.types import GrantType, RequestMethod
-from async_oauth2_provider.utils import (
-    get_authorization_scheme_param,
-    is_secure_transport,
-)
+from async_oauth2_provider.types import GrantType
+from async_oauth2_provider.utils import get_authorization_scheme_param
 
 
-class GrantTypeBase:
+class GrantTypeBase(BaseRequestValidator):
     grant_type: GrantType
-    allowed_methods = (
-        RequestMethod.GET,
-        RequestMethod.POST,
-    )
 
     def __init__(
         self, db_class: Type[DBBase] = DBBase,
@@ -53,14 +45,10 @@ class GrantTypeBase:
         return self.db_class(request)
 
     async def validate_request(self, request: Request, db: DBBase) -> Client:
+        await super().validate_request(request)
+
         authorization: str = request.headers.get("Authorization", "")
         scheme, param = get_authorization_scheme_param(authorization)
-
-        if not is_secure_transport(request.url):
-            raise InsecureTransportError()
-
-        if request.method not in self.allowed_methods:
-            raise MethodNotAllowedError()
 
         if not authorization or scheme.lower() != "basic":
             raise InvalidCredentialsError()
