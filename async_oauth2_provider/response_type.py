@@ -103,7 +103,7 @@ class ResponseTypeToken(ResponseTypeBase):
 
             body = TokenResponse.from_orm(token)
             body_dict = body.dict()
-            body_dict["scope"] = request.query.scope
+            body_dict["scope"] = scope
             body_dict["state"] = request.query.state
             query_string = urlencode(body_dict, quote_via=quote)
             redirect_uri = f"{request.query.redirect_uri}#{query_string}"
@@ -125,7 +125,7 @@ class ResponseTypeAuthorizationCode(ResponseTypeBase):
 
             body = AuthorizationCodeResponse.from_orm(authorization_code)
             body_dict = body.dict()
-            body_dict["scope"] = request.query.scope
+            body_dict["scope"] = scope
             body_dict["state"] = request.query.state
             query_string = urlencode(body_dict, quote_via=quote)
             redirect_uri = f"{request.query.redirect_uri}?{query_string}"
