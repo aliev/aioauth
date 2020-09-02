@@ -17,7 +17,7 @@ def read_requirements(path):
 
 setup(
     name="async_oauth2_provider",
-    python_requires=">=3.5.0",
+    python_requires=">=3.6.0",
     setup_requires=["setuptools_scm"],
     install_requires=read_requirements(requirements_base),
     use_scm_version={
