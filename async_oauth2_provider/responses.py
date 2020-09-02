@@ -1,10 +1,9 @@
 from http import HTTPStatus
 from typing import Dict, Optional, Union
 
-from pydantic import BaseModel
-
 from async_oauth2_provider.constances import default_headers
 from async_oauth2_provider.types import ErrorType
+from pydantic import BaseModel
 
 
 class ErrorResponse(BaseModel):
@@ -37,4 +36,6 @@ class TokenResponse(BaseModel):
 class Response(BaseModel):
     status_code: HTTPStatus = HTTPStatus.OK
     headers: Dict[str, str] = default_headers
-    body: Optional[Union[ErrorResponse, TokenResponse, AuthorizationCodeResponse]]
+    body: Optional[
+        Union[ErrorResponse, TokenResponse, AuthorizationCodeResponse]
+    ] = None

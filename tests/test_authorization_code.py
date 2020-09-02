@@ -12,7 +12,7 @@ async def test_implicit_grant_type(endpoint: OAuth2Endpoint, defaults: Defaults)
     post = Post(username=defaults.username, password=defaults.password)
     query = Query(
         client_id=defaults.client_id,
-        response_type=ResponseType.TYPE_TOKEN,
+        response_type=ResponseType.TYPE_CODE,
         redirect_uri=defaults.redirect_uri,
         scope="hello",
         state="test",

@@ -1,5 +1,4 @@
 from typing import List, Optional, Set, Text, Tuple, Union
-from urllib.parse import quote_plus
 
 from async_oauth2_provider.config import settings
 
@@ -40,7 +39,3 @@ def scope_to_list(scope: Union[Text, List, Set, Tuple]) -> List:
         return []
     else:
         return scope.strip().split(" ")
-
-
-def safe_uri(redirect_uri):
-    return quote_plus(str(redirect_uri), safe=":/%#?&=@[]!$&'()*+,;")

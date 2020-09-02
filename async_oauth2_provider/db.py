@@ -1,12 +1,11 @@
 import time
 from typing import Optional
 
-from authlib.common.security import generate_token
-
 from async_oauth2_provider.config import settings
 from async_oauth2_provider.models import AuthorizationCode, Client, Token
 from async_oauth2_provider.requests import Request
 from async_oauth2_provider.types import CodeChallengeMethod, ResponseType
+from authlib.common.security import generate_token
 
 
 class DBBase:
@@ -25,7 +24,11 @@ class DBBase:
         )
 
     async def create_authorization_code(
-        self, client_id: str, scope: str, response_type: ResponseType
+        self,
+        client_id: str,
+        scope: str,
+        response_type: ResponseType,
+        state: Optional[str] = "",
     ) -> AuthorizationCode:
         code = generate_token(48)
 
@@ -37,6 +40,7 @@ class DBBase:
             scope=scope,
             auth_time=time.time(),
             code_challenge_method=CodeChallengeMethod.PLAIN,
+            state=state,
         )
 
     async def get_client(

@@ -19,21 +19,23 @@ from async_oauth2_provider.exceptions import (
     MissingUsernameError,
     RefreshTokenExpiredError,
 )
-from async_oauth2_provider.models import Client, Token
+from async_oauth2_provider.models import Client
 from async_oauth2_provider.request_validator import BaseRequestValidator
 from async_oauth2_provider.requests import Request
 from async_oauth2_provider.types import GrantType
 from async_oauth2_provider.utils import get_authorization_scheme_param
+from responses import TokenResponse
 
 
 class GrantTypeBase(BaseRequestValidator):
     grant_type: GrantType
 
-    async def create_token(self, request: Request) -> Token:
+    async def create_token_response(self, request: Request) -> TokenResponse:
         db = self.get_db(request)
         client = await self.validate_request(request, db)
         scope = client.get_allowed_scope(request.post.scope)
-        return await db.create_token(client.client_id, scope)
+        token = await db.create_token(client.client_id, scope)
+        return TokenResponse.from_orm(token)
 
     async def validate_request(self, request: Request, db: DBBase) -> Client:
         await super().validate_request(request)
