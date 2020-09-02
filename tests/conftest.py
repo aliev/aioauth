@@ -106,20 +106,6 @@ def db_class(
         async def revoke_token(self, refresh_token: str, client_id: str):
             ...
 
-        async def create_authorization_code(
-            self, client_id: str, scope: str, response_type: ResponseType
-        ) -> AuthorizationCode:
-            authorization_code = await super().create_authorization_code(
-                client_id, scope, response_type
-            )
-            # Save authorization code in DB here
-            return authorization_code
-
-        async def create_token(self, client_id: str, scope: str) -> Token:
-            token = await super().create_token(client_id, scope)
-            # Save token in DB here
-            return token
-
         async def get_client(
             self, client_id: str, client_secret: Optional[str] = None
         ) -> Optional[Client]:
