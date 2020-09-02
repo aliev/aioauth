@@ -37,10 +37,6 @@ class OAuth2Exception(Exception):
         super().__init__(self.error_description)
 
 
-class MissingScopeError(OAuth2Exception):
-    error_description = "Missing scope"
-
-
 class MissingResponseTypeError(OAuth2Exception):
     error_description = "Missing response_type"
 

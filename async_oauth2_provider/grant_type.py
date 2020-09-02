@@ -1,6 +1,5 @@
 import binascii
 from base64 import b64decode
-from typing import Type
 
 from async_oauth2_provider.db import DBBase
 from async_oauth2_provider.exceptions import (
@@ -30,19 +29,11 @@ from async_oauth2_provider.utils import get_authorization_scheme_param
 class GrantTypeBase(BaseRequestValidator):
     grant_type: GrantType
 
-    def __init__(
-        self, db_class: Type[DBBase] = DBBase,
-    ):
-        self.db_class = db_class
-
     async def create_token(self, request: Request) -> Token:
         db = self.get_db(request)
         client = await self.validate_request(request, db)
         scope = client.get_allowed_scope(request.post.scope)
         return await db.create_token(client.client_id, scope)
-
-    def get_db(self, request: Request) -> DBBase:
-        return self.db_class(request)
 
     async def validate_request(self, request: Request, db: DBBase) -> Client:
         await super().validate_request(request)

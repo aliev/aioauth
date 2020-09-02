@@ -1,4 +1,4 @@
-from typing import Optional, Type
+from typing import Optional
 from urllib.parse import quote, urlencode
 
 from async_oauth2_provider.db import DBBase
@@ -11,7 +11,6 @@ from async_oauth2_provider.exceptions import (
     MissingPasswordError,
     MissingRedirectUriError,
     MissingResponseTypeError,
-    MissingScopeError,
     MissingUsernameError,
 )
 from async_oauth2_provider.models import Client
@@ -24,11 +23,6 @@ from async_oauth2_provider.utils import safe_uri
 
 class ResponseTypeBase(BaseRequestValidator):
     response_type: ResponseType
-
-    def __init__(
-        self, db_class: Type[DBBase] = DBBase,
-    ):
-        self.db_class = db_class
 
     async def validate_request(self, request: Request, db: DBBase) -> Client:
         await super().validate_request(request)
@@ -45,9 +39,6 @@ class ResponseTypeBase(BaseRequestValidator):
         if not request.query.redirect_uri:
             raise MissingRedirectUriError()
 
-        if not request.query.scope:
-            raise MissingScopeError()
-
         client = await db.get_client(client_id=request.query.client_id)
 
         if not client:
@@ -60,9 +51,6 @@ class ResponseTypeBase(BaseRequestValidator):
             raise InvalidResponseTypeError()
 
         return client
-
-    def get_db(self, request: Request):
-        return self.db_class(request)
 
     async def get_redirect_uri(self, request: Request):
         db = self.get_db(request)
