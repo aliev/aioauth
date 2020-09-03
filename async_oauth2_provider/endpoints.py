@@ -1,6 +1,6 @@
 from http import HTTPStatus
 from typing import Type
-from urllib.parse import quote, urlencode
+from urllib.parse import quote, urlencode, urlunsplit
 
 from async_oauth2_provider.constances import default_headers
 from async_oauth2_provider.db import DBBase
@@ -64,6 +64,7 @@ class OAuth2Endpoint:
         response_type_cls = self.response_types.get(request.query.response_type)
         response_type_handler = response_type_cls(self.db_class)
 
+        # Defaults
         status_code = HTTPStatus.OK
         headers = default_headers
         body = None
@@ -74,12 +75,22 @@ class OAuth2Endpoint:
             )
             if response is not None:
                 query_string = urlencode(response.dict(), quote_via=quote)
-                fragment = (
-                    "#"
-                    if request.query.response_type == ResponseType.TYPE_CODE
-                    else "?"
+                fragment = ""
+
+                if request.query.response_type == ResponseType.TYPE_TOKEN:
+                    fragment = query_string
+                    query_string = ""
+
+                redirect_uri = urlunsplit(
+                    (
+                        request.query.redirect_uri.scheme,
+                        request.query.redirect_uri.host,
+                        request.query.redirect_uri.path,
+                        query_string,
+                        fragment,
+                    )
                 )
-                redirect_uri = f"{request.query.redirect_uri}{fragment}{query_string}"
+
                 status_code = HTTPStatus.SEE_OTHER
                 headers = {"location": redirect_uri}
             else:

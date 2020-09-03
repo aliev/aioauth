@@ -33,8 +33,7 @@ class GrantTypeBase(BaseRequestValidator):
     async def create_token_response(self, request: Request) -> TokenResponse:
         db = self.get_db(request)
         client = await self.validate_request(request, db)
-        scope = client.get_allowed_scope(request.post.scope)
-        token = await db.create_token(client.client_id, scope)
+        token = await db.create_token(client)
         return TokenResponse.from_orm(token)
 
     async def validate_request(self, request: Request, db: DBBase) -> Client:
@@ -88,9 +87,7 @@ class AuthorizationCodeGrantType(GrantTypeBase):
         if not request.post.code:
             raise MissingAuthorizationCodeError()
 
-        authorization_code = await db.get_authorization_code(
-            code=request.post.code, client_id=client.client_id,
-        )
+        authorization_code = await db.get_authorization_code(client)
 
         if not authorization_code:
             raise InvalidAuthorizationCodeError()
@@ -98,9 +95,7 @@ class AuthorizationCodeGrantType(GrantTypeBase):
         if authorization_code.is_expired():
             raise AuthorizationCodeExpiredError()
 
-        await db.delete_authorization_code(
-            code=request.post.code, client_id=client.client_id,
-        )
+        await db.delete_authorization_code(authorization_code)
 
         return client
 
@@ -117,9 +112,7 @@ class PasswordGrantType(GrantTypeBase):
         if not request.post.username:
             raise MissingUsernameError()
 
-        user = await db.get_user(
-            username=request.post.username, password=request.post.password
-        )
+        user = await db.get_user()
 
         if not user:
             raise InvalidUsernameOrPasswordError()
@@ -136,9 +129,7 @@ class RefreshTokenGrantType(GrantTypeBase):
         if not request.post.refresh_token:
             raise MissingRefreshTokenError()
 
-        token = await db.get_refresh_token(
-            refresh_token=request.post.refresh_token, client_id=client.client_id
-        )
+        token = await db.get_refresh_token(client)
 
         if not token:
             raise InvalidRefreshTokenError()
@@ -146,9 +137,7 @@ class RefreshTokenGrantType(GrantTypeBase):
         if token.refresh_token_expired:
             raise RefreshTokenExpiredError()
 
-        await db.revoke_token(
-            refresh_token=request.post.refresh_token, client_id=client.client_id
-        )
+        await db.revoke_token(token)
 
         return client
 

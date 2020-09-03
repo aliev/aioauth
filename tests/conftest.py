@@ -55,6 +55,7 @@ def client_metadata(defaults: Defaults) -> ClientMetadata:
         ],
         redirect_uris=[defaults.redirect_uri],
         response_types=[ResponseType.TYPE_CODE, ResponseType.TYPE_TOKEN],
+        scope=defaults.scope,
     )
 
 
@@ -100,10 +101,12 @@ def db_class(
     token: Token,
 ) -> Type[DBBase]:
     class DB(DBBase):
-        async def delete_authorization_code(self, code, client_id: str):
+        async def delete_authorization_code(
+            self, authorization_code: AuthorizationCode
+        ):
             ...
 
-        async def revoke_token(self, refresh_token: str, client_id: str):
+        async def revoke_token(self, token: Token):
             ...
 
         async def get_client(
@@ -112,22 +115,26 @@ def db_class(
             if client_id == defaults.client_id:
                 return client
 
-        async def get_user(self, username: str, password: str) -> Optional[bool]:
-            if username == defaults.username and password == defaults.password:
+        async def get_user(self) -> Optional[bool]:
+            if (
+                self.request.post.username == defaults.username
+                and self.request.post.password == defaults.password
+            ):
                 return True
 
         async def get_authorization_code(
-            self, code: str, client_id: str
+            self, client: Client
         ) -> Optional[AuthorizationCode]:
-            if code == defaults.code and client_id == defaults.client_id:
+            if (
+                self.request.post.code == defaults.code
+                and client.client_id == defaults.client_id
+            ):
                 return authorization_code
 
-        async def get_refresh_token(
-            self, refresh_token: str, client_id: str
-        ) -> Optional[Token]:
+        async def get_refresh_token(self, client: Client) -> Optional[Token]:
             if (
-                client_id == defaults.client_id
-                and refresh_token == defaults.refresh_token
+                client.client_id == defaults.client_id
+                and self.request.post.refresh_token == defaults.refresh_token
             ):
                 return token
 

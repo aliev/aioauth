@@ -6,21 +6,23 @@ from async_oauth2_provider.types import ResponseType
 from endpoints import OAuth2Endpoint
 from tests.conftest import Defaults
 
+# from urllib.parse import urlparse
+
 
 @pytest.mark.asyncio
 async def test_implicit_grant_type(endpoint: OAuth2Endpoint, defaults: Defaults):
     post = Post(username=defaults.username, password=defaults.password)
     query = Query(
         client_id=defaults.client_id,
-        response_type=ResponseType.TYPE_CODE,
+        response_type=ResponseType.TYPE_TOKEN,
         redirect_uri=defaults.redirect_uri,
-        scope="hello",
+        scope=defaults.scope,
         state="test",
     )
     request = Request(url="https://google.com/", post=post, query=query, method="POST")
 
     response = await endpoint.create_authorization_response(request)
-    assert response.status_code == HTTPStatus.SEE_OTHER
+    # redirect_uri = urlparse(response.headers["location"])
 
     request = Request(
         url="https://google.com/",

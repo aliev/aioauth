@@ -60,7 +60,7 @@ class ResponseTypeBase(BaseRequestValidator):
             if not request.post.password:
                 raise MissingPasswordError()
 
-            user = await db.get_user(request.post.username, request.post.password)
+            user = await db.get_user()
 
             if not user:
                 raise InvalidUsernameOrPasswordError()
@@ -77,8 +77,7 @@ class ResponseTypeToken(ResponseTypeBase):
         client, db = await super().create_authorization_response(request)
 
         if request.method == RequestMethod.POST:
-            scope = client.get_allowed_scope(request.query.scope)
-            token = await db.create_token(client.client_id, scope)
+            token = await db.create_token(client)
             return TokenResponse.from_orm(token)
 
 
@@ -91,8 +90,5 @@ class ResponseTypeAuthorizationCode(ResponseTypeBase):
         client, db = await super().create_authorization_response(request)
 
         if request.method == RequestMethod.POST:
-            scope = client.get_allowed_scope(request.query.scope)
-            authorization_code = await db.create_authorization_code(
-                client.client_id, scope, self.response_type, request.query.state
-            )
+            authorization_code = await db.create_authorization_code(client)
             return AuthorizationCodeResponse.from_orm(authorization_code)
