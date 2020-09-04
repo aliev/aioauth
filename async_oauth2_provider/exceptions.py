@@ -1,3 +1,9 @@
+"""
+async_oauth2_provider.exceptions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+This module contains the set of OAuth2 exceptions.
+"""
+
 from http import HTTPStatus
 from typing import Optional
 
