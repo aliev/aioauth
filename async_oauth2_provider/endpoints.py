@@ -1,45 +1,41 @@
 from http import HTTPStatus
+from typing import Dict, Optional, Type, Union
 from urllib.parse import quote, urlencode, urlunsplit
 
 from async_oauth2_provider.constances import default_headers
 from async_oauth2_provider.db import DBBase
 from async_oauth2_provider.exceptions import OAuth2Exception
-from async_oauth2_provider.grant_type import (
-    AuthorizationCodeGrantType,
-    ClientCredentialsGrantType,
-    GrantTypeBase,
-    PasswordGrantType,
-    RefreshTokenGrantType,
-)
+from async_oauth2_provider.grant_type import GrantTypeBase
 from async_oauth2_provider.requests import Request
-from async_oauth2_provider.response_type import (
-    ResponseTypeAuthorizationCode,
-    ResponseTypeBase,
-    ResponseTypeToken,
-)
+from async_oauth2_provider.response_type import ResponseTypeBase
 from async_oauth2_provider.responses import ErrorResponse, Response
-from async_oauth2_provider.types import GrantType, ResponseType
+from async_oauth2_provider.types import EndpointType, GrantType, ResponseType
 
 
 class OAuth2Endpoint:
-    response_types = {
-        ResponseType.TYPE_CODE: ResponseTypeAuthorizationCode,
-        ResponseType.TYPE_TOKEN: ResponseTypeToken,
-        None: ResponseTypeBase,  # Default response type
-    }
-    grant_types = {
-        GrantType.TYPE_AUTHORIZATION_CODE: AuthorizationCodeGrantType,
-        GrantType.TYPE_PASSWORD: PasswordGrantType,
-        GrantType.TYPE_CLIENT_CREDENTIALS: ClientCredentialsGrantType,
-        GrantType.TYPE_REFRESH_TOKEN: RefreshTokenGrantType,
-        None: GrantTypeBase,  # Default grant type
-    }
+    response_type: Dict[Optional[ResponseType], Type[ResponseTypeBase]] = {}
+    grant_type: Dict[Optional[GrantType], Type[GrantTypeBase]] = {}
 
     def __init__(self, db: DBBase):
         self.db = db
 
+    def register(
+        self,
+        endpoint_type: EndpointType,
+        endpoint: Union[ResponseType, GrantType],
+        endpoint_cls: Union[Type[ResponseTypeBase], Type[GrantTypeBase]],
+    ):
+        endpoint_dict = getattr(self, endpoint_type.value)
+        endpoint_dict[endpoint] = endpoint_cls
+
+    def unregister(
+        self, endpoint_type: EndpointType, endpoint: Union[ResponseType, GrantType]
+    ):
+        endpoint_dict = getattr(self, endpoint_type.value)
+        del endpoint_dict[endpoint]
+
     async def create_token_response(self, request: Request) -> Response:
-        grant_type_cls = self.grant_types.get(request.post.grant_type)
+        grant_type_cls = self.grant_type.get(request.post.grant_type, GrantTypeBase)
         grant_type_handler = grant_type_cls(self.db)
 
         status_code = HTTPStatus.OK
@@ -58,7 +54,9 @@ class OAuth2Endpoint:
         return Response(body=body, status_code=status_code, headers=headers)
 
     async def create_authorization_response(self, request: Request) -> Response:
-        response_type_cls = self.response_types.get(request.query.response_type)
+        response_type_cls = self.response_type.get(
+            request.query.response_type, ResponseTypeBase
+        )
         response_type_handler = response_type_cls(self.db)
 
         status_code = HTTPStatus.OK
@@ -87,7 +85,7 @@ class OAuth2Endpoint:
                     )
                 )
 
-                status_code = HTTPStatus.SEE_OTHER
+                status_code = HTTPStatus.FOUND
                 headers = {"location": redirect_uri}
             else:
                 status_code = HTTPStatus.OK

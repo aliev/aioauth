@@ -1,5 +1,6 @@
 import binascii
 from base64 import b64decode
+from typing import Optional
 
 from async_oauth2_provider.exceptions import (
     AuthorizationCodeExpiredError,
@@ -28,7 +29,7 @@ from responses import TokenResponse
 
 class GrantTypeBase(BaseRequestValidator):
     allowed_methods = (RequestMethod.POST,)
-    grant_type: GrantType
+    grant_type: Optional[GrantType] = None
 
     async def create_token_response(self, request: Request) -> TokenResponse:
         client = await self.validate_request(request)

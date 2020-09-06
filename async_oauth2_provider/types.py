@@ -22,6 +22,11 @@ class ResponseType(Enum):
     TYPE_CODE = "code"
 
 
+class EndpointType(Enum):
+    GRANT_TYPE = "grant_type"
+    RESPONSE_TYPE = "response_type"
+
+
 class RequestMethod(Enum):
     GET = "GET"
     POST = "POST"

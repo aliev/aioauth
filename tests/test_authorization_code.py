@@ -75,7 +75,7 @@ async def test_grant_type(endpoint: OAuth2Endpoint, defaults: Defaults):
 #     token_endpoint = OAuth2Endpoint(db_class=DB)
 
 #     response = await token_endpoint.create_authorization_response(request)
-#     assert response.status_code == HTTPStatus.SEE_OTHER
+#     assert response.status_code == HTTPStatus.FOUND
 
 #     request = Request(
 #         url="https://google.com/",

@@ -5,6 +5,7 @@ import pytest
 from async_oauth2_provider.config import settings
 from async_oauth2_provider.db import DBBase
 from async_oauth2_provider.endpoints import OAuth2Endpoint
+from async_oauth2_provider.grant_type import AuthorizationCodeGrantType
 from async_oauth2_provider.models import (
     AuthorizationCode,
     Client,
@@ -12,7 +13,13 @@ from async_oauth2_provider.models import (
     Token,
 )
 from async_oauth2_provider.requests import Request
-from async_oauth2_provider.types import CodeChallengeMethod, GrantType, ResponseType
+from async_oauth2_provider.response_type import ResponseTypeToken
+from async_oauth2_provider.types import (
+    CodeChallengeMethod,
+    EndpointType,
+    GrantType,
+    ResponseType,
+)
 from authlib.common.security import generate_token
 from pydantic import BaseModel
 from pydantic.networks import AnyHttpUrl
@@ -146,4 +153,13 @@ def db_class(
 
 @pytest.fixture
 def endpoint(db_class: Type[DBBase]) -> OAuth2Endpoint:
-    return OAuth2Endpoint(db=db_class())
+    endpoint = OAuth2Endpoint(db=db_class())
+    endpoint.register(
+        EndpointType.RESPONSE_TYPE, ResponseType.TYPE_TOKEN, ResponseTypeToken
+    )
+    endpoint.register(
+        EndpointType.GRANT_TYPE,
+        GrantType.TYPE_AUTHORIZATION_CODE,
+        AuthorizationCodeGrantType,
+    )
+    return endpoint
