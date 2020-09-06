@@ -40,7 +40,7 @@ jobs:
     - name: Lint with flake8
       run: |
         flake8 async_oauth2_provider
-        flake8 test
+        flake8 tests
     - name: Test with pytest
       run: |
         pytest
