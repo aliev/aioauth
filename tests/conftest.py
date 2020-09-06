@@ -11,6 +11,7 @@ from async_oauth2_provider.models import (
     ClientMetadata,
     Token,
 )
+from async_oauth2_provider.requests import Request
 from async_oauth2_provider.types import CodeChallengeMethod, GrantType, ResponseType
 from authlib.common.security import generate_token
 from pydantic import BaseModel
@@ -102,39 +103,41 @@ def db_class(
 ) -> Type[DBBase]:
     class DB(DBBase):
         async def delete_authorization_code(
-            self, authorization_code: AuthorizationCode
+            self, request: Request, authorization_code: AuthorizationCode
         ):
             ...
 
-        async def revoke_token(self, token: Token):
+        async def revoke_token(self, request: Request, token: Token):
             ...
 
         async def get_client(
-            self, client_id: str, client_secret: Optional[str] = None
+            self, request: Request, client_id: str, client_secret: Optional[str] = None
         ) -> Optional[Client]:
             if client_id == defaults.client_id:
                 return client
 
-        async def get_user(self) -> Optional[bool]:
+        async def get_user(self, request: Request) -> Optional[bool]:
             if (
-                self.request.post.username == defaults.username
-                and self.request.post.password == defaults.password
+                request.post.username == defaults.username
+                and request.post.password == defaults.password
             ):
                 return True
 
         async def get_authorization_code(
-            self, client: Client
+            self, request: Request, client: Client
         ) -> Optional[AuthorizationCode]:
             if (
-                self.request.post.code == defaults.code
+                request.post.code == defaults.code
                 and client.client_id == defaults.client_id
             ):
                 return authorization_code
 
-        async def get_refresh_token(self, client: Client) -> Optional[Token]:
+        async def get_refresh_token(
+            self, request: Request, client: Client
+        ) -> Optional[Token]:
             if (
                 client.client_id == defaults.client_id
-                and self.request.post.refresh_token == defaults.refresh_token
+                and request.post.refresh_token == defaults.refresh_token
             ):
                 return token
 
@@ -143,4 +146,4 @@ def db_class(
 
 @pytest.fixture
 def endpoint(db_class: Type[DBBase]) -> OAuth2Endpoint:
-    return OAuth2Endpoint(db_class=db_class)
+    return OAuth2Endpoint(db=db_class())

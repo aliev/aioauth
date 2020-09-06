@@ -1,6 +1,5 @@
 from typing import Optional
 
-from async_oauth2_provider.db import DBBase
 from async_oauth2_provider.exceptions import (
     InvalidClientError,
     InvalidRedirectUriError,
@@ -22,7 +21,7 @@ from async_oauth2_provider.types import RequestMethod, ResponseType
 class ResponseTypeBase(BaseRequestValidator):
     response_type: ResponseType
 
-    async def validate_request(self, request: Request, db: DBBase) -> Client:
+    async def validate_request(self, request: Request) -> Client:
         await super().validate_request(request)
 
         if not request.query.response_type:
@@ -37,7 +36,7 @@ class ResponseTypeBase(BaseRequestValidator):
         if not request.query.redirect_uri:
             raise MissingRedirectUriError()
 
-        client = await db.get_client(client_id=request.query.client_id)
+        client = await self.db.get_client(request, client_id=request.query.client_id)
 
         if not client:
             raise InvalidClientError()
@@ -50,9 +49,8 @@ class ResponseTypeBase(BaseRequestValidator):
 
         return client
 
-    async def create_authorization_response(self, request: Request):
-        db = self.get_db(request)
-        client = await self.validate_request(request, db)
+    async def create_authorization_response(self, request: Request) -> Client:
+        client = await self.validate_request(request)
 
         if request.method == RequestMethod.POST:
             if not request.post.username:
@@ -60,12 +58,12 @@ class ResponseTypeBase(BaseRequestValidator):
             if not request.post.password:
                 raise MissingPasswordError()
 
-            user = await db.get_user()
+            user = await self.db.get_user(request)
 
             if not user:
                 raise InvalidUsernameOrPasswordError()
 
-        return client, db
+        return client
 
 
 class ResponseTypeToken(ResponseTypeBase):
@@ -74,10 +72,10 @@ class ResponseTypeToken(ResponseTypeBase):
     async def create_authorization_response(
         self, request: Request
     ) -> Optional[TokenResponse]:
-        client, db = await super().create_authorization_response(request)
+        client = await super().create_authorization_response(request)
 
         if request.method == RequestMethod.POST:
-            token = await db.create_token(client)
+            token = await self.db.create_token(request, client)
             return TokenResponse.from_orm(token)
 
 
@@ -87,8 +85,10 @@ class ResponseTypeAuthorizationCode(ResponseTypeBase):
     async def create_authorization_response(
         self, request: Request
     ) -> Optional[AuthorizationCodeResponse]:
-        client, db = await super().create_authorization_response(request)
+        client = await super().create_authorization_response(request)
 
         if request.method == RequestMethod.POST:
-            authorization_code = await db.create_authorization_code(client)
+            authorization_code = await self.db.create_authorization_code(
+                request, client
+            )
             return AuthorizationCodeResponse.from_orm(authorization_code)

@@ -1,5 +1,3 @@
-from typing import Type
-
 from async_oauth2_provider.exceptions import (
     InsecureTransportError,
     MethodNotAllowedError,
@@ -16,13 +14,8 @@ class BaseRequestValidator:
         RequestMethod.POST,
     )
 
-    def __init__(
-        self, db_class: Type[DBBase] = DBBase,
-    ):
-        self.db_class = db_class
-
-    def get_db(self, request: Request) -> DBBase:
-        return self.db_class(request)
+    def __init__(self, db: DBBase):
+        self.db = db
 
     async def validate_request(self, request: Request):
         if not is_secure_transport(request.url):

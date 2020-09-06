@@ -1,5 +1,4 @@
 from http import HTTPStatus
-from typing import Type
 from urllib.parse import quote, urlencode, urlunsplit
 
 from async_oauth2_provider.constances import default_headers
@@ -36,14 +35,12 @@ class OAuth2Endpoint:
         None: GrantTypeBase,  # Default grant type
     }
 
-    def __init__(
-        self, db_class: Type[DBBase],
-    ):
-        self.db_class = db_class
+    def __init__(self, db: DBBase):
+        self.db = db
 
     async def create_token_response(self, request: Request) -> Response:
         grant_type_cls = self.grant_types.get(request.post.grant_type)
-        grant_type_handler = grant_type_cls(self.db_class)
+        grant_type_handler = grant_type_cls(self.db)
 
         status_code = HTTPStatus.OK
         headers = default_headers
@@ -62,9 +59,8 @@ class OAuth2Endpoint:
 
     async def create_authorization_response(self, request: Request) -> Response:
         response_type_cls = self.response_types.get(request.query.response_type)
-        response_type_handler = response_type_cls(self.db_class)
+        response_type_handler = response_type_cls(self.db)
 
-        # Defaults
         status_code = HTTPStatus.OK
         headers = default_headers
         body = None

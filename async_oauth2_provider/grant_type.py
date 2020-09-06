@@ -1,7 +1,6 @@
 import binascii
 from base64 import b64decode
 
-from async_oauth2_provider.db import DBBase
 from async_oauth2_provider.exceptions import (
     AuthorizationCodeExpiredError,
     InvalidAuthorizationCodeError,
@@ -22,21 +21,21 @@ from async_oauth2_provider.exceptions import (
 from async_oauth2_provider.models import Client
 from async_oauth2_provider.request_validator import BaseRequestValidator
 from async_oauth2_provider.requests import Request
-from async_oauth2_provider.types import GrantType
+from async_oauth2_provider.types import GrantType, RequestMethod
 from async_oauth2_provider.utils import get_authorization_scheme_param
 from responses import TokenResponse
 
 
 class GrantTypeBase(BaseRequestValidator):
+    allowed_methods = (RequestMethod.POST,)
     grant_type: GrantType
 
     async def create_token_response(self, request: Request) -> TokenResponse:
-        db = self.get_db(request)
-        client = await self.validate_request(request, db)
-        token = await db.create_token(client)
+        client = await self.validate_request(request)
+        token = await self.db.create_token(request, client)
         return TokenResponse.from_orm(token)
 
-    async def validate_request(self, request: Request, db: DBBase) -> Client:
+    async def validate_request(self, request: Request) -> Client:
         await super().validate_request(request)
 
         authorization: str = request.headers.get("Authorization", "")
@@ -61,7 +60,9 @@ class GrantTypeBase(BaseRequestValidator):
         if self.grant_type != request.post.grant_type:
             raise InvalidGrantTypeError()
 
-        client = await db.get_client(client_id=client_id, client_secret=client_secret)
+        client = await self.db.get_client(
+            request, client_id=client_id, client_secret=client_secret
+        )
 
         if not client:
             raise InvalidClientError()
@@ -75,8 +76,8 @@ class GrantTypeBase(BaseRequestValidator):
 class AuthorizationCodeGrantType(GrantTypeBase):
     grant_type: GrantType = GrantType.TYPE_AUTHORIZATION_CODE
 
-    async def validate_request(self, request: Request, db: DBBase) -> Client:
-        client = await super().validate_request(request, db)
+    async def validate_request(self, request: Request) -> Client:
+        client = await super().validate_request(request)
 
         if not request.post.redirect_uri:
             raise MissingRedirectUriError()
@@ -87,7 +88,7 @@ class AuthorizationCodeGrantType(GrantTypeBase):
         if not request.post.code:
             raise MissingAuthorizationCodeError()
 
-        authorization_code = await db.get_authorization_code(client)
+        authorization_code = await self.db.get_authorization_code(request, client)
 
         if not authorization_code:
             raise InvalidAuthorizationCodeError()
@@ -95,7 +96,7 @@ class AuthorizationCodeGrantType(GrantTypeBase):
         if authorization_code.is_expired():
             raise AuthorizationCodeExpiredError()
 
-        await db.delete_authorization_code(authorization_code)
+        await self.db.delete_authorization_code(request, authorization_code)
 
         return client
 
@@ -103,8 +104,8 @@ class AuthorizationCodeGrantType(GrantTypeBase):
 class PasswordGrantType(GrantTypeBase):
     grant_type: GrantType = GrantType.TYPE_PASSWORD
 
-    async def validate_request(self, request: Request, db: DBBase) -> Client:
-        client = await super().validate_request(request, db)
+    async def validate_request(self, request: Request) -> Client:
+        client = await super().validate_request(request)
 
         if not request.post.password:
             raise MissingPasswordError()
@@ -112,7 +113,7 @@ class PasswordGrantType(GrantTypeBase):
         if not request.post.username:
             raise MissingUsernameError()
 
-        user = await db.get_user()
+        user = await self.db.get_user(request)
 
         if not user:
             raise InvalidUsernameOrPasswordError()
@@ -123,13 +124,13 @@ class PasswordGrantType(GrantTypeBase):
 class RefreshTokenGrantType(GrantTypeBase):
     grant_type: GrantType = GrantType.TYPE_REFRESH_TOKEN
 
-    async def validate_request(self, request: Request, db: DBBase) -> Client:
-        client = await super().validate_request(request, db)
+    async def validate_request(self, request: Request) -> Client:
+        client = await super().validate_request(request)
 
         if not request.post.refresh_token:
             raise MissingRefreshTokenError()
 
-        token = await db.get_refresh_token(client)
+        token = await self.db.get_refresh_token(request, client)
 
         if not token:
             raise InvalidRefreshTokenError()
@@ -137,7 +138,7 @@ class RefreshTokenGrantType(GrantTypeBase):
         if token.refresh_token_expired:
             raise RefreshTokenExpiredError()
 
-        await db.revoke_token(token)
+        await self.db.revoke_token(request, token)
 
         return client
 
