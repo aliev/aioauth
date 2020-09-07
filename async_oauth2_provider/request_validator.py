@@ -1,5 +1,4 @@
-from db import DBBase
-
+from .db import DBBase
 from .exceptions import InsecureTransportError, MethodNotAllowedError
 from .requests import Request
 from .types import RequestMethod
