@@ -76,7 +76,8 @@ class DBBase:
     ) -> Optional[Client]:
         """Gets existing Client from database.
 
-        If client doesn't exists in database this method MUST return None.
+        If client doesn't exists in database this method MUST return None
+        to indicate to the validator that the requested ``client_id`` does not exist or is invalid.
 
         :param request: OAuth2 Request instance
         :type request: Request
@@ -84,7 +85,7 @@ class DBBase:
         :type client_id: str
         :param client_secret: requested client_secret, defaults to None
         :type client_secret: Optional[str], optional
-        :raises NotImplementedError: [description]
+        :raises NotImplementedError: Method must be implemented by library user.
         :return: returns existing Client model instance if client exists in database.
         :rtype: Optional[Client]
 
@@ -98,7 +99,7 @@ class DBBase:
 
         :param request: OAuth2 Request instance
         :type request: Request
-        :raises NotImplementedError: this method must be implemented by user.
+        :raises NotImplementedError: Method must be implemented by library user.
         :return: Returns True if users exists in database.
         :rtype: bool
 
@@ -114,13 +115,14 @@ class DBBase:
         """Gets existing AuthorizationCode from database.
 
         If authorization code doesn't exists it MUST return None
+        to indicate to the validator that the requested authorization code does not exist or is invalid.
 
-        :param request: [description]
+        :param request: OAuth2 Request instance
         :type request: Request
-        :param client: [description]
+        :param client: OAuth2 Client model instance
         :type client: Client
-        :raises NotImplementedError: [description]
-        :return: [description]
+        :raises NotImplementedError: Method must be implemented by library user.
+        :return: Returns AuthorizationCode instance if it exists in database.
         :rtype: Optional[AuthorizationCode]
 
         Method is used by grant types:
@@ -155,10 +157,16 @@ class DBBase:
             "Method get_refresh_token must be implemented for RefreshTokenGrantType"
         )
 
-    async def revoke_token(self, request: Request, token: Token):
+    async def revoke_token(self, request: Request, token: Token) -> None:
         """Revokes token in database.
 
         This method MUST set `revoked` in True for existing token record.
+
+        :param request: OAuth2 Request instance
+        :type request: Request
+        :param token: Token model instance that should be revoked.
+        :type token: Token
+        :raises NotImplementedError: Method must be implemented by library user.
 
         Method is used by grant types:
             - RefreshTokenGrantType
