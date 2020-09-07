@@ -19,9 +19,11 @@ Supported or planned features
 
 Library settings
 
+```python
 OAUTH2_TOKEN_EXPIRES_IN
 OAUTH2_AUTHORIZATION_CODE_EXPIRES_IN
 OAUTH2_INSECURE_TRANSPORT
+```
 
 You have to inherit from DBBase class
 
