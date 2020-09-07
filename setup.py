@@ -39,7 +39,7 @@ setup(
     use_scm_version={
         "version_scheme": "guess-next-dev",
         "local_scheme": "dirty-tag",
-        "write_to": "src/__init__.py",
+        "write_to": "src/async_oauth2_provider/__init__.py",
         "write_to_template": '__version__ = "{version}"\n',
         "relative_to": __file__,
     },
