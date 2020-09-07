@@ -39,8 +39,7 @@ jobs:
         pyright async_oauth2_provider
     - name: Lint with flake8
       run: |
-        flake8 async_oauth2_provider
-        flake8 tests
+        flake8 async_oauth2_provider tests
     - name: Test with pytest
       run: |
         pytest
