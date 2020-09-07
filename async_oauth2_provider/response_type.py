@@ -1,6 +1,6 @@
 from typing import Optional
 
-from async_oauth2_provider.exceptions import (
+from .exceptions import (
     InvalidClientError,
     InvalidRedirectUriError,
     InvalidResponseTypeError,
@@ -11,11 +11,11 @@ from async_oauth2_provider.exceptions import (
     MissingResponseTypeError,
     MissingUsernameError,
 )
-from async_oauth2_provider.models import Client
-from async_oauth2_provider.request_validator import BaseRequestValidator
-from async_oauth2_provider.requests import Request
-from async_oauth2_provider.responses import AuthorizationCodeResponse, TokenResponse
-from async_oauth2_provider.types import RequestMethod, ResponseType
+from .models import Client
+from .request_validator import BaseRequestValidator
+from .requests import Request
+from .responses import AuthorizationCodeResponse, TokenResponse
+from .types import RequestMethod, ResponseType
 
 
 class ResponseTypeBase(BaseRequestValidator):

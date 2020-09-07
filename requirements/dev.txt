@@ -5,7 +5,6 @@ pre-commit~=2.4.0
 black~=19.10b0
 isort~=4.3.21
 flake8~=3.8.2
-flake8-absolute-import~=1.0
 flake8-black~=0.2.0
 flake8-blind-except~=0.1.1
 flake8-builtins~=1.5.3

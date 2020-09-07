@@ -1,11 +1,12 @@
 import time
 from typing import Optional
 
-from async_oauth2_provider.config import settings
-from async_oauth2_provider.models import AuthorizationCode, Client, Token
-from async_oauth2_provider.requests import Request
-from async_oauth2_provider.types import CodeChallengeMethod
 from authlib.common.security import generate_token
+
+from .config import settings
+from .models import AuthorizationCode, Client, Token
+from .requests import Request
+from .types import CodeChallengeMethod
 
 
 class DBBase:

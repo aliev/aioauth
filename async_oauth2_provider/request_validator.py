@@ -1,11 +1,9 @@
-from async_oauth2_provider.exceptions import (
-    InsecureTransportError,
-    MethodNotAllowedError,
-)
-from async_oauth2_provider.requests import Request
-from async_oauth2_provider.types import RequestMethod
-from async_oauth2_provider.utils import is_secure_transport
 from db import DBBase
+
+from .exceptions import InsecureTransportError, MethodNotAllowedError
+from .requests import Request
+from .types import RequestMethod
+from .utils import is_secure_transport
 
 
 class BaseRequestValidator:

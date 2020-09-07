@@ -1,11 +1,12 @@
 import time
 from typing import List, Optional, Text
 
-from async_oauth2_provider.config import settings
-from async_oauth2_provider.types import CodeChallengeMethod, GrantType, ResponseType
-from async_oauth2_provider.utils import list_to_scope, scope_to_list
 from pydantic import BaseModel
 from pydantic.networks import AnyHttpUrl
+
+from .config import settings
+from .types import CodeChallengeMethod, GrantType, ResponseType
+from .utils import list_to_scope, scope_to_list
 
 
 class ClientMetadata(BaseModel):

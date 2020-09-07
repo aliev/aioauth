@@ -1,6 +1,6 @@
 from typing import List, Optional, Set, Text, Tuple, Union
 
-from async_oauth2_provider.config import settings
+from .config import settings
 
 
 def is_secure_transport(uri) -> bool:

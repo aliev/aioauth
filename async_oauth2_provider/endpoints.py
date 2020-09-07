@@ -2,14 +2,14 @@ from http import HTTPStatus
 from typing import Dict, Optional, Type, Union
 from urllib.parse import quote, urlencode, urlunsplit
 
-from async_oauth2_provider.constances import default_headers
-from async_oauth2_provider.db import DBBase
-from async_oauth2_provider.exceptions import OAuth2Exception
-from async_oauth2_provider.grant_type import GrantTypeBase
-from async_oauth2_provider.requests import Request
-from async_oauth2_provider.response_type import ResponseTypeBase
-from async_oauth2_provider.responses import ErrorResponse, Response
-from async_oauth2_provider.types import EndpointType, GrantType, ResponseType
+from .constances import default_headers
+from .db import DBBase
+from .exceptions import OAuth2Exception
+from .grant_type import GrantTypeBase
+from .requests import Request
+from .response_type import ResponseTypeBase
+from .responses import ErrorResponse, Response
+from .types import EndpointType, GrantType, ResponseType
 
 
 class OAuth2Endpoint:

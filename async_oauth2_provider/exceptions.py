@@ -7,7 +7,7 @@ This module contains the set of OAuth2 exceptions.
 from http import HTTPStatus
 from typing import Optional
 
-from async_oauth2_provider.types import ErrorType
+from .types import ErrorType
 
 
 class OAuth2Exception(Exception):

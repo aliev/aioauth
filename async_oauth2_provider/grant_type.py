@@ -2,7 +2,7 @@ import binascii
 from base64 import b64decode
 from typing import Optional
 
-from async_oauth2_provider.exceptions import (
+from .exceptions import (
     AuthorizationCodeExpiredError,
     InvalidAuthorizationCodeError,
     InvalidClientError,
@@ -19,12 +19,12 @@ from async_oauth2_provider.exceptions import (
     MissingUsernameError,
     RefreshTokenExpiredError,
 )
-from async_oauth2_provider.models import Client
-from async_oauth2_provider.request_validator import BaseRequestValidator
-from async_oauth2_provider.requests import Request
-from async_oauth2_provider.types import GrantType, RequestMethod
-from async_oauth2_provider.utils import get_authorization_scheme_param
-from responses import TokenResponse
+from .models import Client
+from .request_validator import BaseRequestValidator
+from .requests import Request
+from .responses import TokenResponse
+from .types import GrantType, RequestMethod
+from .utils import get_authorization_scheme_param
 
 
 class GrantTypeBase(BaseRequestValidator):
