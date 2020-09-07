@@ -2,9 +2,9 @@ from base64 import b64encode
 from http import HTTPStatus
 
 import pytest
+from async_oauth2_provider.endpoints import OAuth2Endpoint
 from async_oauth2_provider.requests import Post, Query, Request
 from async_oauth2_provider.types import GrantType, RequestMethod, ResponseType
-from endpoints import OAuth2Endpoint
 from tests.conftest import Defaults
 
 # from urllib.parse import urlparse
