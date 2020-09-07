@@ -36,10 +36,10 @@ jobs:
         pip install -r requirements/dev.txt
     - name: Type checking with pyright
       run: |
-        pyright async_oauth2_provider
+        pyright src/async_oauth2_provider
     - name: Lint with flake8
       run: |
-        flake8 async_oauth2_provider tests
+        flake8 src/async_oauth2_provider tests
     - name: Test with pytest
       run: |
         pytest
