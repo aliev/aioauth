@@ -1,6 +1,6 @@
 from async_oauth2_provider.requests import Request as OAuth2Request
 from async_oauth2_provider.responses import Response as OAuth2Response
-from fastapi import Request, Response
+from fastapi import Request, Response  # type: ignore
 
 
 async def to_oauth2_request(request: Request) -> OAuth2Request:
