@@ -8,6 +8,7 @@ This module contains the set of OAuth2 exceptions.
 from http import HTTPStatus
 from typing import Optional
 
+from .constances import default_headers
 from .types import ErrorType
 
 
@@ -16,7 +17,7 @@ class OAuth2Exception(Exception):
     error_description: Optional[str] = ""
     status_code: HTTPStatus = HTTPStatus.BAD_REQUEST
     error_uri: str = ""
-    headers: dict = {}
+    headers: dict = default_headers
 
     def __init__(
         self,

@@ -40,18 +40,18 @@ class OAuth2Endpoint:
 
         status_code = HTTPStatus.OK
         headers = default_headers
-        body = None
+        content = None
 
         try:
-            body = await grant_type_handler.create_token_response(request)
+            content = await grant_type_handler.create_token_response(request)
         except OAuth2Exception as exc:
             status_code = exc.status_code
             headers = exc.headers
-            body = ErrorResponse(
+            content = ErrorResponse(
                 error=exc.error, error_description=exc.error_description
             )
 
-        return Response(body=body, status_code=status_code, headers=headers)
+        return Response(content=content, status_code=status_code, headers=headers)
 
     async def create_authorization_response(self, request: Request) -> Response:
         response_type_cls = self.response_type.get(
@@ -61,7 +61,7 @@ class OAuth2Endpoint:
 
         status_code = HTTPStatus.OK
         headers = default_headers
-        body = None
+        content = None
 
         try:
             response = await response_type_handler.create_authorization_response(
@@ -92,8 +92,8 @@ class OAuth2Endpoint:
         except OAuth2Exception as exc:
             status_code = exc.status_code
             headers = exc.headers
-            body = ErrorResponse(
+            content = ErrorResponse(
                 error=exc.error, error_description=exc.error_description
             )
 
-        return Response(body=body, headers=headers, status_code=status_code)
+        return Response(content=content, headers=headers, status_code=status_code)

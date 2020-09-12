@@ -24,7 +24,10 @@ class PostgreSQL(DBBase):
         return authorization_code
 
     async def get_client(
-        self, request: OAuth2Request, client_id: str, client_secret: Optional[str]
+        self,
+        request: OAuth2Request,
+        client_id: str,
+        client_secret: Optional[str] = None,
     ) -> Optional[Client]:
         query = ClientTable.query.where(ClientTable.client_id == client_id)
         if client_secret is not None:

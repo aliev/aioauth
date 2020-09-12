@@ -28,9 +28,9 @@ class Request(BaseModel):
     headers: Dict[str, str] = {}
     query: Optional[Query] = Query()
     post: Optional[Post] = Post()
-    url: Optional[Any]
+    url: Any = ""
     method: RequestMethod = RequestMethod.POST
-    user: Optional[Any] = None
+    # user: Optional[Any] = None
 
     class Config:
         orm_mode = True

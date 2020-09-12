@@ -37,6 +37,6 @@ class TokenResponse(BaseModel):
 class Response(BaseModel):
     status_code: HTTPStatus = HTTPStatus.OK
     headers: Dict[str, str] = default_headers
-    body: Optional[
+    content: Optional[
         Union[ErrorResponse, TokenResponse, AuthorizationCodeResponse]
     ] = None
