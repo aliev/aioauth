@@ -2,10 +2,18 @@ from typing import Optional
 
 from async_oauth2_provider.db import DBBase
 from async_oauth2_provider.endpoints import OAuth2Endpoint
-from async_oauth2_provider.grant_type import AuthorizationCodeGrantType
+from async_oauth2_provider.grant_type import (
+    AuthorizationCodeGrantType,
+    ClientCredentialsGrantType,
+    PasswordGrantType,
+    RefreshTokenGrantType,
+)
 from async_oauth2_provider.models import AuthorizationCode, Client, Token
 from async_oauth2_provider.requests import Request as OAuth2Request
-from async_oauth2_provider.response_type import ResponseTypeToken
+from async_oauth2_provider.response_type import (
+    ResponseTypeAuthorizationCode,
+    ResponseTypeToken,
+)
 from async_oauth2_provider.types import EndpointType, GrantType, ResponseType
 from fastapi_oauth2.tables import AuthorizationCodeTable, ClientTable, TokenTable
 
@@ -49,11 +57,28 @@ class PostgreSQL(DBBase):
 
 endpoint = OAuth2Endpoint(PostgreSQL())
 
+# Register response type endpoints
 endpoint.register(
-    EndpointType.RESPONSE_TYPE, ResponseType.TYPE_TOKEN, ResponseTypeToken
+    EndpointType.RESPONSE_TYPE, ResponseType.TYPE_TOKEN, ResponseTypeToken,
 )
+endpoint.register(
+    EndpointType.RESPONSE_TYPE, ResponseType.TYPE_CODE, ResponseTypeAuthorizationCode,
+)
+
+# Register grant type endpoints
 endpoint.register(
     EndpointType.GRANT_TYPE,
     GrantType.TYPE_AUTHORIZATION_CODE,
     AuthorizationCodeGrantType,
+)
+endpoint.register(
+    EndpointType.GRANT_TYPE,
+    GrantType.TYPE_CLIENT_CREDENTIALS,
+    ClientCredentialsGrantType,
+)
+endpoint.register(
+    EndpointType.GRANT_TYPE, GrantType.TYPE_PASSWORD, PasswordGrantType,
+)
+endpoint.register(
+    EndpointType.GRANT_TYPE, GrantType.TYPE_REFRESH_TOKEN, RefreshTokenGrantType,
 )

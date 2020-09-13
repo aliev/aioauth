@@ -42,4 +42,4 @@ jobs:
         flake8 src/async_oauth2_provider tests
     - name: Test with pytest
       run: |
-        pytest
+        pytest tests
