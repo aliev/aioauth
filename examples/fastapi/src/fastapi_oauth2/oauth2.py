@@ -21,7 +21,15 @@ from fastapi_oauth2.tables import AuthorizationCodeTable, ClientTable, TokenTabl
 class PostgreSQL(DBBase):
     async def create_token(self, request: OAuth2Request, client: Client) -> Token:
         token = await super().create_token(request, client)
-        await TokenTable(**token.dict()).query.create()
+        await TokenTable(
+            client_id=token.client_id,
+            token_type=token.token_type,
+            access_token=token.access_token,
+            refresh_token=token.refresh_token,
+            scope=token.scope,
+            issued_at=token.issued_at,
+            expires_in=token.expires_in,
+        ).create()
         return token
 
     async def create_authorization_code(
@@ -43,6 +51,21 @@ class PostgreSQL(DBBase):
         ).create()
 
         return authorization_code
+
+    async def get_authorization_code(
+        self, request: OAuth2Request, client: Client
+    ) -> Optional[AuthorizationCode]:
+        authorization_code_record = (
+            await AuthorizationCodeTable.query.where(
+                AuthorizationCodeTable.code == request.post.code
+            )
+            .where(
+                AuthorizationCodeTable.redirect_uri == str(request.post.redirect_uri)
+            )
+            .gino.first()
+        )
+
+        return AuthorizationCode.from_orm(authorization_code_record)
 
     async def get_client(
         self,

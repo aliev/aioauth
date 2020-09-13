@@ -39,7 +39,10 @@ class GrantTypeBase(BaseRequestValidator):
     async def validate_request(self, request: Request) -> Client:
         await super().validate_request(request)
 
-        authorization: str = request.headers.get("Authorization", "")
+        # FIXME: This line looks shitty!
+        authorization: str = request.headers.get(
+            "Authorization", ""
+        ) or request.headers.get("authorization", "")
         scheme, param = get_authorization_scheme_param(authorization)
 
         if not authorization or scheme.lower() != "basic":
