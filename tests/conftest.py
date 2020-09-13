@@ -20,7 +20,7 @@ from async_oauth2_provider.types import (
     GrantType,
     ResponseType,
 )
-from authlib.common.security import generate_token
+from async_oauth2_provider.utils import generate_token
 from pydantic import BaseModel
 from pydantic.networks import AnyHttpUrl
 

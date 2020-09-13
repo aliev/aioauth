@@ -8,12 +8,11 @@ This module contains database interaction interface.
 import time
 from typing import Optional
 
-from authlib.common.security import generate_token
-
 from .config import settings
 from .models import AuthorizationCode, Client, Token
 from .requests import Request
 from .types import CodeChallengeMethod
+from .utils import generate_token
 
 
 class DBBase:
