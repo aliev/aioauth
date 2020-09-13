@@ -32,7 +32,9 @@ async def to_fastapi_response(oauth2_response: OAuth2Response) -> Response:
     :return: returns fastapi Response instance
     :rtype: Response
     """
-    content = oauth2_response.content.json()
+    content = (
+        oauth2_response.content.json() if oauth2_response.content is not None else ""
+    )
     headers = oauth2_response.headers
     status_code = oauth2_response.status_code.value
 

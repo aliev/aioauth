@@ -28,7 +28,20 @@ class PostgreSQL(DBBase):
         self, request: OAuth2Request, client: Client
     ) -> AuthorizationCode:
         authorization_code = await super().create_authorization_code(request, client)
-        await AuthorizationCodeTable(**authorization_code.dict()).create()
+
+        # Create authorization code record
+        await AuthorizationCodeTable(
+            code=authorization_code.code,
+            client_id=authorization_code.client_id,
+            redirect_uri=str(authorization_code.redirect_uri),
+            response_type=authorization_code.response_type.value,
+            scope=authorization_code.scope,
+            nonce=authorization_code.nonce,
+            code_challenge=authorization_code.code_challenge,
+            code_challenge_method=authorization_code.code_challenge_method.value,
+            auth_time=authorization_code.auth_time,
+        ).create()
+
         return authorization_code
 
     async def get_client(
@@ -47,7 +60,10 @@ class PostgreSQL(DBBase):
             return Client.from_orm(record)
 
     async def get_user(self, request: OAuth2Request) -> bool:
-        ...
+        if request.post.username == "admin" and request.post.password == "admin":
+            return True
+
+        return False
 
     async def delete_authorization_code(
         self, request: OAuth2Request, authorization_code: AuthorizationCode

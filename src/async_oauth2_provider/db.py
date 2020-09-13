@@ -64,7 +64,7 @@ class DBBase:
             client_id=client.client_id,
             redirect_uri=request.query.redirect_uri,
             response_type=request.query.response_type,
-            scope=client.get_allowed_scope(request.post.scope),
+            scope=client.get_allowed_scope(request.query.scope),
             auth_time=time.time(),
             code_challenge_method=CodeChallengeMethod.PLAIN,
             state=request.query.state,
