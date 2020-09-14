@@ -6,13 +6,29 @@ from async_oauth2_provider.types import GrantType, ResponseType
 from fastapi_oauth2.tables import ClientTable
 from sqlalchemy.util.compat import b64encode
 from starlette import status
-from starlette.status import HTTP_200_OK
 
 
 @pytest.mark.asyncio
 async def test_auth(client: TestClient, client_record: ClientTable):
     response = await client.post("/oauth/v2/token")
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+@pytest.mark.asyncio
+async def test_password_grant_type(client: TestClient, client_record: ClientTable):
+    authorization = b64encode(
+        f"{client_record.client_id}:{client_record.client_secret}".encode("ascii")
+    )
+    headers = {"Authorization": f"basic {authorization}"}
+
+    data = {
+        "username": "admin",
+        "password": "admin",
+        "grant_type": GrantType.TYPE_PASSWORD.value,
+    }
+
+    response = await client.post("/oauth/v2/token", form=data, headers=headers)
+    assert "access_token" in response.json()
 
 
 @pytest.mark.asyncio
@@ -87,5 +103,5 @@ async def test_authorization_code_flow(client: TestClient, client_record: Client
     headers = {"Authorization": f"basic {authorization}"}
 
     response = await client.post("/oauth/v2/token", form=data, headers=headers)
-    assert response.status_code == HTTP_200_OK
+    assert response.status_code == status.HTTP_200_OK
     assert "access_token" in response.json()

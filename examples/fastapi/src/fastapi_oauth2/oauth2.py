@@ -94,7 +94,8 @@ class PostgreSQL(DBBase):
         ...
 
 
-endpoint = OAuth2Endpoint(PostgreSQL())
+postgres = PostgreSQL()
+endpoint = OAuth2Endpoint(postgres)
 
 # Register response type endpoints
 endpoint.register(
