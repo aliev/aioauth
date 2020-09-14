@@ -1,6 +1,6 @@
 ## Why this project exists
 
-There are few great existing oauth provider libraries like [oauthlib](https://github.com/oauthlib/oauthlib) and [authlib](https://github.com/lepture/authlib) but they do not support fastapi, aiohttp or any other asyncronous frameworks.
+There are few great existing oauth provider libraries like [oauthlib](https://github.com/oauthlib/oauthlib) and [authlib](https://github.com/lepture/authlib) but they do not support asyncio and rewriting these libraries to asyncio is a big challenge. `async-oauth2-provider` implements oauth2 protocol and can be used in fastapi / starlette, aiohttp or any other asyncronous frameworks.
 
 - [x] Can work with any databases (`MongoDB`, `PostgreSQL`, `MySQL` etc.) and ORMs ([gino](https://python-gino.org/), [sqlalchemy](https://www.sqlalchemy.org/), [databases](https://pypi.org/project/databases/)) over simple [DBBase](https://github.com/aliev/async-oauth2-provider/blob/master/src/async_oauth2_provider/db.py) interface.
 - [x] This repository also contains integration examples with [Starlette](https://www.starlette.io/), [FastAPI](https://fastapi.tiangolo.com/) with gino ORM.
