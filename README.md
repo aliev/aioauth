@@ -1,9 +1,9 @@
 ## Why this project exists?
 
-There are few great existing oauth provider libraries like [oauthlib](https://github.com/oauthlib/oauthlib) and [authlib](https://github.com/lepture/authlib) but they do not support asyncio and rewriting these libraries to asyncio is a big challenge. `async-oauth2-provider` implements [OAuth 2.0](https://tools.ietf.org/html/rfc6749) and can be used in fastapi / starlette, aiohttp or any other asyncronous frameworks.
+There are few great existing oauth provider libraries like [oauthlib](https://github.com/oauthlib/oauthlib) and [authlib](https://github.com/lepture/authlib) but they do not support asyncio and rewriting these libraries to asyncio is a big challenge. `async-oauth2-provider` implements [OAuth 2.0](https://tools.ietf.org/html/rfc6749) and can be used in [FastAPI / Starlette](https://github.com/aliev/async-oauth2-provider/tree/master/examples), aiohttp or any other asyncronous frameworks.
 
 - [x] Can work with any databases (`MongoDB`, `PostgreSQL`, `MySQL` etc.) and ORMs ([gino](https://python-gino.org/), [sqlalchemy](https://www.sqlalchemy.org/), [databases](https://pypi.org/project/databases/)) over simple [DBBase](https://github.com/aliev/async-oauth2-provider/blob/master/src/async_oauth2_provider/db.py) interface.
-- [x] This repository also contains integration examples with [fastapi, Starlette](https://github.com/aliev/async-oauth2-provider/tree/master/examples), [aiohttp](https://github.com/aliev/async-oauth2-provider/tree/master/examples) with gino ORM.
+- [x] This repository also contains integration examples with [FastAPI / Starlette](https://github.com/aliev/async-oauth2-provider/tree/master/examples), [aiohttp](https://github.com/aliev/async-oauth2-provider/tree/master/examples) with gino ORM.
 - [x] Can be easily integrated to any asynchronous framework over simple API.
 
 ## Installation
