@@ -4,9 +4,9 @@
 
 There are few great OAuth frameworks for Python like [oauthlib](https://github.com/oauthlib/oauthlib) and [authlib](https://github.com/lepture/authlib), but they do not support asyncio because rewriting these libraries to asyncio is a big challenge.
 
-`async-oauth2-provider` implements [OAuth 2.0](https://tools.ietf.org/html/rfc6749) and can be used in [FastAPI / Starlette](https://github.com/aliev/async-oauth2-provider/tree/master/examples), aiohttp or any other asynchronous frameworks. It can work with any databases like `MongoDB`, `PostgreSQL`, `MySQL` and ORMs like [gino](https://python-gino.org/), [sqlalchemy](https://www.sqlalchemy.org/), [databases](https://pypi.org/project/databases/) over simple [DBBase](https://github.com/aliev/async-oauth2-provider/blob/master/src/async_oauth2_provider/db.py) interface.
+`async-oauth2-provider` implements [OAuth 2.0](https://tools.ietf.org/html/rfc6749) and can be used in [FastAPI / Starlette](examples), aiohttp or any other asynchronous frameworks. It can work with any databases like `MongoDB`, `PostgreSQL`, `MySQL` and ORMs like [gino](https://python-gino.org/), [sqlalchemy](https://www.sqlalchemy.org/), [databases](https://pypi.org/project/databases/) over simple [DBBase](src/async_oauth2_provider/db.py) interface.
 
-[Here](https://github.com/aliev/async-oauth2-provider/tree/master/examples) we provided an integration example with FastAPI / Starlette. If you want to add more examples, please welcome to [contribution](CONTRIBUTING.rst)!
+[Here](examples) we implemented an integration example with FastAPI / Starlette. If you want to add more examples, please welcome to [contribution](CONTRIBUTING.rst)!
 
 ## Supported RFCs
 
@@ -19,7 +19,7 @@ There are few great OAuth frameworks for Python like [oauthlib](https://github.c
 python -m pip install async-oauth2-provider
 ```
 
-## Settings
+## Settings and defaults
 
 | Setting                               | Default value | Description                                                                                                         |
 | ------------------------------------- | ------------- | ------------------------------------------------------------------------------------------------------------------- |
