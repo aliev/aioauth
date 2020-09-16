@@ -2,20 +2,11 @@
 
 ## Why this project exists?
 
-There are few great OAuth frameworks for Python like [oauthlib](https://github.com/oauthlib/oauthlib) and [authlib](https://github.com/lepture/authlib) but they do not support asyncio and rewriting these libraries to asyncio is a big challenge. `async-oauth2-provider` implements [OAuth 2.0](https://tools.ietf.org/html/rfc6749) and can be used in [FastAPI / Starlette](https://github.com/aliev/async-oauth2-provider/tree/master/examples), aiohttp or any other asyncronous frameworks.
+There are few great OAuth frameworks for Python like [oauthlib](https://github.com/oauthlib/oauthlib) and [authlib](https://github.com/lepture/authlib), but they do not support asyncio because rewriting these libraries to asyncio is a big challenge.
 
-## Features
+`async-oauth2-provider` implements [OAuth 2.0](https://tools.ietf.org/html/rfc6749) and can be used in [FastAPI / Starlette](https://github.com/aliev/async-oauth2-provider/tree/master/examples), aiohttp or any other asynchronous frameworks. It can work with any databases like `MongoDB`, `PostgreSQL`, `MySQL` and ORMs like [gino](https://python-gino.org/), [sqlalchemy](https://www.sqlalchemy.org/), [databases](https://pypi.org/project/databases/) over simple [DBBase](https://github.com/aliev/async-oauth2-provider/blob/master/src/async_oauth2_provider/db.py) interface.
 
-- [x] Can work with any databases (`MongoDB`, `PostgreSQL`, `MySQL` etc.) and ORMs ([gino](https://python-gino.org/), [sqlalchemy](https://www.sqlalchemy.org/), [databases](https://pypi.org/project/databases/)) over simple [DBBase](https://github.com/aliev/async-oauth2-provider/blob/master/src/async_oauth2_provider/db.py) interface.
-- [x] Can be easily integrated to any asynchronous frameworks over simple API.
-
-This repository also contains integration examples with [FastAPI / Starlette](https://github.com/aliev/async-oauth2-provider/tree/master/examples) and [aiohttp](https://github.com/aliev/async-oauth2-provider/tree/master/examples).
-
-## Installation
-
-```
-python -m pip install async-oauth2-provider
-```
+[Here](https://github.com/aliev/async-oauth2-provider/tree/master/examples) we provided an integration example with FastAPI / Starlette. If you want to add more examples, please welcome to [contribution](CONTRIBUTING.rst)!
 
 ## Supported RFCs
 
@@ -23,6 +14,10 @@ python -m pip install async-oauth2-provider
 - [ ] [Proof Key for Code Exchange by OAuth Public Clients](https://tools.ietf.org/html/rfc7636)
 - [ ] [JSON Web Token (JWT) Profile for OAuth 2.0 Client Authentication and Authorization Grants](https://tools.ietf.org/html/rfc7523)
 - [ ] [OAuth 2.0 Token Introspection](https://tools.ietf.org/html/rfc7662)
+
+```
+python -m pip install async-oauth2-provider
+```
 
 ## Settings
 
