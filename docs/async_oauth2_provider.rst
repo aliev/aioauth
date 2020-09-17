@@ -1,6 +1,14 @@
 async\_oauth2\_provider package
 ===============================
 
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   async_oauth2_provider.integrations
+
 Submodules
 ----------
 
@@ -48,6 +56,14 @@ async\_oauth2\_provider.grant\_type module
 ------------------------------------------
 
 .. automodule:: async_oauth2_provider.grant_type
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+async\_oauth2\_provider.logger module
+-------------------------------------
+
+.. automodule:: async_oauth2_provider.logger
    :members:
    :undoc-members:
    :show-inheritance:

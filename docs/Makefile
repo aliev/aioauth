@@ -1,10 +1,10 @@
 # Minimal makefile for Sphinx documentation
 #
 
-# You can set these variables from the command line, and also
-# from the environment for the first two.
-SPHINXOPTS    ?=
-SPHINXBUILD   ?= sphinx-build
+# You can set these variables from the command line.
+SPHINXOPTS    =
+SPHINXBUILD   = python -msphinx
+SPHINXPROJ    = async_oauth2_provider
 SOURCEDIR     = .
 BUILDDIR      = _build
 
