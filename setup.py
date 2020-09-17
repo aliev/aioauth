@@ -46,4 +46,6 @@ setup(
     package_dir={"": "src"},
     test_suite="tests",
     url="https://github.com/aliev/async-oauth2-provider",
+    version="0.1.0",
+    zip_safe=False,
 )
