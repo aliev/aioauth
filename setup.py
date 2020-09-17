@@ -22,10 +22,9 @@ def read_requirements(path):
 
 
 setup(
-    name="async_oauth2_provider",
+    author="Ali Aliyev",
+    author_email="ali@aliev.me",
     python_requires=">=3.6.0",
-    setup_requires=["setuptools_scm"],
-    install_requires=read_requirements(requirements_base),
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
         "Intended Audience :: Developers",
@@ -36,20 +35,15 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
     ],
-    use_scm_version={
-        "version_scheme": "guess-next-dev",
-        "local_scheme": "dirty-tag",
-        "write_to": "src/async_oauth2_provider/__init__.py",
-        "write_to_template": '__version__ = "{version}"\n',
-        "relative_to": __file__,
-    },
+    description="Asynchronous OAuth 2.0 framework for Python 3",
+    install_requires=read_requirements(requirements_base),
+    license="MIT license",
+    long_description=readme + "\n\n" + history,
     include_package_data=True,
-    package_data={},
+    keywords="async_oauth2_provider",
+    name="async_oauth2_provider",
     packages=find_packages(where="src"),
     package_dir={"": "src"},
-    author="Ali Aliyev",
-    author_email="ali@aliev.me",
-    url="https://aliev.me",
-    description="Async OAuth2 provider",
-    license="MIT license",
+    test_suite="tests",
+    url="https://github.com/aliev/async-oauth2-provider",
 )
