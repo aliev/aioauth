@@ -6,7 +6,7 @@ here = Path(__file__).parent
 
 requirements_base = here / "requirements" / "base.txt"
 
-with open("README.md") as readme_file:
+with open("README.rst") as readme_file:
     readme = readme_file.read()
 
 with open("HISTORY.rst") as history_file:
