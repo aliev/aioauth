@@ -1,5 +1,5 @@
 Welcome to Async OAuth2 Provider Framework's documentation!
-======================================
+===========================================================
 
 .. toctree::
    :maxdepth: 2
