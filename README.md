@@ -4,7 +4,7 @@
 
 ## Why this project exists?
 
-There are few great OAuth frameworks for Python like [oauthlib](https://github.com/oauthlib/oauthlib) and [authlib](https://github.com/lepture/authlib), but they do not support asyncio because rewriting these libraries to asyncio is a big challenge.
+There are few great OAuth frameworks for Python like [oauthlib](https://github.com/oauthlib/oauthlib) and [authlib](https://github.com/lepture/authlib), but they do not support asyncio because rewriting these libraries to asyncio is a big challenge (see issues [here](https://github.com/lepture/authlib/issues/63) and [here](https://github.com/oauthlib/oauthlib/issues/415)).
 
 [Here](examples) we implemented an integration example with FastAPI / Starlette. If you want to add more examples, please welcome to [contribution](CONTRIBUTING.rst)!
 
