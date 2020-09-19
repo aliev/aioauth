@@ -14,7 +14,6 @@ class ClientTable(Base):
     client_id_issued_at = db.Column(db.Integer, nullable=False, default=0)
     client_secret_expires_at = db.Column(db.Integer, nullable=False, default=0)
     _client_metadata = db.Column("client_metadata", db.Text)
-    user_id = db.Column(db.CHAR(36))
 
     @hybrid_property
     def client_metadata(self):
@@ -40,7 +39,6 @@ class AuthorizationCodeTable(Base):
 
     code_challenge = db.Column(db.Text)
     code_challenge_method = db.Column(db.String(48))
-    user_id = db.Column(db.CHAR(36))
 
 
 class TokenTable(Base):
@@ -54,4 +52,3 @@ class TokenTable(Base):
     revoked = db.Column(db.Boolean, default=False)
     issued_at = db.Column(db.Integer, nullable=False, default=lambda: int(time.time()))
     expires_in = db.Column(db.Integer, nullable=False, default=0)
-    user_id = db.Column(db.CHAR(36))

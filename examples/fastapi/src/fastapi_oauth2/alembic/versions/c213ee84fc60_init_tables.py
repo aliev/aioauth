@@ -28,7 +28,6 @@ def upgrade():
         sa.Column("auth_time", sa.Integer(), nullable=False),
         sa.Column("code_challenge", sa.Text(), nullable=True),
         sa.Column("code_challenge_method", sa.String(length=48), nullable=True),
-        sa.Column("user_id", sa.CHAR(length=36), nullable=True),
         sa.Column("id", sa.Integer(), nullable=False),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("code"),
@@ -40,7 +39,6 @@ def upgrade():
         sa.Column("client_id_issued_at", sa.Integer(), nullable=False),
         sa.Column("client_secret_expires_at", sa.Integer(), nullable=False),
         sa.Column("client_metadata", sa.Text(), nullable=True),
-        sa.Column("user_id", sa.CHAR(length=36), nullable=True),
         sa.Column("id", sa.Integer(), nullable=False),
         sa.PrimaryKeyConstraint("id"),
     )
@@ -57,7 +55,6 @@ def upgrade():
         sa.Column("revoked", sa.Boolean(), nullable=True),
         sa.Column("issued_at", sa.Integer(), nullable=False),
         sa.Column("expires_in", sa.Integer(), nullable=False),
-        sa.Column("user_id", sa.CHAR(length=36), nullable=True),
         sa.Column("id", sa.Integer(), nullable=False),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("access_token"),

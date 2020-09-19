@@ -31,5 +31,11 @@ alembic upgrade head
 # Run tests
 pytest
 # Run Server
-uvicorn fastapi_oauth2.main:app
+uvicorn fastapi_oauth2.main:app --reload
+```
+
+Try
+
+```
+http://127.0.0.1:8000/oauth/v2/authorize?client_id=67IGqEoQ8ddoh5s0wuJll51G&redirect_uri=https://ownauth.com/callback&response_type=token&state=123&scope=wead%20write
 ```

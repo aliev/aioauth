@@ -1,3 +1,3 @@
 import logging
 
-logger = logging.getLogger("o2async")
+logger = logging.getLogger("async_oauth2_provider")
