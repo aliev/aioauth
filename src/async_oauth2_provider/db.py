@@ -38,7 +38,7 @@ class DBBase:
             access_token=generate_token(42),
             refresh_token=generate_token(48),
             issued_at=time.time(),
-            scope=client.get_allowed_scope(request.post.scope),
+            scope=client.get_allowed_scope(request.post.scope or request.query.scope),
             revoked=False,
         )
 
@@ -67,7 +67,6 @@ class DBBase:
             scope=client.get_allowed_scope(request.query.scope),
             auth_time=time.time(),
             code_challenge_method=CodeChallengeMethod.PLAIN,
-            state=request.query.state,
         )
 
     async def get_client(

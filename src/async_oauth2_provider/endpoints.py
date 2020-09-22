@@ -1,6 +1,8 @@
 from http import HTTPStatus
 from typing import Dict, Optional, Type, Union
-from urllib.parse import quote, urlencode, urlunsplit
+from urllib.parse import quote, urlencode
+
+from pydantic.networks import AnyHttpUrl
 
 from .constances import default_headers
 from .db import DBBase
@@ -68,25 +70,27 @@ class OAuth2Endpoint:
                 request
             )
             if response is not None:
-                query_string = urlencode(response.dict(), quote_via=quote)
-                fragment = ""
+                redirect_uri = request.query.redirect_uri
+                response_type = request.query.response_type
+                response_dict = {**response.dict(), "state": request.query.state}
+                query_params = (
+                    response_dict if response_type == ResponseType.TYPE_CODE else {}
+                )
+                fragment = (
+                    response_dict if response_type == ResponseType.TYPE_TOKEN else {}
+                )
 
-                if request.query.response_type == ResponseType.TYPE_TOKEN:
-                    fragment = query_string
-                    query_string = ""
-
-                redirect_uri = urlunsplit(
-                    (
-                        request.query.redirect_uri.scheme,
-                        request.query.redirect_uri.host,
-                        request.query.redirect_uri.path,
-                        query_string,
-                        fragment,
-                    )
+                location: str = AnyHttpUrl.build(
+                    scheme=redirect_uri.scheme,
+                    host=redirect_uri.host,
+                    port=redirect_uri.port,
+                    path=redirect_uri.path,
+                    query=urlencode(query_params, quote_via=quote),
+                    fragment=urlencode(fragment, quote_via=quote),
                 )
 
                 status_code = HTTPStatus.FOUND
-                headers = {"location": redirect_uri}
+                headers = {"location": location}
             else:
                 status_code = HTTPStatus.OK
         except OAuth2Exception as exc:

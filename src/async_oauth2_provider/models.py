@@ -45,7 +45,6 @@ class Client(BaseModel):
 
 
 class AuthorizationCode(BaseModel):
-    state: Text = ""
     code: Text
     client_id: Text
     redirect_uri: Text

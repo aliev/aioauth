@@ -16,7 +16,6 @@ class ErrorResponse(BaseModel):
 class AuthorizationCodeResponse(BaseModel):
     code: str
     scope: str
-    state: Optional[str]
 
     class Config:
         orm_mode = True
@@ -27,7 +26,7 @@ class TokenResponse(BaseModel):
     refresh_token_expires_in: int
     access_token: str
     refresh_token: str
-    token_type: Optional[str] = "Bearer"
+    token_type: str = "Bearer"
     scope: str
 
     class Config:
@@ -37,6 +36,4 @@ class TokenResponse(BaseModel):
 class Response(BaseModel):
     status_code: HTTPStatus = HTTPStatus.OK
     headers: Dict[str, str] = default_headers
-    content: Optional[
-        Union[ErrorResponse, TokenResponse, AuthorizationCodeResponse]
-    ] = None
+    content: Optional[Union[ErrorResponse, TokenResponse, AuthorizationCodeResponse]]

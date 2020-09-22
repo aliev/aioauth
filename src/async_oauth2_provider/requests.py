@@ -10,8 +10,8 @@ class Query(BaseModel):
     client_id: Optional[str]
     redirect_uri: Optional[AnyHttpUrl]
     response_type: Optional[ResponseType]
-    state: Optional[str]
-    scope: Optional[str]
+    state: str = ""
+    scope: str = ""
 
 
 class Post(BaseModel):
@@ -26,8 +26,8 @@ class Post(BaseModel):
 
 class Request(BaseModel):
     headers: Dict[str, str] = {}
-    query: Optional[Query] = Query()
-    post: Optional[Post] = Post()
+    query: Query = Query()
+    post: Post = Post()
     url: Any = ""
     method: RequestMethod = RequestMethod.POST
     # user: Optional[Any] = None
