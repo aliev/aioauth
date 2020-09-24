@@ -123,7 +123,7 @@ def db_class(
             if client_id == defaults.client_id:
                 return client
 
-        async def get_user(self, request: Request) -> Optional[bool]:
+        async def authenticate(self, request: Request) -> Optional[bool]:
             if (
                 request.post.username == defaults.username
                 and request.post.password == defaults.password

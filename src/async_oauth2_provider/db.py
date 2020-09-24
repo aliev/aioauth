@@ -92,8 +92,8 @@ class DBBase:
         """
         raise NotImplementedError("Method get_client must be implemented")
 
-    async def get_user(self, request: Request) -> bool:
-        """Ensure the username and password is valid.
+    async def authenticate(self, request: Request) -> bool:
+        """Authenticate user.
 
         :param request: OAuth2 Request instance
         :type request: Request
@@ -103,9 +103,8 @@ class DBBase:
 
         Method is used by grant types:
             - PasswordGrantType
-        Method is used by all core response types.
         """
-        raise NotImplementedError("Method get_user must be implemented")
+        raise NotImplementedError("Method authenticate must be implemented")
 
     async def get_authorization_code(
         self, request: Request, client: Client

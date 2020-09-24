@@ -30,7 +30,7 @@ class Request(BaseModel):
     post: Post = Post()
     url: Any = ""
     method: RequestMethod = RequestMethod.POST
-    # user: Optional[Any] = None
+    user: Optional[Any]
 
     class Config:
         orm_mode = True

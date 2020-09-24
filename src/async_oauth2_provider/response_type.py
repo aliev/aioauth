@@ -6,10 +6,8 @@ from .exceptions import (
     InvalidResponseTypeError,
     InvalidUsernameOrPasswordError,
     MissingClientIdError,
-    MissingPasswordError,
     MissingRedirectUriError,
     MissingResponseTypeError,
-    MissingUsernameError,
 )
 from .models import Client
 from .request_validator import BaseRequestValidator
@@ -20,6 +18,7 @@ from .types import RequestMethod, ResponseType
 
 class ResponseTypeBase(BaseRequestValidator):
     response_type: Optional[ResponseType] = None
+    allowed_methods = (RequestMethod.GET,)
 
     async def validate_request(self, request: Request) -> Client:
         await super().validate_request(request)
@@ -52,16 +51,8 @@ class ResponseTypeBase(BaseRequestValidator):
     async def create_authorization_response(self, request: Request) -> Client:
         client = await self.validate_request(request)
 
-        if request.method == RequestMethod.POST:
-            if not request.post.username:
-                raise MissingUsernameError()
-            if not request.post.password:
-                raise MissingPasswordError()
-
-            user = await self.db.get_user(request)
-
-            if not user:
-                raise InvalidUsernameOrPasswordError()
+        if not request.user:
+            raise InvalidUsernameOrPasswordError()
 
         return client
 
@@ -74,9 +65,8 @@ class ResponseTypeToken(ResponseTypeBase):
     ) -> Optional[TokenResponse]:
         client = await super().create_authorization_response(request)
 
-        if request.method == RequestMethod.POST:
-            token = await self.db.create_token(request, client)
-            return TokenResponse.from_orm(token)
+        token = await self.db.create_token(request, client)
+        return TokenResponse.from_orm(token)
 
 
 class ResponseTypeAuthorizationCode(ResponseTypeBase):
@@ -87,8 +77,5 @@ class ResponseTypeAuthorizationCode(ResponseTypeBase):
     ) -> Optional[AuthorizationCodeResponse]:
         client = await super().create_authorization_response(request)
 
-        if request.method == RequestMethod.POST:
-            authorization_code = await self.db.create_authorization_code(
-                request, client
-            )
-            return AuthorizationCodeResponse.from_orm(authorization_code)
+        authorization_code = await self.db.create_authorization_code(request, client)
+        return AuthorizationCodeResponse.from_orm(authorization_code)

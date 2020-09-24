@@ -117,7 +117,7 @@ class PasswordGrantType(GrantTypeBase):
         if not request.post.username:
             raise MissingUsernameError()
 
-        user = await self.db.get_user(request)
+        user = await self.db.authenticate(request)
 
         if not user:
             raise InvalidUsernameOrPasswordError()

@@ -18,9 +18,15 @@ async def to_oauth2_request(request: Request) -> OAuth2Request:
     method = request.method
     headers = dict(request.headers)
     url = str(request.url)
+    user = request.user
 
     return OAuth2Request(
-        post=post, query=query_params, method=method, headers=headers, url=url
+        post=post,
+        query=query_params,
+        method=method,
+        headers=headers,
+        url=url,
+        user=user,
     )
 
 

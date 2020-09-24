@@ -21,7 +21,11 @@ async def test_response_type(endpoint: OAuth2Endpoint, defaults: Defaults):
         state="test",
     )
     request = Request(
-        url="https://google.com/", post=post, query=query, method=RequestMethod.POST
+        url="https://google.com/",
+        post=post,
+        query=query,
+        method=RequestMethod.POST,
+        user="some user",
     )
 
     response = await endpoint.create_authorization_response(request)
@@ -38,10 +42,11 @@ async def test_response_type(endpoint: OAuth2Endpoint, defaults: Defaults):
             state="test",
         ),
         method="GET",
+        user="some user",
     )
 
     response = await endpoint.create_authorization_response(request)
-    assert response.status_code == HTTPStatus.OK
+    assert response.status_code == HTTPStatus.FOUND
 
 
 @pytest.mark.asyncio
