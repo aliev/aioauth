@@ -4,8 +4,8 @@ from dataclasses import asdict
 from async_oauth2_provider.requests import Post, Query
 from async_oauth2_provider.requests import Request as OAuth2Request
 from async_oauth2_provider.responses import Response as OAuth2Response
-from async_oauth2_provider.types import RequestMethod  # type: ignore
-from fastapi import Request, Response
+from async_oauth2_provider.types import RequestMethod
+from fastapi import Request, Response # type: ignore
 
 
 async def to_oauth2_request(request: Request) -> OAuth2Request:
