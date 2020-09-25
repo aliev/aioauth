@@ -62,7 +62,7 @@ class ResponseTypeToken(ResponseTypeBase):
 
     async def create_authorization_response(
         self, request: Request
-    ) -> Optional[TokenResponse]:
+    ) -> TokenResponse:
         client = await super().create_authorization_response(request)
 
         token = await self.db.create_token(request, client)
@@ -81,7 +81,7 @@ class ResponseTypeAuthorizationCode(ResponseTypeBase):
 
     async def create_authorization_response(
         self, request: Request
-    ) -> Optional[AuthorizationCodeResponse]:
+    ) -> AuthorizationCodeResponse:
         client = await super().create_authorization_response(request)
 
         authorization_code = await self.db.create_authorization_code(request, client)

@@ -60,7 +60,7 @@ class OAuth2Endpoint:
         )
         response_type_handler = response_type_cls(self.db)
 
-        status_code = HTTPStatus.OK
+        status_code = HTTPStatus.FOUND
         headers = default_headers
         content = None
 
@@ -68,22 +68,17 @@ class OAuth2Endpoint:
             response = await response_type_handler.create_authorization_response(
                 request
             )
-            if response is not None:
-                response_type = request.query.response_type
-                response_dict = {**asdict(response), "state": request.query.state}
-                query_params = (
-                    response_dict if response_type == ResponseType.TYPE_CODE else {}
-                )
-                fragment = (
-                    response_dict if response_type == ResponseType.TYPE_TOKEN else {}
-                )
+            response_type = request.query.response_type
+            response_dict = {**asdict(response), "state": request.query.state}
+            query_params = (
+                response_dict if response_type == ResponseType.TYPE_CODE else {}
+            )
+            fragment = (
+                response_dict if response_type == ResponseType.TYPE_TOKEN else {}
+            )
 
-                location = build_uri(request.query.redirect_uri, query_params, fragment)
-
-                status_code = HTTPStatus.FOUND
-                headers = {"location": location}
-            else:
-                status_code = HTTPStatus.OK
+            location = build_uri(request.query.redirect_uri, query_params, fragment)
+            headers = {"location": location}
         except OAuth2Exception as exc:
             status_code = exc.status_code
             headers = exc.headers
