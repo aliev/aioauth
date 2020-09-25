@@ -73,9 +73,7 @@ class OAuth2Endpoint:
             query_params = (
                 response_dict if response_type == ResponseType.TYPE_CODE else {}
             )
-            fragment = (
-                response_dict if response_type == ResponseType.TYPE_TOKEN else {}
-            )
+            fragment = response_dict if response_type == ResponseType.TYPE_TOKEN else {}
 
             location = build_uri(request.query.redirect_uri, query_params, fragment)
             headers = {"location": location}

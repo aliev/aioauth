@@ -60,9 +60,7 @@ class ResponseTypeBase(BaseRequestValidator):
 class ResponseTypeToken(ResponseTypeBase):
     response_type: ResponseType = ResponseType.TYPE_TOKEN
 
-    async def create_authorization_response(
-        self, request: Request
-    ) -> TokenResponse:
+    async def create_authorization_response(self, request: Request) -> TokenResponse:
         client = await super().create_authorization_response(request)
 
         token = await self.db.create_token(request, client)
