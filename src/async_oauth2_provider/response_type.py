@@ -4,7 +4,7 @@ from .exceptions import (
     InvalidClientError,
     InvalidRedirectUriError,
     InvalidResponseTypeError,
-    InvalidUsernameOrPasswordError,
+    InvalidUserError,
     MissingClientIdError,
     MissingRedirectUriError,
     MissingResponseTypeError,
@@ -52,7 +52,7 @@ class ResponseTypeBase(BaseRequestValidator):
         client = await self.validate_request(request)
 
         if not request.user:
-            raise InvalidUsernameOrPasswordError()
+            raise InvalidUserError()
 
         return client
 
@@ -66,7 +66,14 @@ class ResponseTypeToken(ResponseTypeBase):
         client = await super().create_authorization_response(request)
 
         token = await self.db.create_token(request, client)
-        return TokenResponse.from_orm(token)
+        return TokenResponse(
+            expires_in=token.expires_in,
+            refresh_token_expires_in=token.refresh_token_expires_in,
+            access_token=token.access_token,
+            refresh_token=token.refresh_token,
+            scope=token.scope,
+            token_type=token.token_type,
+        )
 
 
 class ResponseTypeAuthorizationCode(ResponseTypeBase):
@@ -78,4 +85,6 @@ class ResponseTypeAuthorizationCode(ResponseTypeBase):
         client = await super().create_authorization_response(request)
 
         authorization_code = await self.db.create_authorization_code(request, client)
-        return AuthorizationCodeResponse.from_orm(authorization_code)
+        return AuthorizationCodeResponse(
+            code=authorization_code.code, scope=authorization_code.scope,
+        )

@@ -1,8 +1,6 @@
+from dataclasses import asdict
 from http import HTTPStatus
 from typing import Dict, Optional, Type, Union
-from urllib.parse import quote, urlencode
-
-from pydantic.networks import AnyHttpUrl
 
 from .constances import default_headers
 from .db import DBBase
@@ -12,6 +10,7 @@ from .requests import Request
 from .response_type import ResponseTypeBase
 from .responses import ErrorResponse, Response
 from .types import EndpointType, GrantType, ResponseType
+from .utils import build_uri
 
 
 class OAuth2Endpoint:
@@ -27,13 +26,13 @@ class OAuth2Endpoint:
         endpoint: Union[ResponseType, GrantType],
         endpoint_cls: Union[Type[ResponseTypeBase], Type[GrantTypeBase]],
     ):
-        endpoint_dict = getattr(self, endpoint_type.value)
+        endpoint_dict = getattr(self, endpoint_type)
         endpoint_dict[endpoint] = endpoint_cls
 
     def unregister(
         self, endpoint_type: EndpointType, endpoint: Union[ResponseType, GrantType]
     ):
-        endpoint_dict = getattr(self, endpoint_type.value)
+        endpoint_dict = getattr(self, endpoint_type)
         del endpoint_dict[endpoint]
 
     async def create_token_response(self, request: Request) -> Response:
@@ -70,9 +69,8 @@ class OAuth2Endpoint:
                 request
             )
             if response is not None:
-                redirect_uri = request.query.redirect_uri
                 response_type = request.query.response_type
-                response_dict = {**response.dict(), "state": request.query.state}
+                response_dict = {**asdict(response), "state": request.query.state}
                 query_params = (
                     response_dict if response_type == ResponseType.TYPE_CODE else {}
                 )
@@ -80,14 +78,7 @@ class OAuth2Endpoint:
                     response_dict if response_type == ResponseType.TYPE_TOKEN else {}
                 )
 
-                location: str = AnyHttpUrl.build(
-                    scheme=redirect_uri.scheme,
-                    host=redirect_uri.host,
-                    port=redirect_uri.port,
-                    path=redirect_uri.path,
-                    query=urlencode(query_params, quote_via=quote),
-                    fragment=urlencode(fragment, quote_via=quote),
-                )
+                location = build_uri(request.query.redirect_uri, query_params, fragment)
 
                 status_code = HTTPStatus.FOUND
                 headers = {"location": location}

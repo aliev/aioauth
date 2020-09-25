@@ -1,6 +1,7 @@
 import random
 import string
 from typing import List, Optional, Set, Text, Tuple, Union
+from urllib.parse import quote, urlencode, urlparse, urlunsplit
 
 from .config import settings
 
@@ -9,11 +10,6 @@ UNICODE_ASCII_CHARACTER_SET = string.ascii_letters + string.digits
 
 def is_secure_transport(uri: str) -> bool:
     """Check if the uri is over ssl.
-
-    :param uri: [description]
-    :type uri: str
-    :return: [description]
-    :rtype: bool
     """
     if settings.INSECURE_TRANSPORT:
         return True
@@ -23,13 +19,6 @@ def is_secure_transport(uri: str) -> bool:
 def get_authorization_scheme_param(
     authorization_header_value: Text,
 ) -> Tuple[Text, Text]:
-    """[summary]
-
-    :param authorization_header_value: [description]
-    :type authorization_header_value: Text
-    :return: [description]
-    :rtype: Tuple[Text, Text]
-    """
     if not authorization_header_value:
         return "", ""
     scheme, _, param = authorization_header_value.partition(" ")
@@ -38,12 +27,6 @@ def get_authorization_scheme_param(
 
 def list_to_scope(scope: Optional[List] = None) -> Text:
     """Convert a list of scopes to a space separated string.
-
-    :param scope: [description], defaults to None
-    :type scope: Optional[List], optional
-    :raises ValueError: [description]
-    :return: [description]
-    :rtype: Text
     """
     if isinstance(scope, str) or scope is None:
         return ""
@@ -57,11 +40,6 @@ def list_to_scope(scope: Optional[List] = None) -> Text:
 
 def scope_to_list(scope: Union[Text, List, Set, Tuple]) -> List:
     """Convert a space separated string to a list of scopes.
-
-    :param scope: [description]
-    :type scope: Union[Text, List, Set, Tuple]
-    :return: [description]
-    :rtype: List
     """
     if isinstance(scope, (tuple, list, set)):
         return [str(s) for s in scope]
@@ -81,3 +59,24 @@ def generate_token(length=30, chars=UNICODE_ASCII_CHARACTER_SET):
     """
     rand = random.SystemRandom()
     return "".join(rand.choice(chars) for _ in range(length))
+
+
+def build_uri(url: str, query_params: dict = None, fragment: dict = None) -> str:
+    """Build uri string from given url, query_params and fragment"""
+    if query_params is None:
+        query_params = {}
+
+    if fragment is None:
+        fragment = {}
+
+    parsed_url = urlparse(url)
+    uri = urlunsplit(
+        (
+            parsed_url.scheme,
+            parsed_url.netloc,
+            parsed_url.path,
+            urlencode(query_params, quote_via=quote),
+            urlencode(fragment, quote_via=quote),
+        )
+    )
+    return uri

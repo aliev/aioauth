@@ -1,39 +1,36 @@
+from dataclasses import dataclass, field
 from http import HTTPStatus
 from typing import Dict, Optional, Union
 
-from pydantic import BaseModel
-
-from .constances import default_headers
+from .constances import _default_headers
 from .types import ErrorType
 
 
-class ErrorResponse(BaseModel):
+@dataclass
+class ErrorResponse:
     error: ErrorType
     error_description: str
-    error_uri: Optional[str]
+    error_uri: str = ""
 
 
-class AuthorizationCodeResponse(BaseModel):
+@dataclass
+class AuthorizationCodeResponse:
     code: str
     scope: str
 
-    class Config:
-        orm_mode = True
 
-
-class TokenResponse(BaseModel):
+@dataclass
+class TokenResponse:
     expires_in: int
     refresh_token_expires_in: int
     access_token: str
     refresh_token: str
-    token_type: str = "Bearer"
     scope: str
-
-    class Config:
-        orm_mode = True
+    token_type: str = "Bearer"
 
 
-class Response(BaseModel):
-    status_code: HTTPStatus = HTTPStatus.OK
-    headers: Dict[str, str] = default_headers
+@dataclass
+class Response:
     content: Optional[Union[ErrorResponse, TokenResponse, AuthorizationCodeResponse]]
+    status_code: HTTPStatus = HTTPStatus.OK
+    headers: Dict[str, str] = field(default_factory=_default_headers)

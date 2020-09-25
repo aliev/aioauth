@@ -64,7 +64,7 @@ class AuthorizationCode(BaseModel):
 
 class Token(BaseModel):
     client_id: Text
-    token_type: Optional[Text] = "Bearer"
+    token_type: Text = "Bearer"
     access_token: Text
     refresh_token: Text
     scope: Text

@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class ErrorType(Enum):
+class ErrorType(str, Enum):
     INVALID_REQUEST = "invalid_request"
     INVALID_CLIENT = "invalid_client"
     INVALID_GRANT = "invalid_grant"
@@ -10,28 +10,28 @@ class ErrorType(Enum):
     UNSUPPORTED_GRANT_TYPE = "unsupported_grant_type"
 
 
-class GrantType(Enum):
+class GrantType(str, Enum):
     TYPE_AUTHORIZATION_CODE = "authorization_code"
     TYPE_PASSWORD = "password"
     TYPE_CLIENT_CREDENTIALS = "client_credentials"
     TYPE_REFRESH_TOKEN = "refresh_token"
 
 
-class ResponseType(Enum):
+class ResponseType(str, Enum):
     TYPE_TOKEN = "token"
     TYPE_CODE = "code"
 
 
-class EndpointType(Enum):
+class EndpointType(str, Enum):
     GRANT_TYPE = "grant_type"
     RESPONSE_TYPE = "response_type"
 
 
-class RequestMethod(Enum):
+class RequestMethod(str, Enum):
     GET = "GET"
     POST = "POST"
 
 
-class CodeChallengeMethod(Enum):
+class CodeChallengeMethod(str, Enum):
     PLAIN = "plain"
     S256 = "S256"

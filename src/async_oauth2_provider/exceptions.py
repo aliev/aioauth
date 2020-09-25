@@ -6,7 +6,6 @@ This module contains the set of OAuth2 exceptions.
 """
 
 from http import HTTPStatus
-from typing import Optional
 
 from .constances import default_headers
 from .types import ErrorType
@@ -14,7 +13,7 @@ from .types import ErrorType
 
 class OAuth2Exception(Exception):
     error: ErrorType = ErrorType.INVALID_CLIENT
-    error_description: Optional[str] = ""
+    error_description: str = ""
     status_code: HTTPStatus = HTTPStatus.BAD_REQUEST
     error_uri: str = ""
     headers: dict = default_headers
@@ -91,6 +90,10 @@ class MissingPasswordError(OAuth2Exception):
 
 class InvalidUsernameOrPasswordError(OAuth2Exception):
     error_description = "Invalid username or password"
+
+
+class InvalidUserError(OAuth2Exception):
+    error_description = "Invalid user"
 
 
 class MissingRefreshTokenError(OAuth2Exception):
