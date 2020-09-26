@@ -30,7 +30,30 @@ class TokenResponse:
 
 
 @dataclass
+class TokenActiveIntrospectionResponse:
+    scope: str
+    client_id: str
+    # TODO: Implement
+    # username: str
+    exp: int
+    active: bool = True
+
+
+@dataclass
+class TokenInactiveIntrospectionResponse:
+    active: bool = False
+
+
+@dataclass
 class Response:
-    content: Optional[Union[ErrorResponse, TokenResponse, AuthorizationCodeResponse]]
+    content: Optional[
+        Union[
+            ErrorResponse,
+            TokenResponse,
+            AuthorizationCodeResponse,
+            TokenActiveIntrospectionResponse,
+            TokenInactiveIntrospectionResponse,
+        ]
+    ]
     status_code: HTTPStatus = HTTPStatus.OK
     headers: Dict[str, str] = field(default_factory=_default_headers)

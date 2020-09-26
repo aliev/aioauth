@@ -9,13 +9,7 @@ from fastapi import Request, Response  # type: ignore
 
 
 async def to_oauth2_request(request: Request) -> OAuth2Request:
-    """ Converts fastapi Request instance to OAuth2Request instance
-
-    :param request: fastapi Request instance
-    :type request: Request
-    :return: returns OAuth2Request instance
-    :rtype: OAuth2Request
-    """
+    """ Converts fastapi Request instance to OAuth2Request instance"""
     form = await request.form()
 
     post = dict(form)
@@ -36,13 +30,7 @@ async def to_oauth2_request(request: Request) -> OAuth2Request:
 
 
 async def to_fastapi_response(oauth2_response: OAuth2Response) -> Response:
-    """ Converts OAuth2Response instance to fastapi Response instance
-
-    :param oauth2_response: OAuth2Response instance
-    :type oauth2_response: OAuth2Response
-    :return: returns fastapi Response instance
-    :rtype: Response
-    """
+    """ Converts OAuth2Response instance to fastapi Response instance"""
     oauth2_response_content = (
         asdict(oauth2_response.content) if oauth2_response.content else {}
     )

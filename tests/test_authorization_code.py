@@ -26,7 +26,7 @@ async def test_response_type(endpoint: OAuth2Endpoint, defaults: Defaults):
         user="some user",
     )
 
-    response = await endpoint.create_authorization_response(request)
+    response = await endpoint.create_authorization_code_response(request)
     assert response.status_code == HTTPStatus.FOUND
 
 

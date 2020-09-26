@@ -22,6 +22,7 @@ class Post:
     password: Optional[str] = None
     refresh_token: Optional[str] = None
     code: Optional[str] = None
+    token: Optional[str] = None
 
 
 @dataclass

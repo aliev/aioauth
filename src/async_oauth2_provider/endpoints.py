@@ -8,9 +8,14 @@ from .exceptions import OAuth2Exception
 from .grant_type import GrantTypeBase
 from .requests import Request
 from .response_type import ResponseTypeBase
-from .responses import ErrorResponse, Response
+from .responses import (
+    ErrorResponse,
+    Response,
+    TokenActiveIntrospectionResponse,
+    TokenInactiveIntrospectionResponse,
+)
 from .types import EndpointType, GrantType, ResponseType
-from .utils import build_uri
+from .utils import build_uri, check_basic_auth
 
 
 class OAuth2Endpoint:
@@ -35,6 +40,21 @@ class OAuth2Endpoint:
         endpoint_dict = getattr(self, endpoint_type)
         del endpoint_dict[endpoint]
 
+    async def create_token_introspection_response(self, request: Request) -> Response:
+        client_id, _ = check_basic_auth(request)
+
+        token = await self.db.get_token(request, client_id)
+
+        content = TokenInactiveIntrospectionResponse()
+        if token:
+            content = TokenActiveIntrospectionResponse(
+                scope=token.scope, client_id=token.client_id, exp=token.expires_in
+            )
+
+        return Response(
+            content=content, status_code=HTTPStatus.OK, headers=default_headers
+        )
+
     async def create_token_response(self, request: Request) -> Response:
         grant_type_cls = self.grant_type.get(request.post.grant_type, GrantTypeBase)
         grant_type_handler = grant_type_cls(self.db)
@@ -54,7 +74,7 @@ class OAuth2Endpoint:
 
         return Response(content=content, status_code=status_code, headers=headers)
 
-    async def create_authorization_response(self, request: Request) -> Response:
+    async def create_authorization_code_response(self, request: Request) -> Response:
         response_type_cls = self.response_type.get(
             request.query.response_type, ResponseTypeBase
         )
@@ -65,7 +85,7 @@ class OAuth2Endpoint:
         content = None
 
         try:
-            response = await response_type_handler.create_authorization_response(
+            response = await response_type_handler.create_authorization_code_response(
                 request
             )
             response_type = request.query.response_type

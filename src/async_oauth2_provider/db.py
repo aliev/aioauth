@@ -21,13 +21,6 @@ class DBBase:
 
         Generated Token MUST be stored in database.
 
-        :param request: OAuth2 Request instance
-        :type request: Request
-        :param client: OAuth2 Client model instance
-        :type client: Client
-        :return: Returns Token model instance
-        :rtype: Token
-
         Method is used by all core grant types.
         Method is used by response types:
             - ResponseTypeToken
@@ -42,19 +35,16 @@ class DBBase:
             revoked=False,
         )
 
+    async def get_token(self, request, client_id: str) -> Optional[Token]:
+        """Gets existing token from the database"""
+        raise NotImplementedError("Method get_token must be implemented")
+
     async def create_authorization_code(
         self, request: Request, client: Client,
     ) -> AuthorizationCode:
         """Generates AuthorizationCode model instance.
 
         Generated AuthorizationCode MUST be stored in database.
-
-        :param request: OAuth2 Request instance
-        :type request: Request
-        :param client: OAuth2 Client model instance
-        :type client: Client
-        :return: AuthorizationCode model instance
-        :rtype: AuthorizationCode
 
         Method is used by response types:
             - ResponseTypeAuthorizationCode
@@ -77,16 +67,6 @@ class DBBase:
         If client doesn't exists in database this method MUST return None
         to indicate to the validator that the requested ``client_id`` does not exist or is invalid.
 
-        :param request: OAuth2 Request instance
-        :type request: Request
-        :param client_id: requested client_id
-        :type client_id: str
-        :param client_secret: requested client_secret, defaults to None
-        :type client_secret: Optional[str], optional
-        :raises NotImplementedError: Method must be implemented by library user.
-        :return: returns existing Client model instance if client exists in database.
-        :rtype: Optional[Client]
-
         Method is used by all core grant types.
         Method is used by all core response types.
         """
@@ -94,12 +74,6 @@ class DBBase:
 
     async def authenticate(self, request: Request) -> bool:
         """Authenticate user.
-
-        :param request: OAuth2 Request instance
-        :type request: Request
-        :raises NotImplementedError: Method must be implemented by library user.
-        :return: Returns True if users exists in database.
-        :rtype: bool
 
         Method is used by grant types:
             - PasswordGrantType
@@ -113,14 +87,6 @@ class DBBase:
 
         If authorization code doesn't exists it MUST return None
         to indicate to the validator that the requested authorization code does not exist or is invalid.
-
-        :param request: OAuth2 Request instance
-        :type request: Request
-        :param client: OAuth2 Client model instance
-        :type client: Client
-        :raises NotImplementedError: Method must be implemented by library user.
-        :return: Returns AuthorizationCode instance if it exists in database.
-        :rtype: Optional[AuthorizationCode]
 
         Method is used by grant types:
             - AuthorizationCodeGrantType
@@ -158,12 +124,6 @@ class DBBase:
         """Revokes token in database.
 
         This method MUST set `revoked` in True for existing token record.
-
-        :param request: OAuth2 Request instance
-        :type request: Request
-        :param token: Token model instance that should be revoked.
-        :type token: Token
-        :raises NotImplementedError: Method must be implemented by library user.
 
         Method is used by grant types:
             - RefreshTokenGrantType

@@ -1,7 +1,12 @@
+import binascii
 import random
 import string
+from base64 import b64decode
 from typing import List, Optional, Set, Text, Tuple, Union
 from urllib.parse import quote, urlencode, urlparse, urlunsplit
+
+from async_oauth2_provider.exceptions import InvalidCredentialsError
+from async_oauth2_provider.requests import Request
 
 from .config import settings
 
@@ -80,3 +85,24 @@ def build_uri(url: str, query_params: dict = None, fragment: dict = None) -> str
         )
     )
     return uri
+
+
+def check_basic_auth(request: Request) -> Tuple[str, str]:
+    authorization: str = request.headers.get("Authorization", "")
+
+    scheme, param = get_authorization_scheme_param(authorization)
+
+    if not authorization or scheme.lower() != "basic":
+        raise InvalidCredentialsError()
+
+    try:
+        data = b64decode(param).decode("ascii")
+    except (ValueError, UnicodeDecodeError, binascii.Error):
+        raise InvalidCredentialsError()
+
+    client_id, separator, client_secret = data.partition(":")
+
+    if not separator:
+        raise InvalidCredentialsError()
+
+    return client_id, client_secret

@@ -1,12 +1,9 @@
-import binascii
-from base64 import b64decode
 from typing import Optional
 
 from .exceptions import (
     AuthorizationCodeExpiredError,
     InvalidAuthorizationCodeError,
     InvalidClientError,
-    InvalidCredentialsError,
     InvalidGrantTypeError,
     InvalidRedirectUriError,
     InvalidRefreshTokenError,
@@ -24,7 +21,7 @@ from .request_validator import BaseRequestValidator
 from .requests import Request
 from .responses import TokenResponse
 from .types import GrantType, RequestMethod
-from .utils import get_authorization_scheme_param
+from .utils import check_basic_auth
 
 
 class GrantTypeBase(BaseRequestValidator):
@@ -47,24 +44,7 @@ class GrantTypeBase(BaseRequestValidator):
     async def validate_request(self, request: Request) -> Client:
         await super().validate_request(request)
 
-        # FIXME: This line looks shitty!
-        authorization: str = request.headers.get(
-            "Authorization", ""
-        ) or request.headers.get("authorization", "")
-        scheme, param = get_authorization_scheme_param(authorization)
-
-        if not authorization or scheme.lower() != "basic":
-            raise InvalidCredentialsError()
-
-        try:
-            data = b64decode(param).decode("ascii")
-        except (ValueError, UnicodeDecodeError, binascii.Error):
-            raise InvalidCredentialsError()
-
-        client_id, separator, client_secret = data.partition(":")
-
-        if not separator:
-            raise InvalidCredentialsError()
+        client_id, client_secret = check_basic_auth(request)
 
         if not request.post.grant_type:
             raise MissingGrantTypeError()
