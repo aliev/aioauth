@@ -1,8 +1,9 @@
 from dataclasses import dataclass, field
 from http import HTTPStatus
-from typing import Dict, Optional, Union
+from typing import Optional, Union
 
 from .constances import _default_headers
+from .structures import CaseInsensitiveDict
 from .types import ErrorType
 
 
@@ -56,4 +57,4 @@ class Response:
         ]
     ]
     status_code: HTTPStatus = HTTPStatus.OK
-    headers: Dict[str, str] = field(default_factory=_default_headers)
+    headers: CaseInsensitiveDict = field(default_factory=_default_headers)

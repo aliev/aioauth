@@ -57,12 +57,11 @@ class AuthorizationCode(BaseModel):
 
     def check_code_challenge(self, code_verifier: str) -> bool:
         if self.code_challenge_method == CodeChallengeMethod.PLAIN:
-            # If the "code_challenge_method" from Section 4.3 was "plain",
-            # they are compared directly
+            # If the "code_challenge_method" was "plain", they are compared directly
             return code_verifier == self.code_challenge
 
         if self.code_challenge_method == CodeChallengeMethod.S256:
-            # BASE64URL-ENCODE(SHA256(ASCII(code_verifier))) == code_challenge
+            # base64url(sha256(ascii(code_verifier))) == code_challenge
             return create_s256_code_challenge(code_verifier) == self.code_challenge
 
         return True

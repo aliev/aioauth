@@ -4,6 +4,7 @@ from dataclasses import asdict
 from async_oauth2_provider.requests import Post, Query
 from async_oauth2_provider.requests import Request as OAuth2Request
 from async_oauth2_provider.responses import Response as OAuth2Response
+from async_oauth2_provider.structures import CaseInsensitiveDict
 from async_oauth2_provider.types import RequestMethod
 from fastapi import Request, Response  # type: ignore
 
@@ -15,7 +16,7 @@ async def to_oauth2_request(request: Request) -> OAuth2Request:
     post = dict(form)
     query_params = dict(request.query_params)
     method = request.method
-    headers = dict(request.headers)
+    headers = CaseInsensitiveDict(**request.headers)
     url = str(request.url)
     user = request.user
 

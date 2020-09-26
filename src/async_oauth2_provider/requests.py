@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
+from .structures import CaseInsensitiveDict
 from .types import CodeChallengeMethod, GrantType, RequestMethod, ResponseType
 
 
@@ -31,7 +32,7 @@ class Post:
 @dataclass
 class Request:
     method: RequestMethod
-    headers: Dict[str, str] = field(default_factory=dict)
+    headers: CaseInsensitiveDict = field(default_factory=lambda: CaseInsensitiveDict())
     query: Query = Query()
     post: Post = Post()
     url: Any = ""
