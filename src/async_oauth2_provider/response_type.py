@@ -2,10 +2,12 @@ from typing import Optional
 
 from .exceptions import (
     InvalidClientError,
+    InvalidCodeChallengeMethodError,
     InvalidRedirectUriError,
     InvalidResponseTypeError,
     InvalidUserError,
     MissingClientIdError,
+    MissingCodeChallengeError,
     MissingRedirectUriError,
     MissingResponseTypeError,
 )
@@ -13,12 +15,13 @@ from .models import Client
 from .request_validator import BaseRequestValidator
 from .requests import Request
 from .responses import AuthorizationCodeResponse, TokenResponse
-from .types import RequestMethod, ResponseType
+from .types import CodeChallengeMethod, RequestMethod, ResponseType
 
 
 class ResponseTypeBase(BaseRequestValidator):
     response_type: Optional[ResponseType] = None
     allowed_methods = (RequestMethod.GET,)
+    code_challenge_methods = list(CodeChallengeMethod)
 
     async def validate_request(self, request: Request) -> Client:
         await super().validate_request(request)
@@ -39,6 +42,13 @@ class ResponseTypeBase(BaseRequestValidator):
 
         if not client:
             raise InvalidClientError()
+
+        if request.query.code_challenge_method:
+            if request.query.code_challenge_method not in self.code_challenge_methods:
+                raise InvalidCodeChallengeMethodError()
+
+            if not request.query.code_challenge:
+                raise MissingCodeChallengeError()
 
         if not client.check_redirect_uri(request.query.redirect_uri):
             raise InvalidRedirectUriError()

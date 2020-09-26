@@ -4,11 +4,13 @@ from .exceptions import (
     AuthorizationCodeExpiredError,
     InvalidAuthorizationCodeError,
     InvalidClientError,
+    InvalidCodeVerifierError,
     InvalidGrantTypeError,
     InvalidRedirectUriError,
     InvalidRefreshTokenError,
     InvalidUsernameOrPasswordError,
     MissingAuthorizationCodeError,
+    MissingCodeVerifierError,
     MissingGrantTypeError,
     MissingPasswordError,
     MissingRedirectUriError,
@@ -81,6 +83,20 @@ class AuthorizationCodeGrantType(GrantTypeBase):
             raise MissingAuthorizationCodeError()
 
         authorization_code = await self.db.get_authorization_code(request, client)
+
+        if (
+            authorization_code.code_challenge
+            and authorization_code.code_challenge_method
+        ):
+            if request.post.code_verifier:
+                is_valid_code_challenge = authorization_code.check_code_challenge(
+                    request.post.code_verifier
+                )
+
+                if not is_valid_code_challenge:
+                    raise InvalidCodeVerifierError()
+            else:
+                raise MissingCodeVerifierError()
 
         if not authorization_code:
             raise InvalidAuthorizationCodeError()

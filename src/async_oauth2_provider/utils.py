@@ -1,4 +1,6 @@
+import base64
 import binascii
+import hashlib
 import random
 import string
 from base64 import b64decode
@@ -88,7 +90,9 @@ def build_uri(url: str, query_params: dict = None, fragment: dict = None) -> str
 
 
 def check_basic_auth(request: Request) -> Tuple[str, str]:
-    authorization: str = request.headers.get("Authorization", "")
+    authorization: str = request.headers.get(
+        "Authorization", ""
+    ) or request.headers.get("authorization", "")
 
     scheme, param = get_authorization_scheme_param(authorization)
 
@@ -106,3 +110,10 @@ def check_basic_auth(request: Request) -> Tuple[str, str]:
         raise InvalidCredentialsError()
 
     return client_id, client_secret
+
+
+def create_s256_code_challenge(code_verifier: str) -> str:
+    """Create S256 code_challenge with the given code_verifier."""
+    code_verifier_bytes = code_verifier.encode("utf-8")
+    data = hashlib.sha256(code_verifier_bytes).digest()
+    return base64.urlsafe_b64encode(data).rstrip(b"=").decode()

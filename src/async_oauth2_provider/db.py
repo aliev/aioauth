@@ -11,7 +11,6 @@ from typing import Optional
 from .config import settings
 from .models import AuthorizationCode, Client, Token
 from .requests import Request
-from .types import CodeChallengeMethod
 from .utils import generate_token
 
 
@@ -36,7 +35,11 @@ class DBBase:
         )
 
     async def get_token(self, request, client_id: str) -> Optional[Token]:
-        """Gets existing token from the database"""
+        """Gets existing token from the database
+
+        Method is used by:
+            - create_token_introspection_response
+        """
         raise NotImplementedError("Method get_token must be implemented")
 
     async def create_authorization_code(
@@ -56,7 +59,8 @@ class DBBase:
             response_type=request.query.response_type,
             scope=client.get_allowed_scope(request.query.scope),
             auth_time=time.time(),
-            code_challenge_method=CodeChallengeMethod.PLAIN,
+            code_challenge_method=request.query.code_challenge_method,
+            code_challenge=request.query.code_challenge,
         )
 
     async def get_client(

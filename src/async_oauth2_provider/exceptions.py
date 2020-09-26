@@ -129,3 +129,19 @@ class InsecureTransportError(OAuth2Exception):
 class MethodNotAllowedError(OAuth2Exception):
     error_description = "HTTP method is not allowed"
     status_code: HTTPStatus = HTTPStatus.METHOD_NOT_ALLOWED
+
+
+class InvalidCodeVerifierError(OAuth2Exception):
+    error_description = "Invalid code_verifier"
+
+
+class MissingCodeVerifierError(OAuth2Exception):
+    error_description = "Missing code_verifier"
+
+
+class MissingCodeChallengeError(OAuth2Exception):
+    error_description = "Missing code_challenge"
+
+
+class InvalidCodeChallengeMethodError(OAuth2Exception):
+    error_description = "Invalid code_challenge_method"

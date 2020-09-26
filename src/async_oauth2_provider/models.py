@@ -6,7 +6,7 @@ from pydantic.networks import AnyHttpUrl
 
 from .config import settings
 from .types import CodeChallengeMethod, GrantType, ResponseType
-from .utils import list_to_scope, scope_to_list
+from .utils import create_s256_code_challenge, list_to_scope, scope_to_list
 
 
 class ClientMetadata(BaseModel):
@@ -52,8 +52,20 @@ class AuthorizationCode(BaseModel):
     scope: Text
     nonce: Optional[Text]
     auth_time: int
-    code_challenge: Optional[Text]
-    code_challenge_method: CodeChallengeMethod
+    code_challenge: Optional[Text] = None
+    code_challenge_method: Optional[CodeChallengeMethod] = None
+
+    def check_code_challenge(self, code_verifier: str) -> bool:
+        if self.code_challenge_method == CodeChallengeMethod.PLAIN:
+            # If the "code_challenge_method" from Section 4.3 was "plain",
+            # they are compared directly
+            return code_verifier == self.code_challenge
+
+        if self.code_challenge_method == CodeChallengeMethod.S256:
+            # BASE64URL-ENCODE(SHA256(ASCII(code_verifier))) == code_challenge
+            return create_s256_code_challenge(code_verifier) == self.code_challenge
+
+        return True
 
     def is_expired(self) -> bool:
         return self.auth_time + settings.AUTHORIZATION_CODE_EXPIRES_IN < time.time()
