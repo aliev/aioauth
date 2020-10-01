@@ -56,13 +56,10 @@ Supported RFCs
 
 -  ☒ `The OAuth 2.0 Authorization Framework`_
 -  ☐ `Proof Key for Code Exchange by OAuth Public Clients`_
--  ☐ `JSON Web Token (JWT) Profile for OAuth 2.0 Client Authentication
-   and Authorization Grants`_
 -  ☐ `OAuth 2.0 Token Introspection`_
 
 .. _The OAuth 2.0 Authorization Framework: https://tools.ietf.org/html/rfc6749
 .. _Proof Key for Code Exchange by OAuth Public Clients: https://tools.ietf.org/html/rfc7636
-.. _JSON Web Token (JWT) Profile for OAuth 2.0 Client Authentication and Authorization Grants: https://tools.ietf.org/html/rfc7523
 .. _OAuth 2.0 Token Introspection: https://tools.ietf.org/html/rfc7662
 .. _oauthlib: https://github.com/oauthlib/oauthlib
 .. _authlib: https://github.com/lepture/authlib

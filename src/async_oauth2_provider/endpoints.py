@@ -2,6 +2,8 @@ from dataclasses import asdict
 from http import HTTPStatus
 from typing import Dict, Optional, Type, Union
 
+from .structures import CaseInsensitiveDict
+
 from .constances import default_headers
 from .db import DBBase
 from .exceptions import OAuth2Exception
@@ -96,7 +98,7 @@ class OAuth2Endpoint:
             fragment = response_dict if response_type == ResponseType.TYPE_TOKEN else {}
 
             location = build_uri(request.query.redirect_uri, query_params, fragment)
-            headers = {"location": location}
+            headers = CaseInsensitiveDict({"location": location})
         except OAuth2Exception as exc:
             status_code = exc.status_code
             headers = exc.headers

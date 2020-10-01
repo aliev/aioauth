@@ -7,6 +7,9 @@ This module contains the set of OAuth2 exceptions.
 
 from http import HTTPStatus
 
+from .structures import CaseInsensitiveDict
+from .requests import Request
+
 from .constances import default_headers
 from .types import ErrorType
 
@@ -16,15 +19,16 @@ class OAuth2Exception(Exception):
     error_description: str = ""
     status_code: HTTPStatus = HTTPStatus.BAD_REQUEST
     error_uri: str = ""
-    headers: dict = default_headers
+    headers: CaseInsensitiveDict = default_headers
 
     def __init__(
         self,
+        request: Request,
         error: ErrorType = None,
         error_description: str = None,
         status_code: HTTPStatus = None,
         error_uri: str = None,
-        headers: dict = None,
+        headers: CaseInsensitiveDict = None,
     ):
         if error is not None:
             self.error = error
@@ -124,6 +128,7 @@ class InvalidCredentialsError(OAuth2Exception):
 
 class InsecureTransportError(OAuth2Exception):
     error_description = "OAuth 2 MUST utilize https."
+    error = ErrorType.INSECURE_TRANSPORT
 
 
 class MethodNotAllowedError(OAuth2Exception):

@@ -16,7 +16,7 @@ class BaseRequestValidator:
 
     async def validate_request(self, request: Request):
         if not is_secure_transport(request.url):
-            raise InsecureTransportError()
+            raise InsecureTransportError(request=request)
 
         if request.method not in self.allowed_methods:
-            raise MethodNotAllowedError()
+            raise MethodNotAllowedError(request=request)

@@ -27,34 +27,34 @@ class ResponseTypeBase(BaseRequestValidator):
         await super().validate_request(request)
 
         if not request.query.response_type:
-            raise MissingResponseTypeError()
+            raise MissingResponseTypeError(request=request)
 
         if not request.query.client_id:
-            raise MissingClientIdError()
+            raise MissingClientIdError(request=request)
 
         if self.response_type != request.query.response_type:
-            raise InvalidResponseTypeError()
+            raise InvalidResponseTypeError(request=request)
 
         if not request.query.redirect_uri:
-            raise MissingRedirectUriError()
+            raise MissingRedirectUriError(request=request)
 
         client = await self.db.get_client(request, client_id=request.query.client_id)
 
         if not client:
-            raise InvalidClientError()
+            raise InvalidClientError(request=request)
 
         if request.query.code_challenge_method:
             if request.query.code_challenge_method not in self.code_challenge_methods:
-                raise InvalidCodeChallengeMethodError()
+                raise InvalidCodeChallengeMethodError(request=request)
 
             if not request.query.code_challenge:
-                raise MissingCodeChallengeError()
+                raise MissingCodeChallengeError(request=request)
 
         if not client.check_redirect_uri(request.query.redirect_uri):
-            raise InvalidRedirectUriError()
+            raise InvalidRedirectUriError(request=request)
 
         if not client.check_response_type(request.query.response_type):
-            raise InvalidResponseTypeError()
+            raise InvalidResponseTypeError(request=request)
 
         return client
 
@@ -62,7 +62,7 @@ class ResponseTypeBase(BaseRequestValidator):
         client = await self.validate_request(request)
 
         if not request.user:
-            raise InvalidUserError()
+            raise InvalidUserError(request=request)
 
         return client
 

@@ -95,17 +95,17 @@ def check_basic_auth(request: Request) -> Tuple[str, str]:
     scheme, param = get_authorization_scheme_param(authorization)
 
     if not authorization or scheme.lower() != "basic":
-        raise InvalidCredentialsError()
+        raise InvalidCredentialsError(request=request)
 
     try:
         data = b64decode(param).decode("ascii")
     except (ValueError, UnicodeDecodeError, binascii.Error):
-        raise InvalidCredentialsError()
+        raise InvalidCredentialsError(request=request)
 
     client_id, separator, client_secret = data.partition(":")
 
     if not separator:
-        raise InvalidCredentialsError()
+        raise InvalidCredentialsError(request=request)
 
     return client_id, client_secret
 

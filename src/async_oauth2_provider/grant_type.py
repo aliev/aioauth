@@ -49,20 +49,20 @@ class GrantTypeBase(BaseRequestValidator):
         client_id, client_secret = check_basic_auth(request)
 
         if not request.post.grant_type:
-            raise MissingGrantTypeError()
+            raise MissingGrantTypeError(request=request)
 
         if self.grant_type != request.post.grant_type:
-            raise InvalidGrantTypeError()
+            raise InvalidGrantTypeError(request=request)
 
         client = await self.db.get_client(
             request, client_id=client_id, client_secret=client_secret
         )
 
         if not client:
-            raise InvalidClientError()
+            raise InvalidClientError(request=request)
 
         if not client.check_grant_type(request.post.grant_type):
-            raise InvalidGrantTypeError()
+            raise InvalidGrantTypeError(request=request)
 
         return client
 
@@ -74,13 +74,13 @@ class AuthorizationCodeGrantType(GrantTypeBase):
         client = await super().validate_request(request)
 
         if not request.post.redirect_uri:
-            raise MissingRedirectUriError()
+            raise MissingRedirectUriError(request=request)
 
         if not client.check_redirect_uri(request.post.redirect_uri):
-            raise InvalidRedirectUriError()
+            raise InvalidRedirectUriError(request=request)
 
         if not request.post.code:
-            raise MissingAuthorizationCodeError()
+            raise MissingAuthorizationCodeError(request=request)
 
         authorization_code = await self.db.get_authorization_code(request, client)
 
@@ -94,15 +94,15 @@ class AuthorizationCodeGrantType(GrantTypeBase):
                 )
 
                 if not is_valid_code_challenge:
-                    raise InvalidCodeVerifierError()
+                    raise InvalidCodeVerifierError(request=request)
             else:
-                raise MissingCodeVerifierError()
+                raise MissingCodeVerifierError(request=request)
 
         if not authorization_code:
-            raise InvalidAuthorizationCodeError()
+            raise InvalidAuthorizationCodeError(request=request)
 
         if authorization_code.is_expired():
-            raise AuthorizationCodeExpiredError()
+            raise AuthorizationCodeExpiredError(request=request)
 
         await self.db.delete_authorization_code(request, authorization_code)
 
@@ -116,15 +116,15 @@ class PasswordGrantType(GrantTypeBase):
         client = await super().validate_request(request)
 
         if not request.post.password:
-            raise MissingPasswordError()
+            raise MissingPasswordError(request=request)
 
         if not request.post.username:
-            raise MissingUsernameError()
+            raise MissingUsernameError(request=request)
 
         user = await self.db.authenticate(request)
 
         if not user:
-            raise InvalidUsernameOrPasswordError()
+            raise InvalidUsernameOrPasswordError(request=request)
 
         return client
 
@@ -136,15 +136,15 @@ class RefreshTokenGrantType(GrantTypeBase):
         client = await super().validate_request(request)
 
         if not request.post.refresh_token:
-            raise MissingRefreshTokenError()
+            raise MissingRefreshTokenError(request=request)
 
         token = await self.db.get_refresh_token(request, client)
 
         if not token:
-            raise InvalidRefreshTokenError()
+            raise InvalidRefreshTokenError(request=request)
 
         if token.refresh_token_expired:
-            raise RefreshTokenExpiredError()
+            raise RefreshTokenExpiredError(request=request)
 
         await self.db.revoke_token(request, token)
 
