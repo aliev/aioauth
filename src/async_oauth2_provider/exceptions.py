@@ -7,10 +7,9 @@ This module contains the set of OAuth2 exceptions.
 
 from http import HTTPStatus
 
-from .structures import CaseInsensitiveDict
-from .requests import Request
-
 from .constances import default_headers
+from .requests import Request
+from .structures import CaseInsensitiveDict
 from .types import ErrorType
 
 

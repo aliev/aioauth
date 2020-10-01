@@ -2,8 +2,6 @@ from dataclasses import asdict
 from http import HTTPStatus
 from typing import Dict, Optional, Type, Union
 
-from .structures import CaseInsensitiveDict
-
 from .constances import default_headers
 from .db import DBBase
 from .exceptions import OAuth2Exception
@@ -16,6 +14,7 @@ from .responses import (
     TokenActiveIntrospectionResponse,
     TokenInactiveIntrospectionResponse,
 )
+from .structures import CaseInsensitiveDict
 from .types import EndpointType, GrantType, ResponseType
 from .utils import build_uri, check_basic_auth
 
