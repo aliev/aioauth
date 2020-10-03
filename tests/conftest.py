@@ -5,7 +5,12 @@ import pytest
 from async_oauth2_provider.config import settings
 from async_oauth2_provider.db import DBBase
 from async_oauth2_provider.endpoints import OAuth2Endpoint
-from async_oauth2_provider.grant_type import AuthorizationCodeGrantType
+from async_oauth2_provider.grant_type import (
+    AuthorizationCodeGrantType,
+    ClientCredentialsGrantType,
+    PasswordGrantType,
+    RefreshTokenGrantType,
+)
 from async_oauth2_provider.models import (
     AuthorizationCode,
     Client,
@@ -13,7 +18,10 @@ from async_oauth2_provider.models import (
     Token,
 )
 from async_oauth2_provider.requests import Request
-from async_oauth2_provider.response_type import ResponseTypeToken
+from async_oauth2_provider.response_type import (
+    ResponseTypeAuthorizationCode,
+    ResponseTypeToken,
+)
 from async_oauth2_provider.types import (
     CodeChallengeMethod,
     EndpointType,
@@ -52,9 +60,9 @@ def defaults() -> Defaults:
     )
 
 
-@pytest.fixture
-def client_metadata(defaults: Defaults) -> ClientMetadata:
-    return ClientMetadata(
+@pytest.fixture()
+def storage(defaults: Defaults) -> dict:
+    client_metadata = ClientMetadata(
         grant_types=[
             GrantType.TYPE_AUTHORIZATION_CODE,
             GrantType.TYPE_CLIENT_CREDENTIALS,
@@ -66,19 +74,13 @@ def client_metadata(defaults: Defaults) -> ClientMetadata:
         scope=defaults.scope,
     )
 
-
-@pytest.fixture
-def client(defaults: Defaults, client_metadata: ClientMetadata) -> Client:
-    return Client(
+    client = Client(
         client_id=defaults.client_id,
         client_secret=defaults.client_secret,
         client_metadata=client_metadata,
     )
 
-
-@pytest.fixture
-def authorization_code(defaults: Defaults) -> AuthorizationCode:
-    return AuthorizationCode(
+    authorization_code = AuthorizationCode(
         code=defaults.code,
         client_id=defaults.client_id,
         response_type=ResponseType.TYPE_CODE,
@@ -88,10 +90,7 @@ def authorization_code(defaults: Defaults) -> AuthorizationCode:
         code_challenge_method=CodeChallengeMethod.PLAIN,
     )
 
-
-@pytest.fixture
-def token(defaults: Defaults) -> Token:
-    return Token(
+    token = Token(
         client_id=defaults.client_id,
         expires_in=settings.TOKEN_EXPIRES_IN,
         access_token=defaults.access_token,
@@ -100,28 +99,38 @@ def token(defaults: Defaults) -> Token:
         scope=defaults.scope,
     )
 
+    return {
+        "tokens": [token],
+        "authorization_codes": [authorization_code],
+        "clients": [client],
+    }
+
 
 @pytest.fixture
-def db_class(
-    defaults: Defaults,
-    client: Client,
-    authorization_code: AuthorizationCode,
-    token: Token,
-) -> Type[DBBase]:
+def db_class(defaults: Defaults, storage) -> Type[DBBase]:
     class DB(DBBase):
-        async def delete_authorization_code(
-            self, request: Request, authorization_code: AuthorizationCode
-        ):
-            ...
-
-        async def revoke_token(self, request: Request, token: Token):
-            ...
-
         async def get_client(
             self, request: Request, client_id: str, client_secret: Optional[str] = None
         ) -> Optional[Client]:
-            if client_id == defaults.client_id:
-                return client
+            clients = storage.get("clients", [])
+
+            for client in clients:
+                if client.client_id == client_id:
+                    return client
+
+        async def create_token(self, request: Request, client: Client) -> Token:
+            token = await super().create_token(request, client)
+            storage["tokens"].append(token)
+            return token
+
+        async def get_token(self, request: Request, client_id: str) -> Optional[Token]:
+            tokens = storage.get("tokens", [])
+            for token in tokens:
+                if (
+                    request.post.token == token.access_token
+                    and client_id == token.client_id
+                ):
+                    return token
 
         async def authenticate(self, request: Request) -> Optional[bool]:
             if (
@@ -130,23 +139,39 @@ def db_class(
             ):
                 return True
 
+        async def create_authorization_code(
+            self, request: Request, client: Client
+        ) -> AuthorizationCode:
+            authorization_code = await super().create_authorization_code(
+                request, client
+            )
+            storage["authorization_codes"].append(authorization_code)
+            return authorization_code
+
         async def get_authorization_code(
             self, request: Request, client: Client
         ) -> Optional[AuthorizationCode]:
-            if (
-                request.post.code == defaults.code
-                and client.client_id == defaults.client_id
-            ):
-                return authorization_code
+            authorization_codes = storage.get("authorization_codes", [])
+            for authorization_code in authorization_codes:
+                if (
+                    authorization_code.code == request.post.code
+                    and authorization_code.client_id == client.client_id
+                ):
+                    return authorization_code
 
-        async def get_refresh_token(
-            self, request: Request, client: Client
-        ) -> Optional[Token]:
-            if (
-                client.client_id == defaults.client_id
-                and request.post.refresh_token == defaults.refresh_token
-            ):
-                return token
+        async def delete_authorization_code(
+            self,
+            request: Request,
+            authorization_code: AuthorizationCode,
+            client: Client,
+        ):
+            authorization_codes = storage.get("authorization_codes", [])
+            for authorization_code in authorization_codes:
+                if (
+                    authorization_code.client_id == client.client_id
+                    and authorization_code.code == request.post.code
+                ):
+                    authorization_codes.remove(authorization_code)
 
     return DB
 
@@ -154,12 +179,31 @@ def db_class(
 @pytest.fixture
 def endpoint(db_class: Type[DBBase]) -> OAuth2Endpoint:
     endpoint = OAuth2Endpoint(db=db_class())
+    # Register response type endpoints
     endpoint.register(
-        EndpointType.RESPONSE_TYPE, ResponseType.TYPE_TOKEN, ResponseTypeToken
+        EndpointType.RESPONSE_TYPE, ResponseType.TYPE_TOKEN, ResponseTypeToken,
     )
+    endpoint.register(
+        EndpointType.RESPONSE_TYPE,
+        ResponseType.TYPE_CODE,
+        ResponseTypeAuthorizationCode,
+    )
+
+    # Register grant type endpoints
     endpoint.register(
         EndpointType.GRANT_TYPE,
         GrantType.TYPE_AUTHORIZATION_CODE,
         AuthorizationCodeGrantType,
+    )
+    endpoint.register(
+        EndpointType.GRANT_TYPE,
+        GrantType.TYPE_CLIENT_CREDENTIALS,
+        ClientCredentialsGrantType,
+    )
+    endpoint.register(
+        EndpointType.GRANT_TYPE, GrantType.TYPE_PASSWORD, PasswordGrantType,
+    )
+    endpoint.register(
+        EndpointType.GRANT_TYPE, GrantType.TYPE_REFRESH_TOKEN, RefreshTokenGrantType,
     )
     return endpoint
