@@ -86,6 +86,9 @@ class AuthorizationCodeGrantType(GrantTypeBase):
 
         authorization_code = await self.db.get_authorization_code(request, client)
 
+        if not authorization_code:
+            raise InvalidAuthorizationCodeError(request=request)
+
         if (
             authorization_code.code_challenge
             and authorization_code.code_challenge_method
@@ -99,9 +102,6 @@ class AuthorizationCodeGrantType(GrantTypeBase):
                     raise InvalidCodeVerifierError(request=request)
             else:
                 raise MissingCodeVerifierError(request=request)
-
-        if not authorization_code:
-            raise InvalidAuthorizationCodeError(request=request)
 
         if authorization_code.is_expired():
             raise AuthorizationCodeExpiredError(request=request)
