@@ -106,7 +106,7 @@ class AuthorizationCodeGrantType(GrantTypeBase):
         if authorization_code.is_expired():
             raise AuthorizationCodeExpiredError(request=request)
 
-        await self.db.delete_authorization_code(request, authorization_code)
+        await self.db.delete_authorization_code(request, authorization_code, client)
 
         return client
 

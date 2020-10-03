@@ -100,7 +100,7 @@ class DBBase:
         )
 
     async def delete_authorization_code(
-        self, request: Request, authorization_code: AuthorizationCode
+        self, request: Request, authorization_code: AuthorizationCode, client: Client
     ):
         """Deletes authorization code from database.
 

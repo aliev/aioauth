@@ -28,7 +28,7 @@ class OAuth2Exception(Exception):
         error_description: str = None,
         status_code: HTTPStatus = None,
         error_uri: str = None,
-        headers: CaseInsensitiveDict = None,
+        headers: CaseInsensitiveDict = default_headers,
     ):
         if error is not None:
             self.error = error
@@ -143,7 +143,7 @@ class MethodNotAllowedError(OAuth2Exception):
         error_description: str = None,
         status_code: HTTPStatus = None,
         error_uri: str = None,
-        headers: CaseInsensitiveDict = None,
+        headers: CaseInsensitiveDict = default_headers,
     ):
         allowed_methods_list = [method.upper() for method in allowed_methods]
         super().__init__(
