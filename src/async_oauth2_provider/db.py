@@ -34,7 +34,7 @@ class DBBase:
             revoked=False,
         )
 
-    async def get_token(self, request, client_id: str) -> Optional[Token]:
+    async def get_token(self, request: Request, client_id: str) -> Optional[Token]:
         """Gets existing token from the database
 
         Method is used by:
