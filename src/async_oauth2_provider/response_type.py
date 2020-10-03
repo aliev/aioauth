@@ -20,7 +20,9 @@ from .types import CodeChallengeMethod, RequestMethod, ResponseType
 
 class ResponseTypeBase(BaseRequestValidator):
     response_type: Optional[ResponseType] = None
-    allowed_methods = (RequestMethod.GET,)
+    allowed_methods = [
+        RequestMethod.GET,
+    ]
     code_challenge_methods = list(CodeChallengeMethod)
 
     async def validate_request(self, request: Request) -> Client:

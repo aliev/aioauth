@@ -6,11 +6,12 @@ This module contains the set of OAuth2 exceptions.
 """
 
 from http import HTTPStatus
+from typing import List
 
 from .constances import default_headers
 from .requests import Request
 from .structures import CaseInsensitiveDict
-from .types import ErrorType
+from .types import ErrorType, RequestMethod
 
 
 class OAuth2Exception(Exception):
@@ -133,6 +134,28 @@ class InsecureTransportError(OAuth2Exception):
 class MethodNotAllowedError(OAuth2Exception):
     error_description = "HTTP method is not allowed"
     status_code: HTTPStatus = HTTPStatus.METHOD_NOT_ALLOWED
+
+    def __init__(
+        self,
+        request: Request,
+        allowed_methods: List[RequestMethod],
+        error: ErrorType = None,
+        error_description: str = None,
+        status_code: HTTPStatus = None,
+        error_uri: str = None,
+        headers: CaseInsensitiveDict = None,
+    ):
+        allowed_methods_list = [method.upper() for method in allowed_methods]
+        super().__init__(
+            request,
+            error,
+            error_description,
+            status_code,
+            error_uri,
+            headers=CaseInsensitiveDict(
+                **headers, allow=", ".join(allowed_methods_list)
+            ),
+        )
 
 
 class InvalidCodeVerifierError(OAuth2Exception):

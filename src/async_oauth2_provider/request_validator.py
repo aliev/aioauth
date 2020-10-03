@@ -6,10 +6,10 @@ from .utils import is_secure_transport
 
 
 class BaseRequestValidator:
-    allowed_methods = (
+    allowed_methods = [
         RequestMethod.GET,
         RequestMethod.POST,
-    )
+    ]
 
     def __init__(self, db: DBBase):
         self.db = db
@@ -19,4 +19,6 @@ class BaseRequestValidator:
             raise InsecureTransportError(request=request)
 
         if request.method not in self.allowed_methods:
-            raise MethodNotAllowedError(request=request)
+            raise MethodNotAllowedError(
+                request=request, allowed_methods=self.allowed_methods
+            )

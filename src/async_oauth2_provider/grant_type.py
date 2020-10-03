@@ -27,7 +27,9 @@ from .utils import check_basic_auth
 
 
 class GrantTypeBase(BaseRequestValidator):
-    allowed_methods = (RequestMethod.POST,)
+    allowed_methods = [
+        RequestMethod.POST,
+    ]
     grant_type: Optional[GrantType] = None
 
     async def create_token_response(self, request: Request) -> TokenResponse:
