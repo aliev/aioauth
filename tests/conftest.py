@@ -1,5 +1,5 @@
 import time
-from typing import Optional, Text, Type
+from typing import Type
 
 import pytest
 from async_oauth2_provider.config import settings
@@ -17,7 +17,6 @@ from async_oauth2_provider.models import (
     ClientMetadata,
     Token,
 )
-from async_oauth2_provider.requests import Request
 from async_oauth2_provider.response_type import (
     ResponseTypeAuthorizationCode,
     ResponseTypeToken,
@@ -29,20 +28,9 @@ from async_oauth2_provider.types import (
     ResponseType,
 )
 from async_oauth2_provider.utils import generate_token
-from pydantic import BaseModel
-from pydantic.networks import AnyHttpUrl
 
-
-class Defaults(BaseModel):
-    client_id: Text
-    client_secret: Text
-    code: Text
-    refresh_token: Text
-    access_token: Text
-    username: Text
-    password: Text
-    redirect_uri: AnyHttpUrl
-    scope: Text
+from .classes import get_db_class
+from .models import Defaults
 
 
 @pytest.fixture
@@ -108,72 +96,7 @@ def storage(defaults: Defaults) -> dict:
 
 @pytest.fixture
 def db_class(defaults: Defaults, storage) -> Type[DBBase]:
-    class DB(DBBase):
-        async def get_client(
-            self, request: Request, client_id: str, client_secret: Optional[str] = None
-        ) -> Optional[Client]:
-            clients = storage.get("clients", [])
-
-            for client in clients:
-                if client.client_id == client_id:
-                    return client
-
-        async def create_token(self, request: Request, client: Client) -> Token:
-            token = await super().create_token(request, client)
-            storage["tokens"].append(token)
-            return token
-
-        async def get_token(self, request: Request, client_id: str) -> Optional[Token]:
-            tokens = storage.get("tokens", [])
-            for token in tokens:
-                if (
-                    request.post.token == token.access_token
-                    and client_id == token.client_id
-                ):
-                    return token
-
-        async def authenticate(self, request: Request) -> Optional[bool]:
-            if (
-                request.post.username == defaults.username
-                and request.post.password == defaults.password
-            ):
-                return True
-
-        async def create_authorization_code(
-            self, request: Request, client: Client
-        ) -> AuthorizationCode:
-            authorization_code = await super().create_authorization_code(
-                request, client
-            )
-            storage["authorization_codes"].append(authorization_code)
-            return authorization_code
-
-        async def get_authorization_code(
-            self, request: Request, client: Client
-        ) -> Optional[AuthorizationCode]:
-            authorization_codes = storage.get("authorization_codes", [])
-            for authorization_code in authorization_codes:
-                if (
-                    authorization_code.code == request.post.code
-                    and authorization_code.client_id == client.client_id
-                ):
-                    return authorization_code
-
-        async def delete_authorization_code(
-            self,
-            request: Request,
-            authorization_code: AuthorizationCode,
-            client: Client,
-        ):
-            authorization_codes = storage.get("authorization_codes", [])
-            for authorization_code in authorization_codes:
-                if (
-                    authorization_code.client_id == client.client_id
-                    and authorization_code.code == request.post.code
-                ):
-                    authorization_codes.remove(authorization_code)
-
-    return DB
+    return get_db_class(defaults, storage)
 
 
 @pytest.fixture
