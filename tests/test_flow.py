@@ -1,4 +1,5 @@
 from http import HTTPStatus
+from typing import Dict
 from urllib.parse import parse_qsl, urlparse
 
 import pytest
@@ -16,7 +17,9 @@ from tests.utils import set_authorization_headers
 
 
 @pytest.mark.asyncio
-async def test_plain_code_challenge(endpoint: OAuth2Endpoint, defaults: Defaults):
+async def test_plain_code_challenge(
+    endpoint: OAuth2Endpoint, defaults: Defaults, storage: Dict
+):
     code_challenge = generate_token(128)
     client_id = defaults.client_id
     client_secret = defaults.client_secret
@@ -56,6 +59,42 @@ async def test_plain_code_challenge(endpoint: OAuth2Endpoint, defaults: Defaults
     )
     response = await endpoint.create_token_response(request)
     assert response.status_code == HTTPStatus.OK
+
+    access_token = response.content.access_token
+    refresh_token = response.content.refresh_token
+
+    post = Post(token=access_token)
+    request = Request(
+        url="https://localhost",
+        post=post,
+        method=RequestMethod.POST,
+        headers=set_authorization_headers(client_id, client_secret),
+    )
+    response = await endpoint.create_token_introspection_response(request)
+    assert response.status_code == HTTPStatus.OK
+
+    post = Post(
+        grant_type=GrantType.TYPE_REFRESH_TOKEN,
+        redirect_uri=defaults.redirect_uri,
+        refresh_token=refresh_token,
+    )
+
+    request = Request(
+        url="https://localhost",
+        post=post,
+        method=RequestMethod.POST,
+        headers=set_authorization_headers(client_id, client_secret),
+    )
+    response = await endpoint.create_token_response(request)
+    assert response.status_code == HTTPStatus.OK
+    assert response.content.access_token != access_token
+    assert response.content.refresh_token != refresh_token
+
+    tokens = storage.get("tokens", [])
+
+    for token in tokens:
+        if token.access_token == access_token and token.refresh_token == refresh_token:
+            assert token.revoked
 
 
 @pytest.mark.asyncio
