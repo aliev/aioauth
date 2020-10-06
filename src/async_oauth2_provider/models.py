@@ -56,15 +56,19 @@ class AuthorizationCode(BaseModel):
     code_challenge_method: Optional[CodeChallengeMethod] = None
 
     def check_code_challenge(self, code_verifier: str) -> bool:
+        is_valid_code_challenge = False
+
         if self.code_challenge_method == CodeChallengeMethod.PLAIN:
             # If the "code_challenge_method" was "plain", they are compared directly
-            return code_verifier == self.code_challenge
+            is_valid_code_challenge = code_verifier == self.code_challenge
 
         if self.code_challenge_method == CodeChallengeMethod.S256:
             # base64url(sha256(ascii(code_verifier))) == code_challenge
-            return create_s256_code_challenge(code_verifier) == self.code_challenge
+            is_valid_code_challenge = (
+                create_s256_code_challenge(code_verifier) == self.code_challenge
+            )
 
-        return True
+        return is_valid_code_challenge
 
     def is_expired(self) -> bool:
         return self.auth_time + settings.AUTHORIZATION_CODE_EXPIRES_IN < time.time()

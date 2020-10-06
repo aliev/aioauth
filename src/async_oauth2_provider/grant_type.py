@@ -93,15 +93,14 @@ class AuthorizationCodeGrantType(GrantTypeBase):
             authorization_code.code_challenge
             and authorization_code.code_challenge_method
         ):
-            if request.post.code_verifier:
-                is_valid_code_challenge = authorization_code.check_code_challenge(
-                    request.post.code_verifier
-                )
-
-                if not is_valid_code_challenge:
-                    raise InvalidCodeVerifierError(request=request)
-            else:
+            if not request.post.code_verifier:
                 raise MissingCodeVerifierError(request=request)
+
+            is_valid_code_challenge = authorization_code.check_code_challenge(
+                request.post.code_verifier
+            )
+            if not is_valid_code_challenge:
+                raise InvalidCodeVerifierError(request=request)
 
         if authorization_code.is_expired():
             raise AuthorizationCodeExpiredError(request=request)
