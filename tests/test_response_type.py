@@ -182,3 +182,68 @@ async def test_allowed_method(
     response = await endpoint.create_authorization_code_response(request)
     assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED
     assert RequestMethod.GET in response.headers["allow"]
+
+
+@pytest.mark.asyncio
+async def test_invalid_code_challange_method(
+    endpoint: OAuth2Endpoint, defaults: Defaults, storage: Dict
+):
+    code_challenge = generate_token(128)
+
+    query = Query(
+        client_id=defaults.client_id,
+        response_type=ResponseType.TYPE_CODE,
+        redirect_uri=defaults.redirect_uri,
+        scope=defaults.scope,
+        state=generate_token(10),
+        code_challenge_method="invalid",
+        code_challenge=code_challenge,
+    )
+
+    request = Request(
+        url="https://localhost", query=query, method=RequestMethod.GET, user="username",
+    )
+    response = await endpoint.create_authorization_code_response(request)
+    assert response.status_code == HTTPStatus.BAD_REQUEST
+
+
+@pytest.mark.asyncio
+async def test_empty_code_challange(
+    endpoint: OAuth2Endpoint, defaults: Defaults, storage: Dict
+):
+    query = Query(
+        client_id=defaults.client_id,
+        response_type=ResponseType.TYPE_CODE,
+        redirect_uri=defaults.redirect_uri,
+        scope=defaults.scope,
+        state=generate_token(10),
+        code_challenge_method=CodeChallengeMethod.PLAIN,
+    )
+
+    request = Request(
+        url="https://localhost", query=query, method=RequestMethod.GET, user="username",
+    )
+    response = await endpoint.create_authorization_code_response(request)
+    assert response.status_code == HTTPStatus.BAD_REQUEST
+
+
+@pytest.mark.asyncio
+async def test_empty_response_type(
+    endpoint: OAuth2Endpoint, defaults: Defaults, storage: Dict
+):
+    code_challenge = generate_token(128)
+
+    query = Query(
+        client_id=defaults.client_id,
+        redirect_uri=defaults.redirect_uri,
+        scope=defaults.scope,
+        state=generate_token(10),
+        code_challenge_method=CodeChallengeMethod.PLAIN,
+        code_challenge=code_challenge,
+    )
+
+    request = Request(
+        url="https://localhost", query=query, method=RequestMethod.GET, user="username",
+    )
+    response = await endpoint.create_authorization_code_response(request)
+    assert response.status_code == HTTPStatus.BAD_REQUEST
