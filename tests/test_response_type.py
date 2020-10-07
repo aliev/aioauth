@@ -184,7 +184,7 @@ async def test_insecure_transport(endpoint: OAuth2Endpoint, defaults: Defaults):
     code_challenge = generate_token(128)
     redirect_uri = defaults.redirect_uri
     scope = defaults.scope
-    request_url = "https://localhost"
+    request_url = "http://localhost"
     user = "username"
 
     query = Query(
