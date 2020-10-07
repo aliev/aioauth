@@ -56,9 +56,6 @@ class ResponseTypeBase(BaseRequestValidator):
             raise InvalidRedirectUriError(request=request)
 
         if not client.check_response_type(request.query.response_type):
-            import pdb
-
-            pdb.set_trace()
             raise InvalidResponseTypeError(request=request)
 
         return client
