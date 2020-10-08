@@ -23,13 +23,16 @@ async def test_plain_code_challenge(
     code_challenge = generate_token(128)
     client_id = defaults.client_id
     client_secret = defaults.client_secret
+    scope = defaults.scope
+    state = generate_token(10)
+    redirect_uri = defaults.redirect_uri
 
     query = Query(
         client_id=defaults.client_id,
         response_type=ResponseType.TYPE_CODE,
-        redirect_uri=defaults.redirect_uri,
-        scope=defaults.scope,
-        state=generate_token(10),
+        redirect_uri=redirect_uri,
+        scope=scope,
+        state=state,
         code_challenge_method=CodeChallengeMethod.PLAIN,
         code_challenge=code_challenge,
     )

@@ -1,6 +1,0 @@
-gino[starlette]==1.0.1
-fastapi[all]==0.61.1
-pydantic[dotenv]==1.6.1
-alembic==1.4.2
-psycopg2-binary==2.8.6
-uvicorn[watchgodreload]==0.11.8
