@@ -102,7 +102,7 @@ class AuthorizationCodeGrantType(GrantTypeBase):
             if not is_valid_code_challenge:
                 raise InvalidCodeVerifierError(request=request)
 
-        if authorization_code.is_expired():
+        if authorization_code.is_expired:
             raise AuthorizationCodeExpiredError(request=request)
 
         await self.db.delete_authorization_code(request, authorization_code, client)

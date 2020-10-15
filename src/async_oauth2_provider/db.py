@@ -29,7 +29,7 @@ class DBBase:
             expires_in=settings.TOKEN_EXPIRES_IN,
             access_token=generate_token(42),
             refresh_token=generate_token(48),
-            issued_at=time.time(),
+            issued_at=int(time.time()),
             scope=client.get_allowed_scope(request.post.scope or request.query.scope),
             revoked=False,
         )
@@ -58,7 +58,7 @@ class DBBase:
             redirect_uri=request.query.redirect_uri,
             response_type=request.query.response_type,
             scope=client.get_allowed_scope(request.query.scope),
-            auth_time=time.time(),
+            auth_time=int(time.time()),
             code_challenge_method=request.query.code_challenge_method,
             code_challenge=request.query.code_challenge,
         )

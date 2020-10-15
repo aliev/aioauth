@@ -1,10 +1,9 @@
+from dataclasses import dataclass
 from typing import Text
 
-from pydantic.main import BaseModel
-from pydantic.networks import AnyHttpUrl
 
-
-class Defaults(BaseModel):
+@dataclass
+class Defaults:
     client_id: Text
     client_secret: Text
     code: Text
@@ -12,5 +11,5 @@ class Defaults(BaseModel):
     access_token: Text
     username: Text
     password: Text
-    redirect_uri: AnyHttpUrl
+    redirect_uri: Text
     scope: Text

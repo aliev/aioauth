@@ -72,7 +72,7 @@ def storage(defaults: Defaults) -> dict:
         code=defaults.code,
         client_id=defaults.client_id,
         response_type=ResponseType.TYPE_CODE,
-        auth_time=time.time(),
+        auth_time=int(time.time()),
         redirect_uri=defaults.redirect_uri,
         scope=defaults.scope,
         code_challenge_method=CodeChallengeMethod.PLAIN,
@@ -83,7 +83,7 @@ def storage(defaults: Defaults) -> dict:
         expires_in=settings.TOKEN_EXPIRES_IN,
         access_token=defaults.access_token,
         refresh_token=defaults.refresh_token,
-        issued_at=time.time(),
+        issued_at=int(time.time()),
         scope=defaults.scope,
     )
 
