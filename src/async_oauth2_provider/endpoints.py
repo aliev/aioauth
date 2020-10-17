@@ -69,9 +69,7 @@ class OAuth2Endpoint:
         except OAuth2Exception as exc:
             status_code = exc.status_code
             headers = exc.headers
-            content = ErrorResponse(
-                error=exc.error, error_description=exc.error_description
-            )
+            content = ErrorResponse(error=exc.error, description=exc.description)
 
         return Response(content=content, status_code=status_code, headers=headers)
 
@@ -101,8 +99,6 @@ class OAuth2Endpoint:
         except OAuth2Exception as exc:
             status_code = exc.status_code
             headers = exc.headers
-            content = ErrorResponse(
-                error=exc.error, error_description=exc.error_description
-            )
+            content = ErrorResponse(error=exc.error, description=exc.description)
 
         return Response(content=content, headers=headers, status_code=status_code)

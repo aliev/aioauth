@@ -8,6 +8,7 @@ class ErrorType(str, Enum):
     INVALID_SCOPE = "invalid_scope"
     UNAUTHORIZED_CLIENT = "unauthorized_client"
     UNSUPPORTED_GRANT_TYPE = "unsupported_grant_type"
+    UNSUPPORTED_RESPONSE_TYPE = "unsupported_response_type"
     INSECURE_TRANSPORT = "insecure_transport"
 
 

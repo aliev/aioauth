@@ -16,7 +16,7 @@ class ErrorResponse:
     """
 
     error: ErrorType
-    error_description: str
+    description: str
     error_uri: str = ""
 
 

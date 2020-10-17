@@ -1,3 +1,6 @@
+from async_oauth2_provider.structures import CaseInsensitiveDict
+
+from .constances import default_headers
 from .db import DBBase
 from .exceptions import InsecureTransportError, MethodNotAllowedError
 from .requests import Request
@@ -19,6 +22,7 @@ class BaseRequestValidator:
             raise InsecureTransportError(request=request)
 
         if request.method not in self.allowed_methods:
-            raise MethodNotAllowedError(
-                request=request, allowed_methods=self.allowed_methods
+            headers = CaseInsensitiveDict(
+                {**default_headers, "allow": ", ".join(self.allowed_methods)}
             )
+            raise MethodNotAllowedError(request=request, headers=headers)

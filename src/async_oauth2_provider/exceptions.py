@@ -2,39 +2,40 @@
 async_oauth2_provider.exceptions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This module contains the set of OAuth2 exceptions.
+Error used both by OAuth 2 clients and providers to represent the spec
+defined error responses for all four core grant types.
 """
 
 from http import HTTPStatus
-from typing import List
+from typing import Optional
 
 from .constances import default_headers
 from .requests import Request
 from .structures import CaseInsensitiveDict
-from .types import ErrorType, RequestMethod
+from .types import ErrorType
 
 
 class OAuth2Exception(Exception):
-    error: ErrorType = ErrorType.INVALID_CLIENT
-    error_description: str = ""
+    request: Optional[Request] = None
+    error: ErrorType
+    description: str = ""
     status_code: HTTPStatus = HTTPStatus.BAD_REQUEST
     error_uri: str = ""
     headers: CaseInsensitiveDict = default_headers
 
     def __init__(
         self,
-        request: Request,
-        error: ErrorType = None,
-        error_description: str = None,
-        status_code: HTTPStatus = None,
-        error_uri: str = None,
-        headers: CaseInsensitiveDict = default_headers,
+        request: Optional[Request] = None,
+        description: Optional[str] = None,
+        status_code: Optional[HTTPStatus] = None,
+        error_uri: Optional[str] = None,
+        headers: Optional[CaseInsensitiveDict] = None,
     ):
-        if error is not None:
-            self.error = error
+        if request is not None:
+            self.request = request
 
-        if error_description is not None:
-            self.error_description = error_description
+        if description is not None:
+            self.description = description
 
         if status_code is not None:
             self.status_code = status_code
@@ -45,130 +46,101 @@ class OAuth2Exception(Exception):
         if headers is not None:
             self.headers = headers
 
-        super().__init__(self.error_description)
+        super().__init__(f"({self.error}) {self.description}")
 
 
-class MissingResponseTypeError(OAuth2Exception):
-    error_description = "Missing response_type"
-
-
-class InvalidResponseTypeError(OAuth2Exception):
-    error_description = "Invalid response_type"
-
-
-class MissingGrantTypeError(OAuth2Exception):
-    error_description = "Missing grant_type"
-
-
-class InvalidGrantTypeError(OAuth2Exception):
-    error_description = "Invalid grant_type"
-
-
-class MissingClientIdError(OAuth2Exception):
-    error_description = "Missing client_id"
-
-
-class MissingRedirectUriError(OAuth2Exception):
-    error_description = "Missing redirect_uri"
-
-
-class InvalidRedirectUriError(OAuth2Exception):
-    error_description = "Invalid redirect_uri"
-
-
-class InvalidClientError(OAuth2Exception):
-    error_description = "Invalid client_id"
-
-
-class MissingAuthorizationCodeError(OAuth2Exception):
-    error_description = "Missing code"
-
-
-class MissingUsernameError(OAuth2Exception):
-    error_description = "Missing username"
-
-
-class MissingPasswordError(OAuth2Exception):
-    error_description = "Missing password"
-
-
-class InvalidUsernameOrPasswordError(OAuth2Exception):
-    error_description = "Invalid username or password"
-
-
+# TODO: Remove
 class InvalidUserError(OAuth2Exception):
-    error_description = "Invalid user"
-
-
-class MissingRefreshTokenError(OAuth2Exception):
-    error_description = "Missing refresh_token"
-
-
-class InvalidRefreshTokenError(OAuth2Exception):
-    error_description = "Invalid refresh_token"
-
-
-class RefreshTokenExpiredError(OAuth2Exception):
-    error_description = "Expired refresh_token"
-
-
-class InvalidAuthorizationCodeError(OAuth2Exception):
-    error_description = "Invalid authorization code"
-
-
-class AuthorizationCodeExpiredError(OAuth2Exception):
-    error_description = "Authorization code expired"
-
-
-class InvalidCredentialsError(OAuth2Exception):
-    status_code: HTTPStatus = HTTPStatus.UNAUTHORIZED
-    headers = {"WWW-Authenticate": "Basic"}
-    error_description = "Invalid authentication credentials"
-
-
-class InsecureTransportError(OAuth2Exception):
-    error_description = "OAuth 2 MUST utilize https."
-    error = ErrorType.INSECURE_TRANSPORT
+    description = "Invalid user"
+    error = "invalid_user"
 
 
 class MethodNotAllowedError(OAuth2Exception):
-    error_description = "HTTP method is not allowed"
+    description = "HTTP method is not allowed"
     status_code: HTTPStatus = HTTPStatus.METHOD_NOT_ALLOWED
-
-    def __init__(
-        self,
-        request: Request,
-        allowed_methods: List[RequestMethod],
-        error: ErrorType = None,
-        error_description: str = None,
-        status_code: HTTPStatus = None,
-        error_uri: str = None,
-        headers: CaseInsensitiveDict = default_headers,
-    ):
-        allowed_methods_list = [method.upper() for method in allowed_methods]
-        super().__init__(
-            request,
-            error,
-            error_description,
-            status_code,
-            error_uri,
-            headers=CaseInsensitiveDict(
-                **headers, allow=", ".join(allowed_methods_list)
-            ),
-        )
+    error = "method_is_not_allowed"
 
 
-class InvalidCodeVerifierError(OAuth2Exception):
-    error_description = "Invalid code_verifier"
+class InvalidRequestError(OAuth2Exception):
+    """
+    The request is missing a required parameter, includes an invalid
+    parameter value, includes a parameter more than once, or is
+    otherwise malformed.
+    """
+
+    error = ErrorType.INVALID_REQUEST
 
 
-class MissingCodeVerifierError(OAuth2Exception):
-    error_description = "Missing code_verifier"
+class InvalidClientError(OAuth2Exception):
+    """
+    Client authentication failed (e.g. unknown client, no client
+    authentication included, or unsupported authentication method).
+    The authorization server MAY return an HTTP 401 (Unauthorized) status
+    code to indicate which HTTP authentication schemes are supported.
+    If the client attempted to authenticate via the "Authorization" request
+    header field, the authorization server MUST respond with an
+    HTTP 401 (Unauthorized) status code, and include the "WWW-Authenticate"
+    response header field matching the authentication scheme used by the
+    client.
+    """
+
+    error = ErrorType.INVALID_CLIENT
+    status_code: HTTPStatus = HTTPStatus.UNAUTHORIZED
 
 
-class MissingCodeChallengeError(OAuth2Exception):
-    error_description = "Missing code_challenge"
+class InsecureTransportError(OAuth2Exception):
+    description = "OAuth 2 MUST utilize https."
+    error = ErrorType.INSECURE_TRANSPORT
 
 
-class InvalidCodeChallengeMethodError(OAuth2Exception):
-    error_description = "Invalid code_challenge_method"
+class UnsupportedGrantTypeError(OAuth2Exception):
+    """
+    The authorization grant type is not supported by the authorization
+    server.
+    """
+
+    error = ErrorType.UNSUPPORTED_GRANT_TYPE
+
+
+class UnsupportedResponseTypeError(OAuth2Exception):
+    """
+    The authorization server does not support obtaining an authorization
+    code using this method.
+    """
+
+    error = ErrorType.UNSUPPORTED_RESPONSE_TYPE
+
+
+class InvalidGrantError(OAuth2Exception):
+    """
+    The provided authorization grant (e.g. authorization code, resource
+    owner credentials) or refresh token is invalid, expired, revoked, does
+    not match the redirection URI used in the authorization request, or was
+    issued to another client.
+
+    https://tools.ietf.org/html/rfc6749#section-5.2
+    """
+
+    error = ErrorType.INVALID_GRANT
+
+
+# TODO: Integrate
+class UnauthorizedClientError(OAuth2Exception):
+    """
+    The authenticated client is not authorized to use this authorization
+    grant type.
+    """
+
+    error = ErrorType.UNAUTHORIZED_CLIENT
+
+
+# TODO: Integrate
+class InvalidScopeError(OAuth2Exception):
+    """
+    The requested scope is invalid, unknown, or malformed, or
+    exceeds the scope granted by the resource owner.
+
+    https://tools.ietf.org/html/rfc6749#section-5.2
+    """
+
+    error = ErrorType.INVALID_SCOPE

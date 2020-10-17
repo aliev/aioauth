@@ -1,15 +1,9 @@
 from typing import Optional
 
 from .exceptions import (
-    InvalidClientError,
-    InvalidCodeChallengeMethodError,
-    InvalidRedirectUriError,
-    InvalidResponseTypeError,
+    InvalidRequestError,
     InvalidUserError,
-    MissingClientIdError,
-    MissingCodeChallengeError,
-    MissingRedirectUriError,
-    MissingResponseTypeError,
+    UnsupportedResponseTypeError,
 )
 from .models import Client
 from .request_validator import BaseRequestValidator
@@ -29,34 +23,50 @@ class ResponseTypeBase(BaseRequestValidator):
         await super().validate_request(request)
 
         if not request.query.response_type:
-            raise MissingResponseTypeError(request=request)
+            raise InvalidRequestError(
+                request=request, description="Missing response_type parameter."
+            )
 
         if not request.query.client_id:
-            raise MissingClientIdError(request=request)
+            raise InvalidRequestError(
+                request=request, description="Missing client_id parameter."
+            )
 
         if self.response_type != request.query.response_type:
-            raise InvalidResponseTypeError(request=request)
+            raise UnsupportedResponseTypeError(request=request)
 
         if not request.query.redirect_uri:
-            raise MissingRedirectUriError(request=request)
+            raise InvalidRequestError(
+                request=request, description="Mismatching redirect URI."
+            )
 
-        client = await self.db.get_client(request, client_id=request.query.client_id)
+        client = await self.db.get_client(
+            request=request, client_id=request.query.client_id
+        )
 
         if not client:
-            raise InvalidClientError(request=request)
+            raise InvalidRequestError(
+                request=request, description="Invalid client_id parameter value."
+            )
 
         if request.query.code_challenge_method:
             if request.query.code_challenge_method not in self.code_challenge_methods:
-                raise InvalidCodeChallengeMethodError(request=request)
+                raise InvalidRequestError(
+                    request=request, description="Transform algorithm not supported."
+                )
 
             if not request.query.code_challenge:
-                raise MissingCodeChallengeError(request=request)
+                raise InvalidRequestError(
+                    request=request, description="Code challenge required."
+                )
 
         if not client.check_redirect_uri(request.query.redirect_uri):
-            raise InvalidRedirectUriError(request=request)
+            raise InvalidRequestError(
+                request=request, description="Invalid redirect URI."
+            )
 
         if not client.check_response_type(request.query.response_type):
-            raise InvalidResponseTypeError(request=request)
+            raise UnsupportedResponseTypeError(request=request)
 
         return client
 
