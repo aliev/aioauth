@@ -164,6 +164,6 @@ def catch_errors_and_unavailability(f):
                     headers=error.headers,
                 )
             else:
-                raise exc
+                raise
 
     return wrapper
