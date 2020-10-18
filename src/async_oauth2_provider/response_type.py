@@ -90,7 +90,7 @@ class ResponseTypeToken(ResponseTypeBase):
         client = await super().create_authorization_code_response(request)
         scope = client.get_allowed_scope(request.query.scope)
 
-        token = await self.db.create_token(request, client, scope)
+        token = await self.db.create_token(request, client.client_id, scope)
         return TokenResponse(
             expires_in=token.expires_in,
             refresh_token_expires_in=token.refresh_token_expires_in,
@@ -111,7 +111,13 @@ class ResponseTypeAuthorizationCode(ResponseTypeBase):
         scope = client.get_allowed_scope(request.query.scope)
 
         authorization_code = await self.db.create_authorization_code(
-            request, client, scope
+            request,
+            client.client_id,
+            scope,
+            request.query.response_type,  # type: ignore
+            request.query.redirect_uri,
+            request.query.code_challenge_method,  # type: ignore
+            request.query.code_challenge,  # type: ignore
         )
         return AuthorizationCodeResponse(
             code=authorization_code.code, scope=authorization_code.scope,

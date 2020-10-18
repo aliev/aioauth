@@ -23,7 +23,7 @@ class GrantTypeBase(BaseRequestValidator):
     async def create_token_response(self, request: Request) -> TokenResponse:
         client = await self.validate_request(request)
         scope = client.get_allowed_scope(request.post.scope)
-        token = await self.db.create_token(request, client, scope)
+        token = await self.db.create_token(request, client.client_id, scope)
 
         return TokenResponse(
             expires_in=token.expires_in,
@@ -83,7 +83,9 @@ class AuthorizationCodeGrantType(GrantTypeBase):
                 request=request, description="Missing code parameter."
             )
 
-        authorization_code = await self.db.get_authorization_code(request, client)
+        authorization_code = await self.db.get_authorization_code(
+            request, client.client_id, request.post.code
+        )
 
         if not authorization_code:
             raise InvalidGrantError(request=request)
@@ -106,7 +108,9 @@ class AuthorizationCodeGrantType(GrantTypeBase):
         if authorization_code.is_expired:
             raise InvalidGrantError(request=request)
 
-        await self.db.delete_authorization_code(request, authorization_code, client)
+        await self.db.delete_authorization_code(
+            request, client.client_id, request.post.code
+        )
 
         return client
 
@@ -143,7 +147,11 @@ class RefreshTokenGrantType(GrantTypeBase):
                 request=request, description="Missing refresh token parameter."
             )
 
-        token = await self.db.get_refresh_token(request, client)
+        token = await self.db.get_token(
+            request=request,
+            client_id=client.client_id,
+            refresh_token=request.post.refresh_token,
+        )
 
         if not token:
             raise InvalidGrantError(request=request)
@@ -151,7 +159,7 @@ class RefreshTokenGrantType(GrantTypeBase):
         if token.refresh_token_expired:
             raise InvalidGrantError(request=request)
 
-        await self.db.revoke_token(request, token)
+        await self.db.revoke_token(request, request.post.refresh_token)
 
         return client
 

@@ -3,6 +3,7 @@ from typing import Dict, Optional
 from async_oauth2_provider.db import DBBase
 from async_oauth2_provider.models import AuthorizationCode, Client, Token
 from async_oauth2_provider.requests import Request
+from async_oauth2_provider.types import CodeChallengeMethod, ResponseType
 
 from .models import Defaults
 
@@ -20,35 +21,48 @@ class DB(DBBase):
             if client.client_id == client_id:
                 return client
 
-    async def create_token(self, request: Request, client: Client, scope: str) -> Token:
-        token = await super().create_token(request, client, scope)
+    async def create_token(self, request: Request, client_id: str, scope: str) -> Token:
+        token = await super().create_token(request, client_id, scope)
         self.storage["tokens"].append(token)
         return token
 
     async def get_refresh_token(
-        self, request: Request, client: Client
+        self, request: Request, client_id: str, refresh_token: str
     ) -> Optional[Token]:
         # TODO: Split with get_token
         tokens = self.storage.get("tokens", [])
 
         for token in tokens:
-            if request.post.refresh_token == token.refresh_token:
+            if refresh_token == token.refresh_token:
                 return token
 
-    async def revoke_token(self, request: Request, token: Token) -> None:
+    async def revoke_token(self, request: Request, token: str) -> None:
         tokens = self.storage.get("tokens", [])
-        for token in tokens:
-            if token.refresh_token == token.refresh_token:
-                token.revoked = True
+        for token_ in tokens:
+            if token_.refresh_token == token:
+                token_.revoked = True
 
-    async def get_token(self, request: Request, client_id: str) -> Optional[Token]:
+    async def get_token(
+        self,
+        request: Request,
+        client_id: str,
+        token: Optional[str] = None,
+        refresh_token: Optional[str] = None,
+    ) -> Optional[Token]:
         tokens = self.storage.get("tokens", [])
-        for token in tokens:
+        for token_ in tokens:
             if (
-                request.post.token == token.access_token
-                and client_id == token.client_id
+                refresh_token is not None
+                and refresh_token == token_.refresh_token
+                and client_id == token_.client_id
             ):
-                return token
+                return token_
+            if (
+                token is not None
+                and token == token_.access_token
+                and client_id == token_.client_id
+            ):
+                return token_
 
     async def authenticate(self, request: Request) -> Optional[bool]:
         if (
@@ -58,33 +72,46 @@ class DB(DBBase):
             return True
 
     async def create_authorization_code(
-        self, request: Request, client: Client, scope: str
+        self,
+        request: Request,
+        client_id: str,
+        scope: str,
+        response_type: ResponseType,
+        redirect_uri: str,
+        code_challenge_method: CodeChallengeMethod,
+        code_challenge: str,
     ) -> AuthorizationCode:
         authorization_code = await super().create_authorization_code(
-            request, client, scope
+            request,
+            client_id,
+            scope,
+            response_type,
+            redirect_uri,
+            code_challenge_method,
+            code_challenge,
         )
         self.storage["authorization_codes"].append(authorization_code)
         return authorization_code
 
     async def get_authorization_code(
-        self, request: Request, client: Client
+        self, request: Request, client_id: str, code: str
     ) -> Optional[AuthorizationCode]:
         authorization_codes = self.storage.get("authorization_codes", [])
         for authorization_code in authorization_codes:
             if (
-                authorization_code.code == request.post.code
-                and authorization_code.client_id == client.client_id
+                authorization_code.code == code
+                and authorization_code.client_id == client_id
             ):
                 return authorization_code
 
     async def delete_authorization_code(
-        self, request: Request, authorization_code: AuthorizationCode, client: Client,
+        self, request: Request, client_id: str, code: str,
     ):
         authorization_codes = self.storage.get("authorization_codes", [])
         for authorization_code in authorization_codes:
             if (
-                authorization_code.client_id == client.client_id
-                and authorization_code.code == request.post.code
+                authorization_code.client_id == client_id
+                and authorization_code.code == code
             ):
                 authorization_codes.remove(authorization_code)
 

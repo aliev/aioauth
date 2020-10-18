@@ -42,9 +42,11 @@ class OAuth2Endpoint:
         del endpoint_dict[endpoint]
 
     async def create_token_introspection_response(self, request: Request) -> Response:
-        client_id, _ = check_basic_auth(request)
+        client_id, client_secret = check_basic_auth(request)
 
-        token = await self.db.get_token(request, client_id)
+        token = await self.db.get_token(
+            request=request, client_id=client_id, token=request.post.token
+        )
 
         content = TokenInactiveIntrospectionResponse()
         if token:
