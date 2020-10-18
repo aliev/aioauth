@@ -15,7 +15,7 @@ from .utils import generate_token
 
 
 class DBBase:
-    async def create_token(self, request: Request, client: Client) -> Token:
+    async def create_token(self, request: Request, client: Client, scope: str) -> Token:
         """Generates Token model instance.
 
         Generated Token MUST be stored in database.
@@ -30,7 +30,7 @@ class DBBase:
             access_token=generate_token(42),
             refresh_token=generate_token(48),
             issued_at=int(time.time()),
-            scope=client.get_allowed_scope(request.post.scope or request.query.scope),
+            scope=scope,
             revoked=False,
         )
 
@@ -43,7 +43,7 @@ class DBBase:
         raise NotImplementedError("Method get_token must be implemented")
 
     async def create_authorization_code(
-        self, request: Request, client: Client,
+        self, request: Request, client: Client, scope: str
     ) -> AuthorizationCode:
         """Generates AuthorizationCode model instance.
 
@@ -57,7 +57,7 @@ class DBBase:
             client_id=client.client_id,
             redirect_uri=request.query.redirect_uri,
             response_type=request.query.response_type,
-            scope=client.get_allowed_scope(request.query.scope),
+            scope=scope,
             auth_time=int(time.time()),
             code_challenge_method=request.query.code_challenge_method,
             code_challenge=request.query.code_challenge,

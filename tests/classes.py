@@ -20,8 +20,8 @@ class DB(DBBase):
             if client.client_id == client_id:
                 return client
 
-    async def create_token(self, request: Request, client: Client) -> Token:
-        token = await super().create_token(request, client)
+    async def create_token(self, request: Request, client: Client, scope: str) -> Token:
+        token = await super().create_token(request, client, scope)
         self.storage["tokens"].append(token)
         return token
 
@@ -58,9 +58,11 @@ class DB(DBBase):
             return True
 
     async def create_authorization_code(
-        self, request: Request, client: Client
+        self, request: Request, client: Client, scope: str
     ) -> AuthorizationCode:
-        authorization_code = await super().create_authorization_code(request, client)
+        authorization_code = await super().create_authorization_code(
+            request, client, scope
+        )
         self.storage["authorization_codes"].append(authorization_code)
         return authorization_code
 

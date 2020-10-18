@@ -1,8 +1,8 @@
 from typing import Optional
 
 from .exceptions import (
+    InvalidClientError,
     InvalidRequestError,
-    InvalidUserError,
     UnsupportedResponseTypeError,
 )
 from .models import Client
@@ -74,7 +74,9 @@ class ResponseTypeBase(BaseRequestValidator):
         client = await self.validate_request(request)
 
         if not request.user:
-            raise InvalidUserError(request=request)
+            raise InvalidClientError(
+                request=request, description="User is not authorized"
+            )
 
         return client
 
@@ -86,8 +88,9 @@ class ResponseTypeToken(ResponseTypeBase):
         self, request: Request
     ) -> TokenResponse:
         client = await super().create_authorization_code_response(request)
+        scope = client.get_allowed_scope(request.query.scope)
 
-        token = await self.db.create_token(request, client)
+        token = await self.db.create_token(request, client, scope)
         return TokenResponse(
             expires_in=token.expires_in,
             refresh_token_expires_in=token.refresh_token_expires_in,
@@ -105,8 +108,11 @@ class ResponseTypeAuthorizationCode(ResponseTypeBase):
         self, request: Request
     ) -> AuthorizationCodeResponse:
         client = await super().create_authorization_code_response(request)
+        scope = client.get_allowed_scope(request.query.scope)
 
-        authorization_code = await self.db.create_authorization_code(request, client)
+        authorization_code = await self.db.create_authorization_code(
+            request, client, scope
+        )
         return AuthorizationCodeResponse(
             code=authorization_code.code, scope=authorization_code.scope,
         )

@@ -49,14 +49,8 @@ class OAuth2Exception(Exception):
         super().__init__(f"({self.error}) {self.description}")
 
 
-# TODO: Remove
-class InvalidUserError(OAuth2Exception):
-    description = "Invalid user"
-    error = "invalid_user"
-
-
 class MethodNotAllowedError(OAuth2Exception):
-    description = "HTTP method is not allowed"
+    description = "HTTP method is not allowed."
     status_code: HTTPStatus = HTTPStatus.METHOD_NOT_ALLOWED
     error = "method_is_not_allowed"
 
@@ -122,6 +116,11 @@ class InvalidGrantError(OAuth2Exception):
     """
 
     error = ErrorType.INVALID_GRANT
+
+
+class MismatchingStateError(OAuth2Exception):
+    description = "CSRF Warning! State not equal in request and response."
+    error = ErrorType.MISMATCHING_STATE
 
 
 # TODO: Integrate

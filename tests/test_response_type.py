@@ -4,7 +4,12 @@ from typing import Dict
 import pytest
 from async_oauth2_provider.endpoints import OAuth2Endpoint
 from async_oauth2_provider.requests import Query, Request
-from async_oauth2_provider.types import CodeChallengeMethod, RequestMethod, ResponseType
+from async_oauth2_provider.types import (
+    CodeChallengeMethod,
+    ErrorType,
+    RequestMethod,
+    ResponseType,
+)
 from async_oauth2_provider.utils import generate_token
 
 from .conftest import Defaults
@@ -29,7 +34,9 @@ async def test_anonymous_user(endpoint: OAuth2Endpoint, defaults: Defaults):
     )
     request = Request(url=request_url, query=query, method=RequestMethod.GET,)
     response = await endpoint.create_authorization_code_response(request)
-    assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert response.status_code == HTTPStatus.UNAUTHORIZED
+    assert response.content.error == ErrorType.INVALID_CLIENT
+    assert response.content.description == "User is not authorized"
 
 
 @pytest.mark.asyncio
@@ -59,6 +66,7 @@ async def test_invalid_response_type(
     )
     response = await endpoint.create_authorization_code_response(request)
     assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert response.content.error == ErrorType.UNSUPPORTED_RESPONSE_TYPE
 
     # Check token only response_type
     storage["clients"][0].client_metadata.response_types = [ResponseType.TYPE_CODE]
@@ -78,6 +86,7 @@ async def test_invalid_response_type(
     )
     response = await endpoint.create_authorization_code_response(request)
     assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert response.content.error == ErrorType.UNSUPPORTED_RESPONSE_TYPE
 
 
 @pytest.mark.asyncio
@@ -104,6 +113,8 @@ async def test_invalid_redirect_uri(endpoint: OAuth2Endpoint, defaults: Defaults
     )
     response = await endpoint.create_authorization_code_response(request)
     assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert response.content.error == ErrorType.INVALID_REQUEST
+    assert response.content.description == "Invalid redirect URI."
 
 
 @pytest.mark.asyncio
@@ -128,6 +139,8 @@ async def test_empty_client_id(endpoint: OAuth2Endpoint, defaults: Defaults):
     )
     response = await endpoint.create_authorization_code_response(request)
     assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert response.content.error == ErrorType.INVALID_REQUEST
+    assert response.content.description == "Missing client_id parameter."
 
 
 @pytest.mark.asyncio
@@ -152,6 +165,8 @@ async def test_empty_redirect_uri(endpoint: OAuth2Endpoint, defaults: Defaults):
     )
     response = await endpoint.create_authorization_code_response(request)
     assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert response.content.error == ErrorType.INVALID_REQUEST
+    assert response.content.description == "Mismatching redirect URI."
 
 
 @pytest.mark.asyncio
@@ -177,6 +192,8 @@ async def test_invalid_client_id(endpoint: OAuth2Endpoint, defaults: Defaults):
     )
     response = await endpoint.create_authorization_code_response(request)
     assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert response.content.error == ErrorType.INVALID_REQUEST
+    assert response.content.description == "Invalid client_id parameter value."
 
 
 @pytest.mark.asyncio
@@ -202,6 +219,8 @@ async def test_insecure_transport(endpoint: OAuth2Endpoint, defaults: Defaults):
     )
     response = await endpoint.create_authorization_code_response(request)
     assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert response.content.error == ErrorType.INSECURE_TRANSPORT
+    assert response.content.description == "OAuth 2 MUST utilize https."
 
 
 @pytest.mark.asyncio
@@ -230,6 +249,8 @@ async def test_allowed_method(endpoint: OAuth2Endpoint, defaults: Defaults):
     response = await endpoint.create_authorization_code_response(request)
     assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED
     assert RequestMethod.GET in response.headers["allow"]
+    assert response.content.error == ErrorType.METHOD_IS_NOT_ALLOWED
+    assert response.content.description == "HTTP method is not allowed."
 
 
 @pytest.mark.asyncio
@@ -258,6 +279,8 @@ async def test_invalid_code_challange_method(
     )
     response = await endpoint.create_authorization_code_response(request)
     assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert response.content.error == ErrorType.INVALID_REQUEST
+    assert response.content.description == "Transform algorithm not supported."
 
 
 @pytest.mark.asyncio
@@ -283,6 +306,8 @@ async def test_empty_code_challange(endpoint: OAuth2Endpoint, defaults: Defaults
     )
     response = await endpoint.create_authorization_code_response(request)
     assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert response.content.error == ErrorType.INVALID_REQUEST
+    assert response.content.description == "Code challenge required."
 
 
 @pytest.mark.asyncio
@@ -309,3 +334,5 @@ async def test_empty_response_type(endpoint: OAuth2Endpoint, defaults: Defaults)
     )
     response = await endpoint.create_authorization_code_response(request)
     assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert response.content.error == ErrorType.INVALID_REQUEST
+    assert response.content.description == "Missing response_type parameter."

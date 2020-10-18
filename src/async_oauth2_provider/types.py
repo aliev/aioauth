@@ -10,6 +10,8 @@ class ErrorType(str, Enum):
     UNSUPPORTED_GRANT_TYPE = "unsupported_grant_type"
     UNSUPPORTED_RESPONSE_TYPE = "unsupported_response_type"
     INSECURE_TRANSPORT = "insecure_transport"
+    MISMATCHING_STATE = "mismatching_state"
+    METHOD_IS_NOT_ALLOWED = "method_is_not_allowed"
 
 
 class GrantType(str, Enum):

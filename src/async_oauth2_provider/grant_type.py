@@ -3,6 +3,7 @@ from typing import Optional
 from .exceptions import (
     InvalidGrantError,
     InvalidRequestError,
+    MismatchingStateError,
     UnsupportedGrantTypeError,
 )
 from .models import Client
@@ -21,7 +22,8 @@ class GrantTypeBase(BaseRequestValidator):
 
     async def create_token_response(self, request: Request) -> TokenResponse:
         client = await self.validate_request(request)
-        token = await self.db.create_token(request, client)
+        scope = client.get_allowed_scope(request.post.scope)
+        token = await self.db.create_token(request, client, scope)
 
         return TokenResponse(
             expires_in=token.expires_in,
@@ -99,7 +101,7 @@ class AuthorizationCodeGrantType(GrantTypeBase):
                 request.post.code_verifier
             )
             if not is_valid_code_challenge:
-                raise InvalidGrantError(request=request)
+                raise MismatchingStateError(request=request)
 
         if authorization_code.is_expired:
             raise InvalidGrantError(request=request)
