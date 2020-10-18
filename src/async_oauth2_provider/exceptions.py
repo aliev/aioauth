@@ -52,7 +52,7 @@ class OAuth2Exception(Exception):
 class MethodNotAllowedError(OAuth2Exception):
     description = "HTTP method is not allowed."
     status_code: HTTPStatus = HTTPStatus.METHOD_NOT_ALLOWED
-    error = "method_is_not_allowed"
+    error = ErrorType.METHOD_IS_NOT_ALLOWED
 
 
 class InvalidRequestError(OAuth2Exception):
@@ -143,3 +143,25 @@ class InvalidScopeError(OAuth2Exception):
     """
 
     error = ErrorType.INVALID_SCOPE
+
+
+class ServerError(OAuth2Exception):
+    """
+    The authorization server encountered an unexpected condition that
+    prevented it from fulfilling the request.  (This error code is needed
+    because a 500 Internal Server Error HTTP status code cannot be returned
+    to the client via a HTTP redirect.)
+    """
+
+    error = ErrorType.SERVER_ERROR
+
+
+class TemporarilyUnavailableError(OAuth2Exception):
+    """
+    The authorization server is currently unable to handle the request
+    due to a temporary overloading or maintenance of the server.
+    (This error code is needed because a 503 Service Unavailable HTTP
+    status code cannot be returned to the client via a HTTP redirect.)
+    """
+
+    error = ErrorType.TEMPORARILY_UNAVAILABLE

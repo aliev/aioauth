@@ -88,6 +88,6 @@ class Response:
             TokenActiveIntrospectionResponse,
             TokenInactiveIntrospectionResponse,
         ]
-    ]
+    ] = None
     status_code: HTTPStatus = HTTPStatus.OK
     headers: CaseInsensitiveDict = field(default_factory=_default_headers)

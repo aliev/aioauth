@@ -1,19 +1,29 @@
 import base64
 import binascii
+import functools
 import hashlib
+import logging
 import random
 import string
 from base64 import b64decode
 from typing import List, Optional, Set, Text, Tuple, Union
 from urllib.parse import quote, urlencode, urlparse, urlunsplit
 
-from async_oauth2_provider.exceptions import InvalidClientError
-from async_oauth2_provider.requests import Request
-from async_oauth2_provider.structures import CaseInsensitiveDict
-
 from .config import settings
+from .exceptions import (
+    InvalidClientError,
+    OAuth2Exception,
+    ServerError,
+    TemporarilyUnavailableError,
+)
+from .requests import Request
+from .responses import ErrorResponse, Response
+from .structures import CaseInsensitiveDict
 
 UNICODE_ASCII_CHARACTER_SET = string.ascii_letters + string.digits
+
+
+log = logging.getLogger(__name__)
 
 
 def is_secure_transport(uri: str) -> bool:
@@ -120,3 +130,40 @@ def create_s256_code_challenge(code_verifier: str) -> str:
     code_verifier_bytes = code_verifier.encode("utf-8")
     data = hashlib.sha256(code_verifier_bytes).digest()
     return base64.urlsafe_b64encode(data).rstrip(b"=").decode()
+
+
+def catch_errors_and_unavailability(f):
+    @functools.wraps(f)
+    async def wrapper(endpoint, *args, **kwargs):
+        if not endpoint.available:
+            error = TemporarilyUnavailableError()
+            content = ErrorResponse(error=error.error, description=error.description)
+            return Response(
+                content=content, status_code=error.status_code, headers=error.headers
+            )
+
+        try:
+            response = await f(endpoint, *args, **kwargs)
+            return response
+        except OAuth2Exception as exc:
+            content = ErrorResponse(error=exc.error, description=exc.description)
+            log.debug(f"OAuth2 Error: {exc}")
+            return Response(
+                content=content, status_code=exc.status_code, headers=exc.headers
+            )
+        except Exception as exc:
+            if endpoint.catch_errors:
+                error = ServerError()
+                log.error("Exception caught while processing request.", exc_info=True)
+                content = ErrorResponse(
+                    error=error.error, description=error.description
+                )
+                return Response(
+                    content=content,
+                    status_code=error.status_code,
+                    headers=error.headers,
+                )
+            else:
+                raise exc
+
+    return wrapper
