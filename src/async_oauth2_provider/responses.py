@@ -62,7 +62,7 @@ class TokenActiveIntrospectionResponse:
     active: bool = True
 
 
-@dataclass
+@dataclass(frozen=True)
 class TokenInactiveIntrospectionResponse:
     """ For an invalid, revoked or expired token.
 

@@ -4,6 +4,7 @@ from .exceptions import (
     InvalidGrantError,
     InvalidRequestError,
     MismatchingStateError,
+    UnauthorizedClientError,
     UnsupportedGrantTypeError,
 )
 from .models import Client
@@ -57,7 +58,7 @@ class GrantTypeBase(BaseRequestValidator):
             )
 
         if not client.check_grant_type(request.post.grant_type):
-            raise UnsupportedGrantTypeError(request=request)
+            raise UnauthorizedClientError(request=request)
 
         return client
 

@@ -27,8 +27,7 @@ log = logging.getLogger(__name__)
 
 
 def is_secure_transport(uri: str) -> bool:
-    """Check if the uri is over ssl.
-    """
+    """Check if the uri is over ssl."""
     if settings.INSECURE_TRANSPORT:
         return True
     return uri.lower().startswith("https://")
@@ -44,8 +43,7 @@ def get_authorization_scheme_param(
 
 
 def list_to_scope(scope: Optional[List] = None) -> Text:
-    """Convert a list of scopes to a space separated string.
-    """
+    """Convert a list of scopes to a space separated string."""
     if isinstance(scope, str) or scope is None:
         return ""
     elif isinstance(scope, (set, tuple, list)):
@@ -57,8 +55,7 @@ def list_to_scope(scope: Optional[List] = None) -> Text:
 
 
 def scope_to_list(scope: Union[Text, List, Set, Tuple]) -> List:
-    """Convert a space separated string to a list of scopes.
-    """
+    """Convert a space separated string to a list of scopes."""
     if isinstance(scope, (tuple, list, set)):
         return [str(s) for s in scope]
     elif scope is None:
@@ -147,14 +144,14 @@ def catch_errors_and_unavailability(f):
             return response
         except OAuth2Exception as exc:
             content = ErrorResponse(error=exc.error, description=exc.description)
-            log.debug(f"OAuth2 Error: {exc}")
+            log.debug(exc)
             return Response(
                 content=content, status_code=exc.status_code, headers=exc.headers
             )
-        except Exception as exc:
+        except Exception:
             if endpoint.catch_errors:
                 error = ServerError()
-                log.error("Exception caught while processing request.", exc_info=True)
+                log.exception("Exception caught while processing request.")
                 content = ErrorResponse(
                     error=error.error, description=error.description
                 )

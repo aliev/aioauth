@@ -123,7 +123,6 @@ class MismatchingStateError(OAuth2Exception):
     error = ErrorType.MISMATCHING_STATE
 
 
-# TODO: Integrate
 class UnauthorizedClientError(OAuth2Exception):
     """
     The authenticated client is not authorized to use this authorization

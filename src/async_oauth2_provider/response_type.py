@@ -68,17 +68,15 @@ class ResponseTypeBase(BaseRequestValidator):
         if not client.check_response_type(request.query.response_type):
             raise UnsupportedResponseTypeError(request=request)
 
-        return client
-
-    async def create_authorization_code_response(self, request: Request) -> Client:
-        client = await self.validate_request(request)
-
         if not request.user:
             raise InvalidClientError(
                 request=request, description="User is not authorized"
             )
 
         return client
+
+    async def create_authorization_code_response(self, request: Request) -> Client:
+        return await self.validate_request(request)
 
 
 class ResponseTypeToken(ResponseTypeBase):

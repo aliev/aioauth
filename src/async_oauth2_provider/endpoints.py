@@ -20,8 +20,8 @@ from .utils import build_uri, catch_errors_and_unavailability, check_basic_auth
 class OAuth2Endpoint:
     response_type: Dict[Optional[ResponseType], Type[ResponseTypeBase]] = {}
     grant_type: Dict[Optional[GrantType], Type[GrantTypeBase]] = {}
-    catch_errors: Optional[bool] = False
-    available: Optional[bool] = True
+    catch_errors: bool = False
+    available: bool = True
 
     def __init__(
         self,
