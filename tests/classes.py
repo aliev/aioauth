@@ -26,16 +26,6 @@ class DB(DBBase):
         self.storage["tokens"].append(token)
         return token
 
-    async def get_refresh_token(
-        self, request: Request, client_id: str, refresh_token: str
-    ) -> Optional[Token]:
-        # TODO: Split with get_token
-        tokens = self.storage.get("tokens", [])
-
-        for token in tokens:
-            if refresh_token == token.refresh_token:
-                return token
-
     async def revoke_token(self, request: Request, token: str) -> None:
         tokens = self.storage.get("tokens", [])
         for token_ in tokens:

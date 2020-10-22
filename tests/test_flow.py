@@ -26,6 +26,8 @@ async def test_plain_code_challenge(
     scope = defaults.scope
     state = generate_token(10)
     redirect_uri = defaults.redirect_uri
+    request_url = "https://localhost"
+    user = "username"
 
     query = Query(
         client_id=defaults.client_id,
@@ -37,7 +39,7 @@ async def test_plain_code_challenge(
         code_challenge=code_challenge,
     )
     request = Request(
-        url="https://localhost", query=query, method=RequestMethod.GET, user="username",
+        url=request_url, query=query, method=RequestMethod.GET, user=user,
     )
     response = await endpoint.create_authorization_code_response(request)
     assert response.status_code == HTTPStatus.FOUND
@@ -55,7 +57,7 @@ async def test_plain_code_challenge(
     )
 
     request = Request(
-        url="https://localhost",
+        url=request_url,
         post=post,
         method=RequestMethod.POST,
         headers=set_authorization_headers(client_id, client_secret),
@@ -68,7 +70,7 @@ async def test_plain_code_challenge(
 
     post = Post(token=access_token)
     request = Request(
-        url="https://localhost",
+        url=request_url,
         post=post,
         method=RequestMethod.POST,
         headers=set_authorization_headers(client_id, client_secret),
@@ -83,7 +85,7 @@ async def test_plain_code_challenge(
     )
 
     request = Request(
-        url="https://localhost",
+        url=request_url,
         post=post,
         method=RequestMethod.POST,
         headers=set_authorization_headers(client_id, client_secret),
@@ -106,6 +108,8 @@ async def test_pkce(endpoint: OAuth2Endpoint, defaults: Defaults):
     client_secret = defaults.client_secret
     code_verifier = generate_token(128)
     code_challenge = create_s256_code_challenge(code_verifier)
+    request_url = "https://localhost"
+    user = "username"
 
     query = Query(
         client_id=defaults.client_id,
@@ -117,7 +121,7 @@ async def test_pkce(endpoint: OAuth2Endpoint, defaults: Defaults):
         code_challenge=code_challenge,
     )
     request = Request(
-        url="https://localhost", query=query, method=RequestMethod.GET, user="username",
+        url=request_url, query=query, method=RequestMethod.GET, user=user,
     )
     response = await endpoint.create_authorization_code_response(request)
     assert response.status_code == HTTPStatus.FOUND
@@ -134,7 +138,7 @@ async def test_pkce(endpoint: OAuth2Endpoint, defaults: Defaults):
     )
 
     request = Request(
-        url="https://localhost",
+        url=request_url,
         post=post,
         method=RequestMethod.POST,
         headers=set_authorization_headers(client_id, client_secret),
@@ -145,6 +149,9 @@ async def test_pkce(endpoint: OAuth2Endpoint, defaults: Defaults):
 
 @pytest.mark.asyncio
 async def test_implicit_flow(endpoint: OAuth2Endpoint, defaults: Defaults):
+    request_url = "https://localhost"
+    user = "username"
+
     query = Query(
         client_id=defaults.client_id,
         response_type=ResponseType.TYPE_TOKEN,
@@ -153,7 +160,7 @@ async def test_implicit_flow(endpoint: OAuth2Endpoint, defaults: Defaults):
         state=generate_token(10),
     )
     request = Request(
-        url="https://localhost", query=query, method=RequestMethod.GET, user="username",
+        url=request_url, query=query, method=RequestMethod.GET, user=user,
     )
 
     response = await endpoint.create_authorization_code_response(request)
@@ -164,6 +171,8 @@ async def test_implicit_flow(endpoint: OAuth2Endpoint, defaults: Defaults):
 async def test_authorization_code_flow(endpoint: OAuth2Endpoint, defaults: Defaults):
     client_id = defaults.client_id
     client_secret = defaults.client_secret
+    request_url = "https://localhost"
+    user = "username"
 
     query = Query(
         client_id=defaults.client_id,
@@ -173,7 +182,7 @@ async def test_authorization_code_flow(endpoint: OAuth2Endpoint, defaults: Defau
         state=generate_token(10),
     )
     request = Request(
-        url="https://localhost", query=query, method=RequestMethod.GET, user="username",
+        url=request_url, query=query, method=RequestMethod.GET, user=user,
     )
 
     response = await endpoint.create_authorization_code_response(request)
@@ -191,7 +200,7 @@ async def test_authorization_code_flow(endpoint: OAuth2Endpoint, defaults: Defau
     )
 
     request = Request(
-        url="https://localhost",
+        url=request_url,
         post=post,
         method=RequestMethod.POST,
         headers=set_authorization_headers(client_id, client_secret),

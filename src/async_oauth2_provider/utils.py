@@ -6,7 +6,7 @@ import logging
 import random
 import string
 from base64 import b64decode
-from typing import List, Optional, Set, Text, Tuple, Union
+from typing import Callable, List, Optional, Set, Text, Tuple, Union
 from urllib.parse import quote, urlencode, urlparse, urlunsplit
 
 from .config import settings
@@ -64,7 +64,7 @@ def scope_to_list(scope: Union[Text, List, Set, Tuple]) -> List:
         return scope.strip().split(" ")
 
 
-def generate_token(length=30, chars=UNICODE_ASCII_CHARACTER_SET):
+def generate_token(length: int = 30, chars: str = UNICODE_ASCII_CHARACTER_SET) -> str:
     """Generates a non-guessable OAuth token
 
     OAuth (1 and 2) does not specify the format of tokens except that they
@@ -129,9 +129,9 @@ def create_s256_code_challenge(code_verifier: str) -> str:
     return base64.urlsafe_b64encode(data).rstrip(b"=").decode()
 
 
-def catch_errors_and_unavailability(f):
+def catch_errors_and_unavailability(f) -> Callable:
     @functools.wraps(f)
-    async def wrapper(endpoint, *args, **kwargs):
+    async def wrapper(endpoint, *args, **kwargs) -> Optional[Response]:
         if not endpoint.available:
             error = TemporarilyUnavailableError()
             content = ErrorResponse(error=error.error, description=error.description)
@@ -149,18 +149,11 @@ def catch_errors_and_unavailability(f):
                 content=content, status_code=exc.status_code, headers=exc.headers
             )
         except Exception:
-            if endpoint.catch_errors:
-                error = ServerError()
-                log.exception("Exception caught while processing request.")
-                content = ErrorResponse(
-                    error=error.error, description=error.description
-                )
-                return Response(
-                    content=content,
-                    status_code=error.status_code,
-                    headers=error.headers,
-                )
-            else:
-                raise
+            error = ServerError()
+            log.exception("Exception caught while processing request.")
+            content = ErrorResponse(error=error.error, description=error.description)
+            return Response(
+                content=content, status_code=error.status_code, headers=error.headers,
+            )
 
     return wrapper

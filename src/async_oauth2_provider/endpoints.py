@@ -24,15 +24,9 @@ class OAuth2Endpoint:
     available: bool = True
 
     def __init__(
-        self,
-        db: DBBase,
-        catch_errors: Optional[bool] = None,
-        available: Optional[bool] = None,
+        self, db: DBBase, available: Optional[bool] = None,
     ):
         self.db = db
-
-        if catch_errors is not None:
-            self.catch_errors = catch_errors
 
         if available is not None:
             self.available = available

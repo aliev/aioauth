@@ -21,10 +21,12 @@ async def test_invalid_token(
 ):
     client_id = defaults.client_id
     client_secret = defaults.client_secret
+    request_url = "https://localhost"
+    token = "invalid token"
 
-    post = Post(token="invalid token")
+    post = Post(token=token)
     request = Request(
-        url="https://localhost",
+        url=request_url,
         post=post,
         method=RequestMethod.POST,
         headers=set_authorization_headers(client_id, client_secret),
@@ -43,7 +45,7 @@ async def test_unregister_endpoint(endpoint: OAuth2Endpoint):
 
 @pytest.mark.asyncio
 async def test_endpoint_availability(db_class: Type[DBBase]):
-    endpoint = OAuth2Endpoint(db=db_class(), available=False, catch_errors=True)
+    endpoint = OAuth2Endpoint(db=db_class(), available=False)
     request = Request(method=RequestMethod.POST)
     response = await endpoint.create_token_introspection_response(request)
     assert response.status_code == HTTPStatus.BAD_REQUEST
