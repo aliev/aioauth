@@ -10,9 +10,9 @@ from typing import Callable, List, Optional, Set, Text, Tuple, Union
 from urllib.parse import quote, urlencode, urlparse, urlunsplit
 
 from .config import settings
-from .exceptions import (
+from .errors import (
     InvalidClientError,
-    OAuth2Exception,
+    OAuth2Error,
     ServerError,
     TemporarilyUnavailableError,
 )
@@ -142,7 +142,7 @@ def catch_errors_and_unavailability(f) -> Callable:
         try:
             response = await f(endpoint, *args, **kwargs)
             return response
-        except OAuth2Exception as exc:
+        except OAuth2Error as exc:
             content = ErrorResponse(error=exc.error, description=exc.description)
             log.debug(exc)
             return Response(

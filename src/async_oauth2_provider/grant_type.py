@@ -1,6 +1,6 @@
 from typing import Optional
 
-from .exceptions import (
+from .errors import (
     InvalidGrantError,
     InvalidRequestError,
     InvalidScopeError,
@@ -9,7 +9,7 @@ from .exceptions import (
     UnsupportedGrantTypeError,
 )
 from .models import Client
-from .request_validator import BaseRequestValidator
+from .base import BaseRequestValidator
 from .requests import Request
 from .responses import TokenResponse
 from .types import GrantType, RequestMethod

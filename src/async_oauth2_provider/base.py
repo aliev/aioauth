@@ -2,7 +2,7 @@ from async_oauth2_provider.structures import CaseInsensitiveDict
 
 from .constances import default_headers
 from .db import DBBase
-from .exceptions import InsecureTransportError, MethodNotAllowedError
+from .errors import InsecureTransportError, MethodNotAllowedError
 from .requests import Request
 from .types import RequestMethod
 from .utils import is_secure_transport

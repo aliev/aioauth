@@ -15,7 +15,7 @@ from .structures import CaseInsensitiveDict
 from .types import ErrorType
 
 
-class OAuth2Exception(Exception):
+class OAuth2Error(Exception):
     request: Optional[Request] = None
     error: ErrorType
     description: str = ""
@@ -49,13 +49,13 @@ class OAuth2Exception(Exception):
         super().__init__(f"({self.error}) {self.description}")
 
 
-class MethodNotAllowedError(OAuth2Exception):
+class MethodNotAllowedError(OAuth2Error):
     description = "HTTP method is not allowed."
     status_code: HTTPStatus = HTTPStatus.METHOD_NOT_ALLOWED
     error = ErrorType.METHOD_IS_NOT_ALLOWED
 
 
-class InvalidRequestError(OAuth2Exception):
+class InvalidRequestError(OAuth2Error):
     """
     The request is missing a required parameter, includes an invalid
     parameter value, includes a parameter more than once, or is
@@ -65,7 +65,7 @@ class InvalidRequestError(OAuth2Exception):
     error = ErrorType.INVALID_REQUEST
 
 
-class InvalidClientError(OAuth2Exception):
+class InvalidClientError(OAuth2Error):
     """
     Client authentication failed (e.g. unknown client, no client
     authentication included, or unsupported authentication method).
@@ -82,12 +82,12 @@ class InvalidClientError(OAuth2Exception):
     status_code: HTTPStatus = HTTPStatus.UNAUTHORIZED
 
 
-class InsecureTransportError(OAuth2Exception):
+class InsecureTransportError(OAuth2Error):
     description = "OAuth 2 MUST utilize https."
     error = ErrorType.INSECURE_TRANSPORT
 
 
-class UnsupportedGrantTypeError(OAuth2Exception):
+class UnsupportedGrantTypeError(OAuth2Error):
     """
     The authorization grant type is not supported by the authorization
     server.
@@ -96,7 +96,7 @@ class UnsupportedGrantTypeError(OAuth2Exception):
     error = ErrorType.UNSUPPORTED_GRANT_TYPE
 
 
-class UnsupportedResponseTypeError(OAuth2Exception):
+class UnsupportedResponseTypeError(OAuth2Error):
     """
     The authorization server does not support obtaining an authorization
     code using this method.
@@ -105,7 +105,7 @@ class UnsupportedResponseTypeError(OAuth2Exception):
     error = ErrorType.UNSUPPORTED_RESPONSE_TYPE
 
 
-class InvalidGrantError(OAuth2Exception):
+class InvalidGrantError(OAuth2Error):
     """
     The provided authorization grant (e.g. authorization code, resource
     owner credentials) or refresh token is invalid, expired, revoked, does
@@ -118,12 +118,12 @@ class InvalidGrantError(OAuth2Exception):
     error = ErrorType.INVALID_GRANT
 
 
-class MismatchingStateError(OAuth2Exception):
+class MismatchingStateError(OAuth2Error):
     description = "CSRF Warning! State not equal in request and response."
     error = ErrorType.MISMATCHING_STATE
 
 
-class UnauthorizedClientError(OAuth2Exception):
+class UnauthorizedClientError(OAuth2Error):
     """
     The authenticated client is not authorized to use this authorization
     grant type.
@@ -132,7 +132,7 @@ class UnauthorizedClientError(OAuth2Exception):
     error = ErrorType.UNAUTHORIZED_CLIENT
 
 
-class InvalidScopeError(OAuth2Exception):
+class InvalidScopeError(OAuth2Error):
     """
     The requested scope is invalid, unknown, or malformed, or
     exceeds the scope granted by the resource owner.
@@ -143,7 +143,7 @@ class InvalidScopeError(OAuth2Exception):
     error = ErrorType.INVALID_SCOPE
 
 
-class ServerError(OAuth2Exception):
+class ServerError(OAuth2Error):
     """
     The authorization server encountered an unexpected condition that
     prevented it from fulfilling the request.  (This error code is needed
@@ -154,7 +154,7 @@ class ServerError(OAuth2Exception):
     error = ErrorType.SERVER_ERROR
 
 
-class TemporarilyUnavailableError(OAuth2Exception):
+class TemporarilyUnavailableError(OAuth2Error):
     """
     The authorization server is currently unable to handle the request
     due to a temporary overloading or maintenance of the server.
