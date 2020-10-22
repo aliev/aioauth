@@ -3,6 +3,7 @@ from typing import Optional
 from .exceptions import (
     InvalidGrantError,
     InvalidRequestError,
+    InvalidScopeError,
     MismatchingStateError,
     UnauthorizedClientError,
     UnsupportedGrantTypeError,
@@ -59,6 +60,9 @@ class GrantTypeBase(BaseRequestValidator):
 
         if not client.check_grant_type(request.post.grant_type):
             raise UnauthorizedClientError(request=request)
+
+        if not client.check_scope(request.post.scope):
+            raise InvalidScopeError(request=request)
 
         return client
 

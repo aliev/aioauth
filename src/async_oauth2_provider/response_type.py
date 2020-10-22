@@ -3,6 +3,7 @@ from typing import Optional
 from .exceptions import (
     InvalidClientError,
     InvalidRequestError,
+    InvalidScopeError,
     UnsupportedResponseTypeError,
 )
 from .models import Client
@@ -68,6 +69,9 @@ class ResponseTypeBase(BaseRequestValidator):
         if not client.check_response_type(request.query.response_type):
             raise UnsupportedResponseTypeError(request=request)
 
+        if not client.check_scope(request.query.scope):
+            raise InvalidScopeError(request=request)
+
         if not request.user:
             raise InvalidClientError(
                 request=request, description="User is not authorized"
@@ -86,9 +90,9 @@ class ResponseTypeToken(ResponseTypeBase):
         self, request: Request
     ) -> TokenResponse:
         client = await super().create_authorization_code_response(request)
-        scope = client.get_allowed_scope(request.query.scope)
-
-        token = await self.db.create_token(request, client.client_id, scope)
+        token = await self.db.create_token(
+            request, client.client_id, request.query.scope
+        )
         return TokenResponse(
             expires_in=token.expires_in,
             refresh_token_expires_in=token.refresh_token_expires_in,
@@ -106,12 +110,10 @@ class ResponseTypeAuthorizationCode(ResponseTypeBase):
         self, request: Request
     ) -> AuthorizationCodeResponse:
         client = await super().create_authorization_code_response(request)
-        scope = client.get_allowed_scope(request.query.scope)
-
         authorization_code = await self.db.create_authorization_code(
             request,
             client.client_id,
-            scope,
+            request.query.scope,
             request.query.response_type,  # type: ignore
             request.query.redirect_uri,
             request.query.code_challenge_method,  # type: ignore

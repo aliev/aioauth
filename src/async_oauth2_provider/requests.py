@@ -20,7 +20,7 @@ class Query:
 class Post:
     grant_type: Optional[GrantType] = None
     redirect_uri: Optional[str] = None
-    scope: Optional[str] = None
+    scope: str = ""
     username: Optional[str] = None
     password: Optional[str] = None
     refresh_token: Optional[str] = None

@@ -383,3 +383,23 @@ async def test_empty_response_type(
     assert response.content.error == ErrorType.INVALID_REQUEST
     assert response.content.description == "Missing response_type parameter."
     assert ErrorType.INVALID_REQUEST in caplog.text
+
+
+@pytest.mark.asyncio
+async def test_scope(endpoint: OAuth2Endpoint, defaults: Defaults):
+    request_url = "https://localhost"
+    user = "username"
+
+    query = Query(
+        client_id=defaults.client_id,
+        response_type=ResponseType.TYPE_TOKEN,
+        redirect_uri=defaults.redirect_uri,
+        scope=f"{defaults.scope} edit",
+        state=generate_token(10),
+    )
+    request = Request(
+        url=request_url, query=query, method=RequestMethod.GET, user=user,
+    )
+
+    response = await endpoint.create_authorization_code_response(request)
+    assert response.status_code == HTTPStatus.BAD_REQUEST

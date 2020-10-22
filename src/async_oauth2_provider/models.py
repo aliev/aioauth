@@ -37,6 +37,10 @@ class Client:
         scopes = scope_to_list(scope)
         return list_to_scope([s for s in scopes if s in allowed])
 
+    def check_scope(self, scope: str) -> bool:
+        allowed_scope = self.get_allowed_scope(scope)
+        return not (set(scope_to_list(scope)) - set(scope_to_list(allowed_scope)))
+
 
 @dataclass
 class AuthorizationCode:

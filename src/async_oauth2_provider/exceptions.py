@@ -132,7 +132,6 @@ class UnauthorizedClientError(OAuth2Exception):
     error = ErrorType.UNAUTHORIZED_CLIENT
 
 
-# TODO: Integrate
 class InvalidScopeError(OAuth2Exception):
     """
     The requested scope is invalid, unknown, or malformed, or
