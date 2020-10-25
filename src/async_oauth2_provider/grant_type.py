@@ -1,5 +1,6 @@
 from typing import Optional
 
+from .base import BaseRequestValidator
 from .errors import (
     InvalidGrantError,
     InvalidRequestError,
@@ -9,11 +10,10 @@ from .errors import (
     UnsupportedGrantTypeError,
 )
 from .models import Client
-from .base import BaseRequestValidator
 from .requests import Request
 from .responses import TokenResponse
 from .types import GrantType, RequestMethod
-from .utils import check_basic_auth
+from .utils import decode_basic_auth
 
 
 class GrantTypeBase(BaseRequestValidator):
@@ -24,8 +24,9 @@ class GrantTypeBase(BaseRequestValidator):
 
     async def create_token_response(self, request: Request) -> TokenResponse:
         client = await self.validate_request(request)
-        scope = client.get_allowed_scope(request.post.scope)
-        token = await self.db.create_token(request, client.client_id, scope)
+        token = await self.db.create_token(
+            request, client.client_id, request.post.scope
+        )
 
         return TokenResponse(
             expires_in=token.expires_in,
@@ -39,7 +40,7 @@ class GrantTypeBase(BaseRequestValidator):
     async def validate_request(self, request: Request) -> Client:
         await super().validate_request(request)
 
-        client_id, client_secret = check_basic_auth(request)
+        client_id, client_secret = decode_basic_auth(request)
 
         if not request.post.grant_type:
             raise InvalidRequestError(

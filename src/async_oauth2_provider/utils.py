@@ -97,7 +97,11 @@ def build_uri(url: str, query_params: dict = None, fragment: dict = None) -> str
     return uri
 
 
-def check_basic_auth(request: Request) -> Tuple[str, str]:
+def decode_basic_auth(request: Request) -> Tuple[str, str]:
+    """Decode an encrypted HTTP basic authentication string. Returns a tuple of
+    the form (client_id, client_secret), and raises a InvalidClientError exception if
+    nothing could be decoded.
+    """
     authorization: str = request.headers.get("Authorization", "")
     headers = CaseInsensitiveDict({"WWW-Authenticate": "Basic"})
 

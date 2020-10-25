@@ -14,7 +14,7 @@ from .responses import (
 )
 from .structures import CaseInsensitiveDict
 from .types import EndpointType, GrantType, ResponseType
-from .utils import build_uri, catch_errors_and_unavailability, check_basic_auth
+from .utils import build_uri, catch_errors_and_unavailability, decode_basic_auth
 
 
 class OAuth2Endpoint:
@@ -48,7 +48,7 @@ class OAuth2Endpoint:
 
     @catch_errors_and_unavailability
     async def create_token_introspection_response(self, request: Request) -> Response:
-        client_id, _ = check_basic_auth(request)
+        client_id, _ = decode_basic_auth(request)
 
         token = await self.db.get_token(
             request=request, client_id=client_id, token=request.post.token
