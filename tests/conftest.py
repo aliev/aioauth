@@ -1,5 +1,5 @@
 import time
-from typing import Type
+from typing import Dict, Type
 
 import pytest
 from async_oauth2_provider.config import settings
@@ -49,7 +49,7 @@ def defaults() -> Defaults:
 
 
 @pytest.fixture()
-def storage(defaults: Defaults) -> dict:
+def storage(defaults: Defaults) -> Dict:
     client_metadata = ClientMetadata(
         grant_types=[
             GrantType.TYPE_AUTHORIZATION_CODE,

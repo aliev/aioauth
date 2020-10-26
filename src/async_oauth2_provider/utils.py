@@ -5,8 +5,8 @@ import hashlib
 import logging
 import random
 import string
-from base64 import b64decode
-from typing import Callable, List, Optional, Set, Text, Tuple, Union
+from base64 import b64decode, b64encode
+from typing import Callable, Dict, List, Optional, Set, Text, Tuple, Union
 from urllib.parse import quote, urlencode, urlparse, urlunsplit
 
 from .config import settings
@@ -76,7 +76,9 @@ def generate_token(length: int = 30, chars: str = UNICODE_ASCII_CHARACTER_SET) -
     return "".join(rand.choice(chars) for _ in range(length))
 
 
-def build_uri(url: str, query_params: dict = None, fragment: dict = None) -> str:
+def build_uri(
+    url: str, query_params: Optional[Dict] = None, fragment: Optional[Dict] = None
+) -> str:
     """Build uri string from given url, query_params and fragment"""
     if query_params is None:
         query_params = {}
@@ -97,7 +99,20 @@ def build_uri(url: str, query_params: dict = None, fragment: dict = None) -> str
     return uri
 
 
-def decode_basic_auth(request: Request) -> Tuple[str, str]:
+def encode_auth_headers(
+    client_id: str, client_secret: str, headers: Optional[CaseInsensitiveDict] = None
+) -> CaseInsensitiveDict:
+
+    if headers is None:
+        headers = CaseInsensitiveDict()
+
+    authorization = b64encode(f"{client_id}:{client_secret}".encode("ascii"))
+    return CaseInsensitiveDict(
+        **headers, Authorization=f"basic {authorization.decode()}"
+    )
+
+
+def decode_auth_headers(request: Request) -> Tuple[str, str]:
     """Decode an encrypted HTTP basic authentication string. Returns a tuple of
     the form (client_id, client_secret), and raises a InvalidClientError exception if
     nothing could be decoded.

@@ -1,5 +1,6 @@
 from typing import Optional
 
+from .base import BaseRequestValidator
 from .errors import (
     InvalidClientError,
     InvalidRequestError,
@@ -7,7 +8,6 @@ from .errors import (
     UnsupportedResponseTypeError,
 )
 from .models import Client
-from .base import BaseRequestValidator
 from .requests import Request
 from .responses import AuthorizationCodeResponse, TokenResponse
 from .types import CodeChallengeMethod, RequestMethod, ResponseType
@@ -23,22 +23,9 @@ class ResponseTypeBase(BaseRequestValidator):
     async def validate_request(self, request: Request) -> Client:
         await super().validate_request(request)
 
-        if not request.query.response_type:
-            raise InvalidRequestError(
-                request=request, description="Missing response_type parameter."
-            )
-
         if not request.query.client_id:
             raise InvalidRequestError(
                 request=request, description="Missing client_id parameter."
-            )
-
-        if self.response_type != request.query.response_type:
-            raise UnsupportedResponseTypeError(request=request)
-
-        if not request.query.redirect_uri:
-            raise InvalidRequestError(
-                request=request, description="Mismatching redirect URI."
             )
 
         client = await self.db.get_client(
@@ -48,6 +35,24 @@ class ResponseTypeBase(BaseRequestValidator):
         if not client:
             raise InvalidRequestError(
                 request=request, description="Invalid client_id parameter value."
+            )
+
+        if not request.query.redirect_uri:
+            raise InvalidRequestError(
+                request=request, description="Mismatching redirect URI."
+            )
+
+        if self.response_type != request.query.response_type:
+            raise UnsupportedResponseTypeError(request=request)
+
+        if not client.check_redirect_uri(request.query.redirect_uri):
+            raise InvalidRequestError(
+                request=request, description="Invalid redirect URI."
+            )
+
+        if not request.query.response_type:
+            raise InvalidRequestError(
+                request=request, description="Missing response_type parameter."
             )
 
         if request.query.code_challenge_method:
@@ -60,11 +65,6 @@ class ResponseTypeBase(BaseRequestValidator):
                 raise InvalidRequestError(
                     request=request, description="Code challenge required."
                 )
-
-        if not client.check_redirect_uri(request.query.redirect_uri):
-            raise InvalidRequestError(
-                request=request, description="Invalid redirect URI."
-            )
 
         if not client.check_response_type(request.query.response_type):
             raise UnsupportedResponseTypeError(request=request)

@@ -13,7 +13,7 @@ from .models import Client
 from .requests import Request
 from .responses import TokenResponse
 from .types import GrantType, RequestMethod
-from .utils import decode_basic_auth
+from .utils import decode_auth_headers
 
 
 class GrantTypeBase(BaseRequestValidator):
@@ -40,7 +40,7 @@ class GrantTypeBase(BaseRequestValidator):
     async def validate_request(self, request: Request) -> Client:
         await super().validate_request(request)
 
-        client_id, client_secret = decode_basic_auth(request)
+        client_id, client_secret = decode_auth_headers(request)
 
         if not request.post.grant_type:
             raise InvalidRequestError(

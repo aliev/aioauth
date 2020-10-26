@@ -11,8 +11,8 @@ from async_oauth2_provider.types import (
     GrantType,
     RequestMethod,
 )
+from async_oauth2_provider.utils import encode_auth_headers
 from tests.models import Defaults
-from tests.utils import set_authorization_headers
 
 
 @pytest.mark.asyncio
@@ -29,7 +29,7 @@ async def test_invalid_token(
         url=request_url,
         post=post,
         method=RequestMethod.POST,
-        headers=set_authorization_headers(client_id, client_secret),
+        headers=encode_auth_headers(client_id, client_secret),
     )
     response = await endpoint.create_token_introspection_response(request)
     assert not response.content.active

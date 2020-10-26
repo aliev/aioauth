@@ -14,13 +14,12 @@ from .responses import (
 )
 from .structures import CaseInsensitiveDict
 from .types import EndpointType, GrantType, ResponseType
-from .utils import build_uri, catch_errors_and_unavailability, decode_basic_auth
+from .utils import build_uri, catch_errors_and_unavailability, decode_auth_headers
 
 
 class OAuth2Endpoint:
     response_type: Dict[Optional[ResponseType], Type[ResponseTypeBase]] = {}
     grant_type: Dict[Optional[GrantType], Type[GrantTypeBase]] = {}
-    catch_errors: bool = False
     available: bool = True
 
     def __init__(
@@ -48,14 +47,15 @@ class OAuth2Endpoint:
 
     @catch_errors_and_unavailability
     async def create_token_introspection_response(self, request: Request) -> Response:
-        client_id, _ = decode_basic_auth(request)
+        client_id, _ = decode_auth_headers(request)
 
         token = await self.db.get_token(
             request=request, client_id=client_id, token=request.post.token
         )
 
         token_response = TokenInactiveIntrospectionResponse()
-        if token:
+
+        if token and not token.is_expired:
             token_response = TokenActiveIntrospectionResponse(
                 scope=token.scope, client_id=token.client_id, exp=token.expires_in
             )

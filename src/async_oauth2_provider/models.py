@@ -86,6 +86,10 @@ class Token:
     revoked: bool = False
 
     @property
+    def is_expired(self) -> bool:
+        return self.expires_in < time.time()
+
+    @property
     def refresh_token_expires_in(self) -> int:
         expires_at = self.issued_at + self.expires_in * 2
         return expires_at
