@@ -22,6 +22,26 @@ from .utils import check_query_keys
 
 
 @pytest.mark.asyncio
+async def test_insecure_transport_error(endpoint: OAuth2Endpoint):
+    request_url = "http://localhost"
+
+    request = Request(url=request_url, method=RequestMethod.GET,)
+
+    response = await endpoint.create_authorization_code_response(request)
+    assert response.status_code == HTTPStatus.BAD_REQUEST
+
+
+@pytest.mark.asyncio
+async def test_allowed_methods(endpoint: OAuth2Endpoint):
+    request_url = "https://localhost"
+
+    request = Request(url=request_url, method=RequestMethod.POST,)
+
+    response = await endpoint.create_authorization_code_response(request)
+    assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED
+
+
+@pytest.mark.asyncio
 async def test_authorization_code_flow_plan_code_challenge(
     endpoint: OAuth2Endpoint, defaults: Defaults, storage: Dict,
 ):
@@ -86,21 +106,6 @@ async def test_authorization_code_flow_plan_code_challenge(
 
     access_token = response.content.access_token
     refresh_token = response.content.refresh_token
-
-    ############################################################################
-    # Introspect token using introspection endpoint
-    ############################################################################
-    post = Post(token=access_token)
-    request = Request(
-        url=request_url,
-        post=post,
-        method=RequestMethod.POST,
-        headers=encode_auth_headers(client_id, client_secret),
-    )
-
-    await check_query_keys(request, endpoint.create_token_introspection_response)
-    response = await endpoint.create_token_introspection_response(request)
-    assert response.status_code == HTTPStatus.OK
 
     ############################################################################
     # Get new token using refresh_token
