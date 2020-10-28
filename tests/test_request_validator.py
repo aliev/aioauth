@@ -1,6 +1,8 @@
+import time
 from http import HTTPStatus
 
 import pytest
+from async_oauth2_provider.config import settings
 from async_oauth2_provider.endpoints import OAuth2Endpoint
 from async_oauth2_provider.requests import Post, Query, Request
 from async_oauth2_provider.types import (
@@ -166,3 +168,46 @@ async def test_anonymous_user(endpoint: OAuth2Endpoint, defaults: Defaults, stor
     response = await endpoint.create_authorization_code_response(request)
     assert response.status_code == HTTPStatus.UNAUTHORIZED
     assert response.content.error == ErrorType.INVALID_CLIENT
+
+
+@pytest.mark.asyncio
+async def test_expired_authorization_code(
+    endpoint: OAuth2Endpoint, defaults: Defaults, storage
+):
+    request_url = "https://localhost"
+    storage["authorization_codes"][0].auth_time = (
+        time.time() - settings.AUTHORIZATION_CODE_EXPIRES_IN
+    )
+    post = Post(
+        grant_type=GrantType.TYPE_AUTHORIZATION_CODE,
+        redirect_uri=defaults.redirect_uri,
+        code=storage["authorization_codes"][0].code,
+    )
+
+    request = Request(
+        url=request_url,
+        post=post,
+        method=RequestMethod.POST,
+        headers=encode_auth_headers(defaults.client_id, defaults.client_secret),
+    )
+    response = await endpoint.create_token_response(request)
+    assert response.status_code == HTTPStatus.BAD_REQUEST
+
+
+@pytest.mark.asyncio
+async def test_expired_refresh_token(
+    endpoint: OAuth2Endpoint, defaults: Defaults, storage
+):
+    storage["tokens"][0].issued_at = time.time() - (settings.TOKEN_EXPIRES_IN * 2)
+    refresh_token = storage["tokens"][0].refresh_token
+    request_url = "https://localhost"
+    post = Post(grant_type=GrantType.TYPE_REFRESH_TOKEN, refresh_token=refresh_token,)
+    request = Request(
+        url=request_url,
+        post=post,
+        method=RequestMethod.POST,
+        headers=encode_auth_headers(defaults.client_id, defaults.client_secret),
+    )
+    response = await endpoint.create_token_response(request)
+    assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert response.content.error == ErrorType.INVALID_GRANT

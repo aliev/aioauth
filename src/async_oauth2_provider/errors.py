@@ -27,8 +27,6 @@ class OAuth2Error(Exception):
         self,
         request: Optional[Request] = None,
         description: Optional[str] = None,
-        status_code: Optional[HTTPStatus] = None,
-        error_uri: Optional[str] = None,
         headers: Optional[CaseInsensitiveDict] = None,
     ):
         if request is not None:
@@ -36,12 +34,6 @@ class OAuth2Error(Exception):
 
         if description is not None:
             self.description = description
-
-        if status_code is not None:
-            self.status_code = status_code
-
-        if error_uri is not None:
-            self.error_uri = error_uri
 
         if headers is not None:
             self.headers = headers
