@@ -192,6 +192,7 @@ async def test_expired_authorization_code(
     )
     response = await endpoint.create_token_response(request)
     assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert response.content.error == ErrorType.INVALID_GRANT
 
 
 @pytest.mark.asyncio
