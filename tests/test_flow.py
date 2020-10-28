@@ -1,8 +1,8 @@
 from http import HTTPStatus
-from typing import Dict
 from urllib.parse import parse_qsl, urlparse
 
 import pytest
+from async_oauth2_provider.db import DBBase
 from async_oauth2_provider.endpoints import OAuth2Endpoint
 from async_oauth2_provider.requests import Post, Query, Request
 from async_oauth2_provider.types import (
@@ -18,32 +18,12 @@ from async_oauth2_provider.utils import (
 )
 from tests.conftest import Defaults
 
-from .utils import check_query_keys
-
-
-@pytest.mark.asyncio
-async def test_insecure_transport_error(endpoint: OAuth2Endpoint):
-    request_url = "http://localhost"
-
-    request = Request(url=request_url, method=RequestMethod.GET,)
-
-    response = await endpoint.create_authorization_code_response(request)
-    assert response.status_code == HTTPStatus.BAD_REQUEST
-
-
-@pytest.mark.asyncio
-async def test_allowed_methods(endpoint: OAuth2Endpoint):
-    request_url = "https://localhost"
-
-    request = Request(url=request_url, method=RequestMethod.POST,)
-
-    response = await endpoint.create_authorization_code_response(request)
-    assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED
+from .utils import check_request_validators
 
 
 @pytest.mark.asyncio
 async def test_authorization_code_flow_plan_code_challenge(
-    endpoint: OAuth2Endpoint, defaults: Defaults, storage: Dict,
+    endpoint: OAuth2Endpoint, defaults: Defaults, db: DBBase
 ):
     code_challenge = generate_token(128)
     client_id = defaults.client_id
@@ -54,9 +34,6 @@ async def test_authorization_code_flow_plan_code_challenge(
     request_url = "https://localhost"
     user = "username"
 
-    ############################################################################
-    # Get authorization code
-    ############################################################################
     query = Query(
         client_id=defaults.client_id,
         response_type=ResponseType.TYPE_CODE,
@@ -71,16 +48,13 @@ async def test_authorization_code_flow_plan_code_challenge(
         url=request_url, query=query, method=RequestMethod.GET, user=user,
     )
 
-    await check_query_keys(request, endpoint.create_authorization_code_response)
+    await check_request_validators(request, endpoint.create_authorization_code_response)
     response = await endpoint.create_authorization_code_response(request)
     assert response.status_code == HTTPStatus.FOUND
     assert "code" in response.headers["location"]
     assert "scope" in response.headers["location"]
     assert "state" in response.headers["location"]
 
-    ############################################################################
-    # Get token by authorization code from previous response
-    ############################################################################
     location = response.headers["location"]
     location = urlparse(location)
     query = dict(parse_qsl(location.query))
@@ -100,16 +74,12 @@ async def test_authorization_code_flow_plan_code_challenge(
         headers=encode_auth_headers(client_id, client_secret),
     )
 
-    await check_query_keys(request, endpoint.create_token_response)
     response = await endpoint.create_token_response(request)
     assert response.status_code == HTTPStatus.OK
 
     access_token = response.content.access_token
     refresh_token = response.content.refresh_token
 
-    ############################################################################
-    # Get new token using refresh_token
-    ############################################################################
     post = Post(grant_type=GrantType.TYPE_REFRESH_TOKEN, refresh_token=refresh_token,)
 
     request = Request(
@@ -118,23 +88,19 @@ async def test_authorization_code_flow_plan_code_challenge(
         method=RequestMethod.POST,
         headers=encode_auth_headers(client_id, client_secret),
     )
-    await check_query_keys(request, endpoint.create_token_response)
+    await check_request_validators(request, endpoint.create_token_response)
     response = await endpoint.create_token_response(request)
 
     assert response.status_code == HTTPStatus.OK
     assert response.content.access_token != access_token
     assert response.content.refresh_token != refresh_token
-
-    tokens = storage.get("tokens", [])
-
-    for token in tokens:
-        if token.access_token == access_token and token.refresh_token == refresh_token:
-            assert token.revoked
+    token_in_db = await db.get_token(request, client_id, access_token, refresh_token)
+    assert token_in_db.revoked
 
 
 @pytest.mark.asyncio
 async def test_authorization_code_flow_pkce_code_challenge(
-    endpoint: OAuth2Endpoint, defaults: Defaults
+    endpoint: OAuth2Endpoint, defaults: Defaults, db: DBBase
 ):
     client_id = defaults.client_id
     client_secret = defaults.client_secret
@@ -156,7 +122,6 @@ async def test_authorization_code_flow_pkce_code_challenge(
     request = Request(
         url=request_url, query=query, method=RequestMethod.GET, user=user,
     )
-    await check_query_keys(request, endpoint.create_authorization_code_response)
     response = await endpoint.create_authorization_code_response(request)
     assert response.status_code == HTTPStatus.FOUND
 
@@ -179,9 +144,16 @@ async def test_authorization_code_flow_pkce_code_challenge(
         headers=encode_auth_headers(client_id, client_secret),
     )
 
-    await check_query_keys(request, endpoint.create_token_response)
+    await check_request_validators(request, endpoint.create_token_response)
+
+    code_record = await db.get_authorization_code(request, client_id, code)
+    assert code_record
+
     response = await endpoint.create_token_response(request)
     assert response.status_code == HTTPStatus.OK
+
+    code_record = await db.get_authorization_code(request, client_id, code)
+    assert not code_record
 
 
 @pytest.mark.asyncio
@@ -201,7 +173,6 @@ async def test_implicit_flow(endpoint: OAuth2Endpoint, defaults: Defaults):
         url=request_url, query=query, method=RequestMethod.GET, user=user,
     )
 
-    await check_query_keys(request, endpoint.create_authorization_code_response)
     response = await endpoint.create_authorization_code_response(request)
     assert response.status_code == HTTPStatus.FOUND
 
@@ -225,7 +196,7 @@ async def test_password_grant_type(endpoint: OAuth2Endpoint, defaults: Defaults)
         headers=encode_auth_headers(client_id, client_secret),
     )
 
-    await check_query_keys(request, endpoint.create_token_response)
+    await check_request_validators(request, endpoint.create_token_response)
     response = await endpoint.create_token_response(request)
     assert response.status_code == HTTPStatus.OK
 
@@ -249,7 +220,6 @@ async def test_authorization_code_flow(endpoint: OAuth2Endpoint, defaults: Defau
         url=request_url, query=query, method=RequestMethod.GET, user=user,
     )
 
-    await check_query_keys(request, endpoint.create_authorization_code_response)
     response = await endpoint.create_authorization_code_response(request)
     assert response.status_code == HTTPStatus.FOUND
 
@@ -271,6 +241,5 @@ async def test_authorization_code_flow(endpoint: OAuth2Endpoint, defaults: Defau
         headers=encode_auth_headers(client_id, client_secret),
     )
 
-    await check_query_keys(request, endpoint.create_token_response)
     response = await endpoint.create_token_response(request)
     assert response.status_code == HTTPStatus.OK

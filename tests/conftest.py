@@ -100,8 +100,13 @@ def db_class(defaults: Defaults, storage) -> Type[DBBase]:
 
 
 @pytest.fixture
-def endpoint(db_class: Type[DBBase]) -> OAuth2Endpoint:
-    endpoint = OAuth2Endpoint(db=db_class())
+def db(db_class: Type[DBBase]):
+    return db_class()
+
+
+@pytest.fixture
+def endpoint(db: DBBase) -> OAuth2Endpoint:
+    endpoint = OAuth2Endpoint(db=db)
     # Register response type endpoints
     endpoint.register(
         EndpointType.RESPONSE_TYPE, ResponseType.TYPE_TOKEN, ResponseTypeToken,

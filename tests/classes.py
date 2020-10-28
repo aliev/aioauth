@@ -17,9 +17,17 @@ class DB(DBBase):
     ) -> Optional[Client]:
         clients = self.storage.get("clients", [])
 
-        for client in clients:
-            if client.client_id == client_id:
-                return client
+        if client_secret is not None:
+            for client in clients:
+                if (
+                    client.client_id == client_id
+                    and client.client_secret == client_secret
+                ):
+                    return client
+        else:
+            for client in clients:
+                if client.client_id == client_id:
+                    return client
 
     async def create_token(self, request: Request, client_id: str, scope: str) -> Token:
         token = await super().create_token(request, client_id, scope)

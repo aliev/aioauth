@@ -212,7 +212,7 @@ async def check_query_values(
         assert response_expected == response_actual
 
 
-async def check_query_keys(
+async def check_request_validators(
     request: Request, endpoint_func: Callable,
 ):
     query_dict = {}

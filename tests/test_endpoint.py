@@ -70,7 +70,7 @@ async def test_expired_token(
 
 
 @pytest.mark.asyncio
-async def test_token(
+async def test_valid_token(
     endpoint: OAuth2Endpoint, storage: Dict[str, List], defaults: Defaults
 ):
     client_id = defaults.client_id
