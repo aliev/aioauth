@@ -35,7 +35,7 @@ setup(
     license=about["__license__"],
     python_requires=">=3.6.0",
     classifiers=[
-        "Development Status :: 2 - Pre-Alpha",
+        "Development Status :: 1 - Pre-Alpha",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: MIT License",
         "Natural Language :: English",
