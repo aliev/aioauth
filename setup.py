@@ -47,11 +47,10 @@ setup(
     tests_require=test_requirements,
     extras_require={"test": test_requirements},
     include_package_data=True,
-    keywords="aioauth",
+    keywords="asyncio oauth2 oauth",
     packages=find_packages(where="src"),
     package_dir={"": "src"},
     test_suite="tests",
     zip_safe=False,
     project_urls={"Source": about["__url__"]},
-    keywords="asyncio oauth2 oauth",
 )
