@@ -21,7 +21,7 @@ python -m pip install aioauth
 ## Settings and defaults
 
 | Setting                                | Default value | Description                                                                                                         |
-| -------------------------------------- | ------------- | --------------------=---------------------------------------------------------------------------------------------- |
+| -------------------------------------- | ------------- | ------------------------------------------------------------------------------------------------------------------- |
 | AIOAUTH_TOKEN_EXPIRES_IN               | 86400         | Access token lifetime.                                                                                              |
 | AIOAUTH_AUTHORIZATION_CODE_EXPIRES_IN  | 300           | Authorization code lifetime.                                                                                        |
 | AIOAUTH_INSECURE_TRANSPORT             | False         | Allow connections over SSL only. When this option is disabled server will raise "HTTP method is not allowed" error. |

@@ -39,7 +39,6 @@ setup(
         "Intended Audience :: Developers",
         "License :: OSI Approved :: MIT License",
         "Natural Language :: English",
-        "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
@@ -54,4 +53,5 @@ setup(
     test_suite="tests",
     zip_safe=False,
     project_urls={"Source": about["__url__"]},
+    keywords="asyncio oauth2 oauth",
 )
