@@ -1,7 +1,11 @@
 from urllib.parse import urljoin
 
 import pytest
+from aioauth.config import Settings
 from aioauth.errors import InvalidClientError
+from aioauth.requests import Request
+from aioauth.structures import CaseInsensitiveDict
+from aioauth.types import RequestMethod
 from aioauth.utils import (
     build_uri,
     decode_auth_headers,
@@ -12,13 +16,33 @@ from aioauth.utils import (
 )
 
 
-def test_is_secure_transport(monkeypatch):
-    monkeypatch.setenv("AIOAUTH_INSECURE_TRANSPORT", "1")
+def test_is_secure_transport():
+    request = Request(method=RequestMethod.GET, url="https://google.com")
 
-    is_secure = is_secure_transport("https://google.com")
+    is_secure = is_secure_transport(request=request)
     assert is_secure
 
-    is_secure = is_secure_transport("http://google.com")
+    request = Request(method=RequestMethod.GET, url="http://google.com")
+    is_secure = is_secure_transport(request=request)
+    assert not is_secure
+
+
+def test_is_secure_transport_insecure_transport_enabled():
+    request = Request(
+        method=RequestMethod.GET,
+        url="https://google.com",
+        settings=Settings(INSECURE_TRANSPORT=True),
+    )
+
+    is_secure = is_secure_transport(request=request)
+    assert is_secure
+
+    request = Request(
+        method=RequestMethod.GET,
+        url="https://google.com",
+        settings=Settings(INSECURE_TRANSPORT=True),
+    )
+    is_secure = is_secure_transport(request=request)
     assert is_secure
 
 
@@ -44,18 +68,22 @@ def test_build_uri():
 
 
 def test_decode_auth_headers():
+    request = Request(headers=CaseInsensitiveDict(), method=RequestMethod.POST)
     with pytest.raises(InvalidClientError):
-        decode_auth_headers("")
+        decode_auth_headers(request=request)
 
+    request = Request(
+        headers=CaseInsensitiveDict({"authorization": ""}), method=RequestMethod.POST
+    )
     with pytest.raises(InvalidClientError):
-        decode_auth_headers("authorization")
+        decode_auth_headers(request=request)
 
 
-def test_base_error_uri(monkeypatch):
+def test_base_error_uri():
     ERROR_URI = "https://google.com"
-    monkeypatch.setenv("AIOAUTH_ERROR_URI", ERROR_URI)
+    request = Request(settings=Settings(ERROR_URI=ERROR_URI), method=RequestMethod.POST)
 
     try:
-        raise InvalidClientError()
+        raise InvalidClientError(request=request)
     except InvalidClientError as exc:
         assert urljoin(ERROR_URI, exc.error) == exc.error_uri

@@ -1,23 +1,35 @@
 from typing import Dict, Optional, Type, Union
 
-from ..grant_type import GrantTypeBase
-from ..response_type import ResponseTypeBase
+from ..grant_type import (
+    AuthorizationCodeGrantType,
+    ClientCredentialsGrantType,
+    GrantTypeBase,
+    PasswordGrantType,
+    RefreshTokenGrantType,
+)
+from ..response_type import (
+    ResponseTypeAuthorizationCode,
+    ResponseTypeBase,
+    ResponseTypeToken,
+)
 from ..types import EndpointType, GrantType, ResponseType
 from .database import BaseDB
 
 
 class BaseEndpoint:
-    response_type: Dict[Optional[ResponseType], Type[ResponseTypeBase]] = {}
-    grant_type: Dict[Optional[GrantType], Type[GrantTypeBase]] = {}
-    available: bool = True
+    response_type: Dict[Optional[ResponseType], Type[ResponseTypeBase]] = {
+        ResponseType.TYPE_TOKEN: ResponseTypeToken,
+        ResponseType.TYPE_CODE: ResponseTypeAuthorizationCode,
+    }
+    grant_type: Dict[Optional[GrantType], Type[GrantTypeBase]] = {
+        GrantType.TYPE_AUTHORIZATION_CODE: AuthorizationCodeGrantType,
+        GrantType.TYPE_CLIENT_CREDENTIALS: ClientCredentialsGrantType,
+        GrantType.TYPE_PASSWORD: PasswordGrantType,
+        GrantType.TYPE_REFRESH_TOKEN: RefreshTokenGrantType,
+    }
 
-    def __init__(
-        self, db: BaseDB, available: Optional[bool] = None,
-    ):
+    def __init__(self, db: BaseDB):
         self.db = db
-
-        if available is not None:
-            self.available = available
 
     def register(
         self,

@@ -3,7 +3,7 @@ from http import HTTPStatus
 from typing import Dict, List
 
 import pytest
-from aioauth.config import get_settings
+from aioauth.config import Settings
 from aioauth.endpoints import Endpoint
 from aioauth.models import Client
 from aioauth.requests import Post, Query, Request
@@ -189,7 +189,7 @@ async def test_expired_authorization_code(
 ):
     request_url = "https://localhost"
 
-    settings = get_settings()
+    settings = Settings()
 
     authorization_code = storage["authorization_codes"][0]
     storage["authorization_codes"][0] = set_values(
@@ -217,7 +217,7 @@ async def test_expired_authorization_code(
 async def test_expired_refresh_token(
     endpoint: Endpoint, defaults: Defaults, storage: Dict[str, List]
 ):
-    settings = get_settings()
+    settings = Settings()
     token = storage["tokens"][0]
     refresh_token = token.refresh_token
     storage["tokens"][0] = set_values(

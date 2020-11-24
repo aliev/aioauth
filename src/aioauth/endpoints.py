@@ -18,7 +18,7 @@ from .utils import build_uri, catch_errors_and_unavailability, decode_auth_heade
 class Endpoint(BaseEndpoint):
     @catch_errors_and_unavailability
     async def create_token_introspection_response(self, request: Request) -> Response:
-        client_id, _ = decode_auth_headers(request.headers.get("Authorization", ""))
+        client_id, _ = decode_auth_headers(request)
 
         token = await self.db.get_token(
             request=request, client_id=client_id, token=request.post.token
@@ -26,7 +26,7 @@ class Endpoint(BaseEndpoint):
 
         token_response = TokenInactiveIntrospectionResponse()
 
-        if token and not token.is_expired:
+        if token and not token.is_expired(request.settings):
             token_response = TokenActiveIntrospectionResponse(
                 scope=token.scope, client_id=token.client_id, exp=token.expires_in
             )

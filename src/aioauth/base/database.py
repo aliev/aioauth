@@ -3,7 +3,6 @@ from typing import Optional
 
 from aioauth.types import CodeChallengeMethod, ResponseType
 
-from ..config import get_settings
 from ..models import AuthorizationCode, Client, Token
 from ..requests import Request
 from ..utils import generate_token
@@ -19,10 +18,9 @@ class BaseDB:
         Method is used by response types:
             - ResponseTypeToken
         """
-        settings = get_settings()
         return Token(
             client_id=client_id,
-            expires_in=settings.TOKEN_EXPIRES_IN,
+            expires_in=request.settings.TOKEN_EXPIRES_IN,
             access_token=generate_token(42),
             refresh_token=generate_token(48),
             issued_at=int(time.time()),

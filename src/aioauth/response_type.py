@@ -24,44 +24,58 @@ class ResponseTypeBase(BaseRequestValidator):
         await super().validate_request(request)
 
         if not request.query.client_id:
-            raise InvalidRequestError(description="Missing client_id parameter.")
+            raise InvalidRequestError(
+                request=request, description="Missing client_id parameter."
+            )
 
         client = await self.db.get_client(
             request=request, client_id=request.query.client_id
         )
 
         if not client:
-            raise InvalidRequestError(description="Invalid client_id parameter value.")
+            raise InvalidRequestError(
+                request=request, description="Invalid client_id parameter value."
+            )
 
         if not request.query.redirect_uri:
-            raise InvalidRequestError(description="Mismatching redirect URI.")
+            raise InvalidRequestError(
+                request=request, description="Mismatching redirect URI."
+            )
 
         if self.response_type != request.query.response_type:
-            raise UnsupportedResponseTypeError()
+            raise UnsupportedResponseTypeError(request=request)
 
         if not client.check_redirect_uri(request.query.redirect_uri):
-            raise InvalidRequestError(description="Invalid redirect URI.")
+            raise InvalidRequestError(
+                request=request, description="Invalid redirect URI."
+            )
 
         if not request.query.response_type:
-            raise InvalidRequestError(description="Missing response_type parameter.")
+            raise InvalidRequestError(
+                request=request, description="Missing response_type parameter."
+            )
 
         if request.query.code_challenge_method:
             if request.query.code_challenge_method not in self.code_challenge_methods:
                 raise InvalidRequestError(
-                    description="Transform algorithm not supported."
+                    request=request, description="Transform algorithm not supported."
                 )
 
             if not request.query.code_challenge:
-                raise InvalidRequestError(description="Code challenge required.")
+                raise InvalidRequestError(
+                    request=request, description="Code challenge required."
+                )
 
         if not client.check_response_type(request.query.response_type):
-            raise UnsupportedResponseTypeError()
+            raise UnsupportedResponseTypeError(request=request)
 
         if not client.check_scope(request.query.scope):
-            raise InvalidScopeError()
+            raise InvalidScopeError(request=request)
 
         if not request.user:
-            raise InvalidClientError(description="User is not authorized")
+            raise InvalidClientError(
+                request=request, description="User is not authorized"
+            )
 
         return client
 
