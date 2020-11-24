@@ -111,7 +111,7 @@ class AuthorizationCodeGrantType(GrantTypeBase):
             if not is_valid_code_challenge:
                 raise MismatchingStateError(request=request)
 
-        if authorization_code.is_expired(request.settings):
+        if authorization_code.is_expired(request):
             raise InvalidGrantError(request=request)
 
         await self.db.delete_authorization_code(

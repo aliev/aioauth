@@ -26,7 +26,7 @@ class Endpoint(BaseEndpoint):
 
         token_response = TokenInactiveIntrospectionResponse()
 
-        if token and not token.is_expired(request.settings):
+        if token and not token.is_expired(request):
             token_response = TokenActiveIntrospectionResponse(
                 scope=token.scope, client_id=token.client_id, exp=token.expires_in
             )
