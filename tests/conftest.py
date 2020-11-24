@@ -3,7 +3,7 @@ from typing import Dict, Type
 
 import pytest
 from aioauth.base.database import BaseDB
-from aioauth.config import get_settings
+from aioauth.config import Settings
 from aioauth.endpoints import Endpoint
 from aioauth.grant_type import (
     AuthorizationCodeGrantType,
@@ -37,7 +37,7 @@ def defaults() -> Defaults:
 
 @pytest.fixture
 def storage(defaults: Defaults) -> Dict:
-    settings = get_settings()
+    settings = Settings()
 
     client_metadata = ClientMetadata(
         grant_types=[

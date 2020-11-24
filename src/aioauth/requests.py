@@ -1,5 +1,6 @@
 from typing import Any, NamedTuple, Optional
 
+from .config import Settings
 from .structures import CaseInsensitiveDict
 from .types import CodeChallengeMethod, GrantType, RequestMethod, ResponseType
 
@@ -33,3 +34,4 @@ class Request(NamedTuple):
     post: Post = Post()
     url: str = ""
     user: Optional[Any] = None
+    settings: Settings = Settings()

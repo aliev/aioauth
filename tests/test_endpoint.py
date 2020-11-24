@@ -4,7 +4,7 @@ from typing import Dict, List, Optional, Type
 
 import pytest
 from aioauth.base.database import BaseDB
-from aioauth.config import get_settings
+from aioauth.config import Settings
 from aioauth.endpoints import Endpoint
 from aioauth.models import Token
 from aioauth.requests import Post, Request
@@ -28,11 +28,11 @@ async def test_internal_server_error():
                 self.available = available
 
         @catch_errors_and_unavailability
-        async def endpoint(self):
+        async def endpoint(self, request):
             raise Exception()
 
     e = EndpointClass()
-    response = await e.endpoint()
+    response = await e.endpoint(Request(method=RequestMethod.POST))
     assert response.status_code == HTTPStatus.BAD_REQUEST
 
 
@@ -59,7 +59,7 @@ async def test_invalid_token(endpoint: Endpoint, defaults: Defaults):
 async def test_expired_token(
     endpoint: Endpoint, storage: Dict[str, List], defaults: Defaults
 ):
-    settings = get_settings()
+    settings = Settings()
     token = Token(
         client_id=defaults.client_id,
         expires_in=settings.TOKEN_EXPIRES_IN,
@@ -116,8 +116,8 @@ async def test_unregister_endpoint(endpoint: Endpoint):
 
 @pytest.mark.asyncio
 async def test_endpoint_availability(db_class: Type[BaseDB]):
-    endpoint = Endpoint(db=db_class(), available=False)
-    request = Request(method=RequestMethod.POST)
+    endpoint = Endpoint(db=db_class())
+    request = Request(method=RequestMethod.POST, settings=Settings(AVAILABLE=False))
     response = await endpoint.create_token_introspection_response(request)
     assert response.status_code == HTTPStatus.BAD_REQUEST
     assert response.content.error == ErrorType.TEMPORARILY_UNAVAILABLE

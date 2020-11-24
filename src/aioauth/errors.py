@@ -2,8 +2,8 @@ from http import HTTPStatus
 from typing import Optional
 from urllib.parse import urljoin
 
-from .config import get_settings
 from .constances import default_headers
+from .requests import Request
 from .structures import CaseInsensitiveDict
 from .types import ErrorType
 
@@ -17,10 +17,11 @@ class OAuth2Error(Exception):
 
     def __init__(
         self,
+        request: Request,
         description: Optional[str] = None,
         headers: Optional[CaseInsensitiveDict] = None,
     ):
-        settings = get_settings()
+        self.request = request
 
         if description is not None:
             self.description = description
@@ -28,8 +29,8 @@ class OAuth2Error(Exception):
         if headers is not None:
             self.headers = headers
 
-        if settings.ERROR_URI:
-            self.error_uri = urljoin(settings.ERROR_URI, self.error)
+        if request.settings.ERROR_URI:
+            self.error_uri = urljoin(request.settings.ERROR_URI, self.error)
 
         super().__init__(f"({self.error}) {self.description}")
 

@@ -24,7 +24,7 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     - name: Setup Node.js environment
-      uses: actions/setup-node@v1.4.3
+      uses: actions/setup-node@v1.4.4
       with:
         node-version: 12.x
     - name: Install dependencies

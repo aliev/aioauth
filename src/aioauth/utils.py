@@ -9,13 +9,13 @@ from base64 import b64decode, b64encode
 from typing import Callable, Dict, List, Optional, Set, Text, Tuple, Union
 from urllib.parse import quote, urlencode, urlparse, urlunsplit
 
-from .config import get_settings
 from .errors import (
     InvalidClientError,
     OAuth2Error,
     ServerError,
     TemporarilyUnavailableError,
 )
+from .requests import Request
 from .responses import ErrorResponse, Response
 from .structures import CaseInsensitiveDict
 
@@ -25,13 +25,11 @@ UNICODE_ASCII_CHARACTER_SET = string.ascii_letters + string.digits
 log = logging.getLogger(__name__)
 
 
-def is_secure_transport(uri: str) -> bool:
+def is_secure_transport(request: Request) -> bool:
     """Check if the uri is over ssl."""
-    settings = get_settings()
-
-    if settings.INSECURE_TRANSPORT:
+    if request.settings.INSECURE_TRANSPORT:
         return True
-    return uri.lower().startswith("https://")
+    return request.url.lower().startswith("https://")
 
 
 def get_authorization_scheme_param(
@@ -105,26 +103,28 @@ def encode_auth_headers(client_id: str, client_secret: str) -> CaseInsensitiveDi
     return CaseInsensitiveDict(Authorization=f"basic {authorization.decode()}")
 
 
-def decode_auth_headers(authorization: str) -> Tuple[str, str]:
+def decode_auth_headers(request: Request) -> Tuple[str, str]:
     """Decode an encrypted HTTP basic authentication string. Returns a tuple of
     the form (client_id, client_secret), and raises a InvalidClientError exception if
     nothing could be decoded.
     """
+    authorization = request.headers.get("Authorization", "")
+
     headers = CaseInsensitiveDict({"WWW-Authenticate": "Basic"})
 
     scheme, param = get_authorization_scheme_param(authorization)
     if not authorization or scheme.lower() != "basic":
-        raise InvalidClientError(headers=headers)
+        raise InvalidClientError(request=request, headers=headers)
 
     try:
         data = b64decode(param).decode("ascii")
     except (ValueError, UnicodeDecodeError, binascii.Error):
-        raise InvalidClientError(headers=headers)
+        raise InvalidClientError(request=request, headers=headers)
 
     client_id, separator, client_secret = data.partition(":")
 
     if not separator:
-        raise InvalidClientError(headers=headers)
+        raise InvalidClientError(request=request, headers=headers)
 
     return client_id, client_secret
 
@@ -142,16 +142,16 @@ def create_s256_code_challenge(code_verifier: str) -> str:
 
 def catch_errors_and_unavailability(f) -> Callable:
     @functools.wraps(f)
-    async def wrapper(endpoint, *args, **kwargs) -> Optional[Response]:
-        if not endpoint.available:
-            error = TemporarilyUnavailableError()
+    async def wrapper(self, request: Request, *args, **kwargs) -> Optional[Response]:
+        if not request.settings.AVAILABLE:
+            error = TemporarilyUnavailableError(request=request)
             content = ErrorResponse(error=error.error, description=error.description)
             return Response(
                 content=content, status_code=error.status_code, headers=error.headers
             )
 
         try:
-            response = await f(endpoint, *args, **kwargs)
+            response = await f(self, request, *args, **kwargs)
             return response
         except OAuth2Error as exc:
             content = ErrorResponse(error=exc.error, description=exc.description)
@@ -160,7 +160,7 @@ def catch_errors_and_unavailability(f) -> Callable:
                 content=content, status_code=exc.status_code, headers=exc.headers
             )
         except Exception:
-            error = ServerError()
+            error = ServerError(request=request)
             log.exception("Exception caught while processing request.")
             content = ErrorResponse(error=error.error, description=error.description)
             return Response(

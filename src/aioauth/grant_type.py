@@ -40,28 +40,30 @@ class GrantTypeBase(BaseRequestValidator):
     async def validate_request(self, request: Request) -> Client:
         await super().validate_request(request)
 
-        client_id, client_secret = decode_auth_headers(
-            request.headers.get("Authorization", "")
-        )
-
-        if not request.post.grant_type:
-            raise InvalidRequestError(description="Request is missing grant type.")
-
-        if self.grant_type != request.post.grant_type:
-            raise UnsupportedGrantTypeError()
+        client_id, client_secret = decode_auth_headers(request)
 
         client = await self.db.get_client(
             request, client_id=client_id, client_secret=client_secret
         )
 
         if not client:
-            raise InvalidRequestError(description="Invalid client_id parameter value.")
+            raise InvalidRequestError(
+                request=request, description="Invalid client_id parameter value."
+            )
+
+        if not request.post.grant_type:
+            raise InvalidRequestError(
+                request=request, description="Request is missing grant type."
+            )
+
+        if self.grant_type != request.post.grant_type:
+            raise UnsupportedGrantTypeError(request=request)
 
         if not client.check_grant_type(request.post.grant_type):
-            raise UnauthorizedClientError()
+            raise UnauthorizedClientError(request=request)
 
         if not client.check_scope(request.post.scope):
-            raise InvalidScopeError()
+            raise InvalidScopeError(request=request)
 
         return client
 
@@ -73,36 +75,44 @@ class AuthorizationCodeGrantType(GrantTypeBase):
         client = await super().validate_request(request)
 
         if not request.post.redirect_uri:
-            raise InvalidRequestError(description="Mismatching redirect URI.")
+            raise InvalidRequestError(
+                request=request, description="Mismatching redirect URI."
+            )
 
         if not client.check_redirect_uri(request.post.redirect_uri):
-            raise InvalidRequestError(description="Invalid redirect URI.")
+            raise InvalidRequestError(
+                request=request, description="Invalid redirect URI."
+            )
 
         if not request.post.code:
-            raise InvalidRequestError(description="Missing code parameter.")
+            raise InvalidRequestError(
+                request=request, description="Missing code parameter."
+            )
 
         authorization_code = await self.db.get_authorization_code(
             request, client.client_id, request.post.code
         )
 
         if not authorization_code:
-            raise InvalidGrantError()
+            raise InvalidGrantError(request=request)
 
         if (
             authorization_code.code_challenge
             and authorization_code.code_challenge_method
         ):
             if not request.post.code_verifier:
-                raise InvalidRequestError(description="Code verifier required.")
+                raise InvalidRequestError(
+                    request=request, description="Code verifier required."
+                )
 
             is_valid_code_challenge = authorization_code.check_code_challenge(
                 request.post.code_verifier
             )
             if not is_valid_code_challenge:
-                raise MismatchingStateError()
+                raise MismatchingStateError(request=request)
 
-        if authorization_code.is_expired:
-            raise InvalidGrantError()
+        if authorization_code.is_expired(request):
+            raise InvalidGrantError(request=request)
 
         await self.db.delete_authorization_code(
             request, client.client_id, request.post.code
@@ -118,12 +128,16 @@ class PasswordGrantType(GrantTypeBase):
         client = await super().validate_request(request)
 
         if not request.post.password or not request.post.password:
-            raise InvalidGrantError(description="Invalid credentials given.")
+            raise InvalidGrantError(
+                request=request, description="Invalid credentials given."
+            )
 
         user = await self.db.authenticate(request)
 
         if not user:
-            raise InvalidGrantError(description="Invalid credentials given.")
+            raise InvalidGrantError(
+                request=request, description="Invalid credentials given."
+            )
 
         return client
 
@@ -135,7 +149,9 @@ class RefreshTokenGrantType(GrantTypeBase):
         client = await super().validate_request(request)
 
         if not request.post.refresh_token:
-            raise InvalidRequestError(description="Missing refresh token parameter.")
+            raise InvalidRequestError(
+                request=request, description="Missing refresh token parameter."
+            )
 
         token = await self.db.get_token(
             request=request,
@@ -144,10 +160,10 @@ class RefreshTokenGrantType(GrantTypeBase):
         )
 
         if not token:
-            raise InvalidGrantError()
+            raise InvalidGrantError(request=request)
 
         if token.refresh_token_expired:
-            raise InvalidGrantError()
+            raise InvalidGrantError(request=request)
 
         await self.db.revoke_token(request, request.post.refresh_token)
 
