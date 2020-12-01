@@ -73,10 +73,13 @@ async def to_oauth2_request(request: Request) -> OAuth2Request:
     url = str(request.url)
     user = request.user
 
+    # NOTE: Redefinition of the default settings
+    # INSECURE_TRANSPORT must be enabled for local development only!
+    settings=Settings(
+        INSECURE_TRANSPORT=True,
+    ),
+
     return OAuth2Request(
-        settings=Settings(
-            INSECURE_TRANSPORT=True,
-        ),
         method=RequestMethod[method],
         headers=headers,
         post=Post(**post),
@@ -100,6 +103,6 @@ async def to_fastapi_response(oauth2_response: OAuth2Response) -> Response:
 
 | Setting                                | Default value | Description                                                                                                         |
 | -------------------------------------- | ------------- | ------------------------------------------------------------------------------------------------------------------- |
-| AIOAUTH_TOKEN_EXPIRES_IN               | 86400         | Access token lifetime.                                                                                              |
-| AIOAUTH_AUTHORIZATION_CODE_EXPIRES_IN  | 300           | Authorization code lifetime.                                                                                        |
-| AIOAUTH_INSECURE_TRANSPORT             | False         | Allow connections over SSL only. When this option is disabled server will raise "HTTP method is not allowed" error. |
+|         TOKEN_EXPIRES_IN               | 86400         | Access token lifetime.                                                                                              |
+|         AUTHORIZATION_CODE_EXPIRES_IN  | 300           | Authorization code lifetime.                                                                                        |
+|         INSECURE_TRANSPORT             | False         | Allow connections over SSL only. When this option is disabled server will raise "HTTP method is not allowed" error. |
