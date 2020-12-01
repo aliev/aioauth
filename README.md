@@ -48,15 +48,15 @@ server = AuthorizationServer(db=DB())
 
 @router.post("/token")
 async def token(request: Request):
-    oauth2_request: OAuth2Request = to_oauth2_request(request)
-    oauth2_response: Response = await server.create_token_response(oauth2_request)
+    oauth2_request: OAuth2Request = await to_oauth2_request(request)
+    oauth2_response: OAuth2Response = await server.create_token_response(oauth2_request)
 
     return await to_fastapi_response(oauth2_response)
 
 
 @router.get("/authorize")
 async def authorize(request: Request):
-    oauth2_request: OAuth2Request = to_oauth2_request(request)
+    oauth2_request: OAuth2Request = await to_oauth2_request(request)
     oauth2_response: Response = await server.create_authorization_response(oauth2_request)
 
     return await to_fastapi_response(oauth2_response)
