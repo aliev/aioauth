@@ -18,6 +18,84 @@ There are few great OAuth frameworks for Python like [oauthlib](https://github.c
 python -m pip install aioauth
 ```
 
+## FastAPI Example
+
+To interact with the database (create tokens, check authorization code, etc.), you need to inherit from the BaseDB class and implement all its methods. This allows aioauth not to be tied to a specific database and gives the user choice of which database he wants to use. You can get additional documentation on all BaseDB methods in the source code of this class.
+
+```python
+import json
+
+from fastapi import APIRouter, Request, Response
+
+from aioauth.types import RequestMethod
+from aioauth.config import Settings
+from aioauth.base.database import BaseDB
+from aioauth.requests import (
+    Query,
+    Post,
+    Request as OAuth2Request,
+)
+from aioauth.responses import Response as OAuth2Response
+from aioauth.structures import CaseInsensitiveDict
+
+
+class DB(BaseDB):
+    ...
+
+router = APIRouter()
+server = AuthorizationServer(db=DB())
+
+
+@router.post("/token")
+async def token(request: Request):
+    oauth2_request: OAuth2Request = to_oauth2_request(request)
+    oauth2_response: Response = await server.create_token_response(oauth2_request)
+
+    return await to_fastapi_response(oauth2_response)
+
+
+@router.get("/authorize")
+async def authorize(request: Request):
+    oauth2_request: OAuth2Request = to_oauth2_request(request)
+    oauth2_response: Response = await server.create_authorization_response(oauth2_request)
+
+    return await to_fastapi_response(oauth2_response)
+
+
+async def to_oauth2_request(request: Request) -> OAuth2Request:
+    """Converts fastapi Request instance to OAuth2Request instance"""
+    form = await request.form()
+
+    post = dict(form)
+    query_params = dict(request.query_params)
+    method = request.method
+    headers = CaseInsensitiveDict(**request.headers)
+    url = str(request.url)
+    user = request.user
+
+    return OAuth2Request(
+        settings=Settings(
+            INSECURE_TRANSPORT=True,
+        ),
+        method=RequestMethod[method],
+        headers=headers,
+        post=Post(**post),
+        query=Query(**query_params),
+        url=url,
+        user=user,
+    )
+
+
+async def to_fastapi_response(oauth2_response: OAuth2Response) -> Response:
+    """Converts OAuth2Response instance to fastapi Response instance"""
+    response_content = oauth2_response.content._asdict() if oauth2_response.content is not None else {}
+    headers = dict(oauth2_response.headers)
+    status_code = oauth2_response.status_code
+    content = json.dumps(response_content)
+
+    return Response(content=content, headers=headers, status_code=status_code)
+```
+
 ## Settings and defaults
 
 | Setting                                | Default value | Description                                                                                                         |
