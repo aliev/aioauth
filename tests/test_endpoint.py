@@ -5,9 +5,9 @@ from typing import Dict, List, Optional, Type
 import pytest
 from aioauth.base.database import BaseDB
 from aioauth.config import Settings
-from aioauth.endpoints import Endpoint
 from aioauth.models import Token
 from aioauth.requests import Post, Request
+from aioauth.server import AuthorizationServer
 from aioauth.types import EndpointType, ErrorType, GrantType, RequestMethod
 from aioauth.utils import (
     catch_errors_and_unavailability,
@@ -28,16 +28,16 @@ async def test_internal_server_error():
                 self.available = available
 
         @catch_errors_and_unavailability
-        async def endpoint(self, request):
+        async def server(self, request):
             raise Exception()
 
     e = EndpointClass()
-    response = await e.endpoint(Request(method=RequestMethod.POST))
+    response = await e.server(Request(method=RequestMethod.POST))
     assert response.status_code == HTTPStatus.BAD_REQUEST
 
 
 @pytest.mark.asyncio
-async def test_invalid_token(endpoint: Endpoint, defaults: Defaults):
+async def test_invalid_token(server: AuthorizationServer, defaults: Defaults):
     client_id = defaults.client_id
     client_secret = defaults.client_secret
     request_url = "https://localhost"
@@ -50,14 +50,14 @@ async def test_invalid_token(endpoint: Endpoint, defaults: Defaults):
         method=RequestMethod.POST,
         headers=encode_auth_headers(client_id, client_secret),
     )
-    response = await endpoint.create_token_introspection_response(request)
+    response = await server.create_token_introspection_response(request)
     assert not response.content.active
     assert response.status_code == HTTPStatus.OK
 
 
 @pytest.mark.asyncio
 async def test_expired_token(
-    endpoint: Endpoint, storage: Dict[str, List], defaults: Defaults
+    server: AuthorizationServer, storage: Dict[str, List], defaults: Defaults
 ):
     settings = Settings()
     token = Token(
@@ -81,14 +81,14 @@ async def test_expired_token(
         headers=encode_auth_headers(client_id, client_secret),
     )
 
-    response = await endpoint.create_token_introspection_response(request)
+    response = await server.create_token_introspection_response(request)
     assert response.status_code == HTTPStatus.OK
     assert not response.content.active
 
 
 @pytest.mark.asyncio
 async def test_valid_token(
-    endpoint: Endpoint, storage: Dict[str, List], defaults: Defaults
+    server: AuthorizationServer, storage: Dict[str, List], defaults: Defaults
 ):
     client_id = defaults.client_id
     client_secret = defaults.client_secret
@@ -102,22 +102,22 @@ async def test_valid_token(
         headers=encode_auth_headers(client_id, client_secret),
     )
 
-    response = await endpoint.create_token_introspection_response(request)
+    response = await server.create_token_introspection_response(request)
     assert response.status_code == HTTPStatus.OK
     assert response.content.active
 
 
 @pytest.mark.asyncio
-async def test_unregister_endpoint(endpoint: Endpoint):
-    assert endpoint.grant_type.get(GrantType.TYPE_AUTHORIZATION_CODE) is not None
-    endpoint.unregister(EndpointType.GRANT_TYPE, GrantType.TYPE_AUTHORIZATION_CODE)
-    assert endpoint.grant_type.get(GrantType.TYPE_AUTHORIZATION_CODE) is None
+async def test_unregister_endpoint(server: AuthorizationServer):
+    assert server.grant_type.get(GrantType.TYPE_AUTHORIZATION_CODE) is not None
+    server.unregister(EndpointType.GRANT_TYPE, GrantType.TYPE_AUTHORIZATION_CODE)
+    assert server.grant_type.get(GrantType.TYPE_AUTHORIZATION_CODE) is None
 
 
 @pytest.mark.asyncio
 async def test_endpoint_availability(db_class: Type[BaseDB]):
-    endpoint = Endpoint(db=db_class())
+    server = AuthorizationServer(db=db_class())
     request = Request(method=RequestMethod.POST, settings=Settings(AVAILABLE=False))
-    response = await endpoint.create_token_introspection_response(request)
+    response = await server.create_token_introspection_response(request)
     assert response.status_code == HTTPStatus.BAD_REQUEST
     assert response.content.error == ErrorType.TEMPORARILY_UNAVAILABLE
