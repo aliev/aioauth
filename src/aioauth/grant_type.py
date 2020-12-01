@@ -23,6 +23,7 @@ class GrantTypeBase(BaseRequestValidator):
     grant_type: Optional[GrantType] = None
 
     async def create_token_response(self, request: Request) -> TokenResponse:
+        """ Validate token request and create token response. """
         client = await self.validate_request(request)
         token = await self.db.create_token(
             request, client.client_id, request.post.scope

@@ -1,6 +1,6 @@
 from http import HTTPStatus
 
-from .base.endpoint import BaseEndpoint
+from .base.server import BaseAuthorizationServer
 from .constances import default_headers
 from .grant_type import GrantTypeBase
 from .requests import Request
@@ -15,7 +15,7 @@ from .types import ResponseType
 from .utils import build_uri, catch_errors_and_unavailability, decode_auth_headers
 
 
-class Endpoint(BaseEndpoint):
+class AuthorizationServer(BaseAuthorizationServer):
     @catch_errors_and_unavailability
     async def create_token_introspection_response(self, request: Request) -> Response:
         client_id, _ = decode_auth_headers(request)
@@ -37,6 +37,7 @@ class Endpoint(BaseEndpoint):
 
     @catch_errors_and_unavailability
     async def create_token_response(self, request: Request) -> Response:
+        """ Validate token request and create token response. """
         grant_type_cls = self.grant_type.get(request.post.grant_type, GrantTypeBase)
         grant_type_handler = grant_type_cls(self.db)
         token_response = await grant_type_handler.create_token_response(request)
@@ -45,12 +46,13 @@ class Endpoint(BaseEndpoint):
         )
 
     @catch_errors_and_unavailability
-    async def create_authorization_code_response(self, request: Request) -> Response:
+    async def create_authorization_response(self, request: Request) -> Response:
+        """Validate authorization request and create authorization response."""
         response_type_cls = self.response_type.get(
             request.query.response_type, ResponseTypeBase
         )
         response_type_handler = response_type_cls(self.db)
-        authorization_code_response = await response_type_handler.create_authorization_code_response(
+        authorization_code_response = await response_type_handler.create_authorization_response(
             request
         )
         response_type = request.query.response_type

@@ -48,7 +48,7 @@ class TokenResponse(NamedTuple):
 class TokenActiveIntrospectionResponse(NamedTuple):
     """Response for a valid access token.
 
-    Used by token introspection endpoint.
+    Used by token introspection server.
     """
 
     scope: str
@@ -60,7 +60,7 @@ class TokenActiveIntrospectionResponse(NamedTuple):
 class TokenInactiveIntrospectionResponse(NamedTuple):
     """For an invalid, revoked or expired token.
 
-    Used by token introspection endpoint.
+    Used by token introspection server.
     """
 
     active: bool = False
@@ -70,7 +70,7 @@ class Response(NamedTuple):
     """General response class.
 
     Used by:
-        - Endpoint
+        - AuthorizationServer
     """
 
     content: Optional[

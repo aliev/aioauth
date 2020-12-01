@@ -79,17 +79,16 @@ class ResponseTypeBase(BaseRequestValidator):
 
         return client
 
-    async def create_authorization_code_response(self, request: Request) -> Client:
+    async def create_authorization_response(self, request: Request) -> Client:
+        """Validate authorization request and create authorization response."""
         return await self.validate_request(request)
 
 
 class ResponseTypeToken(ResponseTypeBase):
     response_type: ResponseType = ResponseType.TYPE_TOKEN
 
-    async def create_authorization_code_response(
-        self, request: Request
-    ) -> TokenResponse:
-        client = await super().create_authorization_code_response(request)
+    async def create_authorization_response(self, request: Request) -> TokenResponse:
+        client = await super().create_authorization_response(request)
         token = await self.db.create_token(
             request, client.client_id, request.query.scope
         )
@@ -106,10 +105,10 @@ class ResponseTypeToken(ResponseTypeBase):
 class ResponseTypeAuthorizationCode(ResponseTypeBase):
     response_type: ResponseType = ResponseType.TYPE_CODE
 
-    async def create_authorization_code_response(
+    async def create_authorization_response(
         self, request: Request
     ) -> AuthorizationCodeResponse:
-        client = await super().create_authorization_code_response(request)
+        client = await super().create_authorization_response(request)
         authorization_code = await self.db.create_authorization_code(
             request,
             client.client_id,

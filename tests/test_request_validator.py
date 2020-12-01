@@ -4,9 +4,9 @@ from typing import Dict, List
 
 import pytest
 from aioauth.config import Settings
-from aioauth.endpoints import Endpoint
 from aioauth.models import Client
 from aioauth.requests import Post, Query, Request
+from aioauth.server import AuthorizationServer
 from aioauth.types import (
     CodeChallengeMethod,
     ErrorType,
@@ -25,27 +25,29 @@ from .utils import set_values
 
 
 @pytest.mark.asyncio
-async def test_insecure_transport_error(endpoint: Endpoint):
+async def test_insecure_transport_error(server: AuthorizationServer):
     request_url = "http://localhost"
 
     request = Request(url=request_url, method=RequestMethod.GET,)
 
-    response = await endpoint.create_authorization_code_response(request)
+    response = await server.create_authorization_response(request)
     assert response.status_code == HTTPStatus.BAD_REQUEST
 
 
 @pytest.mark.asyncio
-async def test_allowed_methods(endpoint: Endpoint):
+async def test_allowed_methods(server: AuthorizationServer):
     request_url = "https://localhost"
 
     request = Request(url=request_url, method=RequestMethod.POST,)
 
-    response = await endpoint.create_authorization_code_response(request)
+    response = await server.create_authorization_response(request)
     assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED
 
 
 @pytest.mark.asyncio
-async def test_invalid_client_credentials(endpoint: Endpoint, defaults: Defaults):
+async def test_invalid_client_credentials(
+    server: AuthorizationServer, defaults: Defaults
+):
     client_id = defaults.client_id
     request_url = "https://localhost"
 
@@ -62,13 +64,13 @@ async def test_invalid_client_credentials(endpoint: Endpoint, defaults: Defaults
         headers=encode_auth_headers(client_id, "client_secret"),
     )
 
-    response = await endpoint.create_token_response(request)
+    response = await server.create_token_response(request)
     assert response.status_code == HTTPStatus.BAD_REQUEST
     assert response.content.error == ErrorType.INVALID_REQUEST
 
 
 @pytest.mark.asyncio
-async def test_invalid_scope(endpoint: Endpoint, defaults: Defaults):
+async def test_invalid_scope(server: AuthorizationServer, defaults: Defaults):
     client_id = defaults.client_id
     client_secret = defaults.client_secret
     request_url = "https://localhost"
@@ -87,13 +89,15 @@ async def test_invalid_scope(endpoint: Endpoint, defaults: Defaults):
         headers=encode_auth_headers(client_id, client_secret),
     )
 
-    response = await endpoint.create_token_response(request)
+    response = await server.create_token_response(request)
     assert response.status_code == HTTPStatus.BAD_REQUEST
     assert response.content.error == ErrorType.INVALID_SCOPE
 
 
 @pytest.mark.asyncio
-async def test_invalid_grant_type(endpoint: Endpoint, defaults: Defaults, storage):
+async def test_invalid_grant_type(
+    server: AuthorizationServer, defaults: Defaults, storage
+):
     client: Client = storage["clients"][0]
 
     client_metadata = set_values(
@@ -122,13 +126,15 @@ async def test_invalid_grant_type(endpoint: Endpoint, defaults: Defaults, storag
         headers=encode_auth_headers(client_id, client_secret),
     )
 
-    response = await endpoint.create_token_response(request)
+    response = await server.create_token_response(request)
     assert response.status_code == HTTPStatus.BAD_REQUEST
     assert response.content.error == ErrorType.UNAUTHORIZED_CLIENT
 
 
 @pytest.mark.asyncio
-async def test_invalid_response_type(endpoint: Endpoint, defaults: Defaults, storage):
+async def test_invalid_response_type(
+    server: AuthorizationServer, defaults: Defaults, storage
+):
     code_verifier = generate_token(128)
     code_challenge = create_s256_code_challenge(code_verifier)
     request_url = "https://localhost"
@@ -156,13 +162,13 @@ async def test_invalid_response_type(endpoint: Endpoint, defaults: Defaults, sto
     request = Request(
         url=request_url, query=query, method=RequestMethod.GET, user=user,
     )
-    response = await endpoint.create_authorization_code_response(request)
+    response = await server.create_authorization_response(request)
     assert response.status_code == HTTPStatus.BAD_REQUEST
     assert response.content.error == ErrorType.UNSUPPORTED_RESPONSE_TYPE
 
 
 @pytest.mark.asyncio
-async def test_anonymous_user(endpoint: Endpoint, defaults: Defaults, storage):
+async def test_anonymous_user(server: AuthorizationServer, defaults: Defaults, storage):
     code_verifier = generate_token(128)
     code_challenge = create_s256_code_challenge(code_verifier)
     request_url = "https://localhost"
@@ -178,14 +184,14 @@ async def test_anonymous_user(endpoint: Endpoint, defaults: Defaults, storage):
     )
 
     request = Request(url=request_url, query=query, method=RequestMethod.GET)
-    response = await endpoint.create_authorization_code_response(request)
+    response = await server.create_authorization_response(request)
     assert response.status_code == HTTPStatus.UNAUTHORIZED
     assert response.content.error == ErrorType.INVALID_CLIENT
 
 
 @pytest.mark.asyncio
 async def test_expired_authorization_code(
-    endpoint: Endpoint, defaults: Defaults, storage: Dict[str, List]
+    server: AuthorizationServer, defaults: Defaults, storage: Dict[str, List]
 ):
     request_url = "https://localhost"
 
@@ -208,14 +214,14 @@ async def test_expired_authorization_code(
         method=RequestMethod.POST,
         headers=encode_auth_headers(defaults.client_id, defaults.client_secret),
     )
-    response = await endpoint.create_token_response(request)
+    response = await server.create_token_response(request)
     assert response.status_code == HTTPStatus.BAD_REQUEST
     assert response.content.error == ErrorType.INVALID_GRANT
 
 
 @pytest.mark.asyncio
 async def test_expired_refresh_token(
-    endpoint: Endpoint, defaults: Defaults, storage: Dict[str, List]
+    server: AuthorizationServer, defaults: Defaults, storage: Dict[str, List]
 ):
     settings = Settings()
     token = storage["tokens"][0]
@@ -231,6 +237,6 @@ async def test_expired_refresh_token(
         method=RequestMethod.POST,
         headers=encode_auth_headers(defaults.client_id, defaults.client_secret),
     )
-    response = await endpoint.create_token_response(request)
+    response = await server.create_token_response(request)
     assert response.status_code == HTTPStatus.BAD_REQUEST
     assert response.content.error == ErrorType.INVALID_GRANT
