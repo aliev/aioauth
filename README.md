@@ -25,8 +25,9 @@ To interact with the database (create tokens, check authorization code, etc.), y
 ```python
 import json
 
-from fastapi import APIRouter, Request, Response
+from fastapi import FastAPI, Request, Response
 
+from aioauth.server import AuthorizationServer
 from aioauth.types import RequestMethod
 from aioauth.config import Settings
 from aioauth.base.database import BaseDB
@@ -42,22 +43,22 @@ from aioauth.structures import CaseInsensitiveDict
 class DB(BaseDB):
     ...
 
-router = APIRouter()
+app = FastAPI()
 server = AuthorizationServer(db=DB())
 
 
-@router.post("/token")
-async def token(request: Request):
+@app.post("/token")
+async def token(request: Request) -> Response:
     oauth2_request: OAuth2Request = await to_oauth2_request(request)
     oauth2_response: OAuth2Response = await server.create_token_response(oauth2_request)
 
     return await to_fastapi_response(oauth2_response)
 
 
-@router.get("/authorize")
-async def authorize(request: Request):
+@app.get("/authorize")
+async def authorize(request: Request) -> Response:
     oauth2_request: OAuth2Request = await to_oauth2_request(request)
-    oauth2_response: Response = await server.create_authorization_response(oauth2_request)
+    oauth2_response: OAuth2Response = await server.create_authorization_response(oauth2_request)
 
     return await to_fastapi_response(oauth2_response)
 
@@ -71,15 +72,16 @@ async def to_oauth2_request(request: Request) -> OAuth2Request:
     method = request.method
     headers = CaseInsensitiveDict(**request.headers)
     url = str(request.url)
-    user = request.user
+    user = "mock user"
 
     # NOTE: Redefinition of the default settings
     # INSECURE_TRANSPORT must be enabled for local development only!
-    settings=Settings(
+    settings = Settings(
         INSECURE_TRANSPORT=True,
-    ),
+    )
 
     return OAuth2Request(
+        settings=settings,
         method=RequestMethod[method],
         headers=headers,
         post=Post(**post),
