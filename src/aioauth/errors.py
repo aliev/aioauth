@@ -133,7 +133,7 @@ class ServerError(OAuth2Error):
     """
     The authorization server encountered an unexpected condition that
     prevented it from fulfilling the request.  (This error code is needed
-    because a 500 Internal AuthorizationServer Error HTTP status code cannot be returned
+    because a 500 Internal Server Error HTTP status code cannot be returned
     to the client via a HTTP redirect.)
     """
 
