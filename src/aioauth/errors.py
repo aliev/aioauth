@@ -69,6 +69,8 @@ class InvalidClientError(OAuth2Error):
 
 
 class InsecureTransportError(OAuth2Error):
+    """An exception will be thrown if the current request is not secure."""
+
     description = "OAuth 2 MUST utilize https."
     error = ErrorType.INSECURE_TRANSPORT
 

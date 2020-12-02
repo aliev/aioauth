@@ -37,7 +37,10 @@ class AuthorizationServer(BaseAuthorizationServer):
 
     @catch_errors_and_unavailability
     async def create_token_response(self, request: Request) -> Response:
-        """ Validate token request and create token response. """
+        """Validate token request and create token response.
+
+        See Section 4.1.3: https://tools.ietf.org/html/rfc6749#section-4.1.3
+        """
         grant_type_cls = self.grant_type.get(request.post.grant_type, GrantTypeBase)
         grant_type_handler = grant_type_cls(self.db)
         token_response = await grant_type_handler.create_token_response(request)
@@ -47,7 +50,10 @@ class AuthorizationServer(BaseAuthorizationServer):
 
     @catch_errors_and_unavailability
     async def create_authorization_response(self, request: Request) -> Response:
-        """Validate authorization request and create authorization response."""
+        """Validate authorization request and create authorization response.
+
+        See Section 4.1.1: https://tools.ietf.org/html/rfc6749#section-4.1.1
+        """
         response_type_cls = self.response_type.get(
             request.query.response_type, ResponseTypeBase
         )
