@@ -46,9 +46,19 @@ class DB(BaseDB):
 app = FastAPI()
 server = AuthorizationServer(db=DB())
 
+# NOTE: Redefinition of the default aioauth settings
+# INSECURE_TRANSPORT must be enabled for local development only!
+settings = Settings(
+    INSECURE_TRANSPORT=True,
+)
+
 
 @app.post("/token")
 async def token(request: Request) -> Response:
+    """Endpoint to obtain an access and/or ID token by presenting an authorization grant or refresh token.
+
+    See Section 4.1.3: https://tools.ietf.org/html/rfc6749#section-4.1.3
+    """
     oauth2_request: OAuth2Request = await to_oauth2_request(request)
     oauth2_response: OAuth2Response = await server.create_token_response(oauth2_request)
 
@@ -57,8 +67,24 @@ async def token(request: Request) -> Response:
 
 @app.get("/authorize")
 async def authorize(request: Request) -> Response:
+    """Endpoint to interact with the resource owner and obtain an authorization grant.
+
+    See Section 4.1.1: https://tools.ietf.org/html/rfc6749#section-4.1.1
+    """
     oauth2_request: OAuth2Request = await to_oauth2_request(request)
     oauth2_response: OAuth2Response = await server.create_authorization_response(oauth2_request)
+
+    return await to_fastapi_response(oauth2_response)
+
+
+@app.get("/introspect")
+async def introspect(request: Request) -> Response:
+    """Endpoint returns information about a token.
+
+    See Section 2.1: https://tools.ietf.org/html/rfc7662#section-2.1
+    """
+    oauth2_request: OAuth2Request = await to_oauth2_request(request)
+    oauth2_response: OAuth2Response = await server.create_token_introspection_response(oauth2_request)
 
     return await to_fastapi_response(oauth2_response)
 
@@ -72,13 +98,9 @@ async def to_oauth2_request(request: Request) -> OAuth2Request:
     method = request.method
     headers = CaseInsensitiveDict(**request.headers)
     url = str(request.url)
-    user = "mock user"
 
-    # NOTE: Redefinition of the default settings
-    # INSECURE_TRANSPORT must be enabled for local development only!
-    settings = Settings(
-        INSECURE_TRANSPORT=True,
-    )
+    # NOTE: AuthenticationMiddleware must be installed
+    user = request.user
 
     return OAuth2Request(
         settings=settings,
