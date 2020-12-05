@@ -19,9 +19,6 @@ python -m pip install aioauth
 ```
 
 ## FastAPI Example
-
-To interact with the database (create tokens, check authorization code, etc.), you need to inherit from the [BaseDB](src/aioauth/base/database.py) class and implement all its methods. This allows aioauth not to be tied to a specific database and gives the user choice of which database he wants to use. You can get additional documentation on all [BaseDB](src/aioauth/base/database.py) methods in the source code of this class.
-
 ```python
 import json
 
@@ -41,7 +38,84 @@ from aioauth.structures import CaseInsensitiveDict
 
 
 class DB(BaseDB):
-    ...
+    """Class for interacting with the database. Used by `AuthorizationServer`.
+
+    Here you need to override the methods that are responsible for creating tokens,
+    creating authorization code, getting a client from the database, etc.
+    """
+
+    async def create_token(self, *args, **kwargs) -> Token:
+        """Create token code in db
+        """
+        token = await super().create_token(*args, **kwargs)
+        # NOTE: Save data from token to db here.
+        return token
+
+    async def create_authorization_code(self, *args, **kwargs) -> AuthorizationCode:
+        """Create authorization code in db
+        """
+        authorization_code = await super().create_authorization_code(*args, **kwargs)
+        # NOTE: Save data from authorization_code to db here.
+        return authorization_code
+
+    async def get_token(self, *args, **kwargs) -> Optional[Token]:
+        """Get token from the database by provided request from user.
+
+        Returns:
+            Token: if token exists in db.
+            None: if no token in db.
+        """
+        token_record = ...
+
+        if token_record is not None:
+            return Token(
+                access_token=token_record.access_token,
+                refresh_token=token_record.refresh_token,
+                scope=token_record.scope,
+                issued_at=token_record.issued_at,
+                expires_in=token_record.expires_in,
+                client_id=token_record.client_id,
+                token_type=token_record.token_type,
+                revoked=token_record.revoked
+            )
+
+    async def get_client(self, *args, **kwargs) -> Optional[Client]:
+        """Get client record from the database by provided request from user.
+
+        Returns:
+            `Client` instance if client exists in db.
+            `None` if no client in db.
+        """
+
+        client_record = ...
+
+        if client_record is not None:
+            return Client(
+                client_id=client_record.client_id,
+                client_secret=client_record.client_secret,
+                grant_types=client_record.grant_types,
+                response_types=client_record.response_types,
+                redirect_uris=client_record.redirect_uris,
+                scope=client_record.scope
+            )
+
+    async def revoke_token(self, request: Request, token: str) -> None:
+        """Revokes an existing token. The `revoked`
+
+        Flag of the Token must be set to True
+        """
+        token_record = ...
+        token_record.revoked = True
+        token_record.save()
+
+    async def get_authorization_code(self, *args, **kwargs) -> Optional[AuthorizationCode]:
+        ...
+
+    async def delete_authorization_code(self, *args, **kwargs) -> None:
+        ...
+
+    async def authenticate(self, *args, **kwargs) -> bool:
+        ...
 
 app = FastAPI()
 server = AuthorizationServer(db=DB())

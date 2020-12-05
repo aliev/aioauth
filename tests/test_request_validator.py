@@ -100,11 +100,7 @@ async def test_invalid_grant_type(
 ):
     client: Client = storage["clients"][0]
 
-    client_metadata = set_values(
-        client.client_metadata, {"grant_types": [GrantType.TYPE_AUTHORIZATION_CODE]}
-    )
-
-    client = set_values(client, {"client_metadata": client_metadata})
+    client = set_values(client, {"grant_types": [GrantType.TYPE_AUTHORIZATION_CODE]})
 
     storage["clients"][0] = client
 
@@ -142,10 +138,7 @@ async def test_invalid_response_type(
 
     client = storage["clients"][0]
 
-    client_metadata = set_values(
-        client.client_metadata, {"response_types": [ResponseType.TYPE_TOKEN]}
-    )
-    client = set_values(client, {"client_metadata": client_metadata})
+    client = set_values(client, {"response_types": [ResponseType.TYPE_TOKEN]})
 
     storage["clients"][0] = client
 
