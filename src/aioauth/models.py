@@ -7,31 +7,27 @@ from .types import CodeChallengeMethod, GrantType, ResponseType
 from .utils import create_s256_code_challenge, list_to_scope, scope_to_list
 
 
-class ClientMetadata(NamedTuple):
+class Client(NamedTuple):
+    client_id: Text
+    client_secret: Text
     grant_types: List[GrantType] = []
     response_types: List[ResponseType] = []
     redirect_uris: List[str] = []
     scope: Text = ""
 
-
-class Client(NamedTuple):
-    client_id: Text
-    client_secret: Text
-    client_metadata: ClientMetadata
-
     def check_redirect_uri(self, redirect_uri) -> bool:
-        return redirect_uri in self.client_metadata.redirect_uris
+        return redirect_uri in self.redirect_uris
 
     def check_grant_type(self, grant_type: GrantType) -> bool:
-        return grant_type in self.client_metadata.grant_types
+        return grant_type in self.grant_types
 
     def check_response_type(self, response_type: ResponseType) -> bool:
-        return response_type in self.client_metadata.response_types
+        return response_type in self.response_types
 
     def get_allowed_scope(self, scope) -> Text:
         if not scope:
             return ""
-        allowed = set(self.client_metadata.scope.split())
+        allowed = set(self.scope.split())
         scopes = scope_to_list(scope)
         return list_to_scope([s for s in scopes if s in allowed])
 

@@ -110,7 +110,7 @@ class BaseDB:
 
     async def delete_authorization_code(
         self, request: Request, client_id: str, code: str
-    ):
+    ) -> None:
         """Deletes authorization code from database.
 
         Method is used by grant types:

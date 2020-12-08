@@ -10,7 +10,7 @@ from aioauth.grant_type import (
     PasswordGrantType,
     RefreshTokenGrantType,
 )
-from aioauth.models import AuthorizationCode, Client, ClientMetadata, Token
+from aioauth.models import AuthorizationCode, Client, Token
 from aioauth.response_type import ResponseTypeAuthorizationCode, ResponseTypeToken
 from aioauth.server import AuthorizationServer
 from aioauth.types import CodeChallengeMethod, EndpointType, GrantType, ResponseType
@@ -39,7 +39,9 @@ def defaults() -> Defaults:
 def storage(defaults: Defaults) -> Dict:
     settings = Settings()
 
-    client_metadata = ClientMetadata(
+    client = Client(
+        client_id=defaults.client_id,
+        client_secret=defaults.client_secret,
         grant_types=[
             GrantType.TYPE_AUTHORIZATION_CODE,
             GrantType.TYPE_CLIENT_CREDENTIALS,
@@ -49,12 +51,6 @@ def storage(defaults: Defaults) -> Dict:
         redirect_uris=[defaults.redirect_uri],
         response_types=[ResponseType.TYPE_CODE, ResponseType.TYPE_TOKEN],
         scope=defaults.scope,
-    )
-
-    client = Client(
-        client_id=defaults.client_id,
-        client_secret=defaults.client_secret,
-        client_metadata=client_metadata,
     )
 
     authorization_code = AuthorizationCode(
