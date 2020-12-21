@@ -174,7 +174,9 @@ async def to_oauth2_request(request: Request) -> OAuth2Request:
     url = str(request.url)
 
     # NOTE: AuthenticationMiddleware must be installed
-    user = request.user
+    user = None
+    if request.user.is_authenticated:
+        user = request.user
 
     return OAuth2Request(
         settings=settings,
