@@ -13,7 +13,7 @@ from .models import Client
 from .requests import Request
 from .responses import TokenResponse
 from .types import GrantType, RequestMethod
-from .utils import decode_auth_headers
+from .utils import decode_auth_headers, list_to_scope, scope_to_list
 
 
 class GrantTypeBase(BaseRequestValidator):
@@ -145,6 +145,37 @@ class PasswordGrantType(GrantTypeBase):
 
 class RefreshTokenGrantType(GrantTypeBase):
     grant_type: GrantType = GrantType.TYPE_REFRESH_TOKEN
+
+    async def create_token_response(self, request: Request) -> TokenResponse:
+        """ Validate token request and create token response. """
+        client = await self.validate_request(request)
+
+        # new token should have at max the same scope as the old token
+        # (see https://www.oauth.com/oauth2-servers/making-authenticated-requests/refreshing-an-access-token/)
+        old_token = await self.db.get_token(
+            request, client.client_id, refresh_token=request.post.refresh_token
+        )
+
+        new_scope = old_token.scope
+        if request.post.scope:
+            # restrict requested tokens to requested scopes in the old token
+            new_scope = list_to_scope(
+                list(
+                    set(scope_to_list(old_token.scope))
+                    & set(scope_to_list(request.post.scope))
+                )
+            )
+
+        token = await self.db.create_token(request, client.client_id, new_scope)
+
+        return TokenResponse(
+            expires_in=token.expires_in,
+            refresh_token_expires_in=token.refresh_token_expires_in,
+            access_token=token.access_token,
+            refresh_token=token.refresh_token,
+            scope=token.scope,
+            token_type=token.token_type,
+        )
 
     async def validate_request(self, request: Request) -> Client:
         client = await super().validate_request(request)

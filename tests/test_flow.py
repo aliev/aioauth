@@ -11,6 +11,7 @@ from aioauth.utils import (
     create_s256_code_challenge,
     encode_auth_headers,
     generate_token,
+    scope_to_list,
 )
 
 from .conftest import Defaults
@@ -115,6 +116,15 @@ async def test_authorization_code_flow_plan_code_challenge(
     # Check that previous token was revoken
     token_in_db = await db.get_token(request, client_id, access_token, refresh_token)
     assert token_in_db.revoked
+
+    # check that scope is previous scope
+    new_token = await db.get_token(
+        request,
+        client_id,
+        response.content.access_token,
+        response.content.refresh_token,
+    )
+    assert set(scope_to_list(new_token.scope)) == set(scope_to_list(token_in_db.scope))
 
 
 @pytest.mark.asyncio
