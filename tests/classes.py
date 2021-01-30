@@ -40,17 +40,17 @@ class DB(BaseDB):
         self.storage["tokens"].append(token)
         return token
 
-    async def revoke_token(self, request: Request, token: str) -> None:
+    async def revoke_token(self, request: Request, refresh_token: str) -> None:
         tokens: List[Token] = self.storage.get("tokens", [])
         for key, token_ in enumerate(tokens):
-            if token_.refresh_token == token:
+            if token_.refresh_token == refresh_token:
                 tokens[key] = set_values(token_, {"revoked": True})
 
     async def get_token(
         self,
         request: Request,
         client_id: str,
-        token: Optional[str] = None,
+        access_token: Optional[str] = None,
         refresh_token: Optional[str] = None,
     ) -> Optional[Token]:
         tokens: List[Token] = self.storage.get("tokens", [])
@@ -62,8 +62,8 @@ class DB(BaseDB):
             ):
                 return token_
             if (
-                token is not None
-                and token == token_.access_token
+                access_token is not None
+                and access_token == token_.access_token
                 and client_id == token_.client_id
             ):
                 return token_

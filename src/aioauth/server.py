@@ -36,7 +36,7 @@ class AuthorizationServer(BaseAuthorizationServer):
         client_id, _ = decode_auth_headers(request)
 
         token = await self.db.get_token(
-            request=request, client_id=client_id, token=request.post.token
+            request=request, client_id=client_id, access_token=request.post.token
         )
 
         token_response = TokenInactiveIntrospectionResponse()

@@ -1,8 +1,7 @@
 import time
 from typing import List, NamedTuple, Optional, Text
 
-from aioauth.requests import Request
-
+from .requests import Request
 from .types import CodeChallengeMethod, GrantType, ResponseType
 from .utils import create_s256_code_challenge, list_to_scope, scope_to_list
 

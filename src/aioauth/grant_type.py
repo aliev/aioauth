@@ -151,7 +151,9 @@ class RefreshTokenGrantType(GrantTypeBase):
         client, old_token = await self.validate_request(request)
 
         # Revoke old token
-        await self.db.revoke_token(request=request, token=old_token.refresh_token)
+        await self.db.revoke_token(
+            request=request, refresh_token=old_token.refresh_token
+        )
 
         # new token should have at max the same scope as the old token
         # (see https://www.oauth.com/oauth2-servers/making-authenticated-requests/refreshing-an-access-token/)

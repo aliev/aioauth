@@ -1,10 +1,9 @@
 import time
 from typing import Optional
 
-from aioauth.types import CodeChallengeMethod, ResponseType
-
 from ..models import AuthorizationCode, Client, Token
 from ..requests import Request
+from ..types import CodeChallengeMethod, ResponseType
 from ..utils import generate_token
 
 
@@ -32,7 +31,7 @@ class BaseDB:
         self,
         request: Request,
         client_id: str,
-        token: Optional[str] = None,
+        access_token: Optional[str] = None,
         refresh_token: Optional[str] = None,
     ) -> Optional[Token]:
         """Gets existing token from the database
@@ -120,7 +119,7 @@ class BaseDB:
             "Method delete_authorization_code must be implemented for AuthorizationCodeGrantType"
         )
 
-    async def revoke_token(self, request: Request, token: str) -> None:
+    async def revoke_token(self, request: Request, refresh_token: str) -> None:
         """Revokes token in database.
 
         This method MUST set `revoked` in True for existing token record.
