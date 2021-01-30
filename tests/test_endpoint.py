@@ -108,6 +108,39 @@ async def test_valid_token(
 
 
 @pytest.mark.asyncio
+async def test_introspect_revoked_token(
+    server: AuthorizationServer, storage: Dict[str, List], defaults: Defaults
+):
+    client_id = defaults.client_id
+    client_secret = defaults.client_secret
+    request_url = "https://localhost"
+
+    token = storage["tokens"][0]
+
+    post = Post(
+        grant_type=GrantType.TYPE_REFRESH_TOKEN, refresh_token=token.refresh_token,
+    )
+    request = Request(
+        url=request_url,
+        post=post,
+        method=RequestMethod.POST,
+        headers=encode_auth_headers(client_id, client_secret),
+    )
+    response = await server.create_token_response(request)
+    assert response.status_code == HTTPStatus.OK
+
+    # Check that refreshed token was revoked
+    post = Post(token=token.access_token)
+    request = Request(
+        post=post,
+        method=RequestMethod.POST,
+        headers=encode_auth_headers(client_id, client_secret),
+    )
+    response = await server.create_token_introspection_response(request)
+    assert not response.content.active, "The refresh_token must be revoked"
+
+
+@pytest.mark.asyncio
 async def test_unregister_endpoint(server: AuthorizationServer):
     assert server.grant_type.get(GrantType.TYPE_AUTHORIZATION_CODE) is not None
     server.unregister(EndpointType.GRANT_TYPE, GrantType.TYPE_AUTHORIZATION_CODE)

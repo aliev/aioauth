@@ -41,7 +41,7 @@ class AuthorizationServer(BaseAuthorizationServer):
 
         token_response = TokenInactiveIntrospectionResponse()
 
-        if token and not token.is_expired(request):
+        if token and not token.is_expired(request) and not token.revoked:
             token_response = TokenActiveIntrospectionResponse(
                 scope=token.scope, client_id=token.client_id, exp=token.expires_in
             )
