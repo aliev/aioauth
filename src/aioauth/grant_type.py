@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Tuple
 
 from .base.request_validator import BaseRequestValidator
 from .errors import (
@@ -9,7 +9,7 @@ from .errors import (
     UnauthorizedClientError,
     UnsupportedGrantTypeError,
 )
-from .models import Client
+from .models import Client, Token
 from .requests import Request
 from .responses import TokenResponse
 from .types import GrantType, RequestMethod
@@ -148,14 +148,13 @@ class RefreshTokenGrantType(GrantTypeBase):
 
     async def create_token_response(self, request: Request) -> TokenResponse:
         """ Validate token request and create token response. """
-        client = await self.validate_request(request)
+        client, old_token = await self.validate_request(request)
+
+        # Revoke old token
+        await self.db.revoke_token(request=request, token=old_token.refresh_token)
 
         # new token should have at max the same scope as the old token
         # (see https://www.oauth.com/oauth2-servers/making-authenticated-requests/refreshing-an-access-token/)
-        old_token = await self.db.get_token(
-            request, client.client_id, refresh_token=request.post.refresh_token
-        )
-
         new_scope = old_token.scope
         if request.post.scope:
             # restrict requested tokens to requested scopes in the old token
@@ -177,7 +176,7 @@ class RefreshTokenGrantType(GrantTypeBase):
             token_type=token.token_type,
         )
 
-    async def validate_request(self, request: Request) -> Client:
+    async def validate_request(self, request: Request) -> Tuple[Client, Token]:
         client = await super().validate_request(request)
 
         if not request.post.refresh_token:
@@ -191,15 +190,10 @@ class RefreshTokenGrantType(GrantTypeBase):
             refresh_token=request.post.refresh_token,
         )
 
-        if not token:
+        if not token or token.revoked or token.refresh_token_expired:
             raise InvalidGrantError(request=request)
 
-        if token.refresh_token_expired:
-            raise InvalidGrantError(request=request)
-
-        await self.db.revoke_token(request, request.post.refresh_token)
-
-        return client
+        return client, token
 
 
 class ClientCredentialsGrantType(GrantTypeBase):
