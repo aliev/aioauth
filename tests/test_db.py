@@ -19,7 +19,7 @@ async def test_db(storage: Dict[str, List]):
         await db.get_token(
             request=request,
             client_id=client.client_id,
-            token=token.access_token,
+            access_token=token.access_token,
             refresh_token=token.refresh_token,
         )
     with pytest.raises(NotImplementedError):
@@ -39,4 +39,4 @@ async def test_db(storage: Dict[str, List]):
             request=request, client_id=client.client_id, code=authorization_code.code
         )
     with pytest.raises(NotImplementedError):
-        await db.revoke_token(request=request, token=token.access_token)
+        await db.revoke_token(request=request, refresh_token=token.refresh_token)
