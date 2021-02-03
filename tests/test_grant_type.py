@@ -4,7 +4,6 @@ from typing import Dict
 import pytest
 from aioauth.base.database import BaseDB
 from aioauth.config import Settings
-from aioauth.errors import InvalidGrantError
 from aioauth.grant_type import RefreshTokenGrantType
 from aioauth.models import AuthorizationCode, Client, Token
 from aioauth.requests import Post, Request
@@ -83,7 +82,7 @@ async def test_refresh_token_grant_type(
 
     grant_type = RefreshTokenGrantType(db)
 
-    client, old_token = await grant_type.validate_request(request)
+    client = await grant_type.validate_request(request)
 
     assert client.client_id == client_id
     assert client.client_secret == client_secret
@@ -92,10 +91,7 @@ async def test_refresh_token_grant_type(
 
     # Check that previous token was revoken
     token_in_db = await db.get_token(
-        request, client_id, old_token.access_token, old_token.refresh_token
+        request, client_id, defaults.access_token, defaults.refresh_token
     )
     assert token_in_db.revoked
     assert token_response.scope == "read"
-
-    with pytest.raises(InvalidGrantError):
-        await grant_type.validate_request(request)
