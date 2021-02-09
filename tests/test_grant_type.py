@@ -4,6 +4,7 @@ from typing import Dict
 import pytest
 from aioauth.base.database import BaseDB
 from aioauth.config import Settings
+from aioauth.errors import InvalidGrantError
 from aioauth.grant_type import RefreshTokenGrantType
 from aioauth.models import AuthorizationCode, Client, Token
 from aioauth.requests import Post, Request
@@ -95,3 +96,6 @@ async def test_refresh_token_grant_type(
     )
     assert token_in_db.revoked
     assert token_response.scope == "read"
+
+    with pytest.raises(InvalidGrantError):
+        token_response = await grant_type.create_token_response(request)
