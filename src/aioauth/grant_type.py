@@ -1,4 +1,4 @@
-from typing import Optional, Tuple
+from typing import Optional
 
 from .base.request_validator import BaseRequestValidator
 from .errors import (
@@ -9,7 +9,7 @@ from .errors import (
     UnauthorizedClientError,
     UnsupportedGrantTypeError,
 )
-from .models import Client, Token
+from .models import Client
 from .requests import Request
 from .responses import TokenResponse
 from .types import GrantType, RequestMethod
@@ -148,7 +148,16 @@ class RefreshTokenGrantType(GrantTypeBase):
 
     async def create_token_response(self, request: Request) -> TokenResponse:
         """ Validate token request and create token response. """
-        client, old_token = await self.validate_request(request)
+        client = await self.validate_request(request)
+
+        old_token = await self.db.get_token(
+            request=request,
+            client_id=client.client_id,
+            refresh_token=request.post.refresh_token,
+        )
+
+        if not old_token or old_token.revoked or old_token.refresh_token_expired:
+            raise InvalidGrantError(request=request)
 
         # Revoke old token
         await self.db.revoke_token(
@@ -178,7 +187,7 @@ class RefreshTokenGrantType(GrantTypeBase):
             token_type=token.token_type,
         )
 
-    async def validate_request(self, request: Request) -> Tuple[Client, Token]:
+    async def validate_request(self, request: Request) -> Client:
         client = await super().validate_request(request)
 
         if not request.post.refresh_token:
@@ -186,16 +195,7 @@ class RefreshTokenGrantType(GrantTypeBase):
                 request=request, description="Missing refresh token parameter."
             )
 
-        token = await self.db.get_token(
-            request=request,
-            client_id=client.client_id,
-            refresh_token=request.post.refresh_token,
-        )
-
-        if not token or token.revoked or token.refresh_token_expired:
-            raise InvalidGrantError(request=request)
-
-        return client, token
+        return client
 
 
 class ClientCredentialsGrantType(GrantTypeBase):
