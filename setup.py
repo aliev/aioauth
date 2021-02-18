@@ -22,6 +22,7 @@ def read_requirements(path):
 
 base_requirements = read_requirements(here / "requirements" / "base.txt")
 test_requirements = read_requirements(here / "requirements" / "test.txt")
+docs_requirements = read_requirements(here / "requirements" / "docs.txt")
 
 setup(
     name=about["__title__"],
@@ -60,7 +61,7 @@ setup(
     ],
     install_requires=base_requirements,
     tests_require=test_requirements,
-    extras_require={"test": test_requirements},
+    extras_require={"test": test_requirements, "docs": docs_requirements},
     include_package_data=True,
     keywords="asyncio oauth2 oauth",
     test_suite="tests",

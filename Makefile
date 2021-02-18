@@ -68,7 +68,17 @@ dist: clean ## builds source and wheel package
 install: clean ## install the package to the active Python's site-packages
 	python setup.py install
 
-dev-install: clean ## Install the package and test dependencies for local development
+dev-install: clean ## install the package and test dependencies for local development
 	python -m pip install --upgrade pip
 	pip install -e ."[test]"
 	pre-commit install
+
+docs-install: ## install packages for local documentation.
+	python -m pip install --upgrade pip
+	pip install -e ."[docs]"
+
+docs: ## builds the documentation.
+	$(MAKE) -C docs html
+
+docs-serve: ## serves the documentation on 127.0.0.1:8000.
+	$(MAKE) -C docs serve
