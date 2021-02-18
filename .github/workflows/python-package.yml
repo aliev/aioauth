@@ -35,10 +35,10 @@ jobs:
         pip install -e ."[test]"
     - name: Type checking with pyright
       run: |
-        pyright src/aioauth tests
+        pyright aioauth tests
     - name: Lint with flake8
       run: |
-        flake8 src/aioauth tests
+        flake8 aioauth tests
     - name: Test with pytest
       run: |
         pytest tests

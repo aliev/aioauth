@@ -48,8 +48,8 @@ clean-test: ## remove test and coverage artifacts
 	rm -fr .pytest_cache
 
 lint: ## check style with flake8
-	flake8 src/aioauth tests
-	pyright src/aioauth tests
+	flake8 aioauth tests
+	pyright aioauth tests
 
 test: ## run tests quickly with the default Python
 	pytest tests
