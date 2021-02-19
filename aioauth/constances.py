@@ -1,4 +1,4 @@
-""" 
+"""
 .. code-block:: python
 
     from aioauth import constances
