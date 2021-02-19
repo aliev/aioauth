@@ -45,7 +45,7 @@ jobs:
         cp docs/build/latex/aioauth.pdf ../docs/pdf/
 
         # Removes all of the content of the current folder.
-        rm -rf *
+        sudo rm -rf *
 
         # Checks out to gh-pages branch.
         git checkout -b gh-pages
