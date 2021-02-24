@@ -1,3 +1,9 @@
+"""
+.. code-block:: python
+
+    from aioauth import errors
+"""
+
 from http import HTTPStatus
 from typing import Optional
 from urllib.parse import urljoin
