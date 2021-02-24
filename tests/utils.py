@@ -187,12 +187,12 @@ INVALID_KEYS = {
 
 def get_keys(query: Union[Query, Post]) -> Dict[str, Any]:
     """Converts dataclass object to dict and returns dict without empty values"""
-    return {key: value for key, value in query._asdict().items() if bool(value)}
+    return {key: value for key, value in query.__dict__.items() if bool(value)}
 
 
 def set_values(model, values):
     """Sets NamedTuple instance value and returns new NamedTuple"""
-    return model.__class__(**{**model._asdict(), **values})
+    return model.__class__(**{**model.__dict__, **values})
 
 
 async def check_query_values(

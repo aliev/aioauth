@@ -1,11 +1,12 @@
-from typing import Any, NamedTuple, Optional
+from types import SimpleNamespace
+from typing import Any, Optional, Text
 
 from .config import Settings
 from .structures import CaseInsensitiveDict
 from .types import CodeChallengeMethod, GrantType, RequestMethod, ResponseType
 
 
-class Query(NamedTuple):
+class Query(SimpleNamespace):
     client_id: Optional[str] = None
     redirect_uri: str = ""
     response_type: Optional[ResponseType] = None
@@ -15,19 +16,19 @@ class Query(NamedTuple):
     code_challenge: Optional[str] = None
 
 
-class Post(NamedTuple):
+class Post(SimpleNamespace):
     grant_type: Optional[GrantType] = None
     redirect_uri: Optional[str] = None
     scope: str = ""
-    username: Optional[str] = None
-    password: Optional[str] = None
+    username: Optional[Text] = None
+    password: Optional[Text] = None
     refresh_token: Optional[str] = None
     code: Optional[str] = None
     token: Optional[str] = None
     code_verifier: Optional[str] = None
 
 
-class Request(NamedTuple):
+class Request(SimpleNamespace):
     method: RequestMethod
     headers: CaseInsensitiveDict = CaseInsensitiveDict()
     query: Query = Query()

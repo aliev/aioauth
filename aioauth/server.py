@@ -23,12 +23,18 @@ from .responses import (
 )
 from .structures import CaseInsensitiveDict
 from .types import ResponseType
-from .utils import build_uri, catch_errors_and_unavailability, decode_auth_headers
+from .utils import (
+    build_uri,
+    catch_errors_and_unavailability,
+    decode_auth_headers,
+)
 
 
 class AuthorizationServer(BaseAuthorizationServer):
     @catch_errors_and_unavailability
-    async def create_token_introspection_response(self, request: Request) -> Response:
+    async def create_token_introspection_response(
+        self, request: Request
+    ) -> Response:
         """Endpoint returns information about a token.
 
         See Section 2.1: https://tools.ietf.org/html/rfc7662#section-2.1
@@ -36,18 +42,24 @@ class AuthorizationServer(BaseAuthorizationServer):
         client_id, _ = decode_auth_headers(request)
 
         token = await self.db.get_token(
-            request=request, client_id=client_id, access_token=request.post.token
+            request=request,
+            client_id=client_id,
+            access_token=request.post.token,
         )
 
         token_response = TokenInactiveIntrospectionResponse()
 
         if token and not token.is_expired(request) and not token.revoked:
             token_response = TokenActiveIntrospectionResponse(
-                scope=token.scope, client_id=token.client_id, exp=token.expires_in
+                scope=token.scope,
+                client_id=token.client_id,
+                exp=token.expires_in,
             )
 
         return Response(
-            content=token_response, status_code=HTTPStatus.OK, headers=default_headers
+            content=token_response,
+            status_code=HTTPStatus.OK,
+            headers=default_headers,
         )
 
     @catch_errors_and_unavailability
@@ -81,17 +93,20 @@ class AuthorizationServer(BaseAuthorizationServer):
 
         See Section 4.1.1: https://tools.ietf.org/html/rfc6749#section-4.1.1
         """
+
         ResponseTypeClass: Union[
             Type[ResponseTypeToken],
             Type[ResponseTypeAuthorizationCode],
             Type[ResponseTypeBase],
-        ] = self.response_type.get(request.query.response_type, ResponseTypeBase)
+        ] = self.response_type.get(
+            request.query.response_type, ResponseTypeBase
+        )
         response_type = ResponseTypeClass(db=self.db)
 
         response = await response_type.create_authorization_response(request)
 
         response_dict = {
-            **response._asdict(),
+            **response.__dict__,
             "state": request.query.state,
         }
         query_params = (

@@ -1,12 +1,13 @@
 from http import HTTPStatus
-from typing import NamedTuple, Optional, Union
+from types import SimpleNamespace
+from typing import Optional, Union
 
 from .constances import default_headers
 from .structures import CaseInsensitiveDict
 from .types import ErrorType
 
 
-class ErrorResponse(NamedTuple):
+class ErrorResponse(SimpleNamespace):
     """Response for error.
 
     Used by response_types.
@@ -18,7 +19,7 @@ class ErrorResponse(NamedTuple):
     error_uri: str = ""
 
 
-class AuthorizationCodeResponse(NamedTuple):
+class AuthorizationCodeResponse(SimpleNamespace):
     """Response for authorization_code.
 
     Used by response_types:
@@ -29,7 +30,7 @@ class AuthorizationCodeResponse(NamedTuple):
     scope: str
 
 
-class TokenResponse(NamedTuple):
+class TokenResponse(SimpleNamespace):
     """Response for token.
 
     Used by grant_types.
@@ -45,7 +46,7 @@ class TokenResponse(NamedTuple):
     token_type: str = "Bearer"
 
 
-class TokenActiveIntrospectionResponse(NamedTuple):
+class TokenActiveIntrospectionResponse(SimpleNamespace):
     """Response for a valid access token.
 
     Used by token introspection server.
@@ -57,7 +58,7 @@ class TokenActiveIntrospectionResponse(NamedTuple):
     active: bool = True
 
 
-class TokenInactiveIntrospectionResponse(NamedTuple):
+class TokenInactiveIntrospectionResponse(SimpleNamespace):
     """For an invalid, revoked or expired token.
 
     Used by token introspection server.
@@ -66,7 +67,7 @@ class TokenInactiveIntrospectionResponse(NamedTuple):
     active: bool = False
 
 
-class Response(NamedTuple):
+class Response(SimpleNamespace):
     """General response class.
 
     Used by:
