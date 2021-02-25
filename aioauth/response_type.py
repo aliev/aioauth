@@ -119,5 +119,6 @@ class ResponseTypeAuthorizationCode(ResponseTypeBase):
             request.query.code_challenge,  # type: ignore
         )
         return AuthorizationCodeResponse(
-            code=authorization_code.code, scope=authorization_code.scope,
+            code=authorization_code.code,
+            scope=authorization_code.scope,
         )

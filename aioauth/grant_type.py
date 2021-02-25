@@ -216,11 +216,7 @@ class RefreshTokenGrantType(GrantTypeBase):
             refresh_token=request.post.refresh_token,
         )
 
-        if (
-            not old_token
-            or old_token.revoked
-            or old_token.refresh_token_expired
-        ):
+        if not old_token or old_token.revoked or old_token.refresh_token_expired:
             raise InvalidGrantError(request=request)
 
         # Revoke old token

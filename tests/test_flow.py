@@ -6,7 +6,12 @@ from aioauth.base.database import BaseDB
 from aioauth.constances import default_headers
 from aioauth.requests import Post, Query, Request
 from aioauth.server import AuthorizationServer
-from aioauth.types import CodeChallengeMethod, GrantType, RequestMethod, ResponseType
+from aioauth.types import (
+    CodeChallengeMethod,
+    GrantType,
+    RequestMethod,
+    ResponseType,
+)
 from aioauth.utils import (
     create_s256_code_challenge,
     encode_auth_headers,
@@ -42,7 +47,10 @@ async def test_authorization_code_flow_plan_code_challenge(
     )
 
     request = Request(
-        url=request_url, query=query, method=RequestMethod.GET, user=user,
+        url=request_url,
+        query=query,
+        method=RequestMethod.GET,
+        user=user,
     )
 
     await check_request_validators(request, server.create_authorization_response)
@@ -92,7 +100,10 @@ async def test_authorization_code_flow_plan_code_challenge(
     access_token = response.content.access_token
     refresh_token = response.content.refresh_token
 
-    post = Post(grant_type=GrantType.TYPE_REFRESH_TOKEN, refresh_token=refresh_token,)
+    post = Post(
+        grant_type=GrantType.TYPE_REFRESH_TOKEN,
+        refresh_token=refresh_token,
+    )
 
     request = Request(
         url=request_url,
@@ -151,7 +162,10 @@ async def test_authorization_code_flow_pkce_code_challenge(
     )
 
     request = Request(
-        url=request_url, query=query, method=RequestMethod.GET, user=user,
+        url=request_url,
+        query=query,
+        method=RequestMethod.GET,
+        user=user,
     )
     response = await server.create_authorization_response(request)
     assert response.status_code == HTTPStatus.FOUND
@@ -209,7 +223,10 @@ async def test_implicit_flow(server: AuthorizationServer, defaults: Defaults):
     )
 
     request = Request(
-        url=request_url, query=query, method=RequestMethod.GET, user=user,
+        url=request_url,
+        query=query,
+        method=RequestMethod.GET,
+        user=user,
     )
 
     response = await server.create_authorization_response(request)
@@ -261,7 +278,10 @@ async def test_authorization_code_flow(server: AuthorizationServer, defaults: De
     )
 
     request = Request(
-        url=request_url, query=query, method=RequestMethod.GET, user=user,
+        url=request_url,
+        query=query,
+        method=RequestMethod.GET,
+        user=user,
     )
 
     response = await server.create_authorization_response(request)

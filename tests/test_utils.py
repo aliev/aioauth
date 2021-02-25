@@ -73,7 +73,8 @@ def test_decode_auth_headers():
         decode_auth_headers(request=request)
 
     request = Request(
-        headers=CaseInsensitiveDict({"authorization": ""}), method=RequestMethod.POST
+        headers=CaseInsensitiveDict({"authorization": ""}),
+        method=RequestMethod.POST,
     )
     with pytest.raises(InvalidClientError):
         decode_auth_headers(request=request)

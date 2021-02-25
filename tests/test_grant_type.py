@@ -9,7 +9,12 @@ from aioauth.grant_type import RefreshTokenGrantType
 from aioauth.models import AuthorizationCode, Client, Token
 from aioauth.requests import Post, Request
 from aioauth.server import AuthorizationServer
-from aioauth.types import CodeChallengeMethod, GrantType, RequestMethod, ResponseType
+from aioauth.types import (
+    CodeChallengeMethod,
+    GrantType,
+    RequestMethod,
+    ResponseType,
+)
 from aioauth.utils import encode_auth_headers
 from tests.models import Defaults
 

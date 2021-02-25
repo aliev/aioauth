@@ -164,7 +164,9 @@ def catch_errors_and_unavailability(f) -> Callable:
             log.exception("Exception caught while processing request.")
             content = ErrorResponse(error=error.error, description=error.description)
             return Response(
-                content=content, status_code=error.status_code, headers=error.headers,
+                content=content,
+                status_code=error.status_code,
+                headers=error.headers,
             )
 
     return wrapper

@@ -32,9 +32,7 @@ from .utils import (
 
 class AuthorizationServer(BaseAuthorizationServer):
     @catch_errors_and_unavailability
-    async def create_token_introspection_response(
-        self, request: Request
-    ) -> Response:
+    async def create_token_introspection_response(self, request: Request) -> Response:
         """Endpoint returns information about a token.
 
         See Section 2.1: https://tools.ietf.org/html/rfc7662#section-2.1
@@ -98,9 +96,7 @@ class AuthorizationServer(BaseAuthorizationServer):
             Type[ResponseTypeToken],
             Type[ResponseTypeAuthorizationCode],
             Type[ResponseTypeBase],
-        ] = self.response_type.get(
-            request.query.response_type, ResponseTypeBase
-        )
+        ] = self.response_type.get(request.query.response_type, ResponseTypeBase)
         response_type = ResponseTypeClass(db=self.db)
 
         response = await response_type.create_authorization_response(request)

@@ -99,9 +99,7 @@ class Client(SimpleNamespace):
         """Checks if passed ``scope`` is allowed for the client."""
 
         allowed_scope = self.get_allowed_scope(scope)
-        return not (
-            set(scope_to_list(scope)) - set(scope_to_list(allowed_scope))
-        )
+        return not (set(scope_to_list(scope)) - set(scope_to_list(allowed_scope)))
 
 
 class AuthorizationCode(SimpleNamespace):
