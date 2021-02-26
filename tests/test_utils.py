@@ -53,7 +53,7 @@ def test_get_authorization_scheme_param():
 def test_list_to_scope():
     assert list_to_scope("") == ""  # type: ignore
     assert list_to_scope(["read", "write"]) == "read write"
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError):
         list_to_scope(1)  # type: ignore
 
 
@@ -73,8 +73,7 @@ def test_decode_auth_headers():
         decode_auth_headers(request=request)
 
     request = Request(
-        headers=CaseInsensitiveDict({"authorization": ""}),
-        method=RequestMethod.POST,
+        headers=CaseInsensitiveDict({"authorization": ""}), method=RequestMethod.POST,
     )
     with pytest.raises(InvalidClientError):
         decode_auth_headers(request=request)
