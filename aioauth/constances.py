@@ -4,10 +4,11 @@
     from aioauth import constances
 
 Constants that are used throughout the project.
+
+----
 """
 
 from .structures import CaseInsensitiveDict
-
 
 default_headers = CaseInsensitiveDict(
     {
