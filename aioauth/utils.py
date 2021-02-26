@@ -1,3 +1,15 @@
+"""
+.. code-block:: python
+
+    from aioauth import utils
+
+Contains helper functions that is used throughout the project that
+doesn't pertain to a specific file or module.
+
+----
+"""
+
+
 import base64
 import binascii
 import functools
@@ -6,7 +18,7 @@ import logging
 import random
 import string
 from base64 import b64decode, b64encode
-from typing import Callable, Dict, List, Optional, Set, Text, Tuple, Union
+from typing import Callable, Dict, List, Optional, Set, Tuple, Union
 from urllib.parse import quote, urlencode, urlparse, urlunsplit
 
 from .errors import (
@@ -26,50 +38,115 @@ log = logging.getLogger(__name__)
 
 
 def is_secure_transport(request: Request) -> bool:
-    """Check if the uri is over ssl."""
+    """
+    Verifies the request was sent via a protected SSL tunnel.
+
+    Note:
+        This method simply checks if the request URL contains
+        ``https://`` at the start of it. It does **not** ensure
+        if the SSL certificate is valid.
+
+    Args:
+        request: A request object.
+
+    Returns:
+        Flag representing whether or not the transport is secure.
+    """
     if request.settings.INSECURE_TRANSPORT:
         return True
     return request.url.lower().startswith("https://")
 
 
-def get_authorization_scheme_param(
-    authorization_header_value: Text,
-) -> Tuple[Text, Text]:
+def get_authorization_scheme_param(authorization_header_value: str) -> Tuple[str, str]:
+    """
+    Retrieves the authorization schema parameters from the authorization
+    header.
+
+    Args:
+        authorization_header_value: Value of the authorization header.
+
+    Returns:
+        Tuple of the format ``(scheme, param)``.
+    """
     if not authorization_header_value:
         return "", ""
     scheme, _, param = authorization_header_value.partition(" ")
     return scheme, param
 
 
-def list_to_scope(scope: Optional[List] = None) -> Text:
-    """Convert a list of scopes to a space separated string."""
-    if isinstance(scope, str) or scope is None:
-        return ""
-    elif isinstance(scope, (set, tuple, list)):
+def list_to_scope(scope: Optional[Union[str, Set, Tuple, List]] = None) -> str:
+    """
+    Converts a list of scopes to a space separated string.
+
+    Note:
+        If a string is passed to this method it will simply return an
+        empty string back. Use :py:func:`scope_to_list` to convert
+        strings to scope lists.
+
+    Args:
+        scope: An iterable or string that contains a list of scope.
+
+    Returns:
+        A string of scopes seperated by spaces.
+
+    Raises:
+        TypeError: The ``scope`` value passed is not of the proper type.
+    """
+    if isinstance(scope, (set, tuple, list)):
         return " ".join([str(s) for s in scope])
+    elif isinstance(scope, str) or scope is None:
+        return ""
     else:
-        raise ValueError(
+        raise TypeError(
             "Invalid scope (%s), must be string, tuple, set, or list." % scope
         )
 
 
-def scope_to_list(scope: Union[Text, List, Set, Tuple]) -> List:
-    """Convert a space separated string to a list of scopes."""
+def scope_to_list(scope: Optional[Union[str, List, Set, Tuple]] = None) -> List:
+    """
+    Converts a space separated string to a list of scopes.
+
+    Note:
+        If an iterable is passed to this method it will return a list
+        representation of the iterable. Use :py:func:`list_to_scope` to
+        convert iterables to a scope string.
+
+    Args:
+        scope: An iterable or string that contains scopes.
+
+    Returns:
+        A list of scopes.
+
+    Raises:
+        TypeError: The ``scope`` value passed is not of the proper type.
+    """
     if isinstance(scope, (tuple, list, set)):
-        return [str(s) for s in scope]
+        return list(scope)
+    elif isinstance(scope, str):
+        return scope.strip().split(" ")
     elif scope is None:
         return []
     else:
-        return scope.strip().split(" ")
+        raise TypeError(
+            "Invalid scope (%s), must be string, tuple, set, or list." % scope
+        )
 
 
 def generate_token(length: int = 30, chars: str = UNICODE_ASCII_CHARACTER_SET) -> str:
-    """Generates a non-guessable OAuth token
+    """Generates a non-guessable OAuth token.
 
-    OAuth (1 and 2) does not specify the format of tokens except that they
-    should be strings of random characters. Tokens should not be guessable
-    and entropy when generating the random characters is important. Which is
-    why SystemRandom is used instead of the default random.choice method.
+    OAuth (1 and 2) does not specify the format of tokens except that
+    they should be strings of random characters. Tokens should not be
+    guessable and entropy when generating the random characters is
+    important. Which is why SystemRandom is used instead of the default
+    random.choice method.
+
+    Args:
+        length: Length of the generated token.
+        chars: The characters to use to generate the string.
+
+    Returns:
+        Random string of length ``length`` and characters in ``chars``.
     """
     rand = random.SystemRandom()
     return "".join(rand.choice(chars) for _ in range(length))
@@ -78,7 +155,19 @@ def generate_token(length: int = 30, chars: str = UNICODE_ASCII_CHARACTER_SET) -
 def build_uri(
     url: str, query_params: Optional[Dict] = None, fragment: Optional[Dict] = None
 ) -> str:
-    """Build uri string from given url, query_params and fragment"""
+    """
+    Builds an URI string from passed ``url``, ``query_params``, and
+    ``fragment``.
+
+    Args:
+        url: URL string.
+        query_params: Paramaters that contain the query.
+        fragment: Fragment of the page.
+
+    Returns:
+        URL containing the original ``url``, and the added
+        ``query_params`` and ``fragment``.
+    """
     if query_params is None:
         query_params = {}
 
@@ -99,17 +188,40 @@ def build_uri(
 
 
 def encode_auth_headers(client_id: str, client_secret: str) -> CaseInsensitiveDict:
+    """
+    Encodes the authentication header using base64 encoding.
+
+    Args:
+        client_id: The client's id.
+        client_secret: The client's secret.
+
+    Returns:
+        A case insensitive dictionary that contains the
+        ``Authorization`` header set to ``basic`` and the authorization
+        header.
+    """
     authorization = b64encode(f"{client_id}:{client_secret}".encode("ascii"))
     return CaseInsensitiveDict(Authorization=f"basic {authorization.decode()}")
 
 
 def decode_auth_headers(request: Request) -> Tuple[str, str]:
-    """Decode an encrypted HTTP basic authentication string. Returns a tuple of
-    the form (client_id, client_secret), and raises a InvalidClientError exception if
-    nothing could be decoded.
+    """
+    Decodes an encrypted HTTP basic authentication string.
+
+    Returns a tuple of the form ``(client_id, client_secret)``, and
+    raises a :py:class:`aioauth.errors.InvalidClientError` exception if nothing
+    could be decoded.
+
+    Args:
+        request: A request object.
+
+    Returns:
+        Tuple of the form ``(client_id, client_secret)``.
+
+    Raises:
+        aioauth.errors.InvalidClientError: Could not be decoded.
     """
     authorization = request.headers.get("Authorization", "")
-
     headers = CaseInsensitiveDict({"WWW-Authenticate": "Basic"})
 
     scheme, param = get_authorization_scheme_param(authorization)
@@ -130,17 +242,36 @@ def decode_auth_headers(request: Request) -> Tuple[str, str]:
 
 
 def create_s256_code_challenge(code_verifier: str) -> str:
-    """Create S256 code_challenge with the given code_verifier.
+    """
+    Create S256 code challenge with the passed ``code_verifier``.
 
-    Implements:
-        base64url(sha256(ascii(code_verifier)))
+    Note:
+        This function implements
+        ``base64url(sha256(ascii(code_verifier)))``.
+
+    Args:
+        code_verifier: Code verifier string.
+
+    Returns:
+        Representation of the S256 code challenge with the passed
+        ``code_verifier``.
     """
     code_verifier_bytes = code_verifier.encode("utf-8")
     data = hashlib.sha256(code_verifier_bytes).digest()
     return base64.urlsafe_b64encode(data).rstrip(b"=").decode()
 
 
-def catch_errors_and_unavailability(f) -> Callable:
+def catch_errors_and_unavailability(f: Callable) -> Callable:
+    """
+    Decorator that adds error catching to the function passed.
+
+    Args:
+        f: A callable.
+
+    Returns:
+        A callable with error catching capabilities.
+    """
+
     @functools.wraps(f)
     async def wrapper(self, request: Request, *args, **kwargs) -> Optional[Response]:
         if not request.settings.AVAILABLE:
@@ -159,14 +290,12 @@ def catch_errors_and_unavailability(f) -> Callable:
             return Response(
                 content=content, status_code=exc.status_code, headers=exc.headers
             )
-        except Exception:
+        except Exception:  # noqa: B902
             error = ServerError(request=request)
             log.exception("Exception caught while processing request.")
             content = ErrorResponse(error=error.error, description=error.description)
             return Response(
-                content=content,
-                status_code=error.status_code,
-                headers=error.headers,
+                content=content, status_code=error.status_code, headers=error.headers,
             )
 
     return wrapper
