@@ -1,7 +1,20 @@
+"""
+.. code-block:: python
+
+    from aioauth import types
+
+Containers that contain constants used throughout the project.
+
+----
+"""
+
+
 from enum import Enum
 
 
 class ErrorType(str, Enum):
+    """Error types."""
+
     INVALID_REQUEST = "invalid_request"
     INVALID_CLIENT = "invalid_client"
     INVALID_GRANT = "invalid_grant"
@@ -17,6 +30,8 @@ class ErrorType(str, Enum):
 
 
 class GrantType(str, Enum):
+    """Grant types."""
+
     TYPE_AUTHORIZATION_CODE = "authorization_code"
     TYPE_PASSWORD = "password"
     TYPE_CLIENT_CREDENTIALS = "client_credentials"
@@ -24,20 +39,28 @@ class GrantType(str, Enum):
 
 
 class ResponseType(str, Enum):
+    """Response types."""
+
     TYPE_TOKEN = "token"
     TYPE_CODE = "code"
 
 
 class EndpointType(str, Enum):
+    """Endpoint types."""
+
     GRANT_TYPE = "grant_type"
     RESPONSE_TYPE = "response_type"
 
 
 class RequestMethod(str, Enum):
+    """Request types."""
+
     GET = "GET"
     POST = "POST"
 
 
 class CodeChallengeMethod(str, Enum):
+    """Code challenge types."""
+
     PLAIN = "plain"
     S256 = "S256"
