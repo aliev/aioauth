@@ -1,0 +1,34 @@
+/* Sidebar top (and topbar for mobile) */
+.wy-side-nav-search,
+.wy-nav-top {
+    background: #264653;
+}
+
+/* Sidebar top link */
+.wy-side-nav-search>a,
+.wy-side-nav-search .wy-dropdown>a {
+    color: #FFF9F8 !important;
+}
+
+/* Sidebar bottom */
+.wy-nav-side {
+    background: #2D5362;
+}
+
+/* Sidebar bottom subsection */
+.wy-menu-vertical header,
+.wy-menu-vertical p.caption {
+    color: #FFF9F8 !important;
+}
+
+/* Sidebar bottom text */
+.wy-menu-vertical a {
+    color: #FFF9F8 !important;
+}
+
+/* Sidebar bottom text selected */
+.wy-menu-vertical li.on a,
+.wy-menu-vertical li.current>a,
+.wy-menu-vertical li ul li a {
+    color: black !important;
+}

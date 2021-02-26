@@ -1,7 +1,5 @@
 # -- Path setup --------------------------------------------------------------
 
-import os
-import sys
 from pathlib import Path
 
 # Project root folder.
@@ -36,6 +34,12 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 html_theme = "sphinx_rtd_theme"
 html_static_path = ["_static"]
+
+
+# Adds custom css file.
+def setup(app):
+    app.add_css_file("custom.css")
+
 
 # -- Extra Configuration -----------------------------------------------------
 

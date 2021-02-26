@@ -29,4 +29,5 @@
   :glob:
   :maxdepth: 2
 
+  sections/documentation/base/index
   sections/documentation/*
