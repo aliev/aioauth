@@ -2,6 +2,10 @@
 .. code-block:: python
 
     from aioauth import models
+
+Memory objects used throughout the project.
+
+----
 """
 
 import time
@@ -88,7 +92,6 @@ class Client(SimpleNamespace):
             Note that the passed ``scope`` may contain multiple scopes
             seperated by a space character.
         """
-
         if not scope:
             return ""
         allowed = set(self.scope.split())
@@ -97,7 +100,6 @@ class Client(SimpleNamespace):
 
     def check_scope(self, scope: str) -> bool:
         """Checks if passed ``scope`` is allowed for the client."""
-
         allowed_scope = self.get_allowed_scope(scope)
         return not (set(scope_to_list(scope)) - set(scope_to_list(allowed_scope)))
 
@@ -174,7 +176,6 @@ class AuthorizationCode(SimpleNamespace):
 
     def check_code_challenge(self, code_verifier: str) -> bool:
         """Verifies the code challenge."""
-
         is_valid_code_challenge = False
 
         if self.code_challenge_method == CodeChallengeMethod.PLAIN:
