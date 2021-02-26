@@ -1,3 +1,14 @@
+"""
+.. code-block:: python
+
+    from aioauth import requests
+
+Request objects used throughout the project.
+
+----
+"""
+
+
 from types import SimpleNamespace
 from typing import Any, Optional, Text
 
@@ -7,6 +18,11 @@ from .types import CodeChallengeMethod, GrantType, RequestMethod, ResponseType
 
 
 class Query(SimpleNamespace):
+    """
+    Object that contains a client's query string portion of a request.
+    Read more on query strings `here <https://en.wikipedia.org/wiki/Query_string>`__.
+    """
+
     client_id: Optional[str] = None
     redirect_uri: str = ""
     response_type: Optional[ResponseType] = None
@@ -17,6 +33,11 @@ class Query(SimpleNamespace):
 
 
 class Post(SimpleNamespace):
+    """
+    Object that contains a client's post request portion of a request.
+    Read more on post requests `here <https://en.wikipedia.org/wiki/POST_(HTTP)>`__.
+    """
+
     grant_type: Optional[GrantType] = None
     redirect_uri: Optional[str] = None
     scope: str = ""
@@ -29,6 +50,8 @@ class Post(SimpleNamespace):
 
 
 class Request(SimpleNamespace):
+    """Object that contains a client's complete request."""
+
     method: RequestMethod
     headers: CaseInsensitiveDict = CaseInsensitiveDict()
     query: Query = Query()
