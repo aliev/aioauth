@@ -2,6 +2,10 @@
 .. code-block:: python
 
     from aioauth import errors
+
+Errors used throughout the project.
+
+----
 """
 
 from http import HTTPStatus
@@ -120,9 +124,7 @@ class InvalidGrantError(OAuth2Error):
 
 
 class MismatchingStateError(OAuth2Error):
-    """
-    Unable to securely verify the integrity of the request and response.
-    """
+    """Unable to securely verify the integrity of the request and response."""
 
     description = "CSRF Warning! State not equal in request and response."
     error = ErrorType.MISMATCHING_STATE
