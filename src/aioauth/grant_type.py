@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Tuple
 
 from .base.request_validator import BaseRequestValidator
 from .errors import (
@@ -41,7 +41,7 @@ class GrantTypeBase(BaseRequestValidator):
     async def validate_request(self, request: Request) -> Client:
         await super().validate_request(request)
 
-        client_id, client_secret = decode_auth_headers(request)
+        client_id, client_secret = self.get_client_credentials(request)
 
         client = await self.db.get_client(
             request, client_id=client_id, client_secret=client_secret
@@ -67,6 +67,15 @@ class GrantTypeBase(BaseRequestValidator):
             raise InvalidScopeError(request=request)
 
         return client
+
+    def get_client_credentials(self, request: Request) -> Tuple[str, str]:
+        client_id = request.post.client_id
+        client_secret = request.post.client_secret
+
+        if client_id is None or client_secret is None:
+            client_id, client_secret = decode_auth_headers(request)
+
+        return client_id, client_secret
 
 
 class AuthorizationCodeGrantType(GrantTypeBase):
