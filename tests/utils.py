@@ -79,6 +79,20 @@ EMPTY_KEYS = {
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
+        "client_id": Response(
+            content=ErrorResponse(
+                error=ErrorType.INVALID_GRANT, description="Invalid credentials given.",
+            ),
+            status_code=HTTPStatus.BAD_REQUEST,
+            headers=default_headers,
+        ),
+        "client_secret": Response(
+            content=ErrorResponse(
+                error=ErrorType.INVALID_GRANT, description="Invalid credentials given.",
+            ),
+            status_code=HTTPStatus.BAD_REQUEST,
+            headers=default_headers,
+        ),
         "username": Response(
             content=ErrorResponse(
                 error=ErrorType.INVALID_GRANT, description="Invalid credentials given.",
@@ -164,6 +178,22 @@ INVALID_KEYS = {
         ),
         "refresh_token": Response(
             content=ErrorResponse(error=ErrorType.INVALID_GRANT, description="",),
+            status_code=HTTPStatus.BAD_REQUEST,
+            headers=default_headers,
+        ),
+        "client_id": Response(
+            content=ErrorResponse(
+                error=ErrorType.INVALID_GRANT,
+                description="Invalid client_id parameter value.",
+            ),
+            status_code=HTTPStatus.BAD_REQUEST,
+            headers=default_headers,
+        ),
+        "client_secret": Response(
+            content=ErrorResponse(
+                error=ErrorType.INVALID_GRANT,
+                description="Invalid client_secret parameter value.",
+            ),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),

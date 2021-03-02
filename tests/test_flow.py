@@ -287,3 +287,86 @@ async def test_authorization_code_flow(server: AuthorizationServer, defaults: De
 
     response = await server.create_token_response(request)
     assert response.status_code == HTTPStatus.OK
+
+
+@pytest.mark.asyncio
+async def test_authorization_code_flow_credentials_in_post(
+    server: AuthorizationServer, defaults: Defaults
+):
+    client_id = defaults.client_id
+    client_secret = defaults.client_secret
+    request_url = "https://localhost"
+    user = "username"
+
+    query = Query(
+        client_id=defaults.client_id,
+        response_type=ResponseType.TYPE_CODE,
+        redirect_uri=defaults.redirect_uri,
+        scope=defaults.scope,
+        state=generate_token(10),
+    )
+
+    request = Request(
+        url=request_url, query=query, method=RequestMethod.GET, user=user,
+    )
+
+    response = await server.create_authorization_response(request)
+    assert response.status_code == HTTPStatus.FOUND
+
+    location = response.headers["location"]
+    location = urlparse(location)
+    query = dict(parse_qsl(location.query))
+    code = query["code"]
+
+    post = Post(
+        grant_type=GrantType.TYPE_AUTHORIZATION_CODE,
+        client_id=client_id,
+        client_secret=client_secret,
+        redirect_uri=defaults.redirect_uri,
+        code=code,
+    )
+
+    request = Request(url=request_url, post=post, method=RequestMethod.POST,)
+
+    response = await server.create_token_response(request)
+    assert response.status_code == HTTPStatus.OK
+
+
+@pytest.mark.asyncio
+async def test_client_credentials_flow_post_data(
+    server: AuthorizationServer, defaults: Defaults
+):
+    request_url = "https://localhost"
+
+    post = Post(
+        grant_type=GrantType.TYPE_CLIENT_CREDENTIALS,
+        client_id=defaults.client_id,
+        client_secret=defaults.client_secret,
+        scope=defaults.scope,
+    )
+
+    request = Request(url=request_url, post=post, method=RequestMethod.POST)
+
+    response = await server.create_token_response(request)
+    assert response.status_code == HTTPStatus.OK
+
+
+@pytest.mark.asyncio
+async def test_client_credentials_flow_auth_header(
+    server: AuthorizationServer, defaults: Defaults
+):
+    request_url = "https://localhost"
+
+    post = Post(grant_type=GrantType.TYPE_CLIENT_CREDENTIALS, scope=defaults.scope,)
+
+    request = Request(
+        url=request_url,
+        post=post,
+        method=RequestMethod.POST,
+        headers=encode_auth_headers(
+            client_id=defaults.client_id, client_secret=defaults.client_secret
+        ),
+    )
+
+    response = await server.create_token_response(request)
+    assert response.status_code == HTTPStatus.OK

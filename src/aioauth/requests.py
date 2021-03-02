@@ -17,6 +17,8 @@ class Query(NamedTuple):
 
 class Post(NamedTuple):
     grant_type: Optional[GrantType] = None
+    client_id: Optional[str] = None
+    client_secret: Optional[str] = None
     redirect_uri: Optional[str] = None
     scope: str = ""
     username: Optional[str] = None
