@@ -1,3 +1,14 @@
+"""
+.. code-block:: python
+
+    from aioauth import responses
+
+
+Response objects used throughout the project.
+
+----
+"""
+
 from typing import Optional
 
 from .base.request_validator import BaseRequestValidator
@@ -14,6 +25,8 @@ from .types import CodeChallengeMethod, RequestMethod, ResponseType
 
 
 class ResponseTypeBase(BaseRequestValidator):
+    """Base response type that all other exceptions inherit from."""
+
     response_type: Optional[ResponseType] = None
     allowed_methods = [
         RequestMethod.GET,
@@ -21,6 +34,7 @@ class ResponseTypeBase(BaseRequestValidator):
     code_challenge_methods = list(CodeChallengeMethod)
 
     async def validate_request(self, request: Request) -> Client:
+        """Validates the client request to ensure it is valid."""
         await super().validate_request(request)
 
         if not request.query.client_id:
@@ -36,21 +50,17 @@ class ResponseTypeBase(BaseRequestValidator):
             raise InvalidRequestError(
                 request=request, description="Invalid client_id parameter value."
             )
-
-        if not request.query.redirect_uri:
+        elif not request.query.redirect_uri:
             raise InvalidRequestError(
                 request=request, description="Mismatching redirect URI."
             )
-
-        if self.response_type != request.query.response_type:
+        elif self.response_type != request.query.response_type:
             raise UnsupportedResponseTypeError(request=request)
-
-        if not client.check_redirect_uri(request.query.redirect_uri):
+        elif not client.check_redirect_uri(request.query.redirect_uri):
             raise InvalidRequestError(
                 request=request, description="Invalid redirect URI."
             )
-
-        if not request.query.response_type:
+        elif not request.query.response_type:
             raise InvalidRequestError(
                 request=request, description="Missing response_type parameter."
             )
@@ -68,11 +78,9 @@ class ResponseTypeBase(BaseRequestValidator):
 
         if not client.check_response_type(request.query.response_type):
             raise UnsupportedResponseTypeError(request=request)
-
-        if not client.check_scope(request.query.scope):
+        elif not client.check_scope(request.query.scope):
             raise InvalidScopeError(request=request)
-
-        if not request.user:
+        elif not request.user:
             raise InvalidClientError(
                 request=request, description="User is not authorized"
             )
@@ -85,6 +93,8 @@ class ResponseTypeBase(BaseRequestValidator):
 
 
 class ResponseTypeToken(ResponseTypeBase):
+    """Response type that contains a token."""
+
     response_type: ResponseType = ResponseType.TYPE_TOKEN
 
     async def create_authorization_response(self, request: Request) -> TokenResponse:
@@ -103,6 +113,8 @@ class ResponseTypeToken(ResponseTypeBase):
 
 
 class ResponseTypeAuthorizationCode(ResponseTypeBase):
+    """Response type that contains an authorization code."""
+
     response_type: ResponseType = ResponseType.TYPE_CODE
 
     async def create_authorization_response(
@@ -119,6 +131,5 @@ class ResponseTypeAuthorizationCode(ResponseTypeBase):
             request.query.code_challenge,  # type: ignore
         )
         return AuthorizationCodeResponse(
-            code=authorization_code.code,
-            scope=authorization_code.scope,
+            code=authorization_code.code, scope=authorization_code.scope,
         )
