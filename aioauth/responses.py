@@ -1,3 +1,14 @@
+"""
+.. code-block:: python
+
+    from aioauth import responses
+
+
+Response objects used throughout the project.
+
+----
+"""
+
 from http import HTTPStatus
 from types import SimpleNamespace
 from typing import Optional, Union
@@ -8,11 +19,7 @@ from .types import ErrorType
 
 
 class ErrorResponse(SimpleNamespace):
-    """Response for error.
-
-    Used by response_types.
-    Used by grant_types.
-    """
+    """Response for errors."""
 
     error: ErrorType
     description: str
@@ -20,23 +27,14 @@ class ErrorResponse(SimpleNamespace):
 
 
 class AuthorizationCodeResponse(SimpleNamespace):
-    """Response for authorization_code.
-
-    Used by response_types:
-        - ResponseTypeAuthorizationCode
-    """
+    """Response for ``authorization_code``."""
 
     code: str
     scope: str
 
 
 class TokenResponse(SimpleNamespace):
-    """Response for token.
-
-    Used by grant_types.
-    Used by response_types:
-        - ResponseTypeToken
-    """
+    """Response for token."""
 
     expires_in: int
     refresh_token_expires_in: int
@@ -47,10 +45,7 @@ class TokenResponse(SimpleNamespace):
 
 
 class TokenActiveIntrospectionResponse(SimpleNamespace):
-    """Response for a valid access token.
-
-    Used by token introspection server.
-    """
+    """Response for a valid access token."""
 
     scope: str
     client_id: str
@@ -59,20 +54,13 @@ class TokenActiveIntrospectionResponse(SimpleNamespace):
 
 
 class TokenInactiveIntrospectionResponse(SimpleNamespace):
-    """For an invalid, revoked or expired token.
-
-    Used by token introspection server.
-    """
+    """For an invalid, revoked or expired token."""
 
     active: bool = False
 
 
 class Response(SimpleNamespace):
-    """General response class.
-
-    Used by:
-        - AuthorizationServer
-    """
+    """General response class."""
 
     content: Optional[
         Union[
