@@ -28,10 +28,7 @@ from .utils import set_values
 async def test_insecure_transport_error(server: AuthorizationServer):
     request_url = "http://localhost"
 
-    request = Request(
-        url=request_url,
-        method=RequestMethod.GET,
-    )
+    request = Request(url=request_url, method=RequestMethod.GET,)
 
     response = await server.create_authorization_response(request)
     assert response.status_code == HTTPStatus.BAD_REQUEST
@@ -41,10 +38,7 @@ async def test_insecure_transport_error(server: AuthorizationServer):
 async def test_allowed_methods(server: AuthorizationServer):
     request_url = "https://localhost"
 
-    request = Request(
-        url=request_url,
-        method=RequestMethod.POST,
-    )
+    request = Request(url=request_url, method=RequestMethod.POST,)
 
     response = await server.create_authorization_response(request)
     assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED
@@ -159,10 +153,7 @@ async def test_invalid_response_type(
     )
 
     request = Request(
-        url=request_url,
-        query=query,
-        method=RequestMethod.GET,
-        user=user,
+        url=request_url, query=query, method=RequestMethod.GET, user=user,
     )
     response = await server.create_authorization_response(request)
     assert response.status_code == HTTPStatus.BAD_REQUEST
@@ -232,10 +223,7 @@ async def test_expired_refresh_token(
         token, {"issued_at": time.time() - (settings.TOKEN_EXPIRES_IN * 2)}
     )
     request_url = "https://localhost"
-    post = Post(
-        grant_type=GrantType.TYPE_REFRESH_TOKEN,
-        refresh_token=refresh_token,
-    )
+    post = Post(grant_type=GrantType.TYPE_REFRESH_TOKEN, refresh_token=refresh_token,)
     request = Request(
         url=request_url,
         post=post,

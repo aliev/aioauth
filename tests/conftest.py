@@ -11,17 +11,9 @@ from aioauth.grant_type import (
     RefreshTokenGrantType,
 )
 from aioauth.models import AuthorizationCode, Client, Token
-from aioauth.response_type import (
-    ResponseTypeAuthorizationCode,
-    ResponseTypeToken,
-)
+from aioauth.response_type import ResponseTypeAuthorizationCode, ResponseTypeToken
 from aioauth.server import AuthorizationServer
-from aioauth.types import (
-    CodeChallengeMethod,
-    EndpointType,
-    GrantType,
-    ResponseType,
-)
+from aioauth.types import CodeChallengeMethod, EndpointType, GrantType, ResponseType
 from aioauth.utils import generate_token
 
 from .classes import get_db_class
@@ -102,9 +94,7 @@ def server(db: BaseDB) -> AuthorizationServer:
     server = AuthorizationServer(db=db)
     # Register response type server
     server.register(
-        EndpointType.RESPONSE_TYPE,
-        ResponseType.TYPE_TOKEN,
-        ResponseTypeToken,
+        EndpointType.RESPONSE_TYPE, ResponseType.TYPE_TOKEN, ResponseTypeToken,
     )
     server.register(
         EndpointType.RESPONSE_TYPE,
@@ -124,13 +114,9 @@ def server(db: BaseDB) -> AuthorizationServer:
         ClientCredentialsGrantType,
     )
     server.register(
-        EndpointType.GRANT_TYPE,
-        GrantType.TYPE_PASSWORD,
-        PasswordGrantType,
+        EndpointType.GRANT_TYPE, GrantType.TYPE_PASSWORD, PasswordGrantType,
     )
     server.register(
-        EndpointType.GRANT_TYPE,
-        GrantType.TYPE_REFRESH_TOKEN,
-        RefreshTokenGrantType,
+        EndpointType.GRANT_TYPE, GrantType.TYPE_REFRESH_TOKEN, RefreshTokenGrantType,
     )
     return server

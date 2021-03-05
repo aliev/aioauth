@@ -118,8 +118,7 @@ async def test_introspect_revoked_token(
     token = storage["tokens"][0]
 
     post = Post(
-        grant_type=GrantType.TYPE_REFRESH_TOKEN,
-        refresh_token=token.refresh_token,
+        grant_type=GrantType.TYPE_REFRESH_TOKEN, refresh_token=token.refresh_token,
     )
     request = Request(
         url=request_url,

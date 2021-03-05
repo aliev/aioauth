@@ -34,8 +34,7 @@ EMPTY_KEYS = {
         ),
         "code_challenge": Response(
             content=ErrorResponse(
-                error=ErrorType.INVALID_REQUEST,
-                description="Code challenge required.",
+                error=ErrorType.INVALID_REQUEST, description="Code challenge required.",
             ),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
@@ -60,8 +59,7 @@ EMPTY_KEYS = {
         ),
         "code": Response(
             content=ErrorResponse(
-                error=ErrorType.INVALID_REQUEST,
-                description="Missing code parameter.",
+                error=ErrorType.INVALID_REQUEST, description="Missing code parameter.",
             ),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
@@ -76,24 +74,21 @@ EMPTY_KEYS = {
         ),
         "code_verifier": Response(
             content=ErrorResponse(
-                error=ErrorType.INVALID_REQUEST,
-                description="Code verifier required.",
+                error=ErrorType.INVALID_REQUEST, description="Code verifier required.",
             ),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
         "username": Response(
             content=ErrorResponse(
-                error=ErrorType.INVALID_GRANT,
-                description="Invalid credentials given.",
+                error=ErrorType.INVALID_GRANT, description="Invalid credentials given.",
             ),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
         "password": Response(
             content=ErrorResponse(
-                error=ErrorType.INVALID_GRANT,
-                description="Invalid credentials given.",
+                error=ErrorType.INVALID_GRANT, description="Invalid credentials given.",
             ),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
@@ -113,16 +108,14 @@ INVALID_KEYS = {
         ),
         "response_type": Response(
             content=ErrorResponse(
-                error=ErrorType.UNSUPPORTED_RESPONSE_TYPE,
-                description="",
+                error=ErrorType.UNSUPPORTED_RESPONSE_TYPE, description="",
             ),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
         "redirect_uri": Response(
             content=ErrorResponse(
-                error=ErrorType.INVALID_REQUEST,
-                description="Invalid redirect URI.",
+                error=ErrorType.INVALID_REQUEST, description="Invalid redirect URI.",
             ),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
@@ -136,10 +129,7 @@ INVALID_KEYS = {
             headers=default_headers,
         ),
         "scope": Response(
-            content=ErrorResponse(
-                error=ErrorType.INVALID_SCOPE,
-                description="",
-            ),
+            content=ErrorResponse(error=ErrorType.INVALID_SCOPE, description="",),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
@@ -147,25 +137,20 @@ INVALID_KEYS = {
     RequestMethod.POST: {
         "grant_type": Response(
             content=ErrorResponse(
-                error=ErrorType.UNSUPPORTED_GRANT_TYPE,
-                description="",
+                error=ErrorType.UNSUPPORTED_GRANT_TYPE, description="",
             ),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
         "redirect_uri": Response(
             content=ErrorResponse(
-                error=ErrorType.INVALID_REQUEST,
-                description="Invalid redirect URI.",
+                error=ErrorType.INVALID_REQUEST, description="Invalid redirect URI.",
             ),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
         "code": Response(
-            content=ErrorResponse(
-                error=ErrorType.INVALID_GRANT,
-                description="",
-            ),
+            content=ErrorResponse(error=ErrorType.INVALID_GRANT, description="",),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
@@ -178,25 +163,20 @@ INVALID_KEYS = {
             headers=default_headers,
         ),
         "refresh_token": Response(
-            content=ErrorResponse(
-                error=ErrorType.INVALID_GRANT,
-                description="",
-            ),
+            content=ErrorResponse(error=ErrorType.INVALID_GRANT, description="",),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
         "username": Response(
             content=ErrorResponse(
-                error=ErrorType.INVALID_GRANT,
-                description="Invalid credentials given.",
+                error=ErrorType.INVALID_GRANT, description="Invalid credentials given.",
             ),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
         "password": Response(
             content=ErrorResponse(
-                error=ErrorType.INVALID_GRANT,
-                description="Invalid credentials given.",
+                error=ErrorType.INVALID_GRANT, description="Invalid credentials given.",
             ),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
@@ -238,8 +218,7 @@ async def check_query_values(
 
 
 async def check_request_validators(
-    request: Request,
-    endpoint_func: Callable,
+    request: Request, endpoint_func: Callable,
 ):
     query_dict = {}
 

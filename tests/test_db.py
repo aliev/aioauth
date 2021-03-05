@@ -32,15 +32,11 @@ async def test_db(storage: Dict[str, List]):
         await db.authenticate(request=request)
     with pytest.raises(NotImplementedError):
         await db.get_authorization_code(
-            request=request,
-            client_id=client.client_id,
-            code=authorization_code.code,
+            request=request, client_id=client.client_id, code=authorization_code.code,
         )
     with pytest.raises(NotImplementedError):
         await db.delete_authorization_code(
-            request=request,
-            client_id=client.client_id,
-            code=authorization_code.code,
+            request=request, client_id=client.client_id, code=authorization_code.code,
         )
     with pytest.raises(NotImplementedError):
         await db.revoke_token(request=request, refresh_token=token.refresh_token)
