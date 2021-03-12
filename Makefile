@@ -85,6 +85,7 @@ docs-serve: ## serves the documentation on 127.0.0.1:8000.
 
 new-env: ## creates environment for testing and documentation.
 	python -m venv env
-	pip install -e ."[test]"
-	pip install -e ."[docs]"
+	source env/bin/activate && \
+		pip install -e ."[test]" && \
+		pip install -e ."[docs]"
 	@echo "\n\nActivate environment by doing 'source env/bin/activate'.\n"
