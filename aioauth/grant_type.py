@@ -39,20 +39,16 @@ class GrantTypeBase(BaseRequestValidator):
         client_id, client_secret = self.get_client_credentials(request)
 
         client = await self.db.get_client(
-            request,
-            client_id=client_id,
-            client_secret=client_secret,
+            request, client_id=client_id, client_secret=client_secret,
         )
 
         if not client:
             raise InvalidRequestError(
-                request=request,
-                description="Invalid client_id parameter value.",
+                request=request, description="Invalid client_id parameter value.",
             )
         elif not request.post.grant_type:
             raise InvalidRequestError(
-                request=request,
-                description="Request is missing grant type.",
+                request=request, description="Request is missing grant type.",
             )
         elif self.grant_type != request.post.grant_type:
             raise UnsupportedGrantTypeError(request=request)
@@ -67,9 +63,7 @@ class GrantTypeBase(BaseRequestValidator):
         """Creates token response to reply to client."""
         client = await self.validate_request(request)
         token = await self.db.create_token(
-            request,
-            client.client_id,
-            request.post.scope,
+            request, client.client_id, request.post.scope,
         )
 
         return TokenResponse(
@@ -114,24 +108,19 @@ class AuthorizationCodeGrantType(GrantTypeBase):
 
         if not request.post.redirect_uri:
             raise InvalidRequestError(
-                request=request,
-                description="Mismatching redirect URI.",
+                request=request, description="Mismatching redirect URI.",
             )
         elif not client.check_redirect_uri(request.post.redirect_uri):
             raise InvalidRequestError(
-                request=request,
-                description="Invalid redirect URI.",
+                request=request, description="Invalid redirect URI.",
             )
         elif not request.post.code:
             raise InvalidRequestError(
-                request=request,
-                description="Missing code parameter.",
+                request=request, description="Missing code parameter.",
             )
 
         authorization_code = await self.db.get_authorization_code(
-            request,
-            client.client_id,
-            request.post.code,
+            request, client.client_id, request.post.code,
         )
 
         if not authorization_code:
@@ -212,8 +201,7 @@ class RefreshTokenGrantType(GrantTypeBase):
 
         if not request.post.refresh_token:
             raise InvalidRequestError(
-                request=request,
-                description="Missing refresh token parameter.",
+                request=request, description="Missing refresh token parameter.",
             )
 
         return client
@@ -247,11 +235,7 @@ class RefreshTokenGrantType(GrantTypeBase):
                 )
             )
 
-        token = await self.db.create_token(
-            request,
-            client.client_id,
-            new_scope,
-        )
+        token = await self.db.create_token(request, client.client_id, new_scope,)
 
         return TokenResponse(
             expires_in=token.expires_in,
