@@ -1,3 +1,15 @@
+"""
+.. code-block:: python
+
+    from aioauth import database
+
+Database helper class for storing and retrieving client and resource
+owner information. See the examples on the sidebar to view this in
+action.
+
+----
+"""
+
 import time
 from typing import Optional
 
@@ -9,13 +21,22 @@ from ..utils import generate_token
 
 class BaseDB:
     async def create_token(self, request: Request, client_id: str, scope: str) -> Token:
-        """Generates Token model instance.
+        """Generates a user token and stores it in the database.
 
-        Generated Token MUST be stored in database.
+        Warning:
+            Generated token *must* be stored in the database.
 
-        Method is used by all core grant types.
-        Method is used by response types:
-            - ResponseTypeToken
+        Note:
+            Method is used by all core grant types, but only used for
+            :py:class:`aioauth.response_type.ResponseTypeToken`.
+
+        Args:
+            request: An :py:class:`aioauth.requests.Request`.
+            client_id: A user client ID.
+            scope: The scopes for the token.
+
+        Returns:
+            The new generated :py:class:`aioauth.models.Token`.
         """
         return Token(
             client_id=client_id,
@@ -34,14 +55,39 @@ class BaseDB:
         access_token: Optional[str] = None,
         refresh_token: Optional[str] = None,
     ) -> Optional[Token]:
-        """Gets existing token from the database
+        """Gets existing token from the database.
 
-        Method is used by:
-            - create_token_introspection_response
-        Method is used by grant types:
-            - RefreshTokenGrantType
+        Note:
+            Method is used by
+            :py:class:`aioauth.server.AuthorizationServer`,  and by the
+            grant type :py:class:`aioauth.grant_types.RefreshTokenGrantType`.
+
+        Args:
+            request: An :py:class:`aioauth.requests.Request`.
+            client_id: A user client ID.
+            access_token: The user access token.
+            refresh_token: The user refresh token.
+
+        Returns:
+            An optional :py:class:`aioauth.models.Token` object.
         """
         raise NotImplementedError("Method get_token must be implemented")
+
+    async def revoke_token(self, request: Request, refresh_token: str) -> None:
+        """Revokes a token's from the database.
+
+        Note:
+            This method *must* set ``revoked`` to ``True`` for an
+            existing token record. This method is used by the grant type
+            :py:class:`aioauth.grant_types.RefreshTokenGrantType`.
+
+        Args:
+            request: An :py:class:`aioauth.requests.Request`.
+            refresh_token: The user refresh token.
+        """
+        raise NotImplementedError(
+            "Method revoke_token must be implemented for RefreshTokenGrantType"
+        )
 
     async def create_authorization_code(
         self,
@@ -53,12 +99,26 @@ class BaseDB:
         code_challenge_method: CodeChallengeMethod,
         code_challenge: str,
     ) -> AuthorizationCode:
-        """Generates AuthorizationCode model instance.
+        """Generates an authorization token and stores it in the database.
 
-        Generated AuthorizationCode MUST be stored in database.
+        Warning:
+            Generated authorization token *must* be stored in the database.
 
-        Method is used by response types:
-            - ResponseTypeAuthorizationCode
+        Note:
+            This must is used by the response type
+            :py:class:`aioauth.respose_type.ResponseTypeAuthorizationCode`.
+
+        Args:
+            request: An :py:class:`aioauth.requests.Request`.
+            client_id: A user client ID.
+            scope: The scopes for the token.
+            response_type: An :py:class:`aioauth.types.ResponseType`.
+            redirect_uri: The redirect URI.
+            code_challenge_method: An :py:class:`aioauth.types.CodeChallengeMethod`.
+            code_challenge: Code challenge string.
+
+        Returns:
+            An :py:class:`aioauth.models.AuthorizationCode` object.
         """
         return AuthorizationCode(
             code=generate_token(48),
@@ -71,37 +131,27 @@ class BaseDB:
             code_challenge=code_challenge,
         )
 
-    async def get_client(
-        self, request: Request, client_id: str, client_secret: Optional[str] = None
-    ) -> Optional[Client]:
-        """Gets existing Client from database.
-
-        If client doesn't exists in database this method MUST return None
-        to indicate to the validator that the requested ``client_id`` does not exist or is invalid.
-
-        Method is used by all core grant types.
-        Method is used by all core response types.
-        """
-        raise NotImplementedError("Method get_client must be implemented")
-
-    async def authenticate(self, request: Request) -> bool:
-        """Authenticate user.
-
-        Method is used by grant types:
-            - PasswordGrantType
-        """
-        raise NotImplementedError("Method authenticate must be implemented")
-
     async def get_authorization_code(
         self, request: Request, client_id: str, code: str
     ) -> Optional[AuthorizationCode]:
-        """Gets existing AuthorizationCode from database.
+        """Gets existing authorization code from the database if it exists.
 
-        If authorization code doesn't exists it MUST return None
-        to indicate to the validator that the requested authorization code does not exist or is invalid.
+        Warning:
+            If authorization code does not exists this function *must*
+            return ``None`` to indicate to the validator that the
+            requested authorization code does not exist or is invalid.
 
-        Method is used by grant types:
-            - AuthorizationCodeGrantType
+        Note:
+            This method is used by the grant type
+            :py:class:`aioauth.grant_type.AuthorizationCodeGrantType`.
+
+        Args:
+            request: An :py:class:`aioauth.requests.Request`.
+            client_id: A user client ID.
+            code: An authorization code.
+
+        Returns:
+            An optional :py:class:`aioauth.models.AuthorizationCode`.
         """
         raise NotImplementedError(
             "Method get_authorization_code must be implemented for AuthorizationCodeGrantType"
@@ -112,21 +162,55 @@ class BaseDB:
     ) -> None:
         """Deletes authorization code from database.
 
-        Method is used by grant types:
-            - AuthorizationCodeGrantType
+        Note:
+            This method is used by the grant type
+            :py:class:`aioauth.grant_type.AuthorizationCodeGrantType`.
+
+        Args:
+            An :py:class:`aioauth.requests.Request`.
+            client_id: A user client ID.
+            code: An authorization code.
         """
         raise NotImplementedError(
             "Method delete_authorization_code must be implemented for AuthorizationCodeGrantType"
         )
 
-    async def revoke_token(self, request: Request, refresh_token: str) -> None:
-        """Revokes token in database.
+    async def get_client(
+        self, request: Request, client_id: str, client_secret: Optional[str] = None
+    ) -> Optional[Client]:
+        """Gets existing client from the database if it exists.
 
-        This method MUST set `revoked` in True for existing token record.
+        Warning:
+            If client does not exists in database this method *must*
+            return ``None`` to indicate to the validator that the
+            requested ``client_id`` does not exist or is invalid.
 
-        Method is used by grant types:
-            - RefreshTokenGrantType
+        Note:
+            This method is used by all core grant types, as well as
+            all core response types.
+
+        Args:
+            request: An :py:class:`aioauth.requests.Request`.
+            client_id: A user client ID.
+            client_secret: An optional user client secret.
+
+        Returns:
+            An optional :py:class:`aioauth.models.Client` object.
         """
-        raise NotImplementedError(
-            "Method revoke_token must be implemented for RefreshTokenGrantType"
-        )
+        raise NotImplementedError("Method get_client must be implemented")
+
+    async def authenticate(self, request: Request) -> bool:
+        """Authenticates a user.
+
+        Note:
+            This method is used by the grant type
+            :py:class:`aioauth.grant_type.PasswordGrantType`.
+
+        Args:
+            request: An :py:class:`aioauth.requests.Request`.
+
+        Returns:
+            Boolean indicating whether or not the user was authenticated
+            successfully.
+        """
+        raise NotImplementedError("Method authenticate must be implemented")
