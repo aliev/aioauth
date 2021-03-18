@@ -1,3 +1,13 @@
+"""
+.. code-block:: python
+
+    from aioauth.base import request_validator
+
+Base class for all request validators.
+
+----
+"""
+
 from aioauth.structures import CaseInsensitiveDict
 
 from ..constances import default_headers
