@@ -1,3 +1,14 @@
+"""
+.. code-block:: python
+
+    from aioauth.base import server
+
+
+Base class for :py:class:`aioauth.server.AuthorizationServer`.
+
+----
+"""
+
 from typing import Dict, Optional, Type, Union
 
 from ..grant_type import (
@@ -17,6 +28,8 @@ from .database import BaseDB
 
 
 class BaseAuthorizationServer:
+    """Base authorization server."""
+
     response_type: Dict[Optional[ResponseType], Type[ResponseTypeBase]] = {
         ResponseType.TYPE_TOKEN: ResponseTypeToken,
         ResponseType.TYPE_CODE: ResponseTypeAuthorizationCode,
