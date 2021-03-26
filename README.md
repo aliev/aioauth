@@ -44,19 +44,13 @@ class DB(BaseDB):
     creating authorization code, getting a client from the database, etc.
     """
 
-    async def create_token(self, *args, **kwargs) -> Token:
-        """Create token code in db
-        """
-        token = await super().create_token(*args, **kwargs)
-        # NOTE: Save data from token to db here.
-        return token
+    async def save_token(self, token: Token):
+        """Store ALL fields of the Token namedtuple in a db"""
+        ...
 
-    async def create_authorization_code(self, *args, **kwargs) -> AuthorizationCode:
-        """Create authorization code in db
-        """
-        authorization_code = await super().create_authorization_code(*args, **kwargs)
-        # NOTE: Save data from authorization_code to db here.
-        return authorization_code
+    async def save_authorization_code(self, authorization_code: AuthorizationCode):
+        """Store ALL fields of the AuthorizationCode namedtuple in a db"""
+        ...
 
     async def get_token(self, *args, **kwargs) -> Optional[Token]:
         """Get token from the database by provided request from user.
@@ -67,17 +61,19 @@ class DB(BaseDB):
         """
         token_record = ...
 
-        if token_record is not None:
-            return Token(
-                access_token=token_record.access_token,
-                refresh_token=token_record.refresh_token,
-                scope=token_record.scope,
-                issued_at=token_record.issued_at,
-                expires_in=token_record.expires_in,
-                client_id=token_record.client_id,
-                token_type=token_record.token_type,
-                revoked=token_record.revoked
-            )
+        if not token_record:
+            return None
+
+        return Token(
+            access_token=token_record.access_token,
+            refresh_token=token_record.refresh_token,
+            scope=token_record.scope,
+            issued_at=token_record.issued_at,
+            expires_in=token_record.expires_in,
+            client_id=token_record.client_id,
+            token_type=token_record.token_type,
+            revoked=token_record.revoked
+        )
 
     async def get_client(self, *args, **kwargs) -> Optional[Client]:
         """Get client record from the database by provided request from user.
@@ -89,15 +85,17 @@ class DB(BaseDB):
 
         client_record = ...
 
-        if client_record is not None:
-            return Client(
-                client_id=client_record.client_id,
-                client_secret=client_record.client_secret,
-                grant_types=client_record.grant_types,
-                response_types=client_record.response_types,
-                redirect_uris=client_record.redirect_uris,
-                scope=client_record.scope
-            )
+        if not client_record:
+            return None
+
+        return Client(
+            client_id=client_record.client_id,
+            client_secret=client_record.client_secret,
+            grant_types=client_record.grant_types,
+            response_types=client_record.response_types,
+            redirect_uris=client_record.redirect_uris,
+            scope=client_record.scope
+        )
 
     async def revoke_token(self, request: Request, token: str) -> None:
         """Revokes an existing token. The `revoked`

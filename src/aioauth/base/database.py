@@ -17,7 +17,7 @@ class BaseDB:
         Method is used by response types:
             - ResponseTypeToken
         """
-        return Token(
+        token = Token(
             client_id=client_id,
             expires_in=request.settings.TOKEN_EXPIRES_IN,
             access_token=generate_token(42),
@@ -25,6 +25,14 @@ class BaseDB:
             issued_at=int(time.time()),
             scope=scope,
             revoked=False,
+        )
+        await self.save_token(token)
+        return token
+
+    async def save_token(self, token: Token) -> None:
+        """Store the different fields from the namedtuple into your db"""
+        raise NotImplementedError(
+            "Token MUST be stored in a db. It is a namedtuple and all of its fields should be stored"
         )
 
     async def get_token(
@@ -60,7 +68,7 @@ class BaseDB:
         Method is used by response types:
             - ResponseTypeAuthorizationCode
         """
-        return AuthorizationCode(
+        authorization_code = AuthorizationCode(
             code=generate_token(48),
             client_id=client_id,
             redirect_uri=redirect_uri,
@@ -69,6 +77,15 @@ class BaseDB:
             auth_time=int(time.time()),
             code_challenge_method=code_challenge_method,
             code_challenge=code_challenge,
+        )
+        await self.save_authorization_code(authorization_code)
+        return authorization_code
+
+    async def save_authorization_code(
+        self, authorization_code: AuthorizationCode
+    ) -> None:
+        raise NotImplementedError(
+            "AuthorizationCode MUST be stored in any db. It is a namedtuple and all of its fields should be stored"
         )
 
     async def get_client(
