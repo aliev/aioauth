@@ -3,7 +3,6 @@ from typing import Dict, List, Optional
 from aioauth.base.database import BaseDB
 from aioauth.models import AuthorizationCode, Client, Token
 from aioauth.requests import Request
-from aioauth.types import CodeChallengeMethod, ResponseType
 from tests.utils import set_values
 
 from .models import Defaults
@@ -35,10 +34,8 @@ class DB(BaseDB):
 
         return self._get_by_client_id(client_id)
 
-    async def create_token(self, request: Request, client_id: str, scope: str) -> Token:
-        token = await super().create_token(request, client_id, scope)
+    async def save_token(self, token: Token):
         self.storage["tokens"].append(token)
-        return token
 
     async def revoke_token(self, request: Request, refresh_token: str) -> None:
         tokens: List[Token] = self.storage.get("tokens", [])
@@ -75,27 +72,8 @@ class DB(BaseDB):
         ):
             return True
 
-    async def create_authorization_code(
-        self,
-        request: Request,
-        client_id: str,
-        scope: str,
-        response_type: ResponseType,
-        redirect_uri: str,
-        code_challenge_method: CodeChallengeMethod,
-        code_challenge: str,
-    ) -> AuthorizationCode:
-        authorization_code = await super().create_authorization_code(
-            request,
-            client_id,
-            scope,
-            response_type,
-            redirect_uri,
-            code_challenge_method,
-            code_challenge,
-        )
+    async def save_authorization_code(self, authorization_code: AuthorizationCode):
         self.storage["authorization_codes"].append(authorization_code)
-        return authorization_code
 
     async def get_authorization_code(
         self, request: Request, client_id: str, code: str
