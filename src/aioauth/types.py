@@ -26,6 +26,7 @@ class GrantType(str, Enum):
 class ResponseType(str, Enum):
     TYPE_TOKEN = "token"
     TYPE_CODE = "code"
+    TYPE_NONE = "none"
 
 
 class EndpointType(str, Enum):

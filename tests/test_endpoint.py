@@ -59,7 +59,7 @@ async def test_invalid_token(server: AuthorizationServer, defaults: Defaults):
 async def test_expired_token(
     server: AuthorizationServer, storage: Dict[str, List], defaults: Defaults
 ):
-    settings = Settings()
+    settings = Settings(INSECURE_TRANSPORT=True)
     token = Token(
         client_id=defaults.client_id,
         expires_in=settings.TOKEN_EXPIRES_IN,
@@ -76,6 +76,7 @@ async def test_expired_token(
 
     post = Post(token=token.access_token)
     request = Request(
+        settings=settings,
         post=post,
         method=RequestMethod.POST,
         headers=encode_auth_headers(client_id, client_secret),
@@ -88,7 +89,10 @@ async def test_expired_token(
 
 @pytest.mark.asyncio
 async def test_valid_token(
-    server: AuthorizationServer, storage: Dict[str, List], defaults: Defaults
+    server: AuthorizationServer,
+    storage: Dict[str, List],
+    defaults: Defaults,
+    settings: Settings,
 ):
     client_id = defaults.client_id
     client_secret = defaults.client_secret
@@ -100,6 +104,7 @@ async def test_valid_token(
         post=post,
         method=RequestMethod.POST,
         headers=encode_auth_headers(client_id, client_secret),
+        settings=settings,
     )
 
     response = await server.create_token_introspection_response(request)
@@ -109,7 +114,10 @@ async def test_valid_token(
 
 @pytest.mark.asyncio
 async def test_introspect_revoked_token(
-    server: AuthorizationServer, storage: Dict[str, List], defaults: Defaults
+    server: AuthorizationServer,
+    storage: Dict[str, List],
+    defaults: Defaults,
+    settings: Settings,
 ):
     client_id = defaults.client_id
     client_secret = defaults.client_secret
@@ -121,6 +129,7 @@ async def test_introspect_revoked_token(
         grant_type=GrantType.TYPE_REFRESH_TOKEN, refresh_token=token.refresh_token,
     )
     request = Request(
+        settings=settings,
         url=request_url,
         post=post,
         method=RequestMethod.POST,
@@ -132,6 +141,7 @@ async def test_introspect_revoked_token(
     # Check that refreshed token was revoked
     post = Post(token=token.access_token)
     request = Request(
+        settings=settings,
         post=post,
         method=RequestMethod.POST,
         headers=encode_auth_headers(client_id, client_secret),

@@ -11,8 +11,8 @@ from aioauth.utils import (
     decode_auth_headers,
     get_authorization_scheme_param,
     is_secure_transport,
-    list_to_scope,
-    scope_to_list,
+    list_to_str,
+    str_to_list,
 )
 
 
@@ -51,16 +51,16 @@ def test_get_authorization_scheme_param():
 
 
 def test_list_to_scope():
-    assert list_to_scope("") == ""  # type: ignore
-    assert list_to_scope(["read", "write"]) == "read write"
+    assert list_to_str("") == ""  # type: ignore
+    assert list_to_str(["read", "write"]) == "read write"
     with pytest.raises(ValueError):
-        list_to_scope(1)  # type: ignore
+        list_to_str(1)  # type: ignore
 
 
 def test_scope_to_list():
-    assert scope_to_list("read write") == ["read", "write"]
-    assert scope_to_list(["read", "write"]) == ["read", "write"]
-    assert scope_to_list(None) == []  # type: ignore
+    assert str_to_list("read write") == ["read", "write"]
+    assert str_to_list(["read", "write"]) == ["read", "write"]
+    assert str_to_list(None) == []  # type: ignore
 
 
 def test_build_uri():

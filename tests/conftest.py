@@ -36,9 +36,12 @@ def defaults() -> Defaults:
 
 
 @pytest.fixture
-def storage(defaults: Defaults) -> Dict:
-    settings = Settings()
+def settings() -> Settings:
+    return Settings(INSECURE_TRANSPORT=True)
 
+
+@pytest.fixture
+def storage(defaults: Defaults, settings: Settings) -> Dict:
     client = Client(
         client_id=defaults.client_id,
         client_secret=defaults.client_secret,
@@ -49,7 +52,11 @@ def storage(defaults: Defaults) -> Dict:
             GrantType.TYPE_PASSWORD,
         ],
         redirect_uris=[defaults.redirect_uri],
-        response_types=[ResponseType.TYPE_CODE, ResponseType.TYPE_TOKEN],
+        response_types=[
+            ResponseType.TYPE_CODE,
+            ResponseType.TYPE_TOKEN,
+            ResponseType.TYPE_NONE,
+        ],
         scope=defaults.scope,
     )
 

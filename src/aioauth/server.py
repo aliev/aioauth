@@ -1,8 +1,16 @@
 from http import HTTPStatus
-from typing import Type, Union
+from typing import List, Optional, Set, Type, Union
 
-from .base.server import BaseAuthorizationServer
+from aioauth.base.server import BaseAuthorizationServer
+
 from .constances import default_headers
+from .errors import (
+    InsecureTransportError,
+    InvalidRequestError,
+    MethodNotAllowedError,
+    UnsupportedGrantTypeError,
+    UnsupportedResponseTypeError,
+)
 from .grant_type import (
     AuthorizationCodeGrantType,
     ClientCredentialsGrantType,
@@ -14,6 +22,7 @@ from .requests import Request
 from .response_type import (
     ResponseTypeAuthorizationCode,
     ResponseTypeBase,
+    ResponseTypeNone,
     ResponseTypeToken,
 )
 from .responses import (
@@ -22,17 +31,49 @@ from .responses import (
     TokenInactiveIntrospectionResponse,
 )
 from .structures import CaseInsensitiveDict
-from .types import ResponseType
-from .utils import build_uri, catch_errors_and_unavailability, decode_auth_headers
+from .types import RequestMethod, ResponseType
+from .utils import (
+    build_uri,
+    catch_errors_and_unavailability,
+    decode_auth_headers,
+    is_secure_transport,
+    str_to_list,
+)
+
+AnyResponseTypeClass = Union[
+    Type[ResponseTypeBase],
+    Type[ResponseTypeToken],
+    Type[ResponseTypeAuthorizationCode],
+    Type[ResponseTypeNone],
+]
+
+AnyGrantTypeClass = Union[
+    Type[AuthorizationCodeGrantType],
+    Type[ClientCredentialsGrantType],
+    Type[PasswordGrantType],
+    Type[RefreshTokenGrantType],
+    Type[GrantTypeBase],
+]
 
 
 class AuthorizationServer(BaseAuthorizationServer):
+    def validate_request(self, request: Request, allowed_methods: List[RequestMethod]):
+        if not is_secure_transport(request):
+            raise InsecureTransportError(request=request)
+
+        if request.method not in allowed_methods:
+            headers = CaseInsensitiveDict(
+                {**default_headers, "allow": ", ".join(allowed_methods)}
+            )
+            raise MethodNotAllowedError(request=request, headers=headers)
+
     @catch_errors_and_unavailability
     async def create_token_introspection_response(self, request: Request) -> Response:
         """Endpoint returns information about a token.
 
         See Section 2.1: https://tools.ietf.org/html/rfc7662#section-2.1
         """
+        self.validate_request(request, [RequestMethod.POST])
         client_id, _ = decode_auth_headers(request)
 
         token = await self.db.get_token(
@@ -58,13 +99,20 @@ class AuthorizationServer(BaseAuthorizationServer):
 
         See Section 4.1.3: https://tools.ietf.org/html/rfc6749#section-4.1.3
         """
-        GrantTypeClass: Union[
-            Type[AuthorizationCodeGrantType],
-            Type[ClientCredentialsGrantType],
-            Type[PasswordGrantType],
-            Type[RefreshTokenGrantType],
-            Type[GrantTypeBase],
-        ] = self.grant_type.get(request.post.grant_type, GrantTypeBase)
+        self.validate_request(request, [RequestMethod.POST])
+
+        if not request.post.grant_type:
+            raise InvalidRequestError(
+                request=request, description="Request is missing grant type."
+            )
+
+        GrantTypeClass: Optional[AnyGrantTypeClass] = self.grant_type.get(
+            request.post.grant_type
+        )
+
+        if GrantTypeClass is None:
+            raise UnsupportedGrantTypeError(request=request)
+
         grant_type = GrantTypeClass(db=self.db)
 
         response = await grant_type.create_token_response(request)
@@ -81,31 +129,52 @@ class AuthorizationServer(BaseAuthorizationServer):
 
         See Section 4.1.1: https://tools.ietf.org/html/rfc6749#section-4.1.1
         """
-        ResponseTypeClass: Union[
-            Type[ResponseTypeToken],
-            Type[ResponseTypeAuthorizationCode],
-            Type[ResponseTypeBase],
-        ] = self.response_type.get(request.query.response_type, ResponseTypeBase)
-        response_type = ResponseTypeClass(db=self.db)
+        self.validate_request(request, [RequestMethod.GET])
 
-        response = await response_type.create_authorization_response(request)
+        response_type_list = str_to_list(request.query.response_type)
+        response_type_classes: Set[AnyResponseTypeClass] = set()
 
-        response_dict = {
-            **response._asdict(),
-            "state": request.query.state,
-        }
-        query_params = (
-            response_dict
-            if request.query.response_type == ResponseType.TYPE_CODE
-            else {}
-        )
-        fragment = (
-            response_dict
-            if request.query.response_type == ResponseType.TYPE_TOKEN
-            else {}
-        )
+        responses = {}
+        fragment = {}
+        query = {}
 
-        location = build_uri(request.query.redirect_uri, query_params, fragment)
+        if not response_type_list:
+            # NOTE: In case of empty response_type, the validator of
+            # ResponseTypeBase class will raise InvalidRequestError.
+            raise InvalidRequestError(
+                request=request, description="Missing response_type parameter."
+            )
+
+        if request.query.state:
+            responses["state"] = request.query.state
+
+        for response_type in response_type_list:
+            ResponseTypeClass: Optional[AnyResponseTypeClass] = self.response_type.get(
+                response_type
+            )
+            if ResponseTypeClass:
+                response_type_classes.add(ResponseTypeClass)
+
+        if not response_type_classes:
+            raise UnsupportedResponseTypeError(request=request)
+
+        for ResponseTypeClass in response_type_classes:
+            response_type = ResponseTypeClass(db=self.db)
+            response = await response_type.create_authorization_response(request)
+            responses.update(response._asdict())
+
+        if ResponseType.TYPE_CODE in response_type_list:
+            # NOTE: The TYPE_CODE included in response_type has lowest
+            # priority. The response will be placed in query.
+            query = responses
+
+        if ResponseType.TYPE_TOKEN in response_type_list:
+            # NOTE: The TYPE_TOKEN that included in response_type has highest
+            # priority. The response will be placed in fragment instead of query.
+            query = {}
+            fragment = responses
+
+        location = build_uri(request.query.redirect_uri, query, fragment)
 
         return Response(
             status_code=HTTPStatus.FOUND,

@@ -1,6 +1,4 @@
-from typing import Optional
-
-from .base.request_validator import BaseRequestValidator
+from .base.database import BaseDB
 from .errors import (
     InvalidClientError,
     InvalidRequestError,
@@ -9,20 +7,17 @@ from .errors import (
 )
 from .models import Client
 from .requests import Request
-from .responses import AuthorizationCodeResponse, TokenResponse
-from .types import CodeChallengeMethod, RequestMethod, ResponseType
+from .responses import AuthorizationCodeResponse, NoneResponse, TokenResponse
+from .types import CodeChallengeMethod
 
 
-class ResponseTypeBase(BaseRequestValidator):
-    response_type: Optional[ResponseType] = None
-    allowed_methods = [
-        RequestMethod.GET,
-    ]
+class ResponseTypeBase:
     code_challenge_methods = list(CodeChallengeMethod)
 
-    async def validate_request(self, request: Request) -> Client:
-        await super().validate_request(request)
+    def __init__(self, db: BaseDB):
+        self.db = db
 
+    async def validate_request(self, request: Request) -> Client:
         if not request.query.client_id:
             raise InvalidRequestError(
                 request=request, description="Missing client_id parameter."
@@ -42,17 +37,9 @@ class ResponseTypeBase(BaseRequestValidator):
                 request=request, description="Mismatching redirect URI."
             )
 
-        if self.response_type != request.query.response_type:
-            raise UnsupportedResponseTypeError(request=request)
-
         if not client.check_redirect_uri(request.query.redirect_uri):
             raise InvalidRequestError(
                 request=request, description="Invalid redirect URI."
-            )
-
-        if not request.query.response_type:
-            raise InvalidRequestError(
-                request=request, description="Missing response_type parameter."
             )
 
         if request.query.code_challenge_method:
@@ -85,8 +72,6 @@ class ResponseTypeBase(BaseRequestValidator):
 
 
 class ResponseTypeToken(ResponseTypeBase):
-    response_type: ResponseType = ResponseType.TYPE_TOKEN
-
     async def create_authorization_response(self, request: Request) -> TokenResponse:
         client = await super().create_authorization_response(request)
         token = await self.db.create_token(
@@ -103,8 +88,6 @@ class ResponseTypeToken(ResponseTypeBase):
 
 
 class ResponseTypeAuthorizationCode(ResponseTypeBase):
-    response_type: ResponseType = ResponseType.TYPE_CODE
-
     async def create_authorization_response(
         self, request: Request
     ) -> AuthorizationCodeResponse:
@@ -121,3 +104,9 @@ class ResponseTypeAuthorizationCode(ResponseTypeBase):
         return AuthorizationCodeResponse(
             code=authorization_code.code, scope=authorization_code.scope,
         )
+
+
+class ResponseTypeNone(ResponseTypeBase):
+    async def create_authorization_response(self, request: Request) -> NoneResponse:
+        await super().create_authorization_response(request)
+        return NoneResponse()

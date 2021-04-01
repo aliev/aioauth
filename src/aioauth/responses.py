@@ -29,6 +29,10 @@ class AuthorizationCodeResponse(NamedTuple):
     scope: str
 
 
+class NoneResponse(NamedTuple):
+    pass
+
+
 class TokenResponse(NamedTuple):
     """Response for token.
 

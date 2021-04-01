@@ -2,13 +2,13 @@ from typing import Any, NamedTuple, Optional
 
 from .config import Settings
 from .structures import CaseInsensitiveDict
-from .types import CodeChallengeMethod, GrantType, RequestMethod, ResponseType
+from .types import CodeChallengeMethod, GrantType, RequestMethod
 
 
 class Query(NamedTuple):
     client_id: Optional[str] = None
     redirect_uri: str = ""
-    response_type: Optional[ResponseType] = None
+    response_type: str = ""
     state: str = ""
     scope: str = ""
     code_challenge_method: Optional[CodeChallengeMethod] = None

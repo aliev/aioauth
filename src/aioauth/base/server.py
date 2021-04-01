@@ -10,6 +10,7 @@ from ..grant_type import (
 from ..response_type import (
     ResponseTypeAuthorizationCode,
     ResponseTypeBase,
+    ResponseTypeNone,
     ResponseTypeToken,
 )
 from ..types import EndpointType, GrantType, ResponseType
@@ -20,6 +21,7 @@ class BaseAuthorizationServer:
     response_type: Dict[Optional[ResponseType], Type[ResponseTypeBase]] = {
         ResponseType.TYPE_TOKEN: ResponseTypeToken,
         ResponseType.TYPE_CODE: ResponseTypeAuthorizationCode,
+        ResponseType.TYPE_NONE: ResponseTypeNone,
     }
     grant_type: Dict[Optional[GrantType], Type[GrantTypeBase]] = {
         GrantType.TYPE_AUTHORIZATION_CODE: AuthorizationCodeGrantType,
