@@ -4,16 +4,9 @@ from typing import Dict, Type
 import pytest
 from aioauth.base.database import BaseDB
 from aioauth.config import Settings
-from aioauth.grant_type import (
-    AuthorizationCodeGrantType,
-    ClientCredentialsGrantType,
-    PasswordGrantType,
-    RefreshTokenGrantType,
-)
 from aioauth.models import AuthorizationCode, Client, Token
-from aioauth.response_type import ResponseTypeAuthorizationCode, ResponseTypeToken
 from aioauth.server import AuthorizationServer
-from aioauth.types import CodeChallengeMethod, EndpointType, GrantType, ResponseType
+from aioauth.types import CodeChallengeMethod, GrantType, ResponseType
 from aioauth.utils import generate_token
 
 from .classes import get_db_class
@@ -99,31 +92,4 @@ def db(db_class: Type[BaseDB]):
 @pytest.fixture
 def server(db: BaseDB) -> AuthorizationServer:
     server = AuthorizationServer(db=db)
-    # Register response type server
-    server.register(
-        EndpointType.RESPONSE_TYPE, ResponseType.TYPE_TOKEN, ResponseTypeToken,
-    )
-    server.register(
-        EndpointType.RESPONSE_TYPE,
-        ResponseType.TYPE_CODE,
-        ResponseTypeAuthorizationCode,
-    )
-
-    # Register grant type server
-    server.register(
-        EndpointType.GRANT_TYPE,
-        GrantType.TYPE_AUTHORIZATION_CODE,
-        AuthorizationCodeGrantType,
-    )
-    server.register(
-        EndpointType.GRANT_TYPE,
-        GrantType.TYPE_CLIENT_CREDENTIALS,
-        ClientCredentialsGrantType,
-    )
-    server.register(
-        EndpointType.GRANT_TYPE, GrantType.TYPE_PASSWORD, PasswordGrantType,
-    )
-    server.register(
-        EndpointType.GRANT_TYPE, GrantType.TYPE_REFRESH_TOKEN, RefreshTokenGrantType,
-    )
     return server

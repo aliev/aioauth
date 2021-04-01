@@ -1,8 +1,7 @@
 from http import HTTPStatus
-from typing import List, Optional, Set, Type, Union
+from typing import Dict, List, Optional, Set, Type, Union
 
-from aioauth.base.server import BaseAuthorizationServer
-
+from .base.database import BaseDB
 from .constances import default_headers
 from .errors import (
     InsecureTransportError,
@@ -31,7 +30,7 @@ from .responses import (
     TokenInactiveIntrospectionResponse,
 )
 from .structures import CaseInsensitiveDict
-from .types import RequestMethod, ResponseType
+from .types import GrantType, RequestMethod, ResponseType
 from .utils import (
     build_uri,
     catch_errors_and_unavailability,
@@ -56,7 +55,33 @@ AnyGrantTypeClass = Union[
 ]
 
 
-class AuthorizationServer(BaseAuthorizationServer):
+class AuthorizationServer:
+    def __init__(
+        self,
+        db: BaseDB,
+        response_types: Optional[Dict] = None,
+        grant_types: Optional[Dict] = None,
+    ):
+        if response_types is None:
+            self.response_types = {
+                ResponseType.TYPE_TOKEN: ResponseTypeToken,
+                ResponseType.TYPE_CODE: ResponseTypeAuthorizationCode,
+                ResponseType.TYPE_NONE: ResponseTypeNone,
+            }
+        else:
+            self.response_types = response_types
+
+        if grant_types is None:
+            self.grant_types = {
+                GrantType.TYPE_AUTHORIZATION_CODE: AuthorizationCodeGrantType,
+                GrantType.TYPE_CLIENT_CREDENTIALS: ClientCredentialsGrantType,
+                GrantType.TYPE_PASSWORD: PasswordGrantType,
+                GrantType.TYPE_REFRESH_TOKEN: RefreshTokenGrantType,
+            }
+        else:
+            self.grant_types = grant_types
+        self.db = db
+
     def validate_request(self, request: Request, allowed_methods: List[RequestMethod]):
         if not is_secure_transport(request):
             raise InsecureTransportError(request=request)
@@ -102,15 +127,17 @@ class AuthorizationServer(BaseAuthorizationServer):
         self.validate_request(request, [RequestMethod.POST])
 
         if not request.post.grant_type:
+            # grant_type request value is empty
             raise InvalidRequestError(
                 request=request, description="Request is missing grant type."
             )
 
-        GrantTypeClass: Optional[AnyGrantTypeClass] = self.grant_type.get(
+        GrantTypeClass: Optional[AnyGrantTypeClass] = self.grant_types.get(
             request.post.grant_type
         )
 
         if GrantTypeClass is None:
+            # Requested GrantType was not found in the list of the grant_types.
             raise UnsupportedGrantTypeError(request=request)
 
         grant_type = GrantTypeClass(db=self.db)
@@ -149,7 +176,7 @@ class AuthorizationServer(BaseAuthorizationServer):
             responses["state"] = request.query.state
 
         for response_type in response_type_list:
-            ResponseTypeClass: Optional[AnyResponseTypeClass] = self.response_type.get(
+            ResponseTypeClass: Optional[AnyResponseTypeClass] = self.response_types.get(
                 response_type
             )
             if ResponseTypeClass:
@@ -163,6 +190,7 @@ class AuthorizationServer(BaseAuthorizationServer):
             response = await response_type.create_authorization_response(request)
             responses.update(response._asdict())
 
+        # See: https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#Combinations
         if ResponseType.TYPE_CODE in response_type_list:
             # NOTE: The TYPE_CODE included in response_type has lowest
             # priority. The response will be placed in query.

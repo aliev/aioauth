@@ -8,7 +8,7 @@ from aioauth.config import Settings
 from aioauth.models import Token
 from aioauth.requests import Post, Request
 from aioauth.server import AuthorizationServer
-from aioauth.types import EndpointType, ErrorType, GrantType, RequestMethod
+from aioauth.types import ErrorType, GrantType, RequestMethod
 from aioauth.utils import (
     catch_errors_and_unavailability,
     encode_auth_headers,
@@ -148,13 +148,6 @@ async def test_introspect_revoked_token(
     )
     response = await server.create_token_introspection_response(request)
     assert not response.content.active, "The refresh_token must be revoked"
-
-
-@pytest.mark.asyncio
-async def test_unregister_endpoint(server: AuthorizationServer):
-    assert server.grant_type.get(GrantType.TYPE_AUTHORIZATION_CODE) is not None
-    server.unregister(EndpointType.GRANT_TYPE, GrantType.TYPE_AUTHORIZATION_CODE)
-    assert server.grant_type.get(GrantType.TYPE_AUTHORIZATION_CODE) is None
 
 
 @pytest.mark.asyncio
