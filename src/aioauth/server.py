@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from typing import Dict, List, Optional, Set, Type, Union
+from typing import Dict, List, Optional
 
 from .base.database import BaseDB
 from .constances import default_headers
@@ -13,14 +13,12 @@ from .errors import (
 from .grant_type import (
     AuthorizationCodeGrantType,
     ClientCredentialsGrantType,
-    GrantTypeBase,
     PasswordGrantType,
     RefreshTokenGrantType,
 )
 from .requests import Request
 from .response_type import (
     ResponseTypeAuthorizationCode,
-    ResponseTypeBase,
     ResponseTypeNone,
     ResponseTypeToken,
 )
@@ -39,48 +37,33 @@ from .utils import (
     str_to_list,
 )
 
-AnyResponseTypeClass = Union[
-    Type[ResponseTypeBase],
-    Type[ResponseTypeToken],
-    Type[ResponseTypeAuthorizationCode],
-    Type[ResponseTypeNone],
-]
-
-AnyGrantTypeClass = Union[
-    Type[AuthorizationCodeGrantType],
-    Type[ClientCredentialsGrantType],
-    Type[PasswordGrantType],
-    Type[RefreshTokenGrantType],
-    Type[GrantTypeBase],
-]
-
 
 class AuthorizationServer:
+    response_types = {
+        ResponseType.TYPE_TOKEN: ResponseTypeToken,
+        ResponseType.TYPE_CODE: ResponseTypeAuthorizationCode,
+        ResponseType.TYPE_NONE: ResponseTypeNone,
+    }
+    grant_types = {
+        GrantType.TYPE_AUTHORIZATION_CODE: AuthorizationCodeGrantType,
+        GrantType.TYPE_CLIENT_CREDENTIALS: ClientCredentialsGrantType,
+        GrantType.TYPE_PASSWORD: PasswordGrantType,
+        GrantType.TYPE_REFRESH_TOKEN: RefreshTokenGrantType,
+    }
+
     def __init__(
         self,
         db: BaseDB,
         response_types: Optional[Dict] = None,
         grant_types: Optional[Dict] = None,
     ):
-        if response_types is None:
-            self.response_types = {
-                ResponseType.TYPE_TOKEN: ResponseTypeToken,
-                ResponseType.TYPE_CODE: ResponseTypeAuthorizationCode,
-                ResponseType.TYPE_NONE: ResponseTypeNone,
-            }
-        else:
+        self.db = db
+
+        if response_types is not None:
             self.response_types = response_types
 
-        if grant_types is None:
-            self.grant_types = {
-                GrantType.TYPE_AUTHORIZATION_CODE: AuthorizationCodeGrantType,
-                GrantType.TYPE_CLIENT_CREDENTIALS: ClientCredentialsGrantType,
-                GrantType.TYPE_PASSWORD: PasswordGrantType,
-                GrantType.TYPE_REFRESH_TOKEN: RefreshTokenGrantType,
-            }
-        else:
+        if grant_types is not None:
             self.grant_types = grant_types
-        self.db = db
 
     def validate_request(self, request: Request, allowed_methods: List[RequestMethod]):
         if not is_secure_transport(request):
@@ -132,9 +115,7 @@ class AuthorizationServer:
                 request=request, description="Request is missing grant type."
             )
 
-        GrantTypeClass: Optional[AnyGrantTypeClass] = self.grant_types.get(
-            request.post.grant_type
-        )
+        GrantTypeClass = self.grant_types.get(request.post.grant_type)
 
         if GrantTypeClass is None:
             # Requested GrantType was not found in the list of the grant_types.
@@ -159,7 +140,7 @@ class AuthorizationServer:
         self.validate_request(request, [RequestMethod.GET])
 
         response_type_list = str_to_list(request.query.response_type)
-        response_type_classes: Set[AnyResponseTypeClass] = set()
+        response_type_classes = set()
 
         responses = {}
         fragment = {}
@@ -176,9 +157,7 @@ class AuthorizationServer:
             responses["state"] = request.query.state
 
         for response_type in response_type_list:
-            ResponseTypeClass: Optional[AnyResponseTypeClass] = self.response_types.get(
-                response_type
-            )
+            ResponseTypeClass = self.response_types.get(response_type)
             if ResponseTypeClass:
                 response_type_classes.add(ResponseTypeClass)
 

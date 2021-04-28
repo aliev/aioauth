@@ -12,12 +12,12 @@ from .types import CodeChallengeMethod
 
 
 class ResponseTypeBase:
-    code_challenge_methods = list(CodeChallengeMethod)
-
     def __init__(self, db: BaseDB):
         self.db = db
 
     async def validate_request(self, request: Request) -> Client:
+        code_challenge_methods = list(CodeChallengeMethod)
+
         if not request.query.client_id:
             raise InvalidRequestError(
                 request=request, description="Missing client_id parameter."
@@ -43,7 +43,7 @@ class ResponseTypeBase:
             )
 
         if request.query.code_challenge_method:
-            if request.query.code_challenge_method not in self.code_challenge_methods:
+            if request.query.code_challenge_method not in code_challenge_methods:
                 raise InvalidRequestError(
                     request=request, description="Transform algorithm not supported."
                 )
