@@ -96,10 +96,10 @@ class ResponseTypeAuthorizationCode(ResponseTypeBase):
             request,
             client.client_id,
             request.query.scope,
-            request.query.response_type,  # type: ignore
+            request.query.response_type,
             request.query.redirect_uri,
-            request.query.code_challenge_method,  # type: ignore
-            request.query.code_challenge,  # type: ignore
+            request.query.code_challenge_method,
+            request.query.code_challenge,
         )
         return AuthorizationCodeResponse(
             code=authorization_code.code, scope=authorization_code.scope,

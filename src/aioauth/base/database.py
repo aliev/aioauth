@@ -3,7 +3,6 @@ from typing import Optional
 
 from ..models import AuthorizationCode, Client, Token
 from ..requests import Request
-from ..types import CodeChallengeMethod, ResponseType
 from ..utils import generate_token
 
 
@@ -56,10 +55,10 @@ class BaseDB:
         request: Request,
         client_id: str,
         scope: str,
-        response_type: ResponseType,
+        response_type: str,
         redirect_uri: str,
-        code_challenge_method: CodeChallengeMethod,
-        code_challenge: str,
+        code_challenge_method: Optional[str],
+        code_challenge: Optional[str],
     ) -> AuthorizationCode:
         """Generates AuthorizationCode model instance.
 

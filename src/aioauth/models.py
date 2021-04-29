@@ -43,11 +43,11 @@ class AuthorizationCode(NamedTuple):
     code: Text
     client_id: Text
     redirect_uri: Text
-    response_type: ResponseType
+    response_type: str
     scope: Text
     auth_time: int
     code_challenge: Optional[Text] = None
-    code_challenge_method: Optional[CodeChallengeMethod] = None
+    code_challenge_method: Optional[Text] = None
     nonce: Optional[Text] = None
 
     def check_code_challenge(self, code_verifier: str) -> bool:
