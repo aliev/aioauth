@@ -29,11 +29,6 @@ class ResponseType(str, Enum):
     TYPE_NONE = "none"
 
 
-class EndpointType(str, Enum):
-    GRANT_TYPE = "grant_type"
-    RESPONSE_TYPE = "response_type"
-
-
 class RequestMethod(str, Enum):
     GET = "GET"
     POST = "POST"
