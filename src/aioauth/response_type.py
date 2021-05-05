@@ -106,5 +106,5 @@ class ResponseTypeAuthorizationCode(ResponseTypeBase):
 
 class ResponseTypeNone(ResponseTypeBase):
     async def create_authorization_response(self, request: Request) -> NoneResponse:
-        client = await super().validate_request(request)
+        await super().validate_request(request)
         return NoneResponse()
