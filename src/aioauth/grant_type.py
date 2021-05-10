@@ -11,7 +11,7 @@ from .errors import (
 from .models import Client
 from .requests import Request
 from .responses import TokenResponse
-from .utils import decode_auth_headers, list_to_str, str_to_list
+from .utils import decode_auth_headers, enforce_list, enforce_str
 
 
 class GrantTypeBase:
@@ -46,7 +46,7 @@ class GrantTypeBase:
                 request=request, description="Invalid client_id parameter value."
             )
 
-        if not client.check_grant_type(request.post.grant_type):
+        if not client.check_grant_type(request.post.grant_type):  # type: ignore
             raise UnauthorizedClientError(request=request)
 
         if not client.check_scope(request.post.scope):
@@ -158,10 +158,10 @@ class RefreshTokenGrantType(GrantTypeBase):
         new_scope = old_token.scope
         if request.post.scope:
             # restrict requested tokens to requested scopes in the old token
-            new_scope = list_to_str(
+            new_scope = enforce_str(
                 list(
-                    set(str_to_list(old_token.scope))
-                    & set(str_to_list(request.post.scope))
+                    set(enforce_list(old_token.scope))
+                    & set(enforce_list(request.post.scope))
                 )
             )
 

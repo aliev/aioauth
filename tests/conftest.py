@@ -4,7 +4,18 @@ from typing import Dict, Type
 import pytest
 from aioauth.base.database import BaseDB
 from aioauth.config import Settings
+from aioauth.grant_type import (
+    AuthorizationCodeGrantType,
+    ClientCredentialsGrantType,
+    PasswordGrantType,
+    RefreshTokenGrantType,
+)
 from aioauth.models import AuthorizationCode, Client, Token
+from aioauth.response_type import (
+    ResponseTypeAuthorizationCode,
+    ResponseTypeNone,
+    ResponseTypeToken,
+)
 from aioauth.server import AuthorizationServer
 from aioauth.types import CodeChallengeMethod, GrantType, ResponseType
 from aioauth.utils import generate_token
@@ -91,5 +102,18 @@ def db(db_class: Type[BaseDB]):
 
 @pytest.fixture
 def server(db: BaseDB) -> AuthorizationServer:
-    server = AuthorizationServer(db=db)
+    server = AuthorizationServer(
+        db=db,
+        response_types={
+            ResponseType.TYPE_TOKEN: ResponseTypeToken,
+            ResponseType.TYPE_CODE: ResponseTypeAuthorizationCode,
+            ResponseType.TYPE_NONE: ResponseTypeNone,
+        },
+        grant_types={
+            GrantType.TYPE_AUTHORIZATION_CODE: AuthorizationCodeGrantType,
+            GrantType.TYPE_CLIENT_CREDENTIALS: ClientCredentialsGrantType,
+            GrantType.TYPE_PASSWORD: PasswordGrantType,
+            GrantType.TYPE_REFRESH_TOKEN: RefreshTokenGrantType,
+        },
+    )
     return server

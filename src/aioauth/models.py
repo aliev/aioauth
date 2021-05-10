@@ -3,7 +3,7 @@ from typing import List, NamedTuple, Optional, Text
 
 from .requests import Request
 from .types import CodeChallengeMethod, GrantType, ResponseType
-from .utils import create_s256_code_challenge, list_to_str, str_to_list
+from .utils import create_s256_code_challenge, enforce_list, enforce_str
 
 
 class Client(NamedTuple):
@@ -17,26 +17,22 @@ class Client(NamedTuple):
     def check_redirect_uri(self, redirect_uri) -> bool:
         return redirect_uri in self.redirect_uris
 
-    def check_grant_type(self, grant_type: Optional[GrantType] = None) -> bool:
-        if not grant_type:
-            return False
+    def check_grant_type(self, grant_type: GrantType) -> bool:
         return grant_type in self.grant_types
 
     def check_response_type(self, response_type: str) -> bool:
-        if not response_type:
-            return False
-        return not (set(str_to_list(response_type)) - set(self.response_types))
+        return not (set(enforce_list(response_type)) - set(self.response_types))
 
     def get_allowed_scope(self, scope) -> Text:
         if not scope:
             return ""
         allowed = set(self.scope.split())
-        scopes = str_to_list(scope)
-        return list_to_str([s for s in scopes if s in allowed])
+        scopes = enforce_list(scope)
+        return enforce_str([s for s in scopes if s in allowed])
 
     def check_scope(self, scope: str) -> bool:
         allowed_scope = self.get_allowed_scope(scope)
-        return not (set(str_to_list(scope)) - set(str_to_list(allowed_scope)))
+        return not (set(enforce_list(scope)) - set(enforce_list(allowed_scope)))
 
 
 class AuthorizationCode(NamedTuple):

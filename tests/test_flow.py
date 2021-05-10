@@ -10,8 +10,8 @@ from aioauth.types import CodeChallengeMethod, GrantType, RequestMethod, Respons
 from aioauth.utils import (
     create_s256_code_challenge,
     encode_auth_headers,
+    enforce_list,
     generate_token,
-    str_to_list,
 )
 
 from .conftest import Defaults
@@ -124,7 +124,7 @@ async def test_authorization_code_flow_plain_code_challenge(
         response.content.access_token,
         response.content.refresh_token,
     )
-    assert set(str_to_list(new_token.scope)) == set(str_to_list(token_in_db.scope))
+    assert set(enforce_list(new_token.scope)) == set(enforce_list(token_in_db.scope))
 
 
 @pytest.mark.asyncio

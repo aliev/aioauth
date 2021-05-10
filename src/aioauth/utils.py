@@ -41,19 +41,15 @@ def get_authorization_scheme_param(
     return scheme, param
 
 
-def list_to_str(scope: Optional[List] = None) -> Text:
+def enforce_str(scope: List) -> Text:
     """Convert a list of string to a space separated string."""
-    if isinstance(scope, str) or scope is None:
-        return ""
-    elif isinstance(scope, (set, tuple, list)):
+    if isinstance(scope, (set, tuple, list)):
         return " ".join([str(s) for s in scope])
-    else:
-        raise ValueError(
-            "Invalid value (%s), must be string, tuple, set, or list." % scope
-        )
+
+    return ""
 
 
-def str_to_list(scope: Union[Text, List, Set, Tuple]) -> List:
+def enforce_list(scope: Union[Text, List, Set, Tuple]) -> List:
     """Convert a space separated string to a list of string items."""
     if isinstance(scope, (tuple, list, set)):
         return [str(s) for s in scope]

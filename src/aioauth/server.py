@@ -33,8 +33,8 @@ from .utils import (
     build_uri,
     catch_errors_and_unavailability,
     decode_auth_headers,
+    enforce_list,
     is_secure_transport,
-    str_to_list,
 )
 
 
@@ -139,7 +139,7 @@ class AuthorizationServer:
         """
         self.validate_request(request, [RequestMethod.GET])
 
-        response_type_list = str_to_list(request.query.response_type)
+        response_type_list = enforce_list(request.query.response_type)
         response_type_classes = set()
 
         responses = {}

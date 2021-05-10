@@ -9,10 +9,10 @@ from aioauth.types import RequestMethod
 from aioauth.utils import (
     build_uri,
     decode_auth_headers,
+    enforce_list,
+    enforce_str,
     get_authorization_scheme_param,
     is_secure_transport,
-    list_to_str,
-    str_to_list,
 )
 
 
@@ -51,16 +51,14 @@ def test_get_authorization_scheme_param():
 
 
 def test_list_to_scope():
-    assert list_to_str("") == ""  # type: ignore
-    assert list_to_str(["read", "write"]) == "read write"
-    with pytest.raises(ValueError):
-        list_to_str(1)  # type: ignore
+    assert enforce_str("") == ""  # type: ignore
+    assert enforce_str(["read", "write"]) == "read write"
 
 
 def test_scope_to_list():
-    assert str_to_list("read write") == ["read", "write"]
-    assert str_to_list(["read", "write"]) == ["read", "write"]
-    assert str_to_list(None) == []  # type: ignore
+    assert enforce_list("read write") == ["read", "write"]
+    assert enforce_list(["read", "write"]) == ["read", "write"]
+    assert enforce_list(None) == []  # type: ignore
 
 
 def test_build_uri():
