@@ -264,6 +264,8 @@ async def test_authorization_code_flow(server: AuthorizationServer, defaults: De
         url=request_url, query=query, method=RequestMethod.GET, user=user,
     )
 
+    await check_request_validators(request, server.create_authorization_response)
+
     response = await server.create_authorization_response(request)
     assert response.status_code == HTTPStatus.FOUND
 
@@ -284,6 +286,8 @@ async def test_authorization_code_flow(server: AuthorizationServer, defaults: De
         method=RequestMethod.POST,
         headers=encode_auth_headers(client_id, client_secret),
     )
+
+    await check_request_validators(request, server.create_token_response)
 
     response = await server.create_token_response(request)
     assert response.status_code == HTTPStatus.OK
@@ -309,6 +313,8 @@ async def test_authorization_code_flow_credentials_in_post(
     request = Request(
         url=request_url, query=query, method=RequestMethod.GET, user=user,
     )
+
+    await check_request_validators(request, server.create_authorization_response)
 
     response = await server.create_authorization_response(request)
     assert response.status_code == HTTPStatus.FOUND
@@ -347,6 +353,8 @@ async def test_client_credentials_flow_post_data(
 
     request = Request(url=request_url, post=post, method=RequestMethod.POST)
 
+    await check_request_validators(request, server.create_token_response)
+
     response = await server.create_token_response(request)
     assert response.status_code == HTTPStatus.OK
 
@@ -368,6 +376,8 @@ async def test_client_credentials_flow_auth_header(
         ),
     )
 
+    await check_request_validators(request, server.create_token_response)
+
     response = await server.create_token_response(request)
     assert response.status_code == HTTPStatus.OK
 
@@ -388,6 +398,8 @@ async def test_multiple_response_types(server: AuthorizationServer, defaults: De
     request = Request(
         url=request_url, query=query, method=RequestMethod.GET, user=user,
     )
+
+    await check_request_validators(request, server.create_authorization_response)
 
     response = await server.create_authorization_response(request)
     assert response.status_code == HTTPStatus.FOUND
@@ -421,6 +433,8 @@ async def test_response_type_none(server: AuthorizationServer, defaults: Default
     request = Request(
         url=request_url, query=query, method=RequestMethod.GET, user=user,
     )
+
+    await check_request_validators(request, server.create_authorization_response)
 
     response = await server.create_authorization_response(request)
     assert response.status_code == HTTPStatus.FOUND
