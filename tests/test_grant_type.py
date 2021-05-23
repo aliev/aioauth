@@ -38,6 +38,7 @@ def storage(defaults: Defaults, settings: Settings) -> Dict:
         redirect_uri=defaults.redirect_uri,
         scope="read write",
         code_challenge_method=CodeChallengeMethod.PLAIN,
+        expires_in=settings.AUTHORIZATION_CODE_EXPIRES_IN,
     )
 
     token = Token(

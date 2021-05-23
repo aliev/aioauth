@@ -1,7 +1,6 @@
 import time
 from typing import List, NamedTuple, Optional, Text
 
-from .requests import Request
 from .types import CodeChallengeMethod, GrantType, ResponseType
 from .utils import create_s256_code_challenge, enforce_list, enforce_str
 
@@ -42,6 +41,7 @@ class AuthorizationCode(NamedTuple):
     response_type: str
     scope: Text
     auth_time: int
+    expires_in: int
     code_challenge: Optional[Text] = None
     code_challenge_method: Optional[Text] = None
     nonce: Optional[Text] = None
@@ -61,11 +61,9 @@ class AuthorizationCode(NamedTuple):
 
         return is_valid_code_challenge
 
-    def is_expired(self, request: Request) -> bool:
-        return (
-            self.auth_time + request.settings.AUTHORIZATION_CODE_EXPIRES_IN
-            < time.time()
-        )
+    @property
+    def is_expired(self) -> bool:
+        return self.auth_time + self.expires_in < time.time()
 
 
 class Token(NamedTuple):
@@ -78,7 +76,8 @@ class Token(NamedTuple):
     token_type: Text = "Bearer"
     revoked: bool = False
 
-    def is_expired(self, request: Request) -> bool:
+    @property
+    def is_expired(self) -> bool:
         return self.token_expires_in < time.time()
 
     @property

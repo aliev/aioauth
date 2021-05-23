@@ -241,7 +241,9 @@ async def check_query_values(
         response_expected = responses[key]
         response_actual = await endpoint_func(request_)
 
-        assert response_expected == response_actual
+        assert (
+            response_expected == response_actual
+        ), f"{response_expected} != {response_actual}"
 
 
 async def check_request_validators(

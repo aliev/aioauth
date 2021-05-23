@@ -76,6 +76,7 @@ class BaseDB:
             auth_time=int(time.time()),
             code_challenge_method=code_challenge_method,
             code_challenge=code_challenge,
+            expires_in=request.settings.AUTHORIZATION_CODE_EXPIRES_IN,
         )
         await self.save_authorization_code(authorization_code)
         return authorization_code
