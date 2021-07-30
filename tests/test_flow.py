@@ -26,7 +26,6 @@ async def test_authorization_code_flow_plain_code_challenge(
     client_id = defaults.client_id
     client_secret = defaults.client_secret
     scope = defaults.scope
-    state = generate_token(10)
     redirect_uri = defaults.redirect_uri
     request_url = "https://localhost"
     user = "username"
@@ -36,7 +35,6 @@ async def test_authorization_code_flow_plain_code_challenge(
         response_type=ResponseType.TYPE_CODE,
         redirect_uri=redirect_uri,
         scope=scope,
-        state=state,
         code_challenge_method=CodeChallengeMethod.PLAIN,
         code_challenge=code_challenge,
     )
@@ -51,7 +49,6 @@ async def test_authorization_code_flow_plain_code_challenge(
     location = response.headers["location"]
     location = urlparse(location)
     query = dict(parse_qsl(location.query))
-    assert query["state"] == state
     assert query["scope"] == scope
     assert await db.get_authorization_code(request, client_id, query["code"])
     assert "code" in query
@@ -76,6 +73,8 @@ async def test_authorization_code_flow_plain_code_challenge(
         headers=encode_auth_headers(client_id, client_secret),
     )
 
+    await check_request_validators(request, server.create_token_response)
+
     response = await server.create_token_response(request)
     assert response.status_code == HTTPStatus.OK
     assert response.headers == default_headers
@@ -92,7 +91,11 @@ async def test_authorization_code_flow_plain_code_challenge(
     access_token = response.content.access_token
     refresh_token = response.content.refresh_token
 
-    post = Post(grant_type=GrantType.TYPE_REFRESH_TOKEN, refresh_token=refresh_token,)
+    post = Post(
+        grant_type=GrantType.TYPE_REFRESH_TOKEN,
+        refresh_token=refresh_token,
+        scope=scope,
+    )
 
     request = Request(
         url=request_url,
