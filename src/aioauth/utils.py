@@ -87,8 +87,8 @@ def build_uri(
             parsed_url.scheme,
             parsed_url.netloc,
             parsed_url.path,
-            urlencode(query_params, quote_via=quote),
-            urlencode(fragment, quote_via=quote),
+            urlencode(query_params, quote_via=quote),  # type: ignore
+            urlencode(fragment, quote_via=quote),  # type: ignore
         )
     )
     return uri
@@ -139,16 +139,10 @@ def create_s256_code_challenge(code_verifier: str) -> str:
 def catch_errors_and_unavailability(f) -> Callable:
     @functools.wraps(f)
     async def wrapper(self, request: Request, *args, **kwargs) -> Optional[Response]:
-        if not request.settings.AVAILABLE:
-            error = TemporarilyUnavailableError(request=request)
-            content = ErrorResponse(error=error.error, description=error.description)
-            return Response(
-                content=content, status_code=error.status_code, headers=error.headers
-            )
+        error: Union[TemporarilyUnavailableError, ServerError]
 
         try:
             response = await f(self, request, *args, **kwargs)
-            return response
         except OAuth2Error as exc:
             content = ErrorResponse(error=exc.error, description=exc.description)
             log.debug(exc)
@@ -160,7 +154,11 @@ def catch_errors_and_unavailability(f) -> Callable:
             log.exception("Exception caught while processing request.")
             content = ErrorResponse(error=error.error, description=error.description)
             return Response(
-                content=content, status_code=error.status_code, headers=error.headers,
+                content=content,
+                status_code=error.status_code,
+                headers=error.headers,
             )
+
+        return response
 
     return wrapper

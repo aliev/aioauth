@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
 
 from .base.database import BaseDB
 from .constances import default_headers
@@ -7,6 +7,7 @@ from .errors import (
     InsecureTransportError,
     InvalidRequestError,
     MethodNotAllowedError,
+    TemporarilyUnavailableError,
     UnsupportedGrantTypeError,
     UnsupportedResponseTypeError,
 )
@@ -66,6 +67,9 @@ class AuthorizationServer:
             self.grant_types = grant_types
 
     def validate_request(self, request: Request, allowed_methods: List[RequestMethod]):
+        if not request.settings.AVAILABLE:
+            raise TemporarilyUnavailableError(request=request)
+
         if not is_secure_transport(request):
             raise InsecureTransportError(request=request)
 
@@ -87,6 +91,10 @@ class AuthorizationServer:
         token = await self.db.get_token(
             request=request, client_id=client_id, access_token=request.post.token
         )
+
+        token_response: Union[
+            TokenInactiveIntrospectionResponse, TokenActiveIntrospectionResponse
+        ]
 
         token_response = TokenInactiveIntrospectionResponse()
 

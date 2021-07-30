@@ -48,8 +48,7 @@ clean-test: ## remove test and coverage artifacts
 	rm -fr .pytest_cache
 
 lint: ## check style with flake8
-	flake8 src/aioauth tests
-	pyright src/aioauth tests
+	pre-commit run --all-files
 
 test: ## run tests quickly with the default Python
 	pytest tests
@@ -70,5 +69,5 @@ install: clean ## install the package to the active Python's site-packages
 
 dev-install: clean ## Install the package and test dependencies for local development
 	python -m pip install --upgrade pip
-	pip install -e ."[test]"
+	pip install -e ."[dev]"
 	pre-commit install

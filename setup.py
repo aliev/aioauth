@@ -21,7 +21,7 @@ def read_requirements(path):
 
 
 base_requirements = read_requirements(here / "requirements" / "base.txt")
-test_requirements = read_requirements(here / "requirements" / "test.txt")
+dev_requirements = read_requirements(here / "requirements" / "dev.txt")
 
 setup(
     name=about["__title__"],
@@ -59,8 +59,8 @@ setup(
         "Topic :: Internet :: WWW/HTTP",
     ],
     install_requires=base_requirements,
-    tests_require=test_requirements,
-    extras_require={"test": test_requirements},
+    tests_require=dev_requirements,
+    extras_require={"dev": dev_requirements},
     include_package_data=True,
     keywords="asyncio oauth2 oauth",
     packages=find_packages(where="src"),
