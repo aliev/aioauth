@@ -100,7 +100,8 @@ class ResponseTypeAuthorizationCode(ResponseTypeBase):
             request.query.code_challenge,
         )
         return AuthorizationCodeResponse(
-            code=authorization_code.code, scope=authorization_code.scope,
+            code=authorization_code.code,
+            scope=authorization_code.scope,
         )
 
 

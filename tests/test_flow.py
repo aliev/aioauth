@@ -40,7 +40,10 @@ async def test_authorization_code_flow_plain_code_challenge(
     )
 
     request = Request(
-        url=request_url, query=query, method=RequestMethod.GET, user=user,
+        url=request_url,
+        query=query,
+        method=RequestMethod.GET,
+        user=user,
     )
 
     await check_request_validators(request, server.create_authorization_response)
@@ -154,7 +157,10 @@ async def test_authorization_code_flow_pkce_code_challenge(
     )
 
     request = Request(
-        url=request_url, query=query, method=RequestMethod.GET, user=user,
+        url=request_url,
+        query=query,
+        method=RequestMethod.GET,
+        user=user,
     )
     response = await server.create_authorization_response(request)
     assert response.status_code == HTTPStatus.FOUND
@@ -212,7 +218,10 @@ async def test_implicit_flow(server: AuthorizationServer, defaults: Defaults):
     )
 
     request = Request(
-        url=request_url, query=query, method=RequestMethod.GET, user=user,
+        url=request_url,
+        query=query,
+        method=RequestMethod.GET,
+        user=user,
     )
 
     response = await server.create_authorization_response(request)
@@ -264,7 +273,10 @@ async def test_authorization_code_flow(server: AuthorizationServer, defaults: De
     )
 
     request = Request(
-        url=request_url, query=query, method=RequestMethod.GET, user=user,
+        url=request_url,
+        query=query,
+        method=RequestMethod.GET,
+        user=user,
     )
 
     await check_request_validators(request, server.create_authorization_response)
@@ -314,7 +326,10 @@ async def test_authorization_code_flow_credentials_in_post(
     )
 
     request = Request(
-        url=request_url, query=query, method=RequestMethod.GET, user=user,
+        url=request_url,
+        query=query,
+        method=RequestMethod.GET,
+        user=user,
     )
 
     await check_request_validators(request, server.create_authorization_response)
@@ -335,7 +350,11 @@ async def test_authorization_code_flow_credentials_in_post(
         code=code,
     )
 
-    request = Request(url=request_url, post=post, method=RequestMethod.POST,)
+    request = Request(
+        url=request_url,
+        post=post,
+        method=RequestMethod.POST,
+    )
 
     response = await server.create_token_response(request)
     assert response.status_code == HTTPStatus.OK
@@ -368,7 +387,10 @@ async def test_client_credentials_flow_auth_header(
 ):
     request_url = "https://localhost"
 
-    post = Post(grant_type=GrantType.TYPE_CLIENT_CREDENTIALS, scope=defaults.scope,)
+    post = Post(
+        grant_type=GrantType.TYPE_CLIENT_CREDENTIALS,
+        scope=defaults.scope,
+    )
 
     request = Request(
         url=request_url,
@@ -399,7 +421,10 @@ async def test_multiple_response_types(server: AuthorizationServer, defaults: De
     )
 
     request = Request(
-        url=request_url, query=query, method=RequestMethod.GET, user=user,
+        url=request_url,
+        query=query,
+        method=RequestMethod.GET,
+        user=user,
     )
 
     await check_request_validators(request, server.create_authorization_response)
@@ -434,7 +459,10 @@ async def test_response_type_none(server: AuthorizationServer, defaults: Default
     )
 
     request = Request(
-        url=request_url, query=query, method=RequestMethod.GET, user=user,
+        url=request_url,
+        query=query,
+        method=RequestMethod.GET,
+        user=user,
     )
 
     await check_request_validators(request, server.create_authorization_response)

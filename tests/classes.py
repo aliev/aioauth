@@ -89,7 +89,10 @@ class DB(BaseDB):
                 return authorization_code
 
     async def delete_authorization_code(
-        self, request: Request, client_id: str, code: str,
+        self,
+        request: Request,
+        client_id: str,
+        code: str,
     ):
         authorization_codes: List[AuthorizationCode] = self.storage.get(
             "authorization_codes", []

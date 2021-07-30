@@ -19,7 +19,7 @@ class GrantTypeBase:
         self.db = db
 
     async def create_token_response(self, request: Request) -> TokenResponse:
-        """ Validate token request and create token response. """
+        """Validate token request and create token response."""
         client = await self.validate_request(request)
         token = await self.db.create_token(
             request, client.client_id, request.post.scope
@@ -136,7 +136,7 @@ class PasswordGrantType(GrantTypeBase):
 
 class RefreshTokenGrantType(GrantTypeBase):
     async def create_token_response(self, request: Request) -> TokenResponse:
-        """ Validate token request and create token response. """
+        """Validate token request and create token response."""
         client = await self.validate_request(request)
 
         old_token = await self.db.get_token(

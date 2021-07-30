@@ -153,7 +153,10 @@ async def test_invalid_response_type(
     )
 
     request = Request(
-        url=request_url, query=query, method=RequestMethod.GET, user=user,
+        url=request_url,
+        query=query,
+        method=RequestMethod.GET,
+        user=user,
     )
     response = await server.create_authorization_response(request)
     assert response.status_code == HTTPStatus.BAD_REQUEST
@@ -226,7 +229,10 @@ async def test_expired_refresh_token(
         token, {"issued_at": time.time() - (settings.TOKEN_EXPIRES_IN * 2)}
     )
     request_url = "https://localhost"
-    post = Post(grant_type=GrantType.TYPE_REFRESH_TOKEN, refresh_token=refresh_token,)
+    post = Post(
+        grant_type=GrantType.TYPE_REFRESH_TOKEN,
+        refresh_token=refresh_token,
+    )
     request = Request(
         url=request_url,
         post=post,
