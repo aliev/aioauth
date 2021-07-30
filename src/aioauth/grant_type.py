@@ -1,26 +1,22 @@
-from typing import Optional, Tuple
+from typing import Tuple
 
-from .base.request_validator import BaseRequestValidator
+from .base.database import BaseDB
 from .errors import (
     InvalidGrantError,
     InvalidRequestError,
     InvalidScopeError,
     MismatchingStateError,
     UnauthorizedClientError,
-    UnsupportedGrantTypeError,
 )
 from .models import Client
 from .requests import Request
 from .responses import TokenResponse
-from .types import GrantType, RequestMethod
-from .utils import decode_auth_headers, list_to_scope, scope_to_list
+from .utils import decode_auth_headers, enforce_list, enforce_str
 
 
-class GrantTypeBase(BaseRequestValidator):
-    allowed_methods = [
-        RequestMethod.POST,
-    ]
-    grant_type: Optional[GrantType] = None
+class GrantTypeBase:
+    def __init__(self, db: BaseDB):
+        self.db = db
 
     async def create_token_response(self, request: Request) -> TokenResponse:
         """ Validate token request and create token response. """
@@ -39,8 +35,6 @@ class GrantTypeBase(BaseRequestValidator):
         )
 
     async def validate_request(self, request: Request) -> Client:
-        await super().validate_request(request)
-
         client_id, client_secret = self.get_client_credentials(request)
 
         client = await self.db.get_client(
@@ -52,15 +46,7 @@ class GrantTypeBase(BaseRequestValidator):
                 request=request, description="Invalid client_id parameter value."
             )
 
-        if not request.post.grant_type:
-            raise InvalidRequestError(
-                request=request, description="Request is missing grant type."
-            )
-
-        if self.grant_type != request.post.grant_type:
-            raise UnsupportedGrantTypeError(request=request)
-
-        if not client.check_grant_type(request.post.grant_type):
+        if not client.check_grant_type(request.post.grant_type):  # type: ignore
             raise UnauthorizedClientError(request=request)
 
         if not client.check_scope(request.post.scope):
@@ -79,8 +65,6 @@ class GrantTypeBase(BaseRequestValidator):
 
 
 class AuthorizationCodeGrantType(GrantTypeBase):
-    grant_type: GrantType = GrantType.TYPE_AUTHORIZATION_CODE
-
     async def validate_request(self, request: Request) -> Client:
         client = await super().validate_request(request)
 
@@ -121,7 +105,7 @@ class AuthorizationCodeGrantType(GrantTypeBase):
             if not is_valid_code_challenge:
                 raise MismatchingStateError(request=request)
 
-        if authorization_code.is_expired(request):
+        if authorization_code.is_expired:
             raise InvalidGrantError(request=request)
 
         await self.db.delete_authorization_code(
@@ -132,8 +116,6 @@ class AuthorizationCodeGrantType(GrantTypeBase):
 
 
 class PasswordGrantType(GrantTypeBase):
-    grant_type: GrantType = GrantType.TYPE_PASSWORD
-
     async def validate_request(self, request: Request) -> Client:
         client = await super().validate_request(request)
 
@@ -153,8 +135,6 @@ class PasswordGrantType(GrantTypeBase):
 
 
 class RefreshTokenGrantType(GrantTypeBase):
-    grant_type: GrantType = GrantType.TYPE_REFRESH_TOKEN
-
     async def create_token_response(self, request: Request) -> TokenResponse:
         """ Validate token request and create token response. """
         client = await self.validate_request(request)
@@ -178,10 +158,10 @@ class RefreshTokenGrantType(GrantTypeBase):
         new_scope = old_token.scope
         if request.post.scope:
             # restrict requested tokens to requested scopes in the old token
-            new_scope = list_to_scope(
+            new_scope = enforce_str(
                 list(
-                    set(scope_to_list(old_token.scope))
-                    & set(scope_to_list(request.post.scope))
+                    set(enforce_list(old_token.scope))
+                    & set(enforce_list(request.post.scope))
                 )
             )
 
@@ -208,4 +188,4 @@ class RefreshTokenGrantType(GrantTypeBase):
 
 
 class ClientCredentialsGrantType(GrantTypeBase):
-    grant_type: GrantType = GrantType.TYPE_CLIENT_CREDENTIALS
+    ...

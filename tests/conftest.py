@@ -11,9 +11,13 @@ from aioauth.grant_type import (
     RefreshTokenGrantType,
 )
 from aioauth.models import AuthorizationCode, Client, Token
-from aioauth.response_type import ResponseTypeAuthorizationCode, ResponseTypeToken
+from aioauth.response_type import (
+    ResponseTypeAuthorizationCode,
+    ResponseTypeNone,
+    ResponseTypeToken,
+)
 from aioauth.server import AuthorizationServer
-from aioauth.types import CodeChallengeMethod, EndpointType, GrantType, ResponseType
+from aioauth.types import CodeChallengeMethod, GrantType, ResponseType
 from aioauth.utils import generate_token
 
 from .classes import get_db_class
@@ -36,9 +40,12 @@ def defaults() -> Defaults:
 
 
 @pytest.fixture
-def storage(defaults: Defaults) -> Dict:
-    settings = Settings()
+def settings() -> Settings:
+    return Settings(INSECURE_TRANSPORT=True)
 
+
+@pytest.fixture
+def storage(defaults: Defaults, settings: Settings) -> Dict:
     client = Client(
         client_id=defaults.client_id,
         client_secret=defaults.client_secret,
@@ -49,7 +56,11 @@ def storage(defaults: Defaults) -> Dict:
             GrantType.TYPE_PASSWORD,
         ],
         redirect_uris=[defaults.redirect_uri],
-        response_types=[ResponseType.TYPE_CODE, ResponseType.TYPE_TOKEN],
+        response_types=[
+            ResponseType.TYPE_CODE,
+            ResponseType.TYPE_TOKEN,
+            ResponseType.TYPE_NONE,
+        ],
         scope=defaults.scope,
     )
 
@@ -61,6 +72,7 @@ def storage(defaults: Defaults) -> Dict:
         redirect_uri=defaults.redirect_uri,
         scope=defaults.scope,
         code_challenge_method=CodeChallengeMethod.PLAIN,
+        expires_in=settings.AUTHORIZATION_CODE_EXPIRES_IN,
     )
 
     token = Token(
@@ -91,32 +103,18 @@ def db(db_class: Type[BaseDB]):
 
 @pytest.fixture
 def server(db: BaseDB) -> AuthorizationServer:
-    server = AuthorizationServer(db=db)
-    # Register response type server
-    server.register(
-        EndpointType.RESPONSE_TYPE, ResponseType.TYPE_TOKEN, ResponseTypeToken,
-    )
-    server.register(
-        EndpointType.RESPONSE_TYPE,
-        ResponseType.TYPE_CODE,
-        ResponseTypeAuthorizationCode,
-    )
-
-    # Register grant type server
-    server.register(
-        EndpointType.GRANT_TYPE,
-        GrantType.TYPE_AUTHORIZATION_CODE,
-        AuthorizationCodeGrantType,
-    )
-    server.register(
-        EndpointType.GRANT_TYPE,
-        GrantType.TYPE_CLIENT_CREDENTIALS,
-        ClientCredentialsGrantType,
-    )
-    server.register(
-        EndpointType.GRANT_TYPE, GrantType.TYPE_PASSWORD, PasswordGrantType,
-    )
-    server.register(
-        EndpointType.GRANT_TYPE, GrantType.TYPE_REFRESH_TOKEN, RefreshTokenGrantType,
+    server = AuthorizationServer(
+        db=db,
+        response_types={
+            ResponseType.TYPE_TOKEN: ResponseTypeToken,
+            ResponseType.TYPE_CODE: ResponseTypeAuthorizationCode,
+            ResponseType.TYPE_NONE: ResponseTypeNone,
+        },
+        grant_types={
+            GrantType.TYPE_AUTHORIZATION_CODE: AuthorizationCodeGrantType,
+            GrantType.TYPE_CLIENT_CREDENTIALS: ClientCredentialsGrantType,
+            GrantType.TYPE_PASSWORD: PasswordGrantType,
+            GrantType.TYPE_REFRESH_TOKEN: RefreshTokenGrantType,
+        },
     )
     return server

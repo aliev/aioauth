@@ -4,6 +4,7 @@ from typing import Any, Callable, Dict, Union
 from aioauth.constances import default_headers
 from aioauth.requests import Post, Query, Request
 from aioauth.responses import ErrorResponse, Response
+from aioauth.structures import CaseInsensitiveDict
 from aioauth.types import ErrorType, RequestMethod
 
 EMPTY_KEYS = {
@@ -80,18 +81,14 @@ EMPTY_KEYS = {
             headers=default_headers,
         ),
         "client_id": Response(
-            content=ErrorResponse(
-                error=ErrorType.INVALID_GRANT, description="Invalid credentials given.",
-            ),
-            status_code=HTTPStatus.BAD_REQUEST,
-            headers=default_headers,
+            content=ErrorResponse(error=ErrorType.INVALID_CLIENT, description="",),
+            status_code=HTTPStatus.UNAUTHORIZED,
+            headers=CaseInsensitiveDict({"www-authenticate": "Basic"}),
         ),
         "client_secret": Response(
-            content=ErrorResponse(
-                error=ErrorType.INVALID_GRANT, description="Invalid credentials given.",
-            ),
-            status_code=HTTPStatus.BAD_REQUEST,
-            headers=default_headers,
+            content=ErrorResponse(error=ErrorType.INVALID_CLIENT, description="",),
+            status_code=HTTPStatus.UNAUTHORIZED,
+            headers=CaseInsensitiveDict({"www-authenticate": "Basic"}),
         ),
         "username": Response(
             content=ErrorResponse(
@@ -183,7 +180,7 @@ INVALID_KEYS = {
         ),
         "client_id": Response(
             content=ErrorResponse(
-                error=ErrorType.INVALID_GRANT,
+                error=ErrorType.INVALID_REQUEST,
                 description="Invalid client_id parameter value.",
             ),
             status_code=HTTPStatus.BAD_REQUEST,
@@ -191,8 +188,8 @@ INVALID_KEYS = {
         ),
         "client_secret": Response(
             content=ErrorResponse(
-                error=ErrorType.INVALID_GRANT,
-                description="Invalid client_secret parameter value.",
+                error=ErrorType.INVALID_REQUEST,
+                description="Invalid client_id parameter value.",
             ),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
@@ -244,7 +241,9 @@ async def check_query_values(
         response_expected = responses[key]
         response_actual = await endpoint_func(request_)
 
-        assert response_expected == response_actual
+        assert (
+            response_expected == response_actual
+        ), f"{response_expected} != {response_actual}"
 
 
 async def check_request_validators(

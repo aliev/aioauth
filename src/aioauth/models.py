@@ -1,9 +1,8 @@
 import time
 from typing import List, NamedTuple, Optional, Text
 
-from .requests import Request
 from .types import CodeChallengeMethod, GrantType, ResponseType
-from .utils import create_s256_code_challenge, list_to_scope, scope_to_list
+from .utils import create_s256_code_challenge, enforce_list, enforce_str
 
 
 class Client(NamedTuple):
@@ -20,30 +19,31 @@ class Client(NamedTuple):
     def check_grant_type(self, grant_type: GrantType) -> bool:
         return grant_type in self.grant_types
 
-    def check_response_type(self, response_type: ResponseType) -> bool:
-        return response_type in self.response_types
+    def check_response_type(self, response_type: str) -> bool:
+        return not (set(enforce_list(response_type)) - set(self.response_types))
 
     def get_allowed_scope(self, scope) -> Text:
         if not scope:
             return ""
         allowed = set(self.scope.split())
-        scopes = scope_to_list(scope)
-        return list_to_scope([s for s in scopes if s in allowed])
+        scopes = enforce_list(scope)
+        return enforce_str([s for s in scopes if s in allowed])
 
     def check_scope(self, scope: str) -> bool:
         allowed_scope = self.get_allowed_scope(scope)
-        return not (set(scope_to_list(scope)) - set(scope_to_list(allowed_scope)))
+        return not (set(enforce_list(scope)) - set(enforce_list(allowed_scope)))
 
 
 class AuthorizationCode(NamedTuple):
     code: Text
     client_id: Text
     redirect_uri: Text
-    response_type: ResponseType
+    response_type: str
     scope: Text
     auth_time: int
+    expires_in: int
     code_challenge: Optional[Text] = None
-    code_challenge_method: Optional[CodeChallengeMethod] = None
+    code_challenge_method: Optional[Text] = None
     nonce: Optional[Text] = None
 
     def check_code_challenge(self, code_verifier: str) -> bool:
@@ -61,11 +61,9 @@ class AuthorizationCode(NamedTuple):
 
         return is_valid_code_challenge
 
-    def is_expired(self, request: Request) -> bool:
-        return (
-            self.auth_time + request.settings.AUTHORIZATION_CODE_EXPIRES_IN
-            < time.time()
-        )
+    @property
+    def is_expired(self) -> bool:
+        return self.auth_time + self.expires_in < time.time()
 
 
 class Token(NamedTuple):
@@ -78,7 +76,8 @@ class Token(NamedTuple):
     token_type: Text = "Bearer"
     revoked: bool = False
 
-    def is_expired(self, request: Request) -> bool:
+    @property
+    def is_expired(self) -> bool:
         return self.token_expires_in < time.time()
 
     @property

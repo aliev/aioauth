@@ -15,9 +15,7 @@ from tests.models import Defaults
 
 
 @pytest.fixture
-def storage(defaults: Defaults) -> Dict:
-    settings = Settings()
-
+def storage(defaults: Defaults, settings: Settings) -> Dict:
     client = Client(
         client_id=defaults.client_id,
         client_secret=defaults.client_secret,
@@ -40,6 +38,7 @@ def storage(defaults: Defaults) -> Dict:
         redirect_uri=defaults.redirect_uri,
         scope="read write",
         code_challenge_method=CodeChallengeMethod.PLAIN,
+        expires_in=settings.AUTHORIZATION_CODE_EXPIRES_IN,
     )
 
     token = Token(

@@ -28,7 +28,7 @@ from .utils import set_values
 async def test_insecure_transport_error(server: AuthorizationServer):
     request_url = "http://localhost"
 
-    request = Request(url=request_url, method=RequestMethod.GET,)
+    request = Request(url=request_url, method=RequestMethod.GET)
 
     response = await server.create_authorization_response(request)
     assert response.status_code == HTTPStatus.BAD_REQUEST
@@ -38,7 +38,7 @@ async def test_insecure_transport_error(server: AuthorizationServer):
 async def test_allowed_methods(server: AuthorizationServer):
     request_url = "https://localhost"
 
-    request = Request(url=request_url, method=RequestMethod.POST,)
+    request = Request(url=request_url, method=RequestMethod.POST)
 
     response = await server.create_authorization_response(request)
     assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED
@@ -184,11 +184,12 @@ async def test_anonymous_user(server: AuthorizationServer, defaults: Defaults, s
 
 @pytest.mark.asyncio
 async def test_expired_authorization_code(
-    server: AuthorizationServer, defaults: Defaults, storage: Dict[str, List]
+    server: AuthorizationServer,
+    defaults: Defaults,
+    storage: Dict[str, List],
+    settings: Settings,
 ):
     request_url = "https://localhost"
-
-    settings = Settings()
 
     authorization_code = storage["authorization_codes"][0]
     storage["authorization_codes"][0] = set_values(
@@ -214,9 +215,11 @@ async def test_expired_authorization_code(
 
 @pytest.mark.asyncio
 async def test_expired_refresh_token(
-    server: AuthorizationServer, defaults: Defaults, storage: Dict[str, List]
+    server: AuthorizationServer,
+    defaults: Defaults,
+    storage: Dict[str, List],
+    settings: Settings,
 ):
-    settings = Settings()
     token = storage["tokens"][0]
     refresh_token = token.refresh_token
     storage["tokens"][0] = set_values(
@@ -229,6 +232,7 @@ async def test_expired_refresh_token(
         post=post,
         method=RequestMethod.POST,
         headers=encode_auth_headers(defaults.client_id, defaults.client_secret),
+        settings=settings,
     )
     response = await server.create_token_response(request)
     assert response.status_code == HTTPStatus.BAD_REQUEST

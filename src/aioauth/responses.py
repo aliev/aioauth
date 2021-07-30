@@ -29,6 +29,14 @@ class AuthorizationCodeResponse(NamedTuple):
     scope: str
 
 
+class NoneResponse(NamedTuple):
+    """Response for none.
+    See: https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#none
+    Used by response_types:
+        - ResponseTypeNone
+    """
+
+
 class TokenResponse(NamedTuple):
     """Response for token.
 
@@ -77,6 +85,7 @@ class Response(NamedTuple):
         Union[
             ErrorResponse,
             TokenResponse,
+            NoneResponse,
             AuthorizationCodeResponse,
             TokenActiveIntrospectionResponse,
             TokenInactiveIntrospectionResponse,

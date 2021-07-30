@@ -1,6 +1,4 @@
-from typing import Optional
-
-from .base.request_validator import BaseRequestValidator
+from .base.database import BaseDB
 from .errors import (
     InvalidClientError,
     InvalidRequestError,
@@ -9,19 +7,16 @@ from .errors import (
 )
 from .models import Client
 from .requests import Request
-from .responses import AuthorizationCodeResponse, TokenResponse
-from .types import CodeChallengeMethod, RequestMethod, ResponseType
+from .responses import AuthorizationCodeResponse, NoneResponse, TokenResponse
+from .types import CodeChallengeMethod
 
 
-class ResponseTypeBase(BaseRequestValidator):
-    response_type: Optional[ResponseType] = None
-    allowed_methods = [
-        RequestMethod.GET,
-    ]
-    code_challenge_methods = list(CodeChallengeMethod)
+class ResponseTypeBase:
+    def __init__(self, db: BaseDB):
+        self.db = db
 
     async def validate_request(self, request: Request) -> Client:
-        await super().validate_request(request)
+        code_challenge_methods = list(CodeChallengeMethod)
 
         if not request.query.client_id:
             raise InvalidRequestError(
@@ -42,21 +37,13 @@ class ResponseTypeBase(BaseRequestValidator):
                 request=request, description="Mismatching redirect URI."
             )
 
-        if self.response_type != request.query.response_type:
-            raise UnsupportedResponseTypeError(request=request)
-
         if not client.check_redirect_uri(request.query.redirect_uri):
             raise InvalidRequestError(
                 request=request, description="Invalid redirect URI."
             )
 
-        if not request.query.response_type:
-            raise InvalidRequestError(
-                request=request, description="Missing response_type parameter."
-            )
-
         if request.query.code_challenge_method:
-            if request.query.code_challenge_method not in self.code_challenge_methods:
+            if request.query.code_challenge_method not in code_challenge_methods:
                 raise InvalidRequestError(
                     request=request, description="Transform algorithm not supported."
                 )
@@ -79,16 +66,11 @@ class ResponseTypeBase(BaseRequestValidator):
 
         return client
 
-    async def create_authorization_response(self, request: Request) -> Client:
-        """Validate authorization request and create authorization response."""
-        return await self.validate_request(request)
-
 
 class ResponseTypeToken(ResponseTypeBase):
-    response_type: ResponseType = ResponseType.TYPE_TOKEN
-
     async def create_authorization_response(self, request: Request) -> TokenResponse:
-        client = await super().create_authorization_response(request)
+        client = await super().validate_request(request)
+
         token = await self.db.create_token(
             request, client.client_id, request.query.scope
         )
@@ -103,21 +85,26 @@ class ResponseTypeToken(ResponseTypeBase):
 
 
 class ResponseTypeAuthorizationCode(ResponseTypeBase):
-    response_type: ResponseType = ResponseType.TYPE_CODE
-
     async def create_authorization_response(
         self, request: Request
     ) -> AuthorizationCodeResponse:
-        client = await super().create_authorization_response(request)
+        client = await super().validate_request(request)
+
         authorization_code = await self.db.create_authorization_code(
             request,
             client.client_id,
             request.query.scope,
-            request.query.response_type,  # type: ignore
+            request.query.response_type,
             request.query.redirect_uri,
-            request.query.code_challenge_method,  # type: ignore
-            request.query.code_challenge,  # type: ignore
+            request.query.code_challenge_method,
+            request.query.code_challenge,
         )
         return AuthorizationCodeResponse(
             code=authorization_code.code, scope=authorization_code.scope,
         )
+
+
+class ResponseTypeNone(ResponseTypeBase):
+    async def create_authorization_response(self, request: Request) -> NoneResponse:
+        await super().validate_request(request)
+        return NoneResponse()

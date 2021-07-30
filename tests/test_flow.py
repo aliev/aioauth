@@ -10,8 +10,8 @@ from aioauth.types import CodeChallengeMethod, GrantType, RequestMethod, Respons
 from aioauth.utils import (
     create_s256_code_challenge,
     encode_auth_headers,
+    enforce_list,
     generate_token,
-    scope_to_list,
 )
 
 from .conftest import Defaults
@@ -19,14 +19,13 @@ from .utils import check_request_validators
 
 
 @pytest.mark.asyncio
-async def test_authorization_code_flow_plan_code_challenge(
+async def test_authorization_code_flow_plain_code_challenge(
     server: AuthorizationServer, defaults: Defaults, db: BaseDB
 ):
     code_challenge = generate_token(128)
     client_id = defaults.client_id
     client_secret = defaults.client_secret
     scope = defaults.scope
-    state = generate_token(10)
     redirect_uri = defaults.redirect_uri
     request_url = "https://localhost"
     user = "username"
@@ -36,7 +35,6 @@ async def test_authorization_code_flow_plan_code_challenge(
         response_type=ResponseType.TYPE_CODE,
         redirect_uri=redirect_uri,
         scope=scope,
-        state=state,
         code_challenge_method=CodeChallengeMethod.PLAIN,
         code_challenge=code_challenge,
     )
@@ -51,7 +49,6 @@ async def test_authorization_code_flow_plan_code_challenge(
     location = response.headers["location"]
     location = urlparse(location)
     query = dict(parse_qsl(location.query))
-    assert query["state"] == state
     assert query["scope"] == scope
     assert await db.get_authorization_code(request, client_id, query["code"])
     assert "code" in query
@@ -76,6 +73,8 @@ async def test_authorization_code_flow_plan_code_challenge(
         headers=encode_auth_headers(client_id, client_secret),
     )
 
+    await check_request_validators(request, server.create_token_response)
+
     response = await server.create_token_response(request)
     assert response.status_code == HTTPStatus.OK
     assert response.headers == default_headers
@@ -92,7 +91,11 @@ async def test_authorization_code_flow_plan_code_challenge(
     access_token = response.content.access_token
     refresh_token = response.content.refresh_token
 
-    post = Post(grant_type=GrantType.TYPE_REFRESH_TOKEN, refresh_token=refresh_token,)
+    post = Post(
+        grant_type=GrantType.TYPE_REFRESH_TOKEN,
+        refresh_token=refresh_token,
+        scope=scope,
+    )
 
     request = Request(
         url=request_url,
@@ -124,7 +127,7 @@ async def test_authorization_code_flow_plan_code_challenge(
         response.content.access_token,
         response.content.refresh_token,
     )
-    assert set(scope_to_list(new_token.scope)) == set(scope_to_list(token_in_db.scope))
+    assert set(enforce_list(new_token.scope)) == set(enforce_list(token_in_db.scope))
 
 
 @pytest.mark.asyncio
@@ -264,6 +267,8 @@ async def test_authorization_code_flow(server: AuthorizationServer, defaults: De
         url=request_url, query=query, method=RequestMethod.GET, user=user,
     )
 
+    await check_request_validators(request, server.create_authorization_response)
+
     response = await server.create_authorization_response(request)
     assert response.status_code == HTTPStatus.FOUND
 
@@ -284,6 +289,8 @@ async def test_authorization_code_flow(server: AuthorizationServer, defaults: De
         method=RequestMethod.POST,
         headers=encode_auth_headers(client_id, client_secret),
     )
+
+    await check_request_validators(request, server.create_token_response)
 
     response = await server.create_token_response(request)
     assert response.status_code == HTTPStatus.OK
@@ -309,6 +316,8 @@ async def test_authorization_code_flow_credentials_in_post(
     request = Request(
         url=request_url, query=query, method=RequestMethod.GET, user=user,
     )
+
+    await check_request_validators(request, server.create_authorization_response)
 
     response = await server.create_authorization_response(request)
     assert response.status_code == HTTPStatus.FOUND
@@ -347,6 +356,8 @@ async def test_client_credentials_flow_post_data(
 
     request = Request(url=request_url, post=post, method=RequestMethod.POST)
 
+    await check_request_validators(request, server.create_token_response)
+
     response = await server.create_token_response(request)
     assert response.status_code == HTTPStatus.OK
 
@@ -368,5 +379,71 @@ async def test_client_credentials_flow_auth_header(
         ),
     )
 
+    await check_request_validators(request, server.create_token_response)
+
     response = await server.create_token_response(request)
     assert response.status_code == HTTPStatus.OK
+
+
+@pytest.mark.asyncio
+async def test_multiple_response_types(server: AuthorizationServer, defaults: Defaults):
+    request_url = "https://localhost"
+    user = "username"
+
+    query = Query(
+        client_id=defaults.client_id,
+        response_type=f"{ResponseType.TYPE_CODE} {ResponseType.TYPE_TOKEN}",
+        redirect_uri=defaults.redirect_uri,
+        scope=defaults.scope,
+        state=generate_token(10),
+    )
+
+    request = Request(
+        url=request_url, query=query, method=RequestMethod.GET, user=user,
+    )
+
+    await check_request_validators(request, server.create_authorization_response)
+
+    response = await server.create_authorization_response(request)
+    assert response.status_code == HTTPStatus.FOUND
+    location = response.headers["location"]
+    location = urlparse(location)
+    fragment = dict(parse_qsl(location.fragment))
+
+    assert "state" in fragment
+    assert "expires_in" in fragment
+    assert "refresh_token_expires_in" in fragment
+    assert "access_token" in fragment
+    assert "refresh_token" in fragment
+    assert "scope" in fragment
+    assert "token_type" in fragment
+    assert "code" in fragment
+
+
+@pytest.mark.asyncio
+async def test_response_type_none(server: AuthorizationServer, defaults: Defaults):
+    request_url = "https://localhost"
+    user = "username"
+
+    query = Query(
+        client_id=defaults.client_id,
+        response_type=ResponseType.TYPE_NONE,
+        redirect_uri=defaults.redirect_uri,
+        scope=defaults.scope,
+        state=generate_token(10),
+    )
+
+    request = Request(
+        url=request_url, query=query, method=RequestMethod.GET, user=user,
+    )
+
+    await check_request_validators(request, server.create_authorization_response)
+
+    response = await server.create_authorization_response(request)
+    assert response.status_code == HTTPStatus.FOUND
+    location = response.headers["location"]
+    location = urlparse(location)
+    fragment = dict(parse_qsl(location.fragment))
+    query = dict(parse_qsl(location.query))
+    assert fragment == {}
+    assert query == {}

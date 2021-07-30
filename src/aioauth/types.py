@@ -26,11 +26,7 @@ class GrantType(str, Enum):
 class ResponseType(str, Enum):
     TYPE_TOKEN = "token"
     TYPE_CODE = "code"
-
-
-class EndpointType(str, Enum):
-    GRANT_TYPE = "grant_type"
-    RESPONSE_TYPE = "response_type"
+    TYPE_NONE = "none"
 
 
 class RequestMethod(str, Enum):
