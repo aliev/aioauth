@@ -90,7 +90,11 @@ class BaseDB:
         redirect_uri: str,
         nonce: str,
     ) -> str:
-        """Returns token_id"""
+        """Returns token_id. Required for OpenID.
+
+        Method is used by response types:
+            - ResponseTypeIdToken
+        """
         raise NotImplementedError("create_token_id must be implemented.")
 
     async def save_authorization_code(
