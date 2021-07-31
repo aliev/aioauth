@@ -61,6 +61,7 @@ def storage(defaults: Defaults, settings: Settings) -> Dict:
             ResponseType.TYPE_CODE,
             ResponseType.TYPE_TOKEN,
             ResponseType.TYPE_NONE,
+            ResponseType.TYPE_ID_TOKEN,
         ],
         scope=defaults.scope,
     )

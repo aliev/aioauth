@@ -475,3 +475,44 @@ async def test_response_type_none(server: AuthorizationServer, defaults: Default
     query = dict(parse_qsl(location.query))
     assert fragment == {}
     assert query == {}
+
+
+@pytest.mark.asyncio
+async def test_response_type_id_token(server: AuthorizationServer, defaults: Defaults):
+    request_url = "https://localhost"
+    user = "username"
+
+    query = Query(
+        client_id=defaults.client_id,
+        response_type=f"{ResponseType.TYPE_CODE} {ResponseType.TYPE_TOKEN} {ResponseType.TYPE_ID_TOKEN}",
+        redirect_uri=defaults.redirect_uri,
+        scope=defaults.scope,
+        state=generate_token(10),
+        nonce="123",
+    )
+
+    request = Request(
+        url=request_url,
+        query=query,
+        method=RequestMethod.GET,
+        user=user,
+    )
+
+    await check_request_validators(request, server.create_authorization_response)
+
+    response = await server.create_authorization_response(request)
+
+    location = response.headers["location"]
+    location = urlparse(location)
+    fragment = dict(parse_qsl(location.fragment))
+    query = dict(parse_qsl(location.query))
+
+    assert "state" in fragment
+    assert "expires_in" in fragment
+    assert "refresh_token_expires_in" in fragment
+    assert "access_token" in fragment
+    assert "refresh_token" in fragment
+    assert "scope" in fragment
+    assert "token_type" in fragment
+    assert "code" in fragment
+    assert "id_token" in fragment
