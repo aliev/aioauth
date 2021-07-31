@@ -7,7 +7,12 @@ from .errors import (
 )
 from .models import Client
 from .requests import Request
-from .responses import AuthorizationCodeResponse, NoneResponse, TokenResponse
+from .responses import (
+    AuthorizationCodeResponse,
+    IdTokenResponse,
+    NoneResponse,
+    TokenResponse,
+)
 from .types import CodeChallengeMethod
 
 
@@ -103,6 +108,33 @@ class ResponseTypeAuthorizationCode(ResponseTypeBase):
             code=authorization_code.code,
             scope=authorization_code.scope,
         )
+
+
+class ResponseTypeIdToken(ResponseTypeBase):
+    async def validate_request(self, request: Request) -> Client:
+        client = await super().validate_request(request)
+
+        # nonce is required for id_token
+        if not request.query.nonce:
+            raise InvalidRequestError(
+                request=request,
+                description="Nonce required for response_type id_token.",
+            )
+        return client
+
+    async def create_authorization_response(self, request: Request) -> IdTokenResponse:
+        client = await self.validate_request(request)
+
+        id_token = await self.db.get_id_token(
+            request,
+            client.client_id,
+            request.query.scope,
+            request.query.response_type,
+            request.query.redirect_uri,
+            request.query.nonce,  # type: ignore
+        )
+
+        return IdTokenResponse(id_token=id_token)
 
 
 class ResponseTypeNone(ResponseTypeBase):

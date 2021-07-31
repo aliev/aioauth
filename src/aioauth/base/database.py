@@ -81,6 +81,18 @@ class BaseDB:
         await self.save_authorization_code(authorization_code)
         return authorization_code
 
+    async def get_id_token(
+        self,
+        request: Request,
+        client_id: str,
+        scope: str,
+        response_type: str,
+        redirect_uri: str,
+        nonce: str,
+    ) -> str:
+        """Returns token_id"""
+        raise NotImplementedError("create_token_id must be implemented.")
+
     async def save_authorization_code(
         self, authorization_code: AuthorizationCode
     ) -> None:

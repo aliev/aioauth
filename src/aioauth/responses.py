@@ -53,6 +53,16 @@ class TokenResponse(NamedTuple):
     token_type: str = "Bearer"
 
 
+class IdTokenResponse(NamedTuple):
+    """OpenID response. Returns id_token.
+
+    Used by response_types:
+        - ResponseTypeIdToken
+    """
+
+    id_token: str
+
+
 class TokenActiveIntrospectionResponse(NamedTuple):
     """Response for a valid access token.
 
@@ -89,6 +99,7 @@ class Response(NamedTuple):
             AuthorizationCodeResponse,
             TokenActiveIntrospectionResponse,
             TokenInactiveIntrospectionResponse,
+            IdTokenResponse,
         ]
     ] = None
     status_code: HTTPStatus = HTTPStatus.OK

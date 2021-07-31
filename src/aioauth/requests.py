@@ -11,6 +11,7 @@ class Query(NamedTuple):
     response_type: str = ""
     state: str = ""
     scope: str = ""
+    nonce: Optional[str] = None
     code_challenge_method: Optional[str] = None
     code_challenge: Optional[str] = None
 

@@ -20,6 +20,7 @@ from .grant_type import (
 from .requests import Request
 from .response_type import (
     ResponseTypeAuthorizationCode,
+    ResponseTypeIdToken,
     ResponseTypeNone,
     ResponseTypeToken,
 )
@@ -44,6 +45,7 @@ class AuthorizationServer:
         ResponseType.TYPE_TOKEN: ResponseTypeToken,
         ResponseType.TYPE_CODE: ResponseTypeAuthorizationCode,
         ResponseType.TYPE_NONE: ResponseTypeNone,
+        ResponseType.TYPE_ID_TOKEN: ResponseTypeIdToken,
     }
     grant_types = {
         GrantType.TYPE_AUTHORIZATION_CODE: AuthorizationCodeGrantType,
