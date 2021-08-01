@@ -1,11 +1,11 @@
 from pathlib import Path
 
-from setuptools import find_packages, setup
+from setuptools import setup
 
 here = Path(__file__).parent
 about = {}
 
-with open(here / "src" / "aioauth" / "__version__.py", "r") as f:
+with open(here / "aioauth" / "__version__.py", "r") as f:
     exec(f.read(), about)
 
 with open("README.md") as readme_file:
@@ -63,8 +63,7 @@ setup(
     extras_require={"dev": dev_requirements},
     include_package_data=True,
     keywords="asyncio oauth2 oauth",
-    packages=find_packages(where="src"),
-    package_dir={"": "src"},
+    package_dir={"aioauth": "aioauth"},
     test_suite="tests",
     zip_safe=False,
     project_urls={"Source": about["__url__"]},

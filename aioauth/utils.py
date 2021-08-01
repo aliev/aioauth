@@ -145,7 +145,7 @@ def catch_errors_and_unavailability(f) -> Callable:
             response = await f(self, request, *args, **kwargs)
         except OAuth2Error as exc:
             content = ErrorResponse(error=exc.error, description=exc.description)
-            log.debug(exc)
+            log.exception("Exception caught while processing request.")
             return Response(
                 content=content, status_code=exc.status_code, headers=exc.headers
             )
