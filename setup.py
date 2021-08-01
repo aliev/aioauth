@@ -20,7 +20,6 @@ def read_requirements(path):
         raise RuntimeError(f"{path} is broken")
 
 
-base_requirements = read_requirements(here / "requirements" / "base.txt")
 dev_requirements = read_requirements(here / "requirements" / "dev.txt")
 
 setup(
@@ -58,7 +57,6 @@ setup(
         "Topic :: Internet :: WWW/HTTP :: HTTP Servers",
         "Topic :: Internet :: WWW/HTTP",
     ],
-    install_requires=base_requirements,
     tests_require=dev_requirements,
     extras_require={"dev": dev_requirements},
     include_package_data=True,
