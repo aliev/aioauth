@@ -1,6 +1,6 @@
 from typing import Tuple
 
-from .base.database import BaseDB
+from .storage import BaseStorage
 from .errors import (
     InvalidGrantError,
     InvalidRequestError,
@@ -15,13 +15,13 @@ from .utils import decode_auth_headers, enforce_list, enforce_str
 
 
 class GrantTypeBase:
-    def __init__(self, db: BaseDB):
-        self.db = db
+    def __init__(self, storage: BaseStorage):
+        self.storage = storage
 
     async def create_token_response(self, request: Request) -> TokenResponse:
         """Validate token request and create token response."""
         client = await self.validate_request(request)
-        token = await self.db.create_token(
+        token = await self.storage.create_token(
             request, client.client_id, request.post.scope
         )
 
@@ -37,7 +37,7 @@ class GrantTypeBase:
     async def validate_request(self, request: Request) -> Client:
         client_id, client_secret = self.get_client_credentials(request)
 
-        client = await self.db.get_client(
+        client = await self.storage.get_client(
             request, client_id=client_id, client_secret=client_secret
         )
 
@@ -83,7 +83,7 @@ class AuthorizationCodeGrantType(GrantTypeBase):
                 request=request, description="Missing code parameter."
             )
 
-        authorization_code = await self.db.get_authorization_code(
+        authorization_code = await self.storage.get_authorization_code(
             request, client.client_id, request.post.code
         )
 
@@ -108,7 +108,7 @@ class AuthorizationCodeGrantType(GrantTypeBase):
         if authorization_code.is_expired:
             raise InvalidGrantError(request=request)
 
-        await self.db.delete_authorization_code(
+        await self.storage.delete_authorization_code(
             request, client.client_id, request.post.code
         )
 
@@ -124,7 +124,7 @@ class PasswordGrantType(GrantTypeBase):
                 request=request, description="Invalid credentials given."
             )
 
-        user = await self.db.authenticate(request)
+        user = await self.storage.authenticate(request)
 
         if not user:
             raise InvalidGrantError(
@@ -139,7 +139,7 @@ class RefreshTokenGrantType(GrantTypeBase):
         """Validate token request and create token response."""
         client = await self.validate_request(request)
 
-        old_token = await self.db.get_token(
+        old_token = await self.storage.get_token(
             request=request,
             client_id=client.client_id,
             refresh_token=request.post.refresh_token,
@@ -149,7 +149,7 @@ class RefreshTokenGrantType(GrantTypeBase):
             raise InvalidGrantError(request=request)
 
         # Revoke old token
-        await self.db.revoke_token(
+        await self.storage.revoke_token(
             request=request, refresh_token=old_token.refresh_token
         )
 
@@ -165,7 +165,7 @@ class RefreshTokenGrantType(GrantTypeBase):
                 )
             )
 
-        token = await self.db.create_token(request, client.client_id, new_scope)
+        token = await self.storage.create_token(request, client.client_id, new_scope)
 
         return TokenResponse(
             expires_in=token.expires_in,

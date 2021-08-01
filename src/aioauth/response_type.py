@@ -1,4 +1,4 @@
-from .base.database import BaseDB
+from .storage import BaseStorage
 from .errors import (
     InvalidClientError,
     InvalidRequestError,
@@ -17,8 +17,8 @@ from .types import CodeChallengeMethod
 
 
 class ResponseTypeBase:
-    def __init__(self, db: BaseDB):
-        self.db = db
+    def __init__(self, storage: BaseStorage):
+        self.storage = storage
 
     async def validate_request(self, request: Request) -> Client:
         code_challenge_methods = list(CodeChallengeMethod)
@@ -28,7 +28,7 @@ class ResponseTypeBase:
                 request=request, description="Missing client_id parameter."
             )
 
-        client = await self.db.get_client(
+        client = await self.storage.get_client(
             request=request, client_id=request.query.client_id
         )
 
@@ -76,7 +76,7 @@ class ResponseTypeToken(ResponseTypeBase):
     async def create_authorization_response(self, request: Request) -> TokenResponse:
         client = await super().validate_request(request)
 
-        token = await self.db.create_token(
+        token = await self.storage.create_token(
             request, client.client_id, request.query.scope
         )
         return TokenResponse(
@@ -95,7 +95,7 @@ class ResponseTypeAuthorizationCode(ResponseTypeBase):
     ) -> AuthorizationCodeResponse:
         client = await super().validate_request(request)
 
-        authorization_code = await self.db.create_authorization_code(
+        authorization_code = await self.storage.create_authorization_code(
             request,
             client.client_id,
             request.query.scope,
@@ -125,7 +125,7 @@ class ResponseTypeIdToken(ResponseTypeBase):
     async def create_authorization_response(self, request: Request) -> IdTokenResponse:
         client = await self.validate_request(request)
 
-        id_token = await self.db.get_id_token(
+        id_token = await self.storage.get_id_token(
             request,
             client.client_id,
             request.query.scope,

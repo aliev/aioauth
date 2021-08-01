@@ -1,7 +1,7 @@
 from http import HTTPStatus
 from typing import Dict, List, Optional, Union
 
-from .base.database import BaseDB
+from .storage import BaseStorage
 from .constances import default_headers
 from .errors import (
     InsecureTransportError,
@@ -56,11 +56,11 @@ class AuthorizationServer:
 
     def __init__(
         self,
-        db: BaseDB,
+        storage: BaseStorage,
         response_types: Optional[Dict] = None,
         grant_types: Optional[Dict] = None,
     ):
-        self.db = db
+        self.storage = storage
 
         if response_types is not None:
             self.response_types = response_types
@@ -90,7 +90,7 @@ class AuthorizationServer:
         self.validate_request(request, [RequestMethod.POST])
         client_id, _ = decode_auth_headers(request)
 
-        token = await self.db.get_token(
+        token = await self.storage.get_token(
             request=request, client_id=client_id, access_token=request.post.token
         )
 
@@ -131,7 +131,7 @@ class AuthorizationServer:
             # Requested GrantType was not found in the list of the grant_types.
             raise UnsupportedGrantTypeError(request=request)
 
-        grant_type = GrantTypeClass(db=self.db)
+        grant_type = GrantTypeClass(storage=self.storage)
 
         response = await grant_type.create_token_response(request)
 
@@ -175,7 +175,7 @@ class AuthorizationServer:
             raise UnsupportedResponseTypeError(request=request)
 
         for ResponseTypeClass in response_type_classes:
-            response_type = ResponseTypeClass(db=self.db)
+            response_type = ResponseTypeClass(storage=self.storage)
             response = await response_type.create_authorization_response(request)
             responses.update(response._asdict())
 
