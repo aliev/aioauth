@@ -1,11 +1,11 @@
 from pathlib import Path
 
-from setuptools import find_packages, setup
+from setuptools import setup
 
 here = Path(__file__).parent
 about = {}
 
-with open(here / "src" / "aioauth" / "__version__.py", "r") as f:
+with open(here / "aioauth" / "__version__.py", "r") as f:
     exec(f.read(), about)
 
 with open("README.md") as readme_file:
@@ -20,7 +20,6 @@ def read_requirements(path):
         raise RuntimeError(f"{path} is broken")
 
 
-base_requirements = read_requirements(here / "requirements" / "base.txt")
 dev_requirements = read_requirements(here / "requirements" / "dev.txt")
 
 setup(
@@ -58,13 +57,11 @@ setup(
         "Topic :: Internet :: WWW/HTTP :: HTTP Servers",
         "Topic :: Internet :: WWW/HTTP",
     ],
-    install_requires=base_requirements,
     tests_require=dev_requirements,
     extras_require={"dev": dev_requirements},
     include_package_data=True,
     keywords="asyncio oauth2 oauth",
-    packages=find_packages(where="src"),
-    package_dir={"": "src"},
+    package_dir={"aioauth": "aioauth"},
     test_suite="tests",
     zip_safe=False,
     project_urls={"Source": about["__url__"]},
