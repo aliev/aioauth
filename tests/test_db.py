@@ -46,3 +46,13 @@ async def test_db(storage: Dict[str, List]):
 
     with pytest.raises(NotImplementedError):
         await db.save_authorization_code(authorization_code)
+
+    with pytest.raises(NotImplementedError):
+        await db.get_id_token(
+            request=request,
+            client_id=client.client_id,
+            scope="",
+            response_type="",
+            redirect_uri="",
+            nonce="",
+        )
