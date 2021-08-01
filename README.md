@@ -195,7 +195,7 @@ async def to_oauth2_request(request: Request) -> OAuth2Request:
 
 async def to_fastapi_response(oauth2_response: OAuth2Response) -> Response:
     """Converts OAuth2Response instance to fastapi Response instance"""
-    response_content = oauth2_response.content._asdict() if oauth2_response.content is not None else {}
+    response_content = oauth2_response.content
     headers = dict(oauth2_response.headers)
     status_code = oauth2_response.status_code
     content = json.dumps(response_content)

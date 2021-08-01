@@ -38,3 +38,9 @@ class RequestMethod(str, Enum):
 class CodeChallengeMethod(str, Enum):
     PLAIN = "plain"
     S256 = "S256"
+
+
+class ResponseMode(str, Enum):
+    MODE_QUERY = "query"
+    MODE_FORM_POST = "form_post"
+    MODE_FRAGMENT = "fragment"

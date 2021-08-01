@@ -51,7 +51,7 @@ async def test_invalid_token(server: AuthorizationServer, defaults: Defaults):
         headers=encode_auth_headers(client_id, client_secret),
     )
     response = await server.create_token_introspection_response(request)
-    assert not response.content.active
+    assert not response.content["active"]
     assert response.status_code == HTTPStatus.OK
 
 
@@ -84,7 +84,7 @@ async def test_expired_token(
 
     response = await server.create_token_introspection_response(request)
     assert response.status_code == HTTPStatus.OK
-    assert not response.content.active
+    assert not response.content["active"]
 
 
 @pytest.mark.asyncio
@@ -109,7 +109,7 @@ async def test_valid_token(
 
     response = await server.create_token_introspection_response(request)
     assert response.status_code == HTTPStatus.OK
-    assert response.content.active
+    assert response.content["active"]
 
 
 @pytest.mark.asyncio
@@ -148,7 +148,7 @@ async def test_introspect_revoked_token(
         headers=encode_auth_headers(client_id, client_secret),
     )
     response = await server.create_token_introspection_response(request)
-    assert not response.content.active, "The refresh_token must be revoked"
+    assert not response.content["active"], "The refresh_token must be revoked"
 
 
 @pytest.mark.asyncio
@@ -157,4 +157,4 @@ async def test_endpoint_availability(db_class: Type[BaseStorage]):
     request = Request(method=RequestMethod.POST, settings=Settings(AVAILABLE=False))
     response = await server.create_token_introspection_response(request)
     assert response.status_code == HTTPStatus.BAD_REQUEST
-    assert response.content.error == ErrorType.TEMPORARILY_UNAVAILABLE
+    assert response.content["error"] == ErrorType.TEMPORARILY_UNAVAILABLE

@@ -147,14 +147,16 @@ def catch_errors_and_unavailability(f) -> Callable:
             content = ErrorResponse(error=exc.error, description=exc.description)
             log.exception("Exception caught while processing request.")
             return Response(
-                content=content, status_code=exc.status_code, headers=exc.headers
+                content=content._asdict(),
+                status_code=exc.status_code,
+                headers=exc.headers,
             )
         except Exception:
             error = ServerError(request=request)
             log.exception("Exception caught while processing request.")
             content = ErrorResponse(error=error.error, description=error.description)
             return Response(
-                content=content,
+                content=content._asdict(),
                 status_code=error.status_code,
                 headers=error.headers,
             )

@@ -2,7 +2,7 @@ from typing import Any, NamedTuple, Optional
 
 from .config import Settings
 from .structures import CaseInsensitiveDict
-from .types import GrantType, RequestMethod
+from .types import CodeChallengeMethod, GrantType, RequestMethod, ResponseMode
 
 
 class Query(NamedTuple):
@@ -12,8 +12,9 @@ class Query(NamedTuple):
     state: str = ""
     scope: str = ""
     nonce: Optional[str] = None
-    code_challenge_method: Optional[str] = None
+    code_challenge_method: Optional[CodeChallengeMethod] = None
     code_challenge: Optional[str] = None
+    response_mode: Optional[ResponseMode] = None
 
 
 class Post(NamedTuple):

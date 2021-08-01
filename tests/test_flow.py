@@ -6,7 +6,13 @@ from aioauth.storage import BaseStorage
 from aioauth.constances import default_headers
 from aioauth.requests import Post, Query, Request
 from aioauth.server import AuthorizationServer
-from aioauth.types import CodeChallengeMethod, GrantType, RequestMethod, ResponseType
+from aioauth.types import (
+    CodeChallengeMethod,
+    GrantType,
+    RequestMethod,
+    ResponseMode,
+    ResponseType,
+)
 from aioauth.utils import (
     create_s256_code_challenge,
     encode_auth_headers,
@@ -81,18 +87,18 @@ async def test_authorization_code_flow_plain_code_challenge(
     response = await server.create_token_response(request)
     assert response.status_code == HTTPStatus.OK
     assert response.headers == default_headers
-    assert response.content.scope == scope
-    assert response.content.token_type == "Bearer"
+    assert response.content["scope"] == scope
+    assert response.content["token_type"] == "Bearer"
     # Check that token was created in db
     assert await db.get_token(
         request,
         client_id,
-        response.content.access_token,
-        response.content.refresh_token,
+        response.content["access_token"],
+        response.content["refresh_token"],
     )
 
-    access_token = response.content.access_token
-    refresh_token = response.content.refresh_token
+    access_token = response.content["access_token"]
+    refresh_token = response.content["refresh_token"]
 
     post = Post(
         grant_type=GrantType.TYPE_REFRESH_TOKEN,
@@ -110,14 +116,14 @@ async def test_authorization_code_flow_plain_code_challenge(
     response = await server.create_token_response(request)
 
     assert response.status_code == HTTPStatus.OK
-    assert response.content.access_token != access_token
-    assert response.content.refresh_token != refresh_token
+    assert response.content["access_token"] != access_token
+    assert response.content["refresh_token"] != refresh_token
     # Check that token was created in db
     assert await db.get_token(
         request,
         client_id,
-        response.content.access_token,
-        response.content.refresh_token,
+        response.content["access_token"],
+        response.content["refresh_token"],
     )
     # Check that previous token was revoken
     token_in_db = await db.get_token(request, client_id, access_token, refresh_token)
@@ -127,8 +133,8 @@ async def test_authorization_code_flow_plain_code_challenge(
     new_token = await db.get_token(
         request,
         client_id,
-        response.content.access_token,
-        response.content.refresh_token,
+        response.content["access_token"],
+        response.content["refresh_token"],
     )
     assert set(enforce_list(new_token.scope)) == set(enforce_list(token_in_db.scope))
 
@@ -195,8 +201,8 @@ async def test_authorization_code_flow_pkce_code_challenge(
     response = await server.create_token_response(request)
     assert response.status_code == HTTPStatus.OK
     assert response.headers == default_headers
-    assert response.content.scope == scope
-    assert response.content.token_type == "Bearer"
+    assert response.content["scope"] == scope
+    assert response.content["token_type"] == "Bearer"
 
     code_record = await db.get_authorization_code(request, client_id, code)
     assert not code_record
@@ -478,7 +484,18 @@ async def test_response_type_none(server: AuthorizationServer, defaults: Default
 
 
 @pytest.mark.asyncio
-async def test_response_type_id_token(server: AuthorizationServer, defaults: Defaults):
+@pytest.mark.parametrize(
+    "response_mode,",
+    [
+        ResponseMode.MODE_FORM_POST,
+        ResponseMode.MODE_FRAGMENT,
+        ResponseMode.MODE_QUERY,
+        None,
+    ],
+)
+async def test_response_type_id_token(
+    server: AuthorizationServer, defaults: Defaults, response_mode
+):
     request_url = "https://localhost"
     user = "username"
 
@@ -489,6 +506,7 @@ async def test_response_type_id_token(server: AuthorizationServer, defaults: Def
         scope=defaults.scope,
         state=generate_token(10),
         nonce="123",
+        response_mode=response_mode,
     )
 
     request = Request(
@@ -507,12 +525,43 @@ async def test_response_type_id_token(server: AuthorizationServer, defaults: Def
     fragment = dict(parse_qsl(location.fragment))
     query = dict(parse_qsl(location.query))
 
-    assert "state" in fragment
-    assert "expires_in" in fragment
-    assert "refresh_token_expires_in" in fragment
-    assert "access_token" in fragment
-    assert "refresh_token" in fragment
-    assert "scope" in fragment
-    assert "token_type" in fragment
-    assert "code" in fragment
-    assert "id_token" in fragment
+    if response_mode == ResponseMode.MODE_FRAGMENT:
+        assert "state" in fragment
+        assert "expires_in" in fragment
+        assert "refresh_token_expires_in" in fragment
+        assert "access_token" in fragment
+        assert "refresh_token" in fragment
+        assert "scope" in fragment
+        assert "token_type" in fragment
+        assert "code" in fragment
+        assert "id_token" in fragment
+    elif response_mode == ResponseMode.MODE_FORM_POST:
+        assert "state" in response.content
+        assert "expires_in" in response.content
+        assert "refresh_token_expires_in" in response.content
+        assert "access_token" in response.content
+        assert "refresh_token" in response.content
+        assert "scope" in response.content
+        assert "token_type" in response.content
+        assert "code" in response.content
+        assert "id_token" in response.content
+    elif response_mode == ResponseMode.MODE_QUERY:
+        assert "state" in query
+        assert "expires_in" in query
+        assert "refresh_token_expires_in" in query
+        assert "access_token" in query
+        assert "refresh_token" in query
+        assert "scope" in query
+        assert "token_type" in query
+        assert "code" in query
+        assert "id_token" in query
+    else:
+        assert "state" in fragment
+        assert "expires_in" in fragment
+        assert "refresh_token_expires_in" in fragment
+        assert "access_token" in fragment
+        assert "refresh_token" in fragment
+        assert "scope" in fragment
+        assert "token_type" in fragment
+        assert "code" in fragment
+        assert "id_token" in fragment

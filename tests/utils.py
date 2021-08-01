@@ -13,7 +13,7 @@ EMPTY_KEYS = {
             content=ErrorResponse(
                 error=ErrorType.INVALID_REQUEST,
                 description="Missing client_id parameter.",
-            ),
+            )._asdict(),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
@@ -21,7 +21,7 @@ EMPTY_KEYS = {
             content=ErrorResponse(
                 error=ErrorType.INVALID_REQUEST,
                 description="Missing response_type parameter.",
-            ),
+            )._asdict(),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
@@ -29,7 +29,7 @@ EMPTY_KEYS = {
             content=ErrorResponse(
                 error=ErrorType.INVALID_REQUEST,
                 description="Mismatching redirect URI.",
-            ),
+            )._asdict(),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
@@ -37,7 +37,7 @@ EMPTY_KEYS = {
             content=ErrorResponse(
                 error=ErrorType.INVALID_REQUEST,
                 description="Code challenge required.",
-            ),
+            )._asdict(),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
@@ -45,7 +45,7 @@ EMPTY_KEYS = {
             content=ErrorResponse(
                 error=ErrorType.INVALID_REQUEST,
                 description="Nonce required for response_type id_token.",
-            ),
+            )._asdict(),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
@@ -55,7 +55,7 @@ EMPTY_KEYS = {
             content=ErrorResponse(
                 error=ErrorType.INVALID_REQUEST,
                 description="Request is missing grant type.",
-            ),
+            )._asdict(),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
@@ -63,7 +63,7 @@ EMPTY_KEYS = {
             content=ErrorResponse(
                 error=ErrorType.INVALID_REQUEST,
                 description="Mismatching redirect URI.",
-            ),
+            )._asdict(),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
@@ -71,7 +71,7 @@ EMPTY_KEYS = {
             content=ErrorResponse(
                 error=ErrorType.INVALID_REQUEST,
                 description="Missing code parameter.",
-            ),
+            )._asdict(),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
@@ -79,7 +79,7 @@ EMPTY_KEYS = {
             content=ErrorResponse(
                 error=ErrorType.INVALID_REQUEST,
                 description="Missing refresh token parameter.",
-            ),
+            )._asdict(),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
@@ -87,7 +87,7 @@ EMPTY_KEYS = {
             content=ErrorResponse(
                 error=ErrorType.INVALID_REQUEST,
                 description="Code verifier required.",
-            ),
+            )._asdict(),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
@@ -95,7 +95,7 @@ EMPTY_KEYS = {
             content=ErrorResponse(
                 error=ErrorType.INVALID_CLIENT,
                 description="",
-            ),
+            )._asdict(),
             status_code=HTTPStatus.UNAUTHORIZED,
             headers=CaseInsensitiveDict({"www-authenticate": "Basic"}),
         ),
@@ -103,7 +103,7 @@ EMPTY_KEYS = {
             content=ErrorResponse(
                 error=ErrorType.INVALID_CLIENT,
                 description="",
-            ),
+            )._asdict(),
             status_code=HTTPStatus.UNAUTHORIZED,
             headers=CaseInsensitiveDict({"www-authenticate": "Basic"}),
         ),
@@ -111,7 +111,7 @@ EMPTY_KEYS = {
             content=ErrorResponse(
                 error=ErrorType.INVALID_GRANT,
                 description="Invalid credentials given.",
-            ),
+            )._asdict(),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
@@ -119,7 +119,7 @@ EMPTY_KEYS = {
             content=ErrorResponse(
                 error=ErrorType.INVALID_GRANT,
                 description="Invalid credentials given.",
-            ),
+            )._asdict(),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
@@ -132,7 +132,7 @@ INVALID_KEYS = {
             content=ErrorResponse(
                 error=ErrorType.INVALID_REQUEST,
                 description="Invalid client_id parameter value.",
-            ),
+            )._asdict(),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
@@ -140,7 +140,7 @@ INVALID_KEYS = {
             content=ErrorResponse(
                 error=ErrorType.UNSUPPORTED_RESPONSE_TYPE,
                 description="",
-            ),
+            )._asdict(),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
@@ -148,7 +148,7 @@ INVALID_KEYS = {
             content=ErrorResponse(
                 error=ErrorType.INVALID_REQUEST,
                 description="Invalid redirect URI.",
-            ),
+            )._asdict(),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
@@ -156,7 +156,7 @@ INVALID_KEYS = {
             content=ErrorResponse(
                 error=ErrorType.INVALID_REQUEST,
                 description="Transform algorithm not supported.",
-            ),
+            )._asdict(),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
@@ -164,7 +164,7 @@ INVALID_KEYS = {
             content=ErrorResponse(
                 error=ErrorType.INVALID_SCOPE,
                 description="",
-            ),
+            )._asdict(),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
@@ -174,7 +174,7 @@ INVALID_KEYS = {
             content=ErrorResponse(
                 error=ErrorType.UNSUPPORTED_GRANT_TYPE,
                 description="",
-            ),
+            )._asdict(),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
@@ -182,7 +182,7 @@ INVALID_KEYS = {
             content=ErrorResponse(
                 error=ErrorType.INVALID_REQUEST,
                 description="Invalid redirect URI.",
-            ),
+            )._asdict(),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
@@ -190,7 +190,7 @@ INVALID_KEYS = {
             content=ErrorResponse(
                 error=ErrorType.INVALID_GRANT,
                 description="",
-            ),
+            )._asdict(),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
@@ -198,7 +198,7 @@ INVALID_KEYS = {
             content=ErrorResponse(
                 error=ErrorType.MISMATCHING_STATE,
                 description="CSRF Warning! State not equal in request and response.",
-            ),
+            )._asdict(),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
@@ -206,7 +206,7 @@ INVALID_KEYS = {
             content=ErrorResponse(
                 error=ErrorType.INVALID_GRANT,
                 description="",
-            ),
+            )._asdict(),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
@@ -214,7 +214,7 @@ INVALID_KEYS = {
             content=ErrorResponse(
                 error=ErrorType.INVALID_REQUEST,
                 description="Invalid client_id parameter value.",
-            ),
+            )._asdict(),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
@@ -222,7 +222,7 @@ INVALID_KEYS = {
             content=ErrorResponse(
                 error=ErrorType.INVALID_REQUEST,
                 description="Invalid client_id parameter value.",
-            ),
+            )._asdict(),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
@@ -230,7 +230,7 @@ INVALID_KEYS = {
             content=ErrorResponse(
                 error=ErrorType.INVALID_GRANT,
                 description="Invalid credentials given.",
-            ),
+            )._asdict(),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
@@ -238,7 +238,7 @@ INVALID_KEYS = {
             content=ErrorResponse(
                 error=ErrorType.INVALID_GRANT,
                 description="Invalid credentials given.",
-            ),
+            )._asdict(),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
