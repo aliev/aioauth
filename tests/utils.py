@@ -41,6 +41,14 @@ EMPTY_KEYS = {
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
+        "nonce": Response(
+            content=ErrorResponse(
+                error=ErrorType.INVALID_REQUEST,
+                description="Nonce required for response_type id_token.",
+            ),
+            status_code=HTTPStatus.BAD_REQUEST,
+            headers=default_headers,
+        ),
     },
     RequestMethod.POST: {
         "grant_type": Response(

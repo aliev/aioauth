@@ -104,6 +104,17 @@ class DB(BaseDB):
             ):
                 authorization_codes.remove(authorization_code)
 
+    async def get_id_token(
+        self,
+        request: Request,
+        client_id: str,
+        scope: str,
+        response_type: str,
+        redirect_uri: str,
+        nonce: str,
+    ) -> str:
+        return "generated id token"
+
 
 def get_db_class(defaults: Defaults, storage: Dict[str, List]):
     DB.storage = storage

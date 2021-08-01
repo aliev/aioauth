@@ -13,6 +13,7 @@ from aioauth.grant_type import (
 from aioauth.models import AuthorizationCode, Client, Token
 from aioauth.response_type import (
     ResponseTypeAuthorizationCode,
+    ResponseTypeIdToken,
     ResponseTypeNone,
     ResponseTypeToken,
 )
@@ -60,6 +61,7 @@ def storage(defaults: Defaults, settings: Settings) -> Dict:
             ResponseType.TYPE_CODE,
             ResponseType.TYPE_TOKEN,
             ResponseType.TYPE_NONE,
+            ResponseType.TYPE_ID_TOKEN,
         ],
         scope=defaults.scope,
     )
@@ -109,6 +111,7 @@ def server(db: BaseDB) -> AuthorizationServer:
             ResponseType.TYPE_TOKEN: ResponseTypeToken,
             ResponseType.TYPE_CODE: ResponseTypeAuthorizationCode,
             ResponseType.TYPE_NONE: ResponseTypeNone,
+            ResponseType.TYPE_ID_TOKEN: ResponseTypeIdToken,
         },
         grant_types={
             GrantType.TYPE_AUTHORIZATION_CODE: AuthorizationCodeGrantType,

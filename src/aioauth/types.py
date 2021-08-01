@@ -27,6 +27,7 @@ class ResponseType(str, Enum):
     TYPE_TOKEN = "token"
     TYPE_CODE = "code"
     TYPE_NONE = "none"
+    TYPE_ID_TOKEN = "id_token"
 
 
 class RequestMethod(str, Enum):

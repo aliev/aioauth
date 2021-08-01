@@ -1,3 +1,4 @@
+from base64 import b64encode
 from urllib.parse import urljoin
 
 import pytest
@@ -67,12 +68,37 @@ def test_build_uri():
 
 def test_decode_auth_headers():
     request = Request(headers=CaseInsensitiveDict(), method=RequestMethod.POST)
+
+    # No authorization header
     with pytest.raises(InvalidClientError):
         decode_auth_headers(request=request)
 
+    # Invalid authorization header
     request = Request(
         headers=CaseInsensitiveDict({"authorization": ""}), method=RequestMethod.POST
     )
+    with pytest.raises(InvalidClientError):
+        decode_auth_headers(request=request)
+
+    # No separator
+    authorization = b64encode("usernamepassword".encode("ascii"))
+
+    request = Request(
+        headers=CaseInsensitiveDict(Authorization=f"basic {authorization.decode()}"),
+        method=RequestMethod.POST,
+    )
+
+    with pytest.raises(InvalidClientError):
+        decode_auth_headers(request=request)
+
+    # No base64 digits
+    authorization = b64encode("usernamepassword".encode("ascii"))
+
+    request = Request(
+        headers=CaseInsensitiveDict(Authorization="basic привет"),
+        method=RequestMethod.POST,
+    )
+
     with pytest.raises(InvalidClientError):
         decode_auth_headers(request=request)
 
