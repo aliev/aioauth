@@ -1,15 +1,13 @@
-from typing import Dict, List
-
 import pytest
-from aioauth.base.database import BaseDB
+from aioauth.storage import BaseStorage
 from aioauth.models import AuthorizationCode, Client, Token
 from aioauth.requests import Request
 from aioauth.types import RequestMethod
 
 
 @pytest.mark.asyncio
-async def test_db(storage: Dict[str, List]):
-    db = BaseDB()
+async def test_db(storage):
+    db = BaseStorage()
     request = Request(method=RequestMethod.POST)
     client: Client = storage["clients"][0]
     token: Token = storage["tokens"][0]

@@ -6,7 +6,7 @@
 [![PyPi](https://badgen.net/pypi/v/aioauth)](https://pypi.org/project/aioauth/)
 [![Python 3.6](https://img.shields.io/badge/python-3.6-blue.svg)](https://www.python.org/downloads/release/python-360/)
 
-`aioauth` implements [OAuth 2.0 protocol](https://tools.ietf.org/html/rfc6749) and can be used in asynchronous frameworks like [FastAPI / Starlette](https://github.com/tiangolo/fastapi), [aiohttp](https://github.com/aio-libs/aiohttp). It can work with any databases like `MongoDB`, `PostgreSQL`, `MySQL` and ORMs like [gino](https://python-gino.org/), [sqlalchemy](https://www.sqlalchemy.org/) or [databases](https://pypi.org/project/databases/) over simple [BaseDB](src/aioauth/base/database.py) interface.
+`aioauth` implements [OAuth 2.0 protocol](https://tools.ietf.org/html/rfc6749) and can be used in asynchronous frameworks like [FastAPI / Starlette](https://github.com/tiangolo/fastapi), [aiohttp](https://github.com/aio-libs/aiohttp). It can work with any databases like `MongoDB`, `PostgreSQL`, `MySQL` and ORMs like [gino](https://python-gino.org/), [sqlalchemy](https://www.sqlalchemy.org/) or [databases](https://pypi.org/project/databases/) over simple [BaseStorage](src/aioauth/storage.py) interface.
 
 ## Why this project exists?
 
@@ -33,7 +33,7 @@ from fastapi import FastAPI, Request, Response
 from aioauth.server import AuthorizationServer
 from aioauth.types import RequestMethod
 from aioauth.config import Settings
-from aioauth.base.database import BaseDB
+from aioauth.storage import BaseStorage
 from aioauth.requests import (
     Query,
     Post,
@@ -43,7 +43,7 @@ from aioauth.responses import Response as OAuth2Response
 from aioauth.structures import CaseInsensitiveDict
 
 
-class DB(BaseDB):
+class DB(BaseStorage):
     """Class for interacting with the database. Used by `AuthorizationServer`.
 
     Here you need to override the methods that are responsible for creating tokens,
@@ -51,19 +51,19 @@ class DB(BaseDB):
     """
 
     async def save_token(self, token: Token):
-        """Store ALL fields of the Token namedtuple in a db"""
+        """Store ALL fields of the Token namedtuple in a storage"""
         ...
 
     async def save_authorization_code(self, authorization_code: AuthorizationCode):
-        """Store ALL fields of the AuthorizationCode namedtuple in a db"""
+        """Store ALL fields of the AuthorizationCode namedtuple in a storage"""
         ...
 
     async def get_token(self, *args, **kwargs) -> Optional[Token]:
         """Get token from the database by provided request from user.
 
         Returns:
-            Token: if token exists in db.
-            None: if no token in db.
+            Token: if token exists in storage.
+            None: if no token in storage.
         """
         token_record = ...
 

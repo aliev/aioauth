@@ -1,6 +1,6 @@
 from typing import Dict, List, Optional
 
-from aioauth.base.database import BaseDB
+from aioauth.storage import BaseStorage
 from aioauth.models import AuthorizationCode, Client, Token
 from aioauth.requests import Request
 from tests.utils import set_values
@@ -8,7 +8,7 @@ from tests.utils import set_values
 from .models import Defaults
 
 
-class DB(BaseDB):
+class DB(BaseStorage):
     storage: Dict[str, List]
     defaults: Defaults
 

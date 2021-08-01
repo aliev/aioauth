@@ -1,12 +1,12 @@
 import time
 from typing import Optional
 
-from ..models import AuthorizationCode, Client, Token
-from ..requests import Request
-from ..utils import generate_token
+from .models import AuthorizationCode, Client, Token
+from .requests import Request
+from .utils import generate_token
 
 
-class BaseDB:
+class BaseStorage:
     async def create_token(self, request: Request, client_id: str, scope: str) -> Token:
         """Generates Token model instance.
 
@@ -29,9 +29,9 @@ class BaseDB:
         return token
 
     async def save_token(self, token: Token) -> None:
-        """Store the different fields from the namedtuple into your db"""
+        """Store the different fields from the namedtuple into your storage"""
         raise NotImplementedError(
-            "Token MUST be stored in a db. It is a namedtuple and all of its fields should be stored"
+            "Token MUST be stored in a storage. It is a namedtuple and all of its fields should be stored"
         )
 
     async def get_token(
@@ -101,7 +101,7 @@ class BaseDB:
         self, authorization_code: AuthorizationCode
     ) -> None:
         raise NotImplementedError(
-            "AuthorizationCode MUST be stored in any db. It is a namedtuple and all of its fields should be stored"
+            "AuthorizationCode MUST be stored in any storage. It is a namedtuple and all of its fields should be stored"
         )
 
     async def get_client(

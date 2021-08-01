@@ -2,7 +2,7 @@ import time
 from typing import Dict
 
 import pytest
-from aioauth.base.database import BaseDB
+from aioauth.storage import BaseStorage
 from aioauth.config import Settings
 from aioauth.errors import InvalidGrantError
 from aioauth.grant_type import RefreshTokenGrantType
@@ -59,7 +59,7 @@ def storage(defaults: Defaults, settings: Settings) -> Dict:
 
 @pytest.mark.asyncio
 async def test_refresh_token_grant_type(
-    server: AuthorizationServer, defaults: Defaults, db: BaseDB
+    server: AuthorizationServer, defaults: Defaults, db: BaseStorage
 ):
     # first create an access token
 

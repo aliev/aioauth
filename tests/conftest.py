@@ -2,7 +2,7 @@ import time
 from typing import Dict, Type
 
 import pytest
-from aioauth.base.database import BaseDB
+from aioauth.storage import BaseStorage
 from aioauth.config import Settings
 from aioauth.grant_type import (
     AuthorizationCodeGrantType,
@@ -94,19 +94,19 @@ def storage(defaults: Defaults, settings: Settings) -> Dict:
 
 
 @pytest.fixture
-def db_class(defaults: Defaults, storage) -> Type[BaseDB]:
+def db_class(defaults: Defaults, storage) -> Type[BaseStorage]:
     return get_db_class(defaults, storage)
 
 
 @pytest.fixture
-def db(db_class: Type[BaseDB]):
+def db(db_class: Type[BaseStorage]):
     return db_class()
 
 
 @pytest.fixture
-def server(db: BaseDB) -> AuthorizationServer:
+def server(db: BaseStorage) -> AuthorizationServer:
     server = AuthorizationServer(
-        db=db,
+        storage=db,
         response_types={
             ResponseType.TYPE_TOKEN: ResponseTypeToken,
             ResponseType.TYPE_CODE: ResponseTypeAuthorizationCode,

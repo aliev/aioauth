@@ -2,7 +2,7 @@ from http import HTTPStatus
 from urllib.parse import parse_qsl, urlparse
 
 import pytest
-from aioauth.base.database import BaseDB
+from aioauth.storage import BaseStorage
 from aioauth.constances import default_headers
 from aioauth.requests import Post, Query, Request
 from aioauth.server import AuthorizationServer
@@ -20,7 +20,7 @@ from .utils import check_request_validators
 
 @pytest.mark.asyncio
 async def test_authorization_code_flow_plain_code_challenge(
-    server: AuthorizationServer, defaults: Defaults, db: BaseDB
+    server: AuthorizationServer, defaults: Defaults, db: BaseStorage
 ):
     code_challenge = generate_token(128)
     client_id = defaults.client_id
@@ -135,7 +135,7 @@ async def test_authorization_code_flow_plain_code_challenge(
 
 @pytest.mark.asyncio
 async def test_authorization_code_flow_pkce_code_challenge(
-    server: AuthorizationServer, defaults: Defaults, db: BaseDB
+    server: AuthorizationServer, defaults: Defaults, db: BaseStorage
 ):
     client_id = defaults.client_id
     client_secret = defaults.client_secret
