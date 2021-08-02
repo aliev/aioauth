@@ -30,7 +30,7 @@ from .responses import (
     TokenInactiveIntrospectionResponse,
 )
 from .structures import CaseInsensitiveDict
-from .types import GrantType, RequestMethod, ResponseType
+from .types import GrantType, RequestMethod, ResponseMode, ResponseType
 from .utils import (
     build_uri,
     catch_errors_and_unavailability,
@@ -105,8 +105,10 @@ class AuthorizationServer:
                 scope=token.scope, client_id=token.client_id, exp=token.expires_in
             )
 
+        content = token_response._asdict()
+
         return Response(
-            content=token_response, status_code=HTTPStatus.OK, headers=default_headers
+            content=content, status_code=HTTPStatus.OK, headers=default_headers
         )
 
     @catch_errors_and_unavailability
@@ -134,9 +136,10 @@ class AuthorizationServer:
         grant_type = GrantTypeClass(storage=self.storage)
 
         response = await grant_type.create_token_response(request)
+        content = response._asdict()
 
         return Response(
-            content=response, status_code=HTTPStatus.OK, headers=default_headers
+            content=content, status_code=HTTPStatus.OK, headers=default_headers
         )
 
     @catch_errors_and_unavailability
@@ -152,13 +155,19 @@ class AuthorizationServer:
         response_type_list = enforce_list(request.query.response_type)
         response_type_classes = set()
 
+        # Combined responses
         responses = {}
+
+        # URI fragment
         fragment = {}
+
+        # URI query params
         query = {}
 
+        # Response content
+        content = {}
+
         if not response_type_list:
-            # NOTE: In case of empty response_type, the validator of
-            # ResponseTypeBase class will raise InvalidRequestError.
             raise InvalidRequestError(
                 request=request, description="Missing response_type parameter."
             )
@@ -181,19 +190,43 @@ class AuthorizationServer:
 
         # See: https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#Combinations
         if ResponseType.TYPE_CODE in response_type_list:
-            # NOTE: The TYPE_CODE included in response_type has lowest
-            # priority. The response will be placed in query.
+            """
+            The TYPE_CODE has lowest priority.
+            The response will be placed in query.
+            """
             query = responses
 
         if ResponseType.TYPE_TOKEN in response_type_list:
-            # NOTE: The TYPE_TOKEN that included in response_type has highest
-            # priority. The response will be placed in fragment instead of query.
+            """
+            The TYPE_TOKEN has middle priority.
+            The response will be placed in fragment.
+            """
             query = {}
             fragment = responses
+
+        if ResponseType.TYPE_ID_TOKEN in response_type_list:
+            """
+            The TYPE_ID_TOKEN has highest priority.
+            The response can be placed in query, fragment or content
+            depending on the response_mode.
+            """
+            if request.query.response_mode == ResponseMode.MODE_FORM_POST:
+                query = {}
+                fragment = {}
+                content = responses
+            elif request.query.response_mode == ResponseMode.MODE_FRAGMENT:
+                query = {}
+                content = {}
+                fragment = responses
+            elif request.query.response_mode == ResponseMode.MODE_QUERY:
+                content = {}
+                fragment = {}
+                query = responses
 
         location = build_uri(request.query.redirect_uri, query, fragment)
 
         return Response(
             status_code=HTTPStatus.FOUND,
             headers=CaseInsensitiveDict({"location": location}),
+            content=content,
         )

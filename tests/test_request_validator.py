@@ -66,7 +66,7 @@ async def test_invalid_client_credentials(
 
     response = await server.create_token_response(request)
     assert response.status_code == HTTPStatus.BAD_REQUEST
-    assert response.content.error == ErrorType.INVALID_REQUEST
+    assert response.content["error"] == ErrorType.INVALID_REQUEST
 
 
 @pytest.mark.asyncio
@@ -91,7 +91,7 @@ async def test_invalid_scope(server: AuthorizationServer, defaults: Defaults):
 
     response = await server.create_token_response(request)
     assert response.status_code == HTTPStatus.BAD_REQUEST
-    assert response.content.error == ErrorType.INVALID_SCOPE
+    assert response.content["error"] == ErrorType.INVALID_SCOPE
 
 
 @pytest.mark.asyncio
@@ -124,7 +124,7 @@ async def test_invalid_grant_type(
 
     response = await server.create_token_response(request)
     assert response.status_code == HTTPStatus.BAD_REQUEST
-    assert response.content.error == ErrorType.UNAUTHORIZED_CLIENT
+    assert response.content["error"] == ErrorType.UNAUTHORIZED_CLIENT
 
 
 @pytest.mark.asyncio
@@ -160,7 +160,7 @@ async def test_invalid_response_type(
     )
     response = await server.create_authorization_response(request)
     assert response.status_code == HTTPStatus.BAD_REQUEST
-    assert response.content.error == ErrorType.UNSUPPORTED_RESPONSE_TYPE
+    assert response.content["error"] == ErrorType.UNSUPPORTED_RESPONSE_TYPE
 
 
 @pytest.mark.asyncio
@@ -182,7 +182,7 @@ async def test_anonymous_user(server: AuthorizationServer, defaults: Defaults, s
     request = Request(url=request_url, query=query, method=RequestMethod.GET)
     response = await server.create_authorization_response(request)
     assert response.status_code == HTTPStatus.UNAUTHORIZED
-    assert response.content.error == ErrorType.INVALID_CLIENT
+    assert response.content["error"] == ErrorType.INVALID_CLIENT
 
 
 @pytest.mark.asyncio
@@ -213,7 +213,7 @@ async def test_expired_authorization_code(
     )
     response = await server.create_token_response(request)
     assert response.status_code == HTTPStatus.BAD_REQUEST
-    assert response.content.error == ErrorType.INVALID_GRANT
+    assert response.content["error"] == ErrorType.INVALID_GRANT
 
 
 @pytest.mark.asyncio
@@ -242,4 +242,4 @@ async def test_expired_refresh_token(
     )
     response = await server.create_token_response(request)
     assert response.status_code == HTTPStatus.BAD_REQUEST
-    assert response.content.error == ErrorType.INVALID_GRANT
+    assert response.content["error"] == ErrorType.INVALID_GRANT

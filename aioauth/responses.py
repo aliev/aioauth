@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from typing import NamedTuple, Optional, Union
+from typing import Dict, NamedTuple, Optional
 
 from .constances import default_headers
 from .structures import CaseInsensitiveDict
@@ -91,16 +91,6 @@ class Response(NamedTuple):
         - AuthorizationServer
     """
 
-    content: Optional[
-        Union[
-            ErrorResponse,
-            TokenResponse,
-            NoneResponse,
-            AuthorizationCodeResponse,
-            TokenActiveIntrospectionResponse,
-            TokenInactiveIntrospectionResponse,
-            IdTokenResponse,
-        ]
-    ] = None
+    content: Optional[Dict] = {}
     status_code: HTTPStatus = HTTPStatus.OK
     headers: CaseInsensitiveDict = default_headers

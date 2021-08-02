@@ -1,6 +1,6 @@
 ## Asynchronous OAuth 2.0 framework for Python 3
 
-[![Build Status](https://github.com/aliev/aioauth/workflows/Python%20package/badge.svg?branch=master)](https://github.com/aliev/aioauth/actions/workflows/python-package.yml?query=branch%3Amaster)
+[![Build Status](https://github.com/aliev/aioauth/workflows/Python%20package/badge.svg?branch=master)](https://github.com/aliev/aioauth/actions/workflows/ci.yml?query=branch%3Amaster)
 [![Coverage](https://badgen.net/codecov/c/github/aliev/aioauth)](https://app.codecov.io/gh/aliev/aioauth)
 [![License](https://img.shields.io/github/license/aliev/aioauth)](https://github.com/aliev/aioauth/blob/master/LICENSE)
 [![PyPi](https://badgen.net/pypi/v/aioauth)](https://pypi.org/project/aioauth/)
@@ -195,7 +195,7 @@ async def to_oauth2_request(request: Request) -> OAuth2Request:
 
 async def to_fastapi_response(oauth2_response: OAuth2Response) -> Response:
     """Converts OAuth2Response instance to fastapi Response instance"""
-    response_content = oauth2_response.content._asdict() if oauth2_response.content is not None else {}
+    response_content = oauth2_response.content
     headers = dict(oauth2_response.headers)
     status_code = oauth2_response.status_code
     content = json.dumps(response_content)
