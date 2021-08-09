@@ -49,6 +49,14 @@ require_dev = [
     "twine==1.14.0",
 ]
 
+require_docs = [
+    "sphinx",
+    "sphinx-copybutton",
+    "sphinx-autobuild",
+    "m2r2",
+    "sphinx-rtd-theme",
+]
+
 setup(
     name=about["__title__"],
     version=about["__version__"],
@@ -63,6 +71,7 @@ setup(
     classifiers=classifiers,
     extras_require={
         "dev": require_dev,
+        "docs": require_docs,
     },
     include_package_data=True,
     keywords="asyncio oauth2 oauth",
