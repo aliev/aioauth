@@ -1,299 +1,113 @@
-from http import HTTPStatus
-from typing import Any, Callable, Dict, Union
+from base64 import b64encode
+from urllib.parse import urljoin
 
-from aioauth.constances import default_headers
-from aioauth.requests import Post, Query, Request
-from aioauth.responses import ErrorResponse, Response
+import pytest
+from aioauth.config import Settings
+from aioauth.errors import InvalidClientError
+from aioauth.requests import Request
 from aioauth.structures import CaseInsensitiveDict
-from aioauth.types import ErrorType, RequestMethod
-
-EMPTY_KEYS = {
-    RequestMethod.GET: {
-        "client_id": Response(
-            content=ErrorResponse(
-                error=ErrorType.INVALID_REQUEST,
-                description="Missing client_id parameter.",
-            )._asdict(),
-            status_code=HTTPStatus.BAD_REQUEST,
-            headers=default_headers,
-        ),
-        "response_type": Response(
-            content=ErrorResponse(
-                error=ErrorType.INVALID_REQUEST,
-                description="Missing response_type parameter.",
-            )._asdict(),
-            status_code=HTTPStatus.BAD_REQUEST,
-            headers=default_headers,
-        ),
-        "redirect_uri": Response(
-            content=ErrorResponse(
-                error=ErrorType.INVALID_REQUEST,
-                description="Mismatching redirect URI.",
-            )._asdict(),
-            status_code=HTTPStatus.BAD_REQUEST,
-            headers=default_headers,
-        ),
-        "code_challenge": Response(
-            content=ErrorResponse(
-                error=ErrorType.INVALID_REQUEST,
-                description="Code challenge required.",
-            )._asdict(),
-            status_code=HTTPStatus.BAD_REQUEST,
-            headers=default_headers,
-        ),
-        "nonce": Response(
-            content=ErrorResponse(
-                error=ErrorType.INVALID_REQUEST,
-                description="Nonce required for response_type id_token.",
-            )._asdict(),
-            status_code=HTTPStatus.BAD_REQUEST,
-            headers=default_headers,
-        ),
-    },
-    RequestMethod.POST: {
-        "grant_type": Response(
-            content=ErrorResponse(
-                error=ErrorType.INVALID_REQUEST,
-                description="Request is missing grant type.",
-            )._asdict(),
-            status_code=HTTPStatus.BAD_REQUEST,
-            headers=default_headers,
-        ),
-        "redirect_uri": Response(
-            content=ErrorResponse(
-                error=ErrorType.INVALID_REQUEST,
-                description="Mismatching redirect URI.",
-            )._asdict(),
-            status_code=HTTPStatus.BAD_REQUEST,
-            headers=default_headers,
-        ),
-        "code": Response(
-            content=ErrorResponse(
-                error=ErrorType.INVALID_REQUEST,
-                description="Missing code parameter.",
-            )._asdict(),
-            status_code=HTTPStatus.BAD_REQUEST,
-            headers=default_headers,
-        ),
-        "refresh_token": Response(
-            content=ErrorResponse(
-                error=ErrorType.INVALID_REQUEST,
-                description="Missing refresh token parameter.",
-            )._asdict(),
-            status_code=HTTPStatus.BAD_REQUEST,
-            headers=default_headers,
-        ),
-        "code_verifier": Response(
-            content=ErrorResponse(
-                error=ErrorType.INVALID_REQUEST,
-                description="Code verifier required.",
-            )._asdict(),
-            status_code=HTTPStatus.BAD_REQUEST,
-            headers=default_headers,
-        ),
-        "client_id": Response(
-            content=ErrorResponse(
-                error=ErrorType.INVALID_CLIENT,
-                description="",
-            )._asdict(),
-            status_code=HTTPStatus.UNAUTHORIZED,
-            headers=CaseInsensitiveDict({"www-authenticate": "Basic"}),
-        ),
-        "client_secret": Response(
-            content=ErrorResponse(
-                error=ErrorType.INVALID_CLIENT,
-                description="",
-            )._asdict(),
-            status_code=HTTPStatus.UNAUTHORIZED,
-            headers=CaseInsensitiveDict({"www-authenticate": "Basic"}),
-        ),
-        "username": Response(
-            content=ErrorResponse(
-                error=ErrorType.INVALID_GRANT,
-                description="Invalid credentials given.",
-            )._asdict(),
-            status_code=HTTPStatus.BAD_REQUEST,
-            headers=default_headers,
-        ),
-        "password": Response(
-            content=ErrorResponse(
-                error=ErrorType.INVALID_GRANT,
-                description="Invalid credentials given.",
-            )._asdict(),
-            status_code=HTTPStatus.BAD_REQUEST,
-            headers=default_headers,
-        ),
-    },
-}
-
-INVALID_KEYS = {
-    RequestMethod.GET: {
-        "client_id": Response(
-            content=ErrorResponse(
-                error=ErrorType.INVALID_REQUEST,
-                description="Invalid client_id parameter value.",
-            )._asdict(),
-            status_code=HTTPStatus.BAD_REQUEST,
-            headers=default_headers,
-        ),
-        "response_type": Response(
-            content=ErrorResponse(
-                error=ErrorType.UNSUPPORTED_RESPONSE_TYPE,
-                description="",
-            )._asdict(),
-            status_code=HTTPStatus.BAD_REQUEST,
-            headers=default_headers,
-        ),
-        "redirect_uri": Response(
-            content=ErrorResponse(
-                error=ErrorType.INVALID_REQUEST,
-                description="Invalid redirect URI.",
-            )._asdict(),
-            status_code=HTTPStatus.BAD_REQUEST,
-            headers=default_headers,
-        ),
-        "code_challenge_method": Response(
-            content=ErrorResponse(
-                error=ErrorType.INVALID_REQUEST,
-                description="Transform algorithm not supported.",
-            )._asdict(),
-            status_code=HTTPStatus.BAD_REQUEST,
-            headers=default_headers,
-        ),
-        "scope": Response(
-            content=ErrorResponse(
-                error=ErrorType.INVALID_SCOPE,
-                description="",
-            )._asdict(),
-            status_code=HTTPStatus.BAD_REQUEST,
-            headers=default_headers,
-        ),
-    },
-    RequestMethod.POST: {
-        "grant_type": Response(
-            content=ErrorResponse(
-                error=ErrorType.UNSUPPORTED_GRANT_TYPE,
-                description="",
-            )._asdict(),
-            status_code=HTTPStatus.BAD_REQUEST,
-            headers=default_headers,
-        ),
-        "redirect_uri": Response(
-            content=ErrorResponse(
-                error=ErrorType.INVALID_REQUEST,
-                description="Invalid redirect URI.",
-            )._asdict(),
-            status_code=HTTPStatus.BAD_REQUEST,
-            headers=default_headers,
-        ),
-        "code": Response(
-            content=ErrorResponse(
-                error=ErrorType.INVALID_GRANT,
-                description="",
-            )._asdict(),
-            status_code=HTTPStatus.BAD_REQUEST,
-            headers=default_headers,
-        ),
-        "code_verifier": Response(
-            content=ErrorResponse(
-                error=ErrorType.MISMATCHING_STATE,
-                description="CSRF Warning! State not equal in request and response.",
-            )._asdict(),
-            status_code=HTTPStatus.BAD_REQUEST,
-            headers=default_headers,
-        ),
-        "refresh_token": Response(
-            content=ErrorResponse(
-                error=ErrorType.INVALID_GRANT,
-                description="",
-            )._asdict(),
-            status_code=HTTPStatus.BAD_REQUEST,
-            headers=default_headers,
-        ),
-        "client_id": Response(
-            content=ErrorResponse(
-                error=ErrorType.INVALID_REQUEST,
-                description="Invalid client_id parameter value.",
-            )._asdict(),
-            status_code=HTTPStatus.BAD_REQUEST,
-            headers=default_headers,
-        ),
-        "client_secret": Response(
-            content=ErrorResponse(
-                error=ErrorType.INVALID_REQUEST,
-                description="Invalid client_id parameter value.",
-            )._asdict(),
-            status_code=HTTPStatus.BAD_REQUEST,
-            headers=default_headers,
-        ),
-        "username": Response(
-            content=ErrorResponse(
-                error=ErrorType.INVALID_GRANT,
-                description="Invalid credentials given.",
-            )._asdict(),
-            status_code=HTTPStatus.BAD_REQUEST,
-            headers=default_headers,
-        ),
-        "password": Response(
-            content=ErrorResponse(
-                error=ErrorType.INVALID_GRANT,
-                description="Invalid credentials given.",
-            )._asdict(),
-            status_code=HTTPStatus.BAD_REQUEST,
-            headers=default_headers,
-        ),
-    },
-}
+from aioauth.types import RequestMethod
+from aioauth.utils import (
+    build_uri,
+    decode_auth_headers,
+    enforce_list,
+    enforce_str,
+    get_authorization_scheme_param,
+    is_secure_transport,
+)
 
 
-def get_keys(query: Union[Query, Post]) -> Dict[str, Any]:
-    """Converts dataclass object to dict and returns dict without empty values"""
-    return {key: value for key, value in query.__dict__.items() if bool(value)}
+def test_is_secure_transport():
+    request = Request(method=RequestMethod.GET, url="https://google.com")
+
+    is_secure = is_secure_transport(request=request)
+    assert is_secure
+
+    request = Request(method=RequestMethod.GET, url="http://google.com")
+    is_secure = is_secure_transport(request=request)
+    assert not is_secure
 
 
-def set_values(model, values):
-    """Sets NamedTuple instance value and returns new NamedTuple"""
-    return model.__class__(**{**model.__dict__, **values})
+def test_is_secure_transport_insecure_transport_enabled():
+    request = Request(
+        method=RequestMethod.GET,
+        url="https://google.com",
+        settings=Settings(INSECURE_TRANSPORT=True),
+    )
+
+    is_secure = is_secure_transport(request=request)
+    assert is_secure
+
+    request = Request(
+        method=RequestMethod.GET,
+        url="https://google.com",
+        settings=Settings(INSECURE_TRANSPORT=True),
+    )
+    is_secure = is_secure_transport(request=request)
+    assert is_secure
 
 
-async def check_query_values(
-    request: Request, responses, query_dict: Dict, endpoint_func, value
-):
-    keys = set(query_dict.keys()) & set(responses.keys())
-
-    for key in keys:
-        request_ = request
-
-        if request_.method == RequestMethod.POST:
-            post = set_values(request_.post, {key: value})
-            request_ = set_values(request_, {"post": post})
-
-        if request_.method == RequestMethod.GET:
-            query = set_values(request_.query, {key: value})
-            request_ = set_values(request_, {"query": query})
-
-        response_expected = responses[key]
-        response_actual = await endpoint_func(request_)
-
-        assert (
-            response_expected == response_actual
-        ), f"{response_expected} != {response_actual}"
+def test_get_authorization_scheme_param():
+    assert get_authorization_scheme_param("") == ("", "")
 
 
-async def check_request_validators(
-    request: Request,
-    endpoint_func: Callable,
-):
-    query_dict = {}
+def test_list_to_scope():
+    assert enforce_str("") == ""  # type: ignore
+    assert enforce_str(["read", "write"]) == "read write"
 
-    if request.method == RequestMethod.POST:
-        query_dict = get_keys(request.post)
 
-    if request.method == RequestMethod.GET:
-        query_dict = get_keys(request.query)
+def test_scope_to_list():
+    assert enforce_list("read write") == ["read", "write"]
+    assert enforce_list(["read", "write"]) == ["read", "write"]
+    assert enforce_list(None) == []  # type: ignore
 
-    responses = EMPTY_KEYS[request.method]
-    await check_query_values(request, responses, query_dict, endpoint_func, None)
 
-    responses = INVALID_KEYS[request.method]
-    await check_query_values(request, responses, query_dict, endpoint_func, "invalid")
+def test_build_uri():
+    build_uri("https://google.com") == "https://google.com"
+
+
+def test_decode_auth_headers():
+    request = Request(headers=CaseInsensitiveDict(), method=RequestMethod.POST)
+
+    # No authorization header
+    with pytest.raises(InvalidClientError):
+        decode_auth_headers(request=request)
+
+    # Invalid authorization header
+    request = Request(
+        headers=CaseInsensitiveDict({"authorization": ""}), method=RequestMethod.POST
+    )
+    with pytest.raises(InvalidClientError):
+        decode_auth_headers(request=request)
+
+    # No separator
+    authorization = b64encode("usernamepassword".encode("ascii"))
+
+    request = Request(
+        headers=CaseInsensitiveDict(Authorization=f"basic {authorization.decode()}"),
+        method=RequestMethod.POST,
+    )
+
+    with pytest.raises(InvalidClientError):
+        decode_auth_headers(request=request)
+
+    # No base64 digits
+    authorization = b64encode("usernamepassword".encode("ascii"))
+
+    request = Request(
+        headers=CaseInsensitiveDict(Authorization="basic привет"),
+        method=RequestMethod.POST,
+    )
+
+    with pytest.raises(InvalidClientError):
+        decode_auth_headers(request=request)
+
+
+def test_base_error_uri():
+    ERROR_URI = "https://google.com"
+    request = Request(settings=Settings(ERROR_URI=ERROR_URI), method=RequestMethod.POST)
+
+    try:
+        raise InvalidClientError(request=request)
+    except InvalidClientError as exc:
+        assert urljoin(ERROR_URI, exc.error) == exc.error_uri
