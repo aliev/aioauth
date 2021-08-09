@@ -1,11 +1,28 @@
-from typing import Any, NamedTuple, Optional
+"""
+.. code-block:: python
+
+    from aioauth import requests
+
+Request objects used throughout the project.
+
+----
+"""
+
+
+from types import SimpleNamespace
+from typing import Any, Optional, Text
 
 from .config import Settings
 from .structures import CaseInsensitiveDict
 from .types import CodeChallengeMethod, GrantType, RequestMethod, ResponseMode
 
 
-class Query(NamedTuple):
+class Query(SimpleNamespace):
+    """
+    Object that contains a client's query string portion of a request.
+    Read more on query strings `here <https://en.wikipedia.org/wiki/Query_string>`__.
+    """
+
     client_id: Optional[str] = None
     redirect_uri: str = ""
     response_type: str = ""
@@ -17,21 +34,28 @@ class Query(NamedTuple):
     response_mode: Optional[ResponseMode] = None
 
 
-class Post(NamedTuple):
+class Post(SimpleNamespace):
+    """
+    Object that contains a client's post request portion of a request.
+    Read more on post requests `here <https://en.wikipedia.org/wiki/POST_(HTTP)>`__.
+    """
+
     grant_type: Optional[GrantType] = None
     client_id: Optional[str] = None
     client_secret: Optional[str] = None
     redirect_uri: Optional[str] = None
     scope: str = ""
-    username: Optional[str] = None
-    password: Optional[str] = None
+    username: Optional[Text] = None
+    password: Optional[Text] = None
     refresh_token: Optional[str] = None
     code: Optional[str] = None
     token: Optional[str] = None
     code_verifier: Optional[str] = None
 
 
-class Request(NamedTuple):
+class Request(SimpleNamespace):
+    """Object that contains a client's complete request."""
+
     method: RequestMethod
     headers: CaseInsensitiveDict = CaseInsensitiveDict()
     query: Query = Query()

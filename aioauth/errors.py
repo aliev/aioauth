@@ -1,3 +1,13 @@
+"""
+.. code-block:: python
+
+    from aioauth import errors
+
+Errors used throughout the project.
+
+----
+"""
+
 from http import HTTPStatus
 from typing import Optional
 from urllib.parse import urljoin
@@ -9,6 +19,8 @@ from .types import ErrorType
 
 
 class OAuth2Error(Exception):
+    """Base exception that all other exceptions inherit from."""
+
     error: ErrorType
     description: str = ""
     status_code: HTTPStatus = HTTPStatus.BAD_REQUEST
@@ -36,6 +48,11 @@ class OAuth2Error(Exception):
 
 
 class MethodNotAllowedError(OAuth2Error):
+    """
+    The request is valid, but the method trying to be accessed is not
+    available to the resource owner.
+    """
+
     description = "HTTP method is not allowed."
     status_code: HTTPStatus = HTTPStatus.METHOD_NOT_ALLOWED
     error = ErrorType.METHOD_IS_NOT_ALLOWED
@@ -55,11 +72,11 @@ class InvalidClientError(OAuth2Error):
     """
     Client authentication failed (e.g. unknown client, no client
     authentication included, or unsupported authentication method).
-    The authorization server MAY return an HTTP 401 (Unauthorized) status
+    The authorization server **may** return an ``HTTP 401`` (Unauthorized) status
     code to indicate which HTTP authentication schemes are supported.
-    If the client attempted to authenticate via the "Authorization" request
-    header field, the authorization server MUST respond with an
-    HTTP 401 (Unauthorized) status code, and include the "WWW-Authenticate"
+    If the client attempted to authenticate via the ``Authorization`` request
+    header field, the authorization server **must** respond with an
+    ``HTTP 401`` (Unauthorized) status code, and include the ``WWW-Authenticate``
     response header field matching the authentication scheme used by the
     client.
     """
@@ -100,13 +117,15 @@ class InvalidGrantError(OAuth2Error):
     not match the redirection URI used in the authorization request, or was
     issued to another client.
 
-    https://tools.ietf.org/html/rfc6749#section-5.2
+    See `RFC6749 section 5.2 <https://tools.ietf.org/html/rfc6749#section-5.2>`_.
     """
 
     error = ErrorType.INVALID_GRANT
 
 
 class MismatchingStateError(OAuth2Error):
+    """Unable to securely verify the integrity of the request and response."""
+
     description = "CSRF Warning! State not equal in request and response."
     error = ErrorType.MISMATCHING_STATE
 
@@ -125,7 +144,7 @@ class InvalidScopeError(OAuth2Error):
     The requested scope is invalid, unknown, or malformed, or
     exceeds the scope granted by the resource owner.
 
-    https://tools.ietf.org/html/rfc6749#section-5.2
+    See `RFC6749 section 5.2 <https://tools.ietf.org/html/rfc6749#section-5.2>`_.
     """
 
     error = ErrorType.INVALID_SCOPE
@@ -135,7 +154,7 @@ class ServerError(OAuth2Error):
     """
     The authorization server encountered an unexpected condition that
     prevented it from fulfilling the request.  (This error code is needed
-    because a 500 Internal Server Error HTTP status code cannot be returned
+    because a ``HTTP 500`` (Internal Server Error) status code cannot be returned
     to the client via a HTTP redirect.)
     """
 
@@ -146,7 +165,7 @@ class TemporarilyUnavailableError(OAuth2Error):
     """
     The authorization server is currently unable to handle the request
     due to a temporary overloading or maintenance of the server.
-    (This error code is needed because a 503 Service Unavailable HTTP
+    (This error code is needed because a ``HTTP 503`` (Service Unavailable)
     status code cannot be returned to the client via a HTTP redirect.)
     """
 

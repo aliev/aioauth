@@ -1,0 +1,71 @@
+name: Docs
+
+on:
+  push:
+    branches:
+      - master
+      - documentation # @todo Remove this before merging PR.
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checks out repo
+      uses: actions/checkout@v1
+
+    - name: Generates HTML documentation
+      uses: synchronizing/sphinx-action@master
+      with:
+        docs-folder: "docs/"
+        pre-build-command: "make docs-install"
+
+    - name: Builds the PDF documentation
+      uses: synchronizing/sphinx-action@master
+      with:
+        pre-build-command: "apt-get update -y && apt-get install -y latexmk texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended && make docs-install"
+        build-command: "make latexpdf"
+        docs-folder: "docs/"
+
+    - name: Saves the HTML build documentation
+      uses: actions/upload-artifact@v2
+      with:
+        path: docs/build/html/
+
+    - name: Saves the PDF build documentation
+      uses: actions/upload-artifact@v2
+      with:
+        path: docs/build/latex/aioauth.pdf
+        
+    - name: Commits docs changes to gh-pages branch
+      run: |
+
+        # Copies documentation outside of git folder.  
+        mkdir -p ../docs/html ../docs/pdf
+        cp -r docs/build/html ../docs/
+        cp docs/build/latex/aioauth.pdf ../docs/pdf/
+
+        # Removes all of the content of the current folder.
+        sudo rm -rf *
+
+        # Checks out to gh-pages branch.
+        git checkout -b gh-pages
+
+        # Copies files to branch.
+        cp -r ../docs/html/* .
+        cp ../docs/pdf/aioauth.pdf .
+
+        # Sets up no Jekyll config.
+        touch .nojekyll
+
+        # Commits the changes.
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add .
+        git commit -m "Documentation update." -a || true
+
+    - name: Push changes to gh-pages branch
+      uses: ad-m/github-push-action@master
+      with:
+        branch: gh-pages
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        force: True

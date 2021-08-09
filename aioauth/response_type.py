@@ -1,3 +1,10 @@
+"""
+.. code-block:: python
+    from aioauth import responses
+Response objects used throughout the project.
+----
+"""
+
 from .storage import BaseStorage
 from .errors import (
     InvalidClientError,
@@ -17,6 +24,8 @@ from .types import CodeChallengeMethod
 
 
 class ResponseTypeBase:
+    """Base response type that all other exceptions inherit from."""
+
     def __init__(self, storage: BaseStorage):
         self.storage = storage
 
@@ -73,6 +82,8 @@ class ResponseTypeBase:
 
 
 class ResponseTypeToken(ResponseTypeBase):
+    """Response type that contains a token."""
+
     async def create_authorization_response(self, request: Request) -> TokenResponse:
         client = await super().validate_request(request)
 
@@ -90,6 +101,8 @@ class ResponseTypeToken(ResponseTypeBase):
 
 
 class ResponseTypeAuthorizationCode(ResponseTypeBase):
+    """Response type that contains an authorization code."""
+
     async def create_authorization_response(
         self, request: Request
     ) -> AuthorizationCodeResponse:

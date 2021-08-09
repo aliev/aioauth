@@ -27,7 +27,10 @@ class DB(BaseStorage):
                 return client
 
     async def get_client(
-        self, request: Request, client_id: str, client_secret: Optional[str] = None
+        self,
+        request: Request,
+        client_id: str,
+        client_secret: Optional[str] = None,
     ) -> Optional[Client]:
         if client_secret is not None:
             return self._get_by_client_secret(client_id, client_secret)

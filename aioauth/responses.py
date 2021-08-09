@@ -1,3 +1,10 @@
+"""
+.. code-block:: python
+    from aioauth import responses
+Response objects used throughout the project.
+----
+"""
+
 from http import HTTPStatus
 from typing import Dict, NamedTuple, Optional
 
@@ -7,11 +14,7 @@ from .types import ErrorType
 
 
 class ErrorResponse(NamedTuple):
-    """Response for error.
-
-    Used by response_types.
-    Used by grant_types.
-    """
+    """Response for errors."""
 
     error: ErrorType
     description: str
@@ -19,10 +22,9 @@ class ErrorResponse(NamedTuple):
 
 
 class AuthorizationCodeResponse(NamedTuple):
-    """Response for authorization_code.
+    """Response for ``authorization_code``.
 
-    Used by response_types:
-        - ResponseTypeAuthorizationCode
+    Used by :py:class:`aioauth.response_type.ResponseTypeAuthorizationCode`.
     """
 
     code: str
@@ -30,19 +32,16 @@ class AuthorizationCodeResponse(NamedTuple):
 
 
 class NoneResponse(NamedTuple):
-    """Response for none.
-    See: https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#none
-    Used by response_types:
-        - ResponseTypeNone
+    """Response for :py:class:`aioauth.response_type.ResponseTypeNone`.
+
+    See: `OAuth v2 multiple response types <openid.net/specs/oauth-v2-multiple-response-types-1_0.html#none>`_,
     """
 
 
 class TokenResponse(NamedTuple):
-    """Response for token.
+    """Response for valid token.
 
-    Used by grant_types.
-    Used by response_types:
-        - ResponseTypeToken
+    Used by :py:class:`aioauth.response_type.ResponseTypeToken`.
     """
 
     expires_in: int
@@ -54,10 +53,9 @@ class TokenResponse(NamedTuple):
 
 
 class IdTokenResponse(NamedTuple):
-    """OpenID response. Returns id_token.
+    """Response for OpenID id_token.
 
-    Used by response_types:
-        - ResponseTypeIdToken
+    Used by :py:class:`aioauth.response_type.ResponseResponseTypeIdTokenTypeToken`.
     """
 
     id_token: str
@@ -66,7 +64,7 @@ class IdTokenResponse(NamedTuple):
 class TokenActiveIntrospectionResponse(NamedTuple):
     """Response for a valid access token.
 
-    Used by token introspection server.
+    Used by :py:meth:`aioauth.server.AuthorizationServer.create_token_introspection_response`.
     """
 
     scope: str
@@ -78,7 +76,7 @@ class TokenActiveIntrospectionResponse(NamedTuple):
 class TokenInactiveIntrospectionResponse(NamedTuple):
     """For an invalid, revoked or expired token.
 
-    Used by token introspection server.
+    Used by :py:meth:`aioauth.server.AuthorizationServer.create_token_introspection_response`.
     """
 
     active: bool = False
@@ -87,8 +85,7 @@ class TokenInactiveIntrospectionResponse(NamedTuple):
 class Response(NamedTuple):
     """General response class.
 
-    Used by:
-        - AuthorizationServer
+    Used by :py:class:`aioauth.server.AuthorizationServer`.
     """
 
     content: Optional[Dict] = {}
