@@ -9,15 +9,14 @@ Request objects used throughout the project.
 """
 
 
-from types import SimpleNamespace
-from typing import Any, Optional, Text
+from typing import Any, Optional, Text, NamedTuple
 
 from .config import Settings
 from .structures import CaseInsensitiveDict
 from .types import CodeChallengeMethod, GrantType, RequestMethod, ResponseMode
 
 
-class Query(SimpleNamespace):
+class Query(NamedTuple):
     """
     Object that contains a client's query string portion of a request.
     Read more on query strings `here <https://en.wikipedia.org/wiki/Query_string>`__.
@@ -34,7 +33,7 @@ class Query(SimpleNamespace):
     response_mode: Optional[ResponseMode] = None
 
 
-class Post(SimpleNamespace):
+class Post(NamedTuple):
     """
     Object that contains a client's post request portion of a request.
     Read more on post requests `here <https://en.wikipedia.org/wiki/POST_(HTTP)>`__.
@@ -53,7 +52,7 @@ class Post(SimpleNamespace):
     code_verifier: Optional[str] = None
 
 
-class Request(SimpleNamespace):
+class Request(NamedTuple):
     """Object that contains a client's complete request."""
 
     method: RequestMethod
