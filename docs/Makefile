@@ -14,7 +14,7 @@ help:
 
 # Adds serve ability with auto-reload.
 serve:
-	@sphinx-autobuild -b html source build/html 
+	@sphinx-autobuild -b html source build/html
 
 .PHONY: help Makefile
 

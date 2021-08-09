@@ -35,11 +35,11 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         path: docs/build/latex/aioauth.pdf
-        
+
     - name: Commits docs changes to gh-pages branch
       run: |
 
-        # Copies documentation outside of git folder.  
+        # Copies documentation outside of git folder.
         mkdir -p ../docs/html ../docs/pdf
         cp -r docs/build/html ../docs/
         cp docs/build/latex/aioauth.pdf ../docs/pdf/
