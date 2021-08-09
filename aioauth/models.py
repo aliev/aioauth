@@ -139,6 +139,10 @@ class AuthorizationCode(NamedTuple):
     """
 
     expires_in: int
+    """
+    Time delta in which authorization_code will expire.
+    """
+
     code_challenge: Optional[Text] = None
     """
     Only used when `RFC 7636 <tools.ietf.org/html/rfc7636>`_,
@@ -182,6 +186,7 @@ class AuthorizationCode(NamedTuple):
 
     @property
     def is_expired(self) -> bool:
+        """Checks if the authorization_code has expired."""
         return self.auth_time + self.expires_in < time.time()
 
 
