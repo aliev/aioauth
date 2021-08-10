@@ -13,7 +13,9 @@ repos:
     rev: v4.0.1
     hooks:
       - id: trailing-whitespace
+        exclude: ^(setup\.cfg)
       - id: end-of-file-fixer
+        exclude: ^(setup\.cfg)
       - id: check-merge-conflict
       - id: detect-private-key
 
