@@ -24,8 +24,10 @@ import aioauth
 
 ```
 
-## System Information (Python version, OS, etc.)
+## System Information
 
 ```
-<paste here>
+Python Version (3.x):
+aioauth Version (0.x):
+Framework (FastAPI / starlette, aiohttp, sanic, etc.)
 ```
