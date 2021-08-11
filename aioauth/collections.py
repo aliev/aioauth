@@ -7,12 +7,7 @@ Collections that are used throughout the project.
 -------------------------------------------------
 """
 
-try:
-    from urllib3 import HTTPHeaderDict as _HTTPHeaderDict
-
-    """ See `urllib3 PR <https://github.com/urllib3/urllib3/pull/2216>`_. """
-except ImportError:
-    from urllib3._collections import HTTPHeaderDict as _HTTPHeaderDict
+from urllib3._collections import HTTPHeaderDict as _HTTPHeaderDict
 
 
 class HTTPHeaderDict(_HTTPHeaderDict):
