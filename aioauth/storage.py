@@ -9,6 +9,7 @@ action.
 ----
 """
 
+from aioauth.types import ResponseType
 import time
 from typing import Optional
 
@@ -77,7 +78,7 @@ class BaseStorage:
         request: Request,
         client_id: str,
         scope: str,
-        response_type: str,
+        response_type: ResponseType,
         redirect_uri: str,
         code_challenge_method: Optional[str],
         code_challenge: Optional[str],
@@ -118,7 +119,7 @@ class BaseStorage:
         request: Request,
         client_id: str,
         scope: str,
-        response_type: str,
+        response_type: ResponseType,
         redirect_uri: str,
         nonce: str,
     ) -> str:

@@ -92,7 +92,7 @@ def enforce_str(scope: List) -> Text:
     return ""
 
 
-def enforce_list(scope: Union[Text, List, Set, Tuple]) -> List:
+def enforce_list(scope: Optional[Union[Text, List, Set, Tuple]]) -> List:
     """
     Converts a space separated string to a list of scopes.
 

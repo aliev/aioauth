@@ -13,7 +13,13 @@ from typing import Any, Optional, Text, NamedTuple
 
 from .config import Settings
 from .collections import HTTPHeaderDict
-from .types import CodeChallengeMethod, GrantType, RequestMethod, ResponseMode
+from .types import (
+    CodeChallengeMethod,
+    GrantType,
+    RequestMethod,
+    ResponseMode,
+    ResponseType,
+)
 
 
 class Query(NamedTuple):
@@ -24,7 +30,7 @@ class Query(NamedTuple):
 
     client_id: Optional[str] = None
     redirect_uri: str = ""
-    response_type: str = ""
+    response_type: Optional[ResponseType] = None
     state: str = ""
     scope: str = ""
     nonce: Optional[str] = None

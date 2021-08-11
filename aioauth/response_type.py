@@ -114,7 +114,7 @@ class ResponseTypeAuthorizationCode(ResponseTypeBase):
             request,
             client.client_id,
             request.query.scope,
-            request.query.response_type,
+            request.query.response_type,  # type: ignore
             request.query.redirect_uri,
             request.query.code_challenge_method,
             request.query.code_challenge,
@@ -144,7 +144,7 @@ class ResponseTypeIdToken(ResponseTypeBase):
             request,
             client.client_id,
             request.query.scope,
-            request.query.response_type,
+            request.query.response_type,  # type: ignore
             request.query.redirect_uri,
             request.query.nonce,  # type: ignore
         )
