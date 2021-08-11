@@ -12,7 +12,7 @@ Request objects used throughout the project.
 from typing import Any, Optional, Text, NamedTuple
 
 from .config import Settings
-from .structures import CaseInsensitiveDict
+from .collections import HTTPHeaderDict
 from .types import CodeChallengeMethod, GrantType, RequestMethod, ResponseMode
 
 
@@ -56,7 +56,7 @@ class Request(NamedTuple):
     """Object that contains a client's complete request."""
 
     method: RequestMethod
-    headers: CaseInsensitiveDict = CaseInsensitiveDict()
+    headers: HTTPHeaderDict = HTTPHeaderDict()
     query: Query = Query()
     post: Post = Post()
     url: str = ""

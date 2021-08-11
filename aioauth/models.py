@@ -1,6 +1,8 @@
 """
 .. code-block:: python
+
     from aioauth import models
+
 Memory objects used throughout the project.
 ----
 """

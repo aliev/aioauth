@@ -1,6 +1,8 @@
 """
 .. code-block:: python
+
     from aioauth import config
+
 Configuration settings for aioauth server instance.
 ----
 """
@@ -19,6 +21,7 @@ class Settings(NamedTuple):
 
     INSECURE_TRANSPORT: bool = False
     """Allow connections over SSL only.
+
     Note:
         When this option is disabled server will raise "HTTP method is
         not allowed" error when attempting to access the server without

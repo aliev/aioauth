@@ -14,7 +14,7 @@ from urllib.parse import urljoin
 
 from .constances import default_headers
 from .requests import Request
-from .structures import CaseInsensitiveDict
+from .collections import HTTPHeaderDict
 from .types import ErrorType
 
 
@@ -25,13 +25,13 @@ class OAuth2Error(Exception):
     description: str = ""
     status_code: HTTPStatus = HTTPStatus.BAD_REQUEST
     error_uri: str = ""
-    headers: CaseInsensitiveDict = default_headers
+    headers: HTTPHeaderDict = default_headers
 
     def __init__(
         self,
         request: Request,
         description: Optional[str] = None,
-        headers: Optional[CaseInsensitiveDict] = None,
+        headers: Optional[HTTPHeaderDict] = None,
     ):
         self.request = request
 

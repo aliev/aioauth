@@ -5,7 +5,7 @@ import pytest
 from aioauth.config import Settings
 from aioauth.errors import InvalidClientError
 from aioauth.requests import Request
-from aioauth.structures import CaseInsensitiveDict
+from aioauth.collections import HTTPHeaderDict
 from aioauth.types import RequestMethod
 from aioauth.utils import (
     build_uri,
@@ -67,7 +67,7 @@ def test_build_uri():
 
 
 def test_decode_auth_headers():
-    request = Request(headers=CaseInsensitiveDict(), method=RequestMethod.POST)
+    request = Request(headers=HTTPHeaderDict(), method=RequestMethod.POST)
 
     # No authorization header
     with pytest.raises(InvalidClientError):
@@ -75,7 +75,7 @@ def test_decode_auth_headers():
 
     # Invalid authorization header
     request = Request(
-        headers=CaseInsensitiveDict({"authorization": ""}), method=RequestMethod.POST
+        headers=HTTPHeaderDict({"authorization": ""}), method=RequestMethod.POST
     )
     with pytest.raises(InvalidClientError):
         decode_auth_headers(request=request)
@@ -84,7 +84,7 @@ def test_decode_auth_headers():
     authorization = b64encode("usernamepassword".encode("ascii"))
 
     request = Request(
-        headers=CaseInsensitiveDict(Authorization=f"basic {authorization.decode()}"),
+        headers=HTTPHeaderDict(Authorization=f"basic {authorization.decode()}"),
         method=RequestMethod.POST,
     )
 
@@ -95,7 +95,7 @@ def test_decode_auth_headers():
     authorization = b64encode("usernamepassword".encode("ascii"))
 
     request = Request(
-        headers=CaseInsensitiveDict(Authorization="basic привет"),
+        headers=HTTPHeaderDict(Authorization="basic привет"),
         method=RequestMethod.POST,
     )
 
