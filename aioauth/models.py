@@ -30,7 +30,7 @@ class Client(NamedTuple):
     client and authorization server.
     """
 
-    grant_types: List[GrantType] = []
+    grant_types: List[GrantType]
     """
     The method(s) in which an application gets an access token from the
     provider. Each grant type is optimized for a particular use case,
@@ -38,10 +38,10 @@ class Client(NamedTuple):
     to launch a web browser, or server-to-server applications.
     """
 
-    response_types: List[ResponseType] = []
+    response_types: List[ResponseType]
     """A list containing the types of the response expected."""
 
-    redirect_uris: List[str] = []
+    redirect_uris: List[str]
     """
     After a user successfully authorizes an application, the
     authorization server will redirect the user back to the application
@@ -74,7 +74,7 @@ class Client(NamedTuple):
         """
         return grant_type in self.grant_types
 
-    def check_response_type(self, response_type: str) -> bool:
+    def check_response_type(self, response_type: Optional[ResponseType]) -> bool:
         """
         Verifies passed ``response_type`` is part of the client's
         ``response_types`` list.
@@ -122,7 +122,7 @@ class AuthorizationCode(NamedTuple):
     locations.
     """
 
-    response_type: str
+    response_type: ResponseType
     """A string containing the type of the response expected."""
 
     scope: Text
