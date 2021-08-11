@@ -1,8 +1,10 @@
 """
 .. code-block:: python
+
     from aioauth import server
-Memory object and interface used to initialize an OAuth2.0 server
-instance.
+
+Memory object and interface used to initialize an OAuth2.0 server instance.
+
 Warning:
     Note that :py:class:`aioauth.server.AuthorizationServer` is not
     depedent on any server framework, nor serves at any specific
@@ -45,7 +47,7 @@ from .responses import (
     TokenActiveIntrospectionResponse,
     TokenInactiveIntrospectionResponse,
 )
-from .structures import CaseInsensitiveDict
+from .collections import HTTPHeaderDict
 from .types import GrantType, RequestMethod, ResponseMode, ResponseType
 from .utils import (
     build_uri,
@@ -94,7 +96,7 @@ class AuthorizationServer:
             raise InsecureTransportError(request=request)
 
         if request.method not in allowed_methods:
-            headers = CaseInsensitiveDict(
+            headers = HTTPHeaderDict(
                 {**default_headers, "allow": ", ".join(allowed_methods)}
             )
             raise MethodNotAllowedError(request=request, headers=headers)
@@ -103,27 +105,31 @@ class AuthorizationServer:
     async def create_token_introspection_response(self, request: Request) -> Response:
         """
         Returns a response object with introspection of the passed token.
-        For more information see
-        `RFC7662 section 2.1 <https://tools.ietf.org/html/rfc7662#section-2.1>`_.
+        For more information see `RFC7662 section 2.1 <https://tools.ietf.org/html/rfc7662#section-2.1>`_.
+
         Note:
             The API endpoint that leverages this function is usually
             ``/introspect``.
+
         Example:
             Below is an example utilizing FastAPI as the server framework.
-            .. code-block:: python
-                @app.get("/introspect")
-                async def introspect(request: fastapi.Request) -> fastapi.Response:
-                    # Converts a fastapi.Request to an aioauth.Request.
-                    oauth2_request: aioauth.Request = await to_oauth2_request(request)
-                    # Creates the response via this function call.
-                    oauth2_response: aioauth.Response = await server.create_token_introspection_response(oauth2_request)
-                    # Converts an aioauth.Response to a fastapi.Response.
-                    response: fastapi.Response = await to_fastapi_response(oauth2_response)
-                    return response
+        .. code-block:: python
+
+            @app.get("/introspect")
+            async def introspect(request: fastapi.Request) -> fastapi.Response:
+                # Converts a fastapi.Request to an aioauth.Request.
+                oauth2_request: aioauth.Request = await to_oauth2_request(request)
+                # Creates the response via this function call.
+                oauth2_response: aioauth.Response = await server.create_token_introspection_response(oauth2_request)
+                # Converts an aioauth.Response to a fastapi.Response.
+                response: fastapi.Response = await to_fastapi_response(oauth2_response)
+                return response
+
         Args:
-            request: An ``aioauth`` request object.
+            request: An :py:class:`aioauth.requests.Request` object.
+
         Returns:
-            response: An ``aioauth`` response object.
+            response: An :py:class:`aioauth.responses.Response` object.
         """
         self.validate_request(request, [RequestMethod.POST])
         client_id, _ = decode_auth_headers(request)
@@ -156,25 +162,29 @@ class AuthorizationServer:
         Validates a token request and creates a token response.
         For more information see
         `RFC6749 section 4.1.3 <https://tools.ietf.org/html/rfc6749#section-4.1.3>`_.
+
         Note:
             The API endpoint that leverages this function is usually
             ``/token``.
         Example:
             Below is an example utilizing FastAPI as the server framework.
-            .. code-block:: python
-                @app.post("/token")
-                async def token(request: fastapi.Request) -> fastapi.Response:
-                    # Converts a fastapi.Request to an aioauth.Request.
-                    oauth2_request: aioauth.Request = await to_oauth2_request(request)
-                    # Creates the response via this function call.
-                    oauth2_response: aioauth.Response = await server.create_token_response(oauth2_request)
-                    # Converts an aioauth.Response to a fastapi.Response.
-                    response: fastapi.Response = await to_fastapi_response(oauth2_response)
-                    return response
+        .. code-block:: python
+
+            @app.post("/token")
+            async def token(request: fastapi.Request) -> fastapi.Response:
+                # Converts a fastapi.Request to an aioauth.Request.
+                oauth2_request: aioauth.Request = await to_oauth2_request(request)
+                # Creates the response via this function call.
+                oauth2_response: aioauth.Response = await server.create_token_response(oauth2_request)
+                # Converts an aioauth.Response to a fastapi.Response.
+                response: fastapi.Response = await to_fastapi_response(oauth2_response)
+                return response
+
         Args:
-            request: An ``aioauth`` request object.
+            request: An :py:class:`aioauth.requests.Request` object.
+
         Returns:
-            response: An ``aioauth`` response object.
+            response: An :py:class:`aioauth.responses.Response` object.
         """
         self.validate_request(request, [RequestMethod.POST])
 
@@ -207,25 +217,30 @@ class AuthorizationServer:
         Validate authorization request and create authorization response.
         For more information see
         `RFC6749 section 4.1.1 <https://tools.ietf.org/html/rfc6749#section-4.1.1>`_.
+
         Note:
             The API endpoint that leverages this function is usually
             ``/authorize``.
+
         Example:
             Below is an example utilizing FastAPI as the server framework.
-            .. code-block:: python
-                @app.post("/authorize")
-                async def authorize(request: fastapi.Request) -> fastapi.Response:
-                    # Converts a fastapi.Request to an aioauth.Request.
-                    oauth2_request: aioauth.Request = await to_oauth2_request(request)
-                    # Creates the response via this function call.
-                    oauth2_response: aioauth.Response = await server.create_authorization_response(oauth2_request)
-                    # Converts an aioauth.Response to a fastapi.Response.
-                    response: fastapi.Response = await to_fastapi_response(oauth2_response)
-                    return response
+        .. code-block:: python
+
+            @app.post("/authorize")
+            async def authorize(request: fastapi.Request) -> fastapi.Response:
+                # Converts a fastapi.Request to an aioauth.Request.
+                oauth2_request: aioauth.Request = await to_oauth2_request(request)
+                # Creates the response via this function call.
+                oauth2_response: aioauth.Response = await server.create_authorization_response(oauth2_request)
+                # Converts an aioauth.Response to a fastapi.Response.
+                response: fastapi.Response = await to_fastapi_response(oauth2_response)
+                return response
+
         Args:
-            request: An ``aioauth`` request object.
+            request: An :py:class:`aioauth.requests.Request` object.
+
         Returns:
-            response: An ``aioauth`` response object.
+            response: An :py:class:`aioauth.responses.Response` object.
         """
         self.validate_request(request, [RequestMethod.GET])
 
@@ -304,6 +319,6 @@ class AuthorizationServer:
 
         return Response(
             status_code=HTTPStatus.FOUND,
-            headers=CaseInsensitiveDict({"location": location}),
+            headers=HTTPHeaderDict({"location": location}),
             content=content,
         )

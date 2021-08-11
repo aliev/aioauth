@@ -1,15 +1,17 @@
 """
 .. code-block:: python
+
     from aioauth import responses
+
 Response objects used throughout the project.
-----
+---------------------------------------------
 """
 
 from http import HTTPStatus
 from typing import Dict, NamedTuple, Optional
 
 from .constances import default_headers
-from .structures import CaseInsensitiveDict
+from .collections import HTTPHeaderDict
 from .types import ErrorType
 
 
@@ -90,4 +92,4 @@ class Response(NamedTuple):
 
     content: Optional[Dict] = {}
     status_code: HTTPStatus = HTTPStatus.OK
-    headers: CaseInsensitiveDict = default_headers
+    headers: HTTPHeaderDict = default_headers

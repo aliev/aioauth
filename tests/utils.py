@@ -4,7 +4,7 @@ from typing import Any, Callable, Dict, Union
 from aioauth.constances import default_headers
 from aioauth.requests import Post, Query, Request
 from aioauth.responses import ErrorResponse, Response
-from aioauth.structures import CaseInsensitiveDict
+from aioauth.collections import HTTPHeaderDict
 from aioauth.types import ErrorType, RequestMethod
 
 EMPTY_KEYS = {
@@ -97,7 +97,7 @@ EMPTY_KEYS = {
                 description="",
             )._asdict(),
             status_code=HTTPStatus.UNAUTHORIZED,
-            headers=CaseInsensitiveDict({"www-authenticate": "Basic"}),
+            headers=HTTPHeaderDict({"www-authenticate": "Basic"}),
         ),
         "client_secret": Response(
             content=ErrorResponse(
@@ -105,7 +105,7 @@ EMPTY_KEYS = {
                 description="",
             )._asdict(),
             status_code=HTTPStatus.UNAUTHORIZED,
-            headers=CaseInsensitiveDict({"www-authenticate": "Basic"}),
+            headers=HTTPHeaderDict({"www-authenticate": "Basic"}),
         ),
         "username": Response(
             content=ErrorResponse(

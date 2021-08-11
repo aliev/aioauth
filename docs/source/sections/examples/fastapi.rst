@@ -17,7 +17,7 @@ FastAPI
         Request as OAuth2Request,
     )
     from aioauth.responses import Response as OAuth2Response
-    from aioauth.structures import CaseInsensitiveDict
+    from aioauth.collections import HTTPHeaderDict
 
 
     class DB(BaseStorage):
@@ -151,7 +151,7 @@ FastAPI
         post = dict(form)
         query_params = dict(request.query_params)
         method = request.method
-        headers = CaseInsensitiveDict(**request.headers)
+        headers = HTTPHeaderDict(**request.headers)
         url = str(request.url)
 
         # NOTE: AuthenticationMiddleware must be installed

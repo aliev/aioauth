@@ -1,8 +1,10 @@
 """
 .. code-block:: python
+
     from aioauth import responses
+
 Response objects used throughout the project.
-----
+---------------------------------------------
 """
 
 from .storage import BaseStorage

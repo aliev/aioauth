@@ -1,13 +1,15 @@
 """
 .. code-block:: python
+
     from aioauth import constances
+
 Constants that are used throughout the project.
-----
+-----------------------------------------------
 """
 
-from .structures import CaseInsensitiveDict
+from .collections import HTTPHeaderDict
 
-default_headers = CaseInsensitiveDict(
+default_headers = HTTPHeaderDict(
     {
         "Content-Type": "application/json",
         "Cache-Control": "no-store",

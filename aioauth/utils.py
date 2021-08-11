@@ -1,6 +1,8 @@
 """
 .. code-block:: python
+
     from aioauth import utils
+
 Contains helper functions that is used throughout the project that
 doesn't pertain to a specific file or module.
 ----
@@ -25,7 +27,7 @@ from .errors import (
 )
 from .requests import Request
 from .responses import ErrorResponse, Response
-from .structures import CaseInsensitiveDict
+from .collections import HTTPHeaderDict
 
 UNICODE_ASCII_CHARACTER_SET = string.ascii_letters + string.digits
 
@@ -36,12 +38,13 @@ log = logging.getLogger(__name__)
 def is_secure_transport(request: Request) -> bool:
     """
     Verifies the request was sent via a protected SSL tunnel.
+
     Note:
         This method simply checks if the request URL contains
         ``https://`` at the start of it. It does **not** ensure
         if the SSL certificate is valid.
     Args:
-        request: A request object.
+        request: :py:class:`aioauth.requests.Request` object.
     Returns:
         Flag representing whether or not the transport is secure.
     """
@@ -56,6 +59,7 @@ def get_authorization_scheme_param(
     """
     Retrieves the authorization schema parameters from the authorization
     header.
+
     Args:
         authorization_header_value: Value of the authorization header.
     Returns:
@@ -70,6 +74,7 @@ def get_authorization_scheme_param(
 def enforce_str(scope: List) -> Text:
     """
     Converts a list of scopes to a space separated string.
+
     Note:
         If a string is passed to this method it will simply return an
         empty string back. Use :py:func:`enforce_list` to convert
@@ -90,6 +95,7 @@ def enforce_str(scope: List) -> Text:
 def enforce_list(scope: Union[Text, List, Set, Tuple]) -> List:
     """
     Converts a space separated string to a list of scopes.
+
     Note:
         If an iterable is passed to this method it will return a list
         representation of the iterable. Use :py:func:`enforce_str` to
@@ -116,6 +122,7 @@ def generate_token(length: int = 30, chars: str = UNICODE_ASCII_CHARACTER_SET) -
     guessable and entropy when generating the random characters is
     important. Which is why SystemRandom is used instead of the default
     random.choice method.
+
     Args:
         length: Length of the generated token.
         chars: The characters to use to generate the string.
@@ -132,6 +139,7 @@ def build_uri(
     """
     Builds an URI string from passed ``url``, ``query_params``, and
     ``fragment``.
+
     Args:
         url: URL string.
         query_params: Paramaters that contain the query.
@@ -159,9 +167,10 @@ def build_uri(
     return uri
 
 
-def encode_auth_headers(client_id: str, client_secret: str) -> CaseInsensitiveDict:
+def encode_auth_headers(client_id: str, client_secret: str) -> HTTPHeaderDict:
     """
     Encodes the authentication header using base64 encoding.
+
     Args:
         client_id: The client's id.
         client_secret: The client's secret.
@@ -171,7 +180,7 @@ def encode_auth_headers(client_id: str, client_secret: str) -> CaseInsensitiveDi
         header.
     """
     authorization = b64encode(f"{client_id}:{client_secret}".encode("ascii"))
-    return CaseInsensitiveDict(Authorization=f"basic {authorization.decode()}")
+    return HTTPHeaderDict(Authorization=f"basic {authorization.decode()}")
 
 
 def decode_auth_headers(request: Request) -> Tuple[str, str]:
@@ -180,6 +189,7 @@ def decode_auth_headers(request: Request) -> Tuple[str, str]:
     Returns a tuple of the form ``(client_id, client_secret)``, and
     raises a :py:class:`aioauth.errors.InvalidClientError` exception if nothing
     could be decoded.
+
     Args:
         request: A request object.
     Returns:
@@ -189,7 +199,7 @@ def decode_auth_headers(request: Request) -> Tuple[str, str]:
     """
     authorization = request.headers.get("Authorization", "")
 
-    headers = CaseInsensitiveDict({"WWW-Authenticate": "Basic"})
+    headers = HTTPHeaderDict({"WWW-Authenticate": "Basic"})
 
     scheme, param = get_authorization_scheme_param(authorization)
     if not authorization or scheme.lower() != "basic":
@@ -211,6 +221,7 @@ def decode_auth_headers(request: Request) -> Tuple[str, str]:
 def create_s256_code_challenge(code_verifier: str) -> str:
     """
     Create S256 code challenge with the passed ``code_verifier``.
+
     Note:
         This function implements
         ``base64url(sha256(ascii(code_verifier)))``.
@@ -228,6 +239,7 @@ def create_s256_code_challenge(code_verifier: str) -> str:
 def catch_errors_and_unavailability(f) -> Callable:
     """
     Decorator that adds error catching to the function passed.
+
     Args:
         f: A callable.
     Returns:
