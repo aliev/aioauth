@@ -7,10 +7,10 @@ Collections that are used throughout the project.
 -------------------------------------------------
 """
 
-from urllib3._collections import HTTPHeaderDict as _HTTPHeaderDict
+from collections import UserDict
 
 
-class HTTPHeaderDict(_HTTPHeaderDict):
+class HTTPHeaderDict(UserDict):
     """
     :param headers:
         An iterable of field-value pairs. Must not contain multiple field names
@@ -21,25 +21,19 @@ class HTTPHeaderDict(_HTTPHeaderDict):
 
     A ``dict`` like container for storing HTTP Headers.
 
-    Field names are stored and compared case-insensitively in compliance with
-    RFC 7230. Iteration provides the first case-sensitive key seen for each
-    case-insensitive pair.
+    Example:
 
-    Using ``__setitem__`` syntax overwrites fields that compare equal
-    case-insensitively in order to maintain ``dict``'s api. For fields that
-    compare equal, instead create a new ``HTTPHeaderDict`` and use ``.add``
-    in a loop.
+    .. code-block:: python
 
-    If multiple fields that are equal case-insensitively are passed to the
-    constructor or ``.update``, the behavior is undefined and some will be
-    lost.
-
-    >>> headers = HTTPHeaderDict()
-    >>> headers.add('Set-Cookie', 'foo=bar')
-    >>> headers.add('set-cookie', 'baz=quxx')
-    >>> headers['content-length'] = '7'
-    >>> headers['SET-cookie']
-    'foo=bar, baz=quxx'
-    >>> headers['Content-Length']
-    '7'
+        from aioauth.collections import HTTPHeaderDict
+        d = HTTPHeaderDict({"hello": "world"})
+        d['hello'] == 'world' # >>> True
+        d['Hello'] == 'world' # >>> True
+        d['hElLo'] == 'world' # >>> True
     """
+
+    def __setitem__(self, key, value):
+        super().__setitem__(key.lower(), value)
+
+    def __getitem__(self, key):
+        return super().__getitem__(key.lower())
