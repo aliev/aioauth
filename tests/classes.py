@@ -34,7 +34,7 @@ class DB(BaseStorage):
 
         return self._get_by_client_id(client_id)
 
-    async def save_token(self, token: Token):
+    async def save_token(self, request: Request, token: Token):
         self.storage["tokens"].append(token)
 
     async def revoke_token(self, request: Request, refresh_token: str) -> None:
@@ -72,7 +72,9 @@ class DB(BaseStorage):
         ):
             return True
 
-    async def save_authorization_code(self, authorization_code: AuthorizationCode):
+    async def save_authorization_code(
+        self, request: Request, authorization_code: AuthorizationCode
+    ):
         self.storage["authorization_codes"].append(authorization_code)
 
     async def get_authorization_code(

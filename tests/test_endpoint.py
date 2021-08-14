@@ -63,6 +63,7 @@ async def test_expired_token(
     token = Token(
         client_id=defaults.client_id,
         expires_in=settings.TOKEN_EXPIRES_IN,
+        refresh_token_expires_in=settings.REFRESH_TOKEN_EXPIRES_IN,
         access_token=generate_token(42),
         refresh_token=generate_token(48),
         issued_at=int(time.time() - settings.TOKEN_EXPIRES_IN),

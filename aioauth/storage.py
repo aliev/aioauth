@@ -9,7 +9,6 @@ action.
 ----
 """
 
-from aioauth.types import ResponseType
 import time
 from typing import Optional
 
@@ -36,16 +35,17 @@ class BaseStorage:
         token = Token(
             client_id=client_id,
             expires_in=request.settings.TOKEN_EXPIRES_IN,
+            refresh_token_expires_in=request.settings.REFRESH_TOKEN_EXPIRES_IN,
             access_token=generate_token(42),
             refresh_token=generate_token(48),
             issued_at=int(time.time()),
             scope=scope,
             revoked=False,
         )
-        await self.save_token(token)
+        await self.save_token(request, token)
         return token
 
-    async def save_token(self, token: Token) -> None:
+    async def save_token(self, request: Request, token: Token) -> None:
         """Store the different fields from the namedtuple into your storage"""
         raise NotImplementedError(
             "Token MUST be stored in a storage. It is a namedtuple and all of its fields should be stored"
@@ -78,7 +78,7 @@ class BaseStorage:
         request: Request,
         client_id: str,
         scope: str,
-        response_type: ResponseType,
+        response_type: str,
         redirect_uri: str,
         code_challenge_method: Optional[str],
         code_challenge: Optional[str],
@@ -111,7 +111,7 @@ class BaseStorage:
             code_challenge=code_challenge,
             expires_in=request.settings.AUTHORIZATION_CODE_EXPIRES_IN,
         )
-        await self.save_authorization_code(authorization_code)
+        await self.save_authorization_code(request, authorization_code)
         return authorization_code
 
     async def get_id_token(
@@ -119,7 +119,7 @@ class BaseStorage:
         request: Request,
         client_id: str,
         scope: str,
-        response_type: ResponseType,
+        response_type: str,
         redirect_uri: str,
         nonce: str,
     ) -> str:
@@ -131,7 +131,7 @@ class BaseStorage:
         raise NotImplementedError("create_token_id must be implemented.")
 
     async def save_authorization_code(
-        self, authorization_code: AuthorizationCode
+        self, request: Request, authorization_code: AuthorizationCode
     ) -> None:
         raise NotImplementedError(
             "AuthorizationCode MUST be stored in any storage. It is a namedtuple and all of its fields should be stored"

@@ -16,7 +16,7 @@ import logging
 import random
 import string
 from base64 import b64decode, b64encode
-from typing import Callable, Dict, List, Optional, Set, Text, Tuple, Union
+from typing import Callable, Dict, List, Optional, Set, Tuple, Union
 from urllib.parse import quote, urlencode, urlparse, urlunsplit
 
 from .errors import (
@@ -54,8 +54,8 @@ def is_secure_transport(request: Request) -> bool:
 
 
 def get_authorization_scheme_param(
-    authorization_header_value: Text,
-) -> Tuple[Text, Text]:
+    authorization_header_value: str,
+) -> Tuple[str, str]:
     """
     Retrieves the authorization schema parameters from the authorization
     header.
@@ -71,7 +71,7 @@ def get_authorization_scheme_param(
     return scheme, param
 
 
-def enforce_str(scope: List) -> Text:
+def enforce_str(scope: List) -> str:
     """
     Converts a list of scopes to a space separated string.
 
@@ -92,7 +92,7 @@ def enforce_str(scope: List) -> Text:
     return ""
 
 
-def enforce_list(scope: Optional[Union[Text, List, Set, Tuple]]) -> List:
+def enforce_list(scope: Optional[Union[str, List, Set, Tuple]]) -> List:
     """
     Converts a space separated string to a list of scopes.
 
