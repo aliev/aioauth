@@ -47,6 +47,7 @@ require_dev = [
     "testfixtures==6.14.1",
     "bump2version==0.5.11",
     "twine==1.14.0",
+    "wheel",
 ]
 
 require_docs = [
