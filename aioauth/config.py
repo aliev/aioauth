@@ -16,6 +16,9 @@ class Settings(NamedTuple):
     TOKEN_EXPIRES_IN: int = 24 * 60 * 60
     """Access token lifetime in seconds. Defaults to 24 hours."""
 
+    REFRESH_TOKEN_EXPIRES_IN: int = TOKEN_EXPIRES_IN * 2
+    """Refresh token lifetime in seconds. Defaults to TOKEN_EXPIRES_IN * 2 (48 hours)."""
+
     AUTHORIZATION_CODE_EXPIRES_IN: int = 5 * 60
     """Authorization code lifetime in seconds. Defaults to 5 minutes."""
 

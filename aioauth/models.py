@@ -8,7 +8,7 @@ Memory objects used throughout the project.
 """
 
 import time
-from typing import List, NamedTuple, Optional, Text
+from typing import List, NamedTuple, Optional, Union
 
 from .types import CodeChallengeMethod, GrantType, ResponseType
 from .utils import create_s256_code_challenge, enforce_list, enforce_str
@@ -17,13 +17,13 @@ from .utils import create_s256_code_challenge, enforce_list, enforce_str
 class Client(NamedTuple):
     """OAuth2.0 client model object."""
 
-    client_id: Text
+    client_id: str
     """
     Public identifier for the client. It must also be unique across all
     clients that the authorization server handles.
     """
 
-    client_secret: Text
+    client_secret: str
     """
     Client secret is a secret known only to the client and the
     authorization server. Used for secure communication between the
@@ -51,7 +51,7 @@ class Client(NamedTuple):
     locations.
     """
 
-    scope: Text = ""
+    scope: str = ""
     """
     Scope is a mechanism that limit an application's access to a user's
     account. An application can request one or more scopes, this
@@ -74,14 +74,16 @@ class Client(NamedTuple):
         """
         return grant_type in self.grant_types
 
-    def check_response_type(self, response_type: Optional[ResponseType]) -> bool:
+    def check_response_type(
+        self, response_type: Optional[Union[ResponseType, str]]
+    ) -> bool:
         """
         Verifies passed ``response_type`` is part of the client's
         ``response_types`` list.
         """
         return not (set(enforce_list(response_type)) - set(self.response_types))
 
-    def get_allowed_scope(self, scope) -> Text:
+    def get_allowed_scope(self, scope) -> str:
         """
         Returns the allowed ``scope`` given the passed ``scope``.
         Note:
@@ -100,19 +102,19 @@ class Client(NamedTuple):
 
 
 class AuthorizationCode(NamedTuple):
-    code: Text
+    code: str
     """
     Authorization code that the client previously received from the
     authorization server.
     """
 
-    client_id: Text
+    client_id: str
     """
     Public identifier for the client. It must also be unique across all
     clients that the authorization server handles.
     """
 
-    redirect_uri: Text
+    redirect_uri: str
     """
     After a user successfully authorizes an application, the
     authorization server will redirect the user back to the application
@@ -122,10 +124,10 @@ class AuthorizationCode(NamedTuple):
     locations.
     """
 
-    response_type: ResponseType
+    response_type: str
     """A string containing the type of the response expected."""
 
-    scope: Text
+    scope: str
     """
     Scope is a mechanism that limit an application's access to a user's
     account. An application can request one or more scopes, this
@@ -145,7 +147,7 @@ class AuthorizationCode(NamedTuple):
     Time delta in which authorization_code will expire.
     """
 
-    code_challenge: Optional[Text] = None
+    code_challenge: Optional[str] = None
     """
     Only used when `RFC 7636 <tools.ietf.org/html/rfc7636>`_,
     Proof Key for Code Exchange, is used.
@@ -157,14 +159,14 @@ class AuthorizationCode(NamedTuple):
     Authorization Server.
     """
 
-    code_challenge_method: Optional[Text] = None
+    code_challenge_method: Optional[str] = None
     """
     Only used when `RFC 7636 <tools.ietf.org/html/rfc7636>`_,
     Proof Key for Code Exchange, is used.
     Method used to transform the code verifier into the code challenge.
     """
 
-    nonce: Optional[Text] = None
+    nonce: Optional[str] = None
     """
     Only used when `RFC 7636 <tools.ietf.org/html/rfc7636>`_,
     Proof Key for Code Exchange, is used.
@@ -193,19 +195,19 @@ class AuthorizationCode(NamedTuple):
 
 
 class Token(NamedTuple):
-    access_token: Text
+    access_token: str
     """
     Token that clients use to make API requests on behalf of the
     resource owner.
     """
 
-    refresh_token: Text
+    refresh_token: str
     """
     Token used by clients to exchange a refresh token for an access
     token when the access token has expired.
     """
 
-    scope: Text
+    scope: str
     """
     Scope is a mechanism that limit an application's access to a user's
     account. An application can request one or more scopes, this
@@ -221,17 +223,21 @@ class Token(NamedTuple):
 
     expires_in: int
     """
-    Time delta in which token will expire. :py:func:`token_expires_in`
-    will give the date time for which the token is to expire.
+    Time delta in which token will expire.
     """
 
-    client_id: Text
+    refresh_token_expires_in: int
+    """
+    Time delta in which refresh token will expire.
+    """
+
+    client_id: str
     """
     Public identifier for the client. It must also be unique across all
     clients that the authorization server handles.
     """
 
-    token_type: Text = "Bearer"
+    token_type: str = "Bearer"
     """
     Type of token expected.
     """
@@ -244,21 +250,9 @@ class Token(NamedTuple):
     @property
     def is_expired(self) -> bool:
         """Checks if the token has expired."""
-        return self.token_expires_in < time.time()
-
-    @property
-    def refresh_token_expires_in(self) -> int:
-        """Refreshes the 'expires_in' parameter."""
-        expires_at = self.issued_at + self.expires_in * 2
-        return expires_at
-
-    @property
-    def token_expires_in(self) -> int:
-        """Time date in which the token will expire in."""
-        expires_at = self.issued_at + self.expires_in
-        return expires_at
+        return (self.issued_at + self.expires_in) < time.time()
 
     @property
     def refresh_token_expired(self) -> bool:
         """Checks if refresh token has expired."""
-        return self.refresh_token_expires_in < time.time()
+        return (self.issued_at + self.refresh_token_expires_in) < time.time()

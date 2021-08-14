@@ -1,13 +1,13 @@
-from typing import NamedTuple, Text
+from typing import NamedTuple
 
 
 class Defaults(NamedTuple):
-    client_id: Text
-    client_secret: Text
-    code: Text
-    refresh_token: Text
-    access_token: Text
-    username: Text
-    password: Text
-    redirect_uri: Text
-    scope: Text
+    client_id: str
+    client_secret: str
+    code: str
+    refresh_token: str
+    access_token: str
+    username: str
+    password: str
+    redirect_uri: str
+    scope: str

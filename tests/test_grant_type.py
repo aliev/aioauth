@@ -44,6 +44,7 @@ def storage(defaults: Defaults, settings: Settings) -> Dict:
     token = Token(
         client_id=defaults.client_id,
         expires_in=settings.TOKEN_EXPIRES_IN,
+        refresh_token_expires_in=settings.REFRESH_TOKEN_EXPIRES_IN,
         access_token=defaults.access_token,
         refresh_token=defaults.refresh_token,
         issued_at=int(time.time()),

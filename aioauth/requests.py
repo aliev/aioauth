@@ -9,7 +9,7 @@ Request objects used throughout the project.
 """
 
 
-from typing import Any, Optional, Text, NamedTuple
+from typing import Any, Optional, NamedTuple
 
 from .config import Settings
 from .collections import HTTPHeaderDict
@@ -18,7 +18,6 @@ from .types import (
     GrantType,
     RequestMethod,
     ResponseMode,
-    ResponseType,
 )
 
 
@@ -30,7 +29,7 @@ class Query(NamedTuple):
 
     client_id: Optional[str] = None
     redirect_uri: str = ""
-    response_type: Optional[ResponseType] = None
+    response_type: Optional[str] = None
     state: str = ""
     scope: str = ""
     nonce: Optional[str] = None
@@ -50,8 +49,8 @@ class Post(NamedTuple):
     client_secret: Optional[str] = None
     redirect_uri: Optional[str] = None
     scope: str = ""
-    username: Optional[Text] = None
-    password: Optional[Text] = None
+    username: Optional[str] = None
+    password: Optional[str] = None
     refresh_token: Optional[str] = None
     code: Optional[str] = None
     token: Optional[str] = None
