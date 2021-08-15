@@ -27,14 +27,6 @@ FastAPI
         creating authorization code, getting a client from the database, etc.
         """
 
-        async def save_token(self, token: Token):
-            """Store ALL fields of the Token namedtuple in a storage"""
-            ...
-
-        async def save_authorization_code(self, authorization_code: AuthorizationCode):
-            """Store ALL fields of the AuthorizationCode namedtuple in a storage"""
-            ...
-
         async def get_token(self, *args, **kwargs) -> Optional[Token]:
             """Get token from the database by provided request from user.
 
