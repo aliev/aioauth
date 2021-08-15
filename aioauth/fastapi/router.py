@@ -10,7 +10,7 @@ def get_oauth2_router(authorization_server: AuthorizationServer, settings: Setti
     router = APIRouter()
 
     @router.post("/token")
-    async def token(request: Request, form: TokenIntrospectForm = Depends()):
+    async def token(request: Request, form: TokenForm = Depends()):
         oauth2_request = await to_oauth2_request(request, settings)
         oauth2_response = await authorization_server.create_token_response(
             oauth2_request
@@ -18,7 +18,7 @@ def get_oauth2_router(authorization_server: AuthorizationServer, settings: Setti
         return await to_fastapi_response(oauth2_response)
 
     @router.post("/token/introspect")
-    async def token_introspect(request: Request, form: TokenForm = Depends()):
+    async def token_introspect(request: Request, form: TokenIntrospectForm = Depends()):
         oauth2_request = await to_oauth2_request(request, settings)
         oauth2_response = (
             await authorization_server.create_token_introspection_response(
