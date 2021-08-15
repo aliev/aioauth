@@ -65,3 +65,8 @@ class ResponseMode(str, Enum):
     MODE_QUERY = "query"
     MODE_FORM_POST = "form_post"
     MODE_FRAGMENT = "fragment"
+
+
+class TokenType(str, Enum):
+    ACCESS = "access_token"
+    REFRESH = "refresh_token"

@@ -51,6 +51,7 @@ class DB(BaseStorage):
         client_id: str,
         access_token: Optional[str] = None,
         refresh_token: Optional[str] = None,
+        token_type: str = "refresh_token",
     ) -> Optional[Token]:
         tokens: List[Token] = self.storage.get("tokens", [])
         for token_ in tokens:

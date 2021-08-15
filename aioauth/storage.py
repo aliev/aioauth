@@ -9,6 +9,7 @@ action.
 ----
 """
 
+from aioauth.types import TokenType
 import time
 from typing import Optional
 
@@ -48,6 +49,7 @@ class BaseStorage:
         self,
         request: Request,
         client_id: str,
+        token_type: Optional[str] = TokenType.REFRESH,
         access_token: Optional[str] = None,
         refresh_token: Optional[str] = None,
     ) -> Optional[Token]:

@@ -12,7 +12,7 @@ from typing import Dict, NamedTuple, Optional
 
 from .constances import default_headers
 from .collections import HTTPHeaderDict
-from .types import ErrorType
+from .types import ErrorType, TokenType
 
 
 class ErrorResponse(NamedTuple):
@@ -71,7 +71,8 @@ class TokenActiveIntrospectionResponse(NamedTuple):
 
     scope: str
     client_id: str
-    exp: int
+    token_type: TokenType
+    expires_in: int
     active: bool = True
 
 

@@ -48,7 +48,7 @@ from .responses import (
     TokenInactiveIntrospectionResponse,
 )
 from .collections import HTTPHeaderDict
-from .types import GrantType, RequestMethod, ResponseMode, ResponseType
+from .types import GrantType, RequestMethod, ResponseMode, ResponseType, TokenType
 from .utils import (
     build_uri,
     catch_errors_and_unavailability,
@@ -134,8 +134,25 @@ class AuthorizationServer:
         self.validate_request(request, [RequestMethod.POST])
         client_id, _ = decode_auth_headers(request)
 
+        token_types = set(TokenType)
+        token_type = TokenType.REFRESH
+
+        access_token = None
+        refresh_token = request.post.token
+
+        if request.post.token_type in token_types:
+            token_type = request.post.token_type  # type: ignore
+
+        if token_type == TokenType.ACCESS:
+            access_token = request.post.token
+            refresh_token = None
+
         token = await self.storage.get_token(
-            request=request, client_id=client_id, access_token=request.post.token
+            request=request,
+            client_id=client_id,
+            access_token=access_token,
+            refresh_token=refresh_token,
+            token_type=token_type,
         )
 
         token_response: Union[
@@ -146,7 +163,10 @@ class AuthorizationServer:
 
         if token and not token.is_expired and not token.revoked:
             token_response = TokenActiveIntrospectionResponse(
-                scope=token.scope, client_id=token.client_id, exp=token.expires_in
+                scope=token.scope,
+                client_id=token.client_id,
+                expires_in=token.expires_in,
+                token_type=token_type,
             )
 
         content = token_response._asdict()
