@@ -1,7 +1,7 @@
 __title__ = "aioauth"
 __description__ = "Asynchronous OAuth 2.0 framework for Python 3."
 __url__ = "https://github.com/aliev/aioauth"
-__version__ = "1.0.2"
+__version__ = "1.0.3"
 __author__ = "Ali Aliyev"
 __author_email__ = "ali@aliev.me"
 __license__ = "The MIT License (MIT)"
