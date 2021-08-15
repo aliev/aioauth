@@ -54,6 +54,7 @@ class Post(NamedTuple):
     refresh_token: Optional[str] = None
     code: Optional[str] = None
     token: Optional[str] = None
+    token_type: Optional[str] = None
     code_verifier: Optional[str] = None
 
 

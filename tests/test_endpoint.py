@@ -100,7 +100,7 @@ async def test_valid_token(
 
     token = storage["tokens"][0]
 
-    post = Post(token=token.access_token)
+    post = Post(token=token.refresh_token)
     request = Request(
         post=post,
         method=RequestMethod.POST,

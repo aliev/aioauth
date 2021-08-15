@@ -9,6 +9,7 @@ action.
 ----
 """
 
+from aioauth.types import TokenType
 import time
 from typing import Optional
 
@@ -42,19 +43,13 @@ class BaseStorage:
             scope=scope,
             revoked=False,
         )
-        await self.save_token(request, token)
         return token
-
-    async def save_token(self, request: Request, token: Token) -> None:
-        """Store the different fields from the namedtuple into your storage"""
-        raise NotImplementedError(
-            "Token MUST be stored in a storage. It is a namedtuple and all of its fields should be stored"
-        )
 
     async def get_token(
         self,
         request: Request,
         client_id: str,
+        token_type: Optional[str] = TokenType.REFRESH,
         access_token: Optional[str] = None,
         refresh_token: Optional[str] = None,
     ) -> Optional[Token]:
@@ -111,7 +106,6 @@ class BaseStorage:
             code_challenge=code_challenge,
             expires_in=request.settings.AUTHORIZATION_CODE_EXPIRES_IN,
         )
-        await self.save_authorization_code(request, authorization_code)
         return authorization_code
 
     async def get_id_token(
@@ -129,13 +123,6 @@ class BaseStorage:
             - ResponseTypeIdToken
         """
         raise NotImplementedError("create_token_id must be implemented.")
-
-    async def save_authorization_code(
-        self, request: Request, authorization_code: AuthorizationCode
-    ) -> None:
-        raise NotImplementedError(
-            "AuthorizationCode MUST be stored in any storage. It is a namedtuple and all of its fields should be stored"
-        )
 
     async def get_client(
         self, request: Request, client_id: str, client_secret: Optional[str] = None

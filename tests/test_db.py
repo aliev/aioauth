@@ -40,12 +40,6 @@ async def test_db(storage):
         await db.revoke_token(request=request, refresh_token=token.refresh_token)
 
     with pytest.raises(NotImplementedError):
-        await db.save_token(request, token)
-
-    with pytest.raises(NotImplementedError):
-        await db.save_authorization_code(request, authorization_code)
-
-    with pytest.raises(NotImplementedError):
         await db.get_id_token(
             request=request,
             client_id=client.client_id,
