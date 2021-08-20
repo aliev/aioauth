@@ -8,7 +8,7 @@ from aioauth.config import Settings
 from aioauth.models import Token
 from aioauth.requests import Post, Request
 from aioauth.server import AuthorizationServer
-from aioauth.types import ErrorType, GrantType, RequestMethod
+from aioauth.types import ErrorType, GrantType, RequestMethod, TokenType
 from aioauth.utils import (
     catch_errors_and_unavailability,
     encode_auth_headers,
@@ -141,7 +141,7 @@ async def test_introspect_revoked_token(
     assert response.status_code == HTTPStatus.OK
 
     # Check that refreshed token was revoked
-    post = Post(token=token.access_token)
+    post = Post(token=token.access_token, token_type=TokenType.ACCESS)
     request = Request(
         settings=settings,
         post=post,

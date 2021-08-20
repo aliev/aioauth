@@ -48,6 +48,8 @@ require_dev = [
     "bump2version==0.5.11",
     "twine==1.14.0",
     "wheel",
+    "fastapi==0.68.0",
+    "python-multipart==0.0.5",
 ]
 
 require_docs = [
