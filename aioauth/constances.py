@@ -4,7 +4,8 @@
     from aioauth import constances
 
 Constants that are used throughout the project.
------------------------------------------------
+
+----
 """
 
 from .collections import HTTPHeaderDict

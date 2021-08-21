@@ -4,7 +4,8 @@
     from aioauth import responses
 
 Response objects used throughout the project.
----------------------------------------------
+
+----
 """
 
 from http import HTTPStatus

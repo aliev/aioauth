@@ -27,6 +27,13 @@
 .. toctree::
   :caption: Documentation
   :glob:
-  :maxdepth: 2
+  :maxdepth: 3
 
   sections/documentation/*
+
+.. toctree::
+  :caption: FastAPI
+  :glob:
+  :maxdepth: 3
+
+  sections/fastapi/*

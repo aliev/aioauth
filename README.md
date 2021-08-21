@@ -17,7 +17,7 @@ There are few great OAuth frameworks for Python like [oauthlib](https://github.c
 - [x] [The OAuth 2.0 Authorization Framework](https://tools.ietf.org/html/rfc6749)
 - [X] [OAuth 2.0 Token Introspection](https://tools.ietf.org/html/rfc7662)
 - [X] [Proof Key for Code Exchange by OAuth Public Clients](https://tools.ietf.org/html/rfc7636)
-- [x] Simple OpenID support
+- [x] OpenID support
 
 ## Installation
 

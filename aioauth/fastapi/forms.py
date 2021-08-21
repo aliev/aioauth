@@ -1,3 +1,15 @@
+"""
+.. code-block:: python
+
+    from aioauth.fastapi import forms
+
+FastAPI oauth2 forms.
+
+Used to generate an OpenAPI schema.
+
+----
+"""
+
 from dataclasses import dataclass
 from typing import Optional
 from fastapi.params import Form

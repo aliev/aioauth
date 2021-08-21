@@ -4,6 +4,7 @@
     from aioauth import grant_type
 
 Different OAuth 2.0 grant types.
+
 ----
 """
 
@@ -85,9 +86,11 @@ class AuthorizationCodeGrantType(GrantTypeBase):
     an access token.
     It is recommended that all clients use `RFC 7636 <https://tools.ietf.org/html/rfc7636>`_
     Proof Key for Code Exchange extension with this flow as well to
-    provide better security. Note that ``aioauth`` implements RFC 7636
-    out-of-the-box.
-    See `RFC 6749 section 1.3.1 <https://tools.ietf.org/html/rfc6749#section-1.3.1>`_.
+    provide better security.
+
+    Note:
+        Note that ``aioauth`` implements RFC 7636 out-of-the-box.
+        See `RFC 6749 section 1.3.1 <https://tools.ietf.org/html/rfc6749#section-1.3.1>`_.
     """
 
     async def validate_request(self, request: Request) -> Client:

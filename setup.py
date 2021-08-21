@@ -74,7 +74,7 @@ setup(
     classifiers=classifiers,
     extras_require={
         "dev": require_dev,
-        "docs": require_docs,
+        "docs": require_docs + require_dev,
     },
     include_package_data=True,
     keywords="asyncio oauth2 oauth",

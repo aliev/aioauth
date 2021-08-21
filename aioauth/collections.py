@@ -4,7 +4,8 @@
     from aioauth import collections
 
 Collections that are used throughout the project.
--------------------------------------------------
+
+----
 """
 
 from collections import UserDict
