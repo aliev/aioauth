@@ -17,12 +17,12 @@ jobs:
       uses: synchronizing/sphinx-action@master
       with:
         docs-folder: "docs/"
-        pre-build-command: "make docs-install"
+        pre-build-command: "apt-get update -y && apt-get install -y build-essential && make docs-install"
 
     - name: Builds the PDF documentation
       uses: synchronizing/sphinx-action@master
       with:
-        pre-build-command: "apt-get update -y && apt-get install -y latexmk texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended && make docs-install"
+        pre-build-command: "apt-get update -y && apt-get install -y build-essential latexmk texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended && make docs-install"
         build-command: "make latexpdf"
         docs-folder: "docs/"
 
