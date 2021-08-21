@@ -4,6 +4,7 @@
     from aioauth import config
 
 Configuration settings for aioauth server instance.
+
 ----
 """
 

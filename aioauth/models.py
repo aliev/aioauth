@@ -4,11 +4,12 @@
     from aioauth import models
 
 Memory objects used throughout the project.
+
 ----
 """
 
 import time
-from typing import List, NamedTuple, Optional, Union
+from typing import Any, List, NamedTuple, Optional, Union
 
 from .types import CodeChallengeMethod, GrantType, ResponseType
 from .utils import create_s256_code_challenge, enforce_list, enforce_str
@@ -60,6 +61,13 @@ class Client(NamedTuple):
     scopes granted.
     """
 
+    user: Optional[Any] = None
+    """
+    The user who is the creator of the Client.
+    This optional attribute can be useful if you are creating a server that
+    can be managed by multiple users.
+    """
+
     def check_redirect_uri(self, redirect_uri) -> bool:
         """
         Verifies passed ``redirect_uri`` is part of the Clients's
@@ -86,6 +94,7 @@ class Client(NamedTuple):
     def get_allowed_scope(self, scope) -> str:
         """
         Returns the allowed ``scope`` given the passed ``scope``.
+
         Note:
             Note that the passed ``scope`` may contain multiple scopes
             seperated by a space character.
@@ -173,6 +182,11 @@ class AuthorizationCode(NamedTuple):
     Random piece of data.
     """
 
+    user: Optional[Any] = None
+    """
+    The user who owns the AuthorizationCode.
+    """
+
     def check_code_challenge(self, code_verifier: str) -> bool:
         is_valid_code_challenge = False
 
@@ -245,6 +259,11 @@ class Token(NamedTuple):
     revoked: bool = False
     """
     Flag that indicates whether or not the token has been revoked.
+    """
+
+    user: Optional[Any] = None
+    """
+    The user who owns the Token.
     """
 
     @property

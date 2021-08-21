@@ -13,6 +13,7 @@ Warning:
     ``aiohttp`` to create a fully functional OAuth 2.0 server.
     Check out the *Examples* portion of the documentation to understand
     how it can be leveraged in your own project.
+
 ----
 """
 
@@ -115,7 +116,9 @@ class AuthorizationServer:
             Below is an example utilizing FastAPI as the server framework.
         .. code-block:: python
 
-            @app.get("/introspect")
+            from aioauth.fastapi.utils import to_oauth2_request, to_fastapi_response
+
+            @app.get("/token/introspect")
             async def introspect(request: fastapi.Request) -> fastapi.Response:
                 # Converts a fastapi.Request to an aioauth.Request.
                 oauth2_request: aioauth.Request = await to_oauth2_request(request)
@@ -190,6 +193,8 @@ class AuthorizationServer:
             Below is an example utilizing FastAPI as the server framework.
         .. code-block:: python
 
+            from aioauth.fastapi.utils import to_oauth2_request, to_fastapi_response
+
             @app.post("/token")
             async def token(request: fastapi.Request) -> fastapi.Response:
                 # Converts a fastapi.Request to an aioauth.Request.
@@ -245,6 +250,8 @@ class AuthorizationServer:
         Example:
             Below is an example utilizing FastAPI as the server framework.
         .. code-block:: python
+
+            from aioauth.fastapi.utils import to_oauth2_request, to_fastapi_response
 
             @app.post("/authorize")
             async def authorize(request: fastapi.Request) -> fastapi.Response:

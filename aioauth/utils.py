@@ -3,8 +3,9 @@
 
     from aioauth import utils
 
-Contains helper functions that is used throughout the project that
-doesn't pertain to a specific file or module.
+Contains helper functions that is used throughout the project that doesn't
+pertain to a specific file or module.
+
 ----
 """
 

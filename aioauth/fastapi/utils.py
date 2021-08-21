@@ -1,3 +1,13 @@
+"""
+.. code-block:: python
+
+    from aioauth.fastapi import utils
+
+Core utils for integration with FastAPI
+
+----
+"""
+
 import json
 
 from fastapi import Request, Response
@@ -13,8 +23,10 @@ from aioauth.collections import HTTPHeaderDict
 from aioauth.config import Settings
 
 
-async def to_oauth2_request(request: Request, settings: Settings) -> OAuth2Request:
-    """Converts fastapi Request instance to OAuth2Request instance"""
+async def to_oauth2_request(
+    request: Request, settings: Settings = Settings()
+) -> OAuth2Request:
+    """Converts :py:class:`fastapi.Request` instance to :py:class:`aioauth.requests.Request` instance"""
     form = await request.form()
 
     post = dict(form)
@@ -40,7 +52,7 @@ async def to_oauth2_request(request: Request, settings: Settings) -> OAuth2Reque
 
 
 async def to_fastapi_response(oauth2_response: OAuth2Response) -> Response:
-    """Converts OAuth2Response instance to fastapi Response instance"""
+    """Converts :py:class:`aioauth.responses.Response` instance to :py:class:`fastapi.Response` instance"""
     response_content = oauth2_response.content
     headers = dict(oauth2_response.headers)
     status_code = oauth2_response.status_code

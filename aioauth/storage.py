@@ -6,6 +6,7 @@
 Storage helper class for storing and retrieving client and resource
 owner information. See the examples on the sidebar to view this in
 action.
+
 ----
 """
 
@@ -21,6 +22,7 @@ from .utils import generate_token
 class BaseStorage:
     async def create_token(self, request: Request, client_id: str, scope: str) -> Token:
         """Generates a user token and stores it in the database.
+
         Warning:
             Generated token *must* be stored in the database.
         Note:
@@ -54,6 +56,7 @@ class BaseStorage:
         refresh_token: Optional[str] = None,
     ) -> Optional[Token]:
         """Gets existing token from the database.
+
         Note:
             Method is used by
             :py:class:`aioauth.server.AuthorizationServer`,  and by the
@@ -79,6 +82,7 @@ class BaseStorage:
         code_challenge: Optional[str],
     ) -> AuthorizationCode:
         """Generates an authorization token and stores it in the database.
+
         Warning:
             Generated authorization token *must* be stored in the database.
         Note:
@@ -117,17 +121,19 @@ class BaseStorage:
         redirect_uri: str,
         nonce: str,
     ) -> str:
-        """Returns token_id. Required for OpenID.
+        """Returns an id_token.
+        For more information see `OpenID Connect Core 1.0 incorporating errata set 1 section 2 <https://openid.net/specs/openid-connect-core-1_0.html#IDToken>`_.
 
-        Method is used by response types:
-            - ResponseTypeIdToken
+        Note:
+            Method is used by response type :py:class:`aioauth.response_type.ResponseTypeIdToken`
         """
-        raise NotImplementedError("create_token_id must be implemented.")
+        raise NotImplementedError("get_id_token must be implemented.")
 
     async def get_client(
         self, request: Request, client_id: str, client_secret: Optional[str] = None
     ) -> Optional[Client]:
         """Gets existing client from the database if it exists.
+
         Warning:
             If client does not exists in database this method *must*
             return ``None`` to indicate to the validator that the
@@ -146,6 +152,7 @@ class BaseStorage:
 
     async def authenticate(self, request: Request) -> bool:
         """Authenticates a user.
+
         Note:
             This method is used by the grant type
             :py:class:`aioauth.grant_type.PasswordGrantType`.
@@ -161,6 +168,7 @@ class BaseStorage:
         self, request: Request, client_id: str, code: str
     ) -> Optional[AuthorizationCode]:
         """Gets existing authorization code from the database if it exists.
+
         Warning:
             If authorization code does not exists this function *must*
             return ``None`` to indicate to the validator that the
@@ -183,11 +191,12 @@ class BaseStorage:
         self, request: Request, client_id: str, code: str
     ) -> None:
         """Deletes authorization code from database.
+
         Note:
             This method is used by the grant type
             :py:class:`aioauth.grant_type.AuthorizationCodeGrantType`.
         Args:
-            An :py:class:`aioauth.requests.Request`.
+            request: An :py:class:`aioauth.requests.Request`.
             client_id: A user client ID.
             code: An authorization code.
         """
@@ -197,6 +206,7 @@ class BaseStorage:
 
     async def revoke_token(self, request: Request, refresh_token: str) -> None:
         """Revokes a token's from the database.
+
         Note:
             This method *must* set ``revoked`` to ``True`` for an
             existing token record. This method is used by the grant type
