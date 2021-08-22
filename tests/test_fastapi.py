@@ -1,17 +1,19 @@
-from aioauth.config import Settings
-import pytest
-from aioauth.server import AuthorizationServer
-from fastapi import FastAPI
-from async_asgi_testclient import TestClient
-from aioauth.fastapi.router import get_oauth2_router
 from http import HTTPStatus
+
+import pytest
+from async_asgi_testclient import TestClient
+from fastapi import FastAPI
 from starlette.authentication import (
+    AuthCredentials,
     AuthenticationBackend,
     SimpleUser,
     UnauthenticatedUser,
-    AuthCredentials,
 )
 from starlette.middleware.authentication import AuthenticationMiddleware
+
+from aioauth.config import Settings
+from aioauth.fastapi.router import get_oauth2_router
+from aioauth.server import AuthorizationServer
 
 
 class CookiesAuthenticationBackend(AuthenticationBackend):

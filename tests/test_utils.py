@@ -2,10 +2,11 @@ from base64 import b64encode
 from urllib.parse import urljoin
 
 import pytest
+
+from aioauth.collections import HTTPHeaderDict
 from aioauth.config import Settings
 from aioauth.errors import InvalidClientError
 from aioauth.requests import Request
-from aioauth.collections import HTTPHeaderDict
 from aioauth.types import RequestMethod
 from aioauth.utils import (
     build_uri,

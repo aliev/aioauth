@@ -9,16 +9,11 @@ Request objects used throughout the project.
 """
 
 
-from typing import Any, Optional, NamedTuple
+from typing import Any, NamedTuple, Optional
 
-from .config import Settings
 from .collections import HTTPHeaderDict
-from .types import (
-    CodeChallengeMethod,
-    GrantType,
-    RequestMethod,
-    ResponseMode,
-)
+from .config import Settings
+from .types import CodeChallengeMethod, GrantType, RequestMethod, ResponseMode
 
 
 class Query(NamedTuple):
@@ -54,7 +49,7 @@ class Post(NamedTuple):
     refresh_token: Optional[str] = None
     code: Optional[str] = None
     token: Optional[str] = None
-    token_type: Optional[str] = None
+    token_type_hint: Optional[str] = None
     code_verifier: Optional[str] = None
 
 

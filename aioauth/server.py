@@ -20,7 +20,7 @@ Warning:
 from http import HTTPStatus
 from typing import Dict, List, Optional, Union
 
-from .storage import BaseStorage
+from .collections import HTTPHeaderDict
 from .constances import default_headers
 from .errors import (
     InsecureTransportError,
@@ -48,7 +48,7 @@ from .responses import (
     TokenActiveIntrospectionResponse,
     TokenInactiveIntrospectionResponse,
 )
-from .collections import HTTPHeaderDict
+from .storage import BaseStorage
 from .types import GrantType, RequestMethod, ResponseMode, ResponseType, TokenType
 from .utils import (
     build_uri,
@@ -143,8 +143,8 @@ class AuthorizationServer:
         access_token = None
         refresh_token = request.post.token
 
-        if request.post.token_type in token_types:
-            token_type = request.post.token_type  # type: ignore
+        if request.post.token_type_hint in token_types:
+            token_type = request.post.token_type_hint  # type: ignore
 
         if token_type == TokenType.ACCESS:
             access_token = request.post.token

@@ -12,15 +12,12 @@ import json
 
 from fastapi import Request, Response
 
-from aioauth.types import RequestMethod
-from aioauth.requests import (
-    Query,
-    Post,
-    Request as OAuth2Request,
-)
-from aioauth.responses import Response as OAuth2Response
 from aioauth.collections import HTTPHeaderDict
 from aioauth.config import Settings
+from aioauth.requests import Post, Query
+from aioauth.requests import Request as OAuth2Request
+from aioauth.responses import Response as OAuth2Response
+from aioauth.types import RequestMethod
 
 
 async def to_oauth2_request(

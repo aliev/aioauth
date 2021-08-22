@@ -1,8 +1,8 @@
 from typing import Dict, List, Optional
 
-from aioauth.storage import BaseStorage
 from aioauth.models import AuthorizationCode, Client, Token
 from aioauth.requests import Request
+from aioauth.storage import BaseStorage
 from tests.utils import set_values
 
 from .models import Defaults

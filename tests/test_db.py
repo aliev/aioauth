@@ -1,7 +1,8 @@
 import pytest
-from aioauth.storage import BaseStorage
+
 from aioauth.models import AuthorizationCode, Client, Token
 from aioauth.requests import Request
+from aioauth.storage import BaseStorage
 from aioauth.types import RequestMethod
 
 

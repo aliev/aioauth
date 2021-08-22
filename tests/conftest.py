@@ -2,7 +2,7 @@ import time
 from typing import Dict, Type
 
 import pytest
-from aioauth.storage import BaseStorage
+
 from aioauth.config import Settings
 from aioauth.grant_type import (
     AuthorizationCodeGrantType,
@@ -18,6 +18,7 @@ from aioauth.response_type import (
     ResponseTypeToken,
 )
 from aioauth.server import AuthorizationServer
+from aioauth.storage import BaseStorage
 from aioauth.types import CodeChallengeMethod, GrantType, ResponseType
 from aioauth.utils import generate_token
 

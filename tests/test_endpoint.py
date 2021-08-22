@@ -3,11 +3,12 @@ from http import HTTPStatus
 from typing import Dict, List, Optional, Type
 
 import pytest
-from aioauth.storage import BaseStorage
+
 from aioauth.config import Settings
 from aioauth.models import Token
 from aioauth.requests import Post, Request
 from aioauth.server import AuthorizationServer
+from aioauth.storage import BaseStorage
 from aioauth.types import ErrorType, GrantType, RequestMethod, TokenType
 from aioauth.utils import (
     catch_errors_and_unavailability,
@@ -141,7 +142,7 @@ async def test_introspect_revoked_token(
     assert response.status_code == HTTPStatus.OK
 
     # Check that refreshed token was revoked
-    post = Post(token=token.access_token, token_type=TokenType.ACCESS)
+    post = Post(token=token.access_token, token_type_hint=TokenType.ACCESS)
     request = Request(
         settings=settings,
         post=post,

@@ -12,9 +12,9 @@ from http import HTTPStatus
 from typing import Optional
 from urllib.parse import urljoin
 
+from .collections import HTTPHeaderDict
 from .constances import default_headers
 from .requests import Request
-from .collections import HTTPHeaderDict
 from .types import ErrorType
 
 

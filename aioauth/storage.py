@@ -10,9 +10,10 @@ action.
 ----
 """
 
-from aioauth.types import TokenType
 import time
 from typing import Optional
+
+from aioauth.types import TokenType
 
 from .models import AuthorizationCode, Client, Token
 from .requests import Request

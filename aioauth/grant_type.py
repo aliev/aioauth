@@ -10,7 +10,6 @@ Different OAuth 2.0 grant types.
 
 from typing import Tuple
 
-from .storage import BaseStorage
 from .errors import (
     InvalidGrantError,
     InvalidRequestError,
@@ -21,6 +20,7 @@ from .errors import (
 from .models import Client
 from .requests import Request
 from .responses import TokenResponse
+from .storage import BaseStorage
 from .utils import decode_auth_headers, enforce_list, enforce_str
 
 

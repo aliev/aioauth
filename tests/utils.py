@@ -1,10 +1,10 @@
 from http import HTTPStatus
 from typing import Any, Callable, Dict, Union
 
+from aioauth.collections import HTTPHeaderDict
 from aioauth.constances import default_headers
 from aioauth.requests import Post, Query, Request
 from aioauth.responses import ErrorResponse, Response
-from aioauth.collections import HTTPHeaderDict
 from aioauth.types import ErrorType, RequestMethod
 
 EMPTY_KEYS = {

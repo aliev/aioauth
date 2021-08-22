@@ -11,8 +11,8 @@ Response objects used throughout the project.
 from http import HTTPStatus
 from typing import Dict, NamedTuple, Optional
 
-from .constances import default_headers
 from .collections import HTTPHeaderDict
+from .constances import default_headers
 from .types import ErrorType, TokenType
 
 

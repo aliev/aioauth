@@ -41,12 +41,14 @@ Usage example
 ----
 """
 
+from fastapi import APIRouter, Depends, Request
+
 from aioauth.config import Settings
-from aioauth.server import AuthorizationServer
-from fastapi import APIRouter, Request, Depends
-from .utils import to_oauth2_request, to_fastapi_response
 from aioauth.requests import Query
+from aioauth.server import AuthorizationServer
+
 from .forms import TokenForm, TokenIntrospectForm
+from .utils import to_fastapi_response, to_oauth2_request
 
 
 def get_oauth2_router(

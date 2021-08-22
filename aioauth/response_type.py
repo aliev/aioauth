@@ -8,7 +8,6 @@ Response objects used throughout the project.
 ----
 """
 
-from .storage import BaseStorage
 from .errors import (
     InvalidClientError,
     InvalidRequestError,
@@ -23,6 +22,7 @@ from .responses import (
     NoneResponse,
     TokenResponse,
 )
+from .storage import BaseStorage
 from .types import CodeChallengeMethod
 
 

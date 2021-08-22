@@ -3,6 +3,7 @@ from http import HTTPStatus
 from typing import Dict, List
 
 import pytest
+
 from aioauth.config import Settings
 from aioauth.models import Client
 from aioauth.requests import Post, Query, Request

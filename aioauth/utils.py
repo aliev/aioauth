@@ -20,6 +20,7 @@ from base64 import b64decode, b64encode
 from typing import Callable, Dict, List, Optional, Set, Tuple, Union
 from urllib.parse import quote, urlencode, urlparse, urlunsplit
 
+from .collections import HTTPHeaderDict
 from .errors import (
     InvalidClientError,
     OAuth2Error,
@@ -28,7 +29,6 @@ from .errors import (
 )
 from .requests import Request
 from .responses import ErrorResponse, Response
-from .collections import HTTPHeaderDict
 
 UNICODE_ASCII_CHARACTER_SET = string.ascii_letters + string.digits
 
@@ -255,7 +255,7 @@ def catch_errors_and_unavailability(f) -> Callable:
             response = await f(self, request, *args, **kwargs)
         except OAuth2Error as exc:
             content = ErrorResponse(error=exc.error, description=exc.description)
-            log.error("oauth2 error %s" % exc)
+            log.debug("%s %r" % (exc, request))
             return Response(
                 content=content._asdict(),
                 status_code=exc.status_code,
