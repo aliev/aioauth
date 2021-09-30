@@ -21,7 +21,7 @@ from .models import Client
 from .requests import Request
 from .responses import TokenResponse
 from .storage import BaseStorage
-from .utils import decode_auth_headers, enforce_list, enforce_str
+from .utils import decode_auth_headers, enforce_list, enforce_str, generate_token
 
 
 class GrantTypeBase:
@@ -34,7 +34,11 @@ class GrantTypeBase:
         """Creates token response to reply to client."""
         client = await self.validate_request(request)
         token = await self.storage.create_token(
-            request, client.client_id, request.post.scope
+            request,
+            client.client_id,
+            request.post.scope,
+            generate_token(42),
+            generate_token(48),
         )
 
         return TokenResponse(
@@ -211,7 +215,9 @@ class RefreshTokenGrantType(GrantTypeBase):
                 )
             )
 
-        token = await self.storage.create_token(request, client.client_id, new_scope)
+        token = await self.storage.create_token(
+            request, client.client_id, new_scope, generate_token(42), generate_token(48)
+        )
 
         return TokenResponse(
             expires_in=token.expires_in,

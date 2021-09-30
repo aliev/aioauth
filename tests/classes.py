@@ -34,8 +34,17 @@ class DB(BaseStorage):
 
         return self._get_by_client_id(client_id)
 
-    async def create_token(self, request: Request, client_id: str, scope: str):
-        token = await super().create_token(request, client_id, scope)
+    async def create_token(
+        self,
+        request: Request,
+        client_id: str,
+        scope: str,
+        access_token: str,
+        refresh_token: str,
+    ):
+        token = await super().create_token(
+            request, client_id, scope, access_token, refresh_token
+        )
         self.storage["tokens"].append(token)
         return token
 

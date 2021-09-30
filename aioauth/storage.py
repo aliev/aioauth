@@ -17,11 +17,17 @@ from aioauth.types import TokenType
 
 from .models import AuthorizationCode, Client, Token
 from .requests import Request
-from .utils import generate_token
 
 
 class BaseStorage:
-    async def create_token(self, request: Request, client_id: str, scope: str) -> Token:
+    async def create_token(
+        self,
+        request: Request,
+        client_id: str,
+        scope: str,
+        access_token: str,
+        refresh_token: str,
+    ) -> Token:
         """Generates a user token and stores it in the database.
 
         Warning:
@@ -40,8 +46,8 @@ class BaseStorage:
             client_id=client_id,
             expires_in=request.settings.TOKEN_EXPIRES_IN,
             refresh_token_expires_in=request.settings.REFRESH_TOKEN_EXPIRES_IN,
-            access_token=generate_token(42),
-            refresh_token=generate_token(48),
+            access_token=access_token,
+            refresh_token=refresh_token,
             issued_at=int(time.time()),
             scope=scope,
             revoked=False,
@@ -81,6 +87,7 @@ class BaseStorage:
         redirect_uri: str,
         code_challenge_method: Optional[str],
         code_challenge: Optional[str],
+        code: str,
     ) -> AuthorizationCode:
         """Generates an authorization token and stores it in the database.
 
@@ -101,7 +108,7 @@ class BaseStorage:
             An :py:class:`aioauth.models.AuthorizationCode` object.
         """
         authorization_code = AuthorizationCode(
-            code=generate_token(48),
+            code=code,
             client_id=client_id,
             redirect_uri=redirect_uri,
             response_type=response_type,
