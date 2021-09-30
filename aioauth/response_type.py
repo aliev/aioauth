@@ -8,6 +8,7 @@ Response objects used throughout the project.
 ----
 """
 
+from .utils import generate_token
 from .errors import (
     InvalidClientError,
     InvalidRequestError,
@@ -91,7 +92,11 @@ class ResponseTypeToken(ResponseTypeBase):
         client = await super().validate_request(request)
 
         token = await self.storage.create_token(
-            request, client.client_id, request.query.scope
+            request,
+            client.client_id,
+            request.query.scope,
+            generate_token(42),
+            generate_token(48),
         )
         return TokenResponse(
             expires_in=token.expires_in,
@@ -119,6 +124,7 @@ class ResponseTypeAuthorizationCode(ResponseTypeBase):
             request.query.redirect_uri,
             request.query.code_challenge_method,
             request.query.code_challenge,
+            generate_token(42),
         )
         return AuthorizationCodeResponse(
             code=authorization_code.code,
