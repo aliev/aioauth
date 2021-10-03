@@ -89,7 +89,7 @@ async def test_refresh_token_grant_type(
     assert client.client_id == client_id
     assert client.client_secret == client_secret
 
-    token_response = await grant_type.create_token_response(request)
+    token_response = await grant_type.create_token_response(request, client)
 
     # Check that previous token was revoken
     token_in_db = await db.get_token(
@@ -99,4 +99,4 @@ async def test_refresh_token_grant_type(
     assert token_response.scope == "read"
 
     with pytest.raises(InvalidGrantError):
-        token_response = await grant_type.create_token_response(request)
+        token_response = await grant_type.create_token_response(request, client)

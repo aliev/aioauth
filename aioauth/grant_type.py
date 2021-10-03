@@ -30,9 +30,10 @@ class GrantTypeBase:
     def __init__(self, storage: BaseStorage):
         self.storage = storage
 
-    async def create_token_response(self, request: Request) -> TokenResponse:
+    async def create_token_response(
+        self, request: Request, client: Client
+    ) -> TokenResponse:
         """Creates token response to reply to client."""
-        client = await self.validate_request(request)
         token = await self.storage.create_token(
             request,
             client.client_id,
@@ -140,11 +141,20 @@ class AuthorizationCodeGrantType(GrantTypeBase):
         if authorization_code.is_expired:
             raise InvalidGrantError(request=request)
 
+        return client
+
+    async def create_token_response(
+        self, request: Request, client: Client
+    ) -> TokenResponse:
+        token_response = await super().create_token_response(request, client)
+
         await self.storage.delete_authorization_code(
-            request, client.client_id, request.post.code
+            request,
+            client.client_id,
+            request.post.code,  # type: ignore
         )
 
-        return client
+        return token_response
 
 
 class PasswordGrantType(GrantTypeBase):
@@ -185,10 +195,10 @@ class RefreshTokenGrantType(GrantTypeBase):
     See `RFC 6749 section 1.5 <https://tools.ietf.org/html/rfc6749#section-1.5>`_.
     """
 
-    async def create_token_response(self, request: Request) -> TokenResponse:
+    async def create_token_response(
+        self, request: Request, client: Client
+    ) -> TokenResponse:
         """Validate token request and create token response."""
-        client = await self.validate_request(request)
-
         old_token = await self.storage.get_token(
             request=request,
             client_id=client.client_id,
