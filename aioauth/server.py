@@ -227,7 +227,9 @@ class AuthorizationServer:
 
         grant_type = GrantTypeClass(storage=self.storage)
 
-        response = await grant_type.create_token_response(request)
+        client = await grant_type.validate_request(request)
+
+        response = await grant_type.create_token_response(request, client)
         content = response._asdict()
 
         return Response(
@@ -304,7 +306,10 @@ class AuthorizationServer:
 
         for ResponseTypeClass in response_type_classes:
             response_type = ResponseTypeClass(storage=self.storage)
-            response = await response_type.create_authorization_response(request)
+            client = await response_type.validate_request(request)
+            response = await response_type.create_authorization_response(
+                request, client
+            )
             responses.update(response._asdict())
 
         # See: https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#Combinations
