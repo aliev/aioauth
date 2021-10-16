@@ -255,7 +255,7 @@ def catch_errors_and_unavailability(f) -> Callable:
             response = await f(self, request, *args, **kwargs)
         except OAuth2Error as exc:
             content = ErrorResponse(error=exc.error, description=exc.description)
-            log.debug("%s %r" % (exc, request))
+            log.debug("%s %r", exc, request)
             return Response(
                 content=content._asdict(),
                 status_code=exc.status_code,
