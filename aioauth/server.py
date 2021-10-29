@@ -55,7 +55,6 @@ from .utils import (
     catch_errors_and_unavailability,
     decode_auth_headers,
     enforce_list,
-    is_secure_transport,
 )
 
 
@@ -89,11 +88,28 @@ class AuthorizationServer:
         if grant_types is not None:
             self.grant_types = grant_types
 
+    def is_secure_transport(self, request: Request) -> bool:
+        """
+        Verifies the request was sent via a protected SSL tunnel.
+
+        Note:
+            This method simply checks if the request URL contains
+            ``https://`` at the start of it. It does **not** ensure
+            if the SSL certificate is valid.
+        Args:
+            request: :py:class:`aioauth.requests.Request` object.
+        Returns:
+            Flag representing whether or not the transport is secure.
+        """
+        if request.settings.INSECURE_TRANSPORT:
+            return True
+        return request.url.lower().startswith("https://")
+
     def validate_request(self, request: Request, allowed_methods: List[RequestMethod]):
         if not request.settings.AVAILABLE:
             raise TemporarilyUnavailableError(request=request)
 
-        if not is_secure_transport(request):
+        if not self.is_secure_transport(request):
             raise InsecureTransportError(request=request)
 
         if request.method not in allowed_methods:

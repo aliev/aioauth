@@ -14,38 +14,7 @@ from aioauth.utils import (
     enforce_list,
     enforce_str,
     get_authorization_scheme_param,
-    is_secure_transport,
 )
-
-
-def test_is_secure_transport():
-    request = Request(method=RequestMethod.GET, url="https://google.com")
-
-    is_secure = is_secure_transport(request=request)
-    assert is_secure
-
-    request = Request(method=RequestMethod.GET, url="http://google.com")
-    is_secure = is_secure_transport(request=request)
-    assert not is_secure
-
-
-def test_is_secure_transport_insecure_transport_enabled():
-    request = Request(
-        method=RequestMethod.GET,
-        url="https://google.com",
-        settings=Settings(INSECURE_TRANSPORT=True),
-    )
-
-    is_secure = is_secure_transport(request=request)
-    assert is_secure
-
-    request = Request(
-        method=RequestMethod.GET,
-        url="https://google.com",
-        settings=Settings(INSECURE_TRANSPORT=True),
-    )
-    is_secure = is_secure_transport(request=request)
-    assert is_secure
 
 
 def test_get_authorization_scheme_param():
