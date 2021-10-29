@@ -36,24 +36,6 @@ UNICODE_ASCII_CHARACTER_SET = string.ascii_letters + string.digits
 log = logging.getLogger(__name__)
 
 
-def is_secure_transport(request: Request) -> bool:
-    """
-    Verifies the request was sent via a protected SSL tunnel.
-
-    Note:
-        This method simply checks if the request URL contains
-        ``https://`` at the start of it. It does **not** ensure
-        if the SSL certificate is valid.
-    Args:
-        request: :py:class:`aioauth.requests.Request` object.
-    Returns:
-        Flag representing whether or not the transport is secure.
-    """
-    if request.settings.INSECURE_TRANSPORT:
-        return True
-    return request.url.lower().startswith("https://")
-
-
 def get_authorization_scheme_param(
     authorization_header_value: str,
 ) -> Tuple[str, str]:
