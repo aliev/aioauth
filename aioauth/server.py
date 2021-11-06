@@ -18,12 +18,13 @@ Warning:
 """
 
 from http import HTTPStatus
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional, Tuple, Type, Union
 
 from .collections import HTTPHeaderDict
 from .constances import default_headers
 from .errors import (
     InsecureTransportError,
+    InvalidClientError,
     InvalidRequestError,
     MethodNotAllowedError,
     TemporarilyUnavailableError,
@@ -33,6 +34,7 @@ from .errors import (
 from .grant_type import (
     AuthorizationCodeGrantType,
     ClientCredentialsGrantType,
+    GrantTypeBase,
     PasswordGrantType,
     RefreshTokenGrantType,
 )
@@ -49,7 +51,13 @@ from .responses import (
     TokenInactiveIntrospectionResponse,
 )
 from .storage import BaseStorage
-from .types import GrantType, RequestMethod, ResponseMode, ResponseType, TokenType
+from .types import (
+    GrantType,
+    RequestMethod,
+    ResponseMode,
+    ResponseType,
+    TokenType,
+)
 from .utils import (
     build_uri,
     catch_errors_and_unavailability,
@@ -151,7 +159,7 @@ class AuthorizationServer:
             response: An :py:class:`aioauth.responses.Response` object.
         """
         self.validate_request(request, [RequestMethod.POST])
-        client_id, _ = decode_auth_headers(request)
+        client_id, _ = self.get_client_credentials(request)
 
         token_types = set(TokenType)
         token_type = TokenType.REFRESH
@@ -194,6 +202,22 @@ class AuthorizationServer:
             content=content, status_code=HTTPStatus.OK, headers=default_headers
         )
 
+    def get_client_credentials(self, request: Request) -> Tuple[str, str]:
+        client_id = request.post.client_id
+        client_secret = request.post.client_secret
+
+        if client_id is None or client_secret is None:
+            authorization = request.headers.get("Authorization", "")
+            headers = HTTPHeaderDict({"WWW-Authenticate": "Basic"})
+
+            # Get client credentials from the Authorization header.
+            try:
+                client_id, client_secret = decode_auth_headers(authorization)
+            except ValueError as exc:
+                raise InvalidClientError(request=request, headers=headers) from exc
+
+        return client_id, client_secret
+
     @catch_errors_and_unavailability
     async def create_token_response(self, request: Request) -> Response:
         """Endpoint to obtain an access and/or ID token by presenting an
@@ -228,6 +252,7 @@ class AuthorizationServer:
             response: An :py:class:`aioauth.responses.Response` object.
         """
         self.validate_request(request, [RequestMethod.POST])
+        client_id, client_secret = self.get_client_credentials(request)
 
         if not request.post.grant_type:
             # grant_type request value is empty
@@ -235,13 +260,25 @@ class AuthorizationServer:
                 request=request, description="Request is missing grant type."
             )
 
-        GrantTypeClass = self.grant_types.get(request.post.grant_type)
+        GrantTypeClass: Type[
+            Union[
+                GrantTypeBase,
+                AuthorizationCodeGrantType,
+                PasswordGrantType,
+                RefreshTokenGrantType,
+                ClientCredentialsGrantType,
+            ]
+        ]
 
-        if GrantTypeClass is None:
-            # Requested GrantType was not found in the list of the grant_types.
-            raise UnsupportedGrantTypeError(request=request)
+        try:
+            GrantTypeClass = self.grant_types[request.post.grant_type]
+        except KeyError as exc:
+            # grant_type request value is invalid
+            raise UnsupportedGrantTypeError(request=request) from exc
 
-        grant_type = GrantTypeClass(storage=self.storage)
+        grant_type = GrantTypeClass(
+            storage=self.storage, client_id=client_id, client_secret=client_secret
+        )
 
         client = await grant_type.validate_request(request)
 

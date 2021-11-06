@@ -82,7 +82,9 @@ async def test_refresh_token_grant_type(
         headers=encode_auth_headers(client_id, client_secret),
     )
 
-    grant_type = RefreshTokenGrantType(db)
+    grant_type = RefreshTokenGrantType(
+        db, client_id=defaults.client_id, client_secret=defaults.client_secret
+    )
 
     client = await grant_type.validate_request(request)
 

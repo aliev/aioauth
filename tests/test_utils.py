@@ -38,17 +38,18 @@ def test_build_uri():
 
 def test_decode_auth_headers():
     request = Request(headers=HTTPHeaderDict(), method=RequestMethod.POST)
+    authorization = request.headers.get("Authorization", "")
 
     # No authorization header
-    with pytest.raises(InvalidClientError):
-        decode_auth_headers(request=request)
+    with pytest.raises(Exception):
+        decode_auth_headers(authorization)
 
     # Invalid authorization header
     request = Request(
         headers=HTTPHeaderDict({"authorization": ""}), method=RequestMethod.POST
     )
-    with pytest.raises(InvalidClientError):
-        decode_auth_headers(request=request)
+    with pytest.raises(Exception):
+        decode_auth_headers(authorization)
 
     # No separator
     authorization = b64encode("usernamepassword".encode("ascii"))
@@ -58,8 +59,8 @@ def test_decode_auth_headers():
         method=RequestMethod.POST,
     )
 
-    with pytest.raises(InvalidClientError):
-        decode_auth_headers(request=request)
+    with pytest.raises(Exception):
+        decode_auth_headers(authorization.decode())
 
     # No base64 digits
     authorization = b64encode("usernamepassword".encode("ascii"))
@@ -69,8 +70,8 @@ def test_decode_auth_headers():
         method=RequestMethod.POST,
     )
 
-    with pytest.raises(InvalidClientError):
-        decode_auth_headers(request=request)
+    with pytest.raises(Exception):
+        decode_auth_headers(authorization.decode())
 
 
 def test_base_error_uri():

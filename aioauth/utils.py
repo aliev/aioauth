@@ -22,7 +22,6 @@ from urllib.parse import quote, urlencode, urlparse, urlunsplit
 
 from .collections import HTTPHeaderDict
 from .errors import (
-    InvalidClientError,
     OAuth2Error,
     ServerError,
     TemporarilyUnavailableError,
@@ -166,7 +165,7 @@ def encode_auth_headers(client_id: str, client_secret: str) -> HTTPHeaderDict:
     return HTTPHeaderDict(Authorization=f"basic {authorization.decode()}")
 
 
-def decode_auth_headers(request: Request) -> Tuple[str, str]:
+def decode_auth_headers(authorization: str) -> Tuple[str, str]:
     """
     Decodes an encrypted HTTP basic authentication string.
     Returns a tuple of the form ``(client_id, client_secret)``, and
@@ -174,29 +173,23 @@ def decode_auth_headers(request: Request) -> Tuple[str, str]:
     could be decoded.
 
     Args:
-        request: A request object.
+        authorization: Authorization header string.
     Returns:
         Tuple of the form ``(client_id, client_secret)``.
-    Raises:
-        aioauth.errors.InvalidClientError: Could not be decoded.
     """
-    authorization = request.headers.get("Authorization", "")
-
-    headers = HTTPHeaderDict({"WWW-Authenticate": "Basic"})
-
     scheme, param = get_authorization_scheme_param(authorization)
     if not authorization or scheme.lower() != "basic":
-        raise InvalidClientError(request=request, headers=headers)
+        raise ValueError("Invalid authoirzation header string.")
 
     try:
         data = b64decode(param).decode("ascii")
-    except (ValueError, UnicodeDecodeError, binascii.Error):
-        raise InvalidClientError(request=request, headers=headers)
+    except (ValueError, UnicodeDecodeError, binascii.Error) as exc:
+        raise ValueError("Invalid base64 encoding.") from exc
 
     client_id, separator, client_secret = data.partition(":")
 
     if not separator:
-        raise InvalidClientError(request=request, headers=headers)
+        raise ValueError("Separator was not provided.")
 
     return client_id, client_secret
 
@@ -230,7 +223,7 @@ def catch_errors_and_unavailability(f) -> Callable:
     """
 
     @functools.wraps(f)
-    async def wrapper(self, request: Request, *args, **kwargs) -> Optional[Response]:
+    async def wrapper(self, request: Request, *args, **kwargs) -> Response:
         error: Union[TemporarilyUnavailableError, ServerError]
 
         try:
