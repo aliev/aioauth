@@ -40,7 +40,7 @@ async def test_responses(app):
         assert response.status_code == HTTPStatus.BAD_REQUEST
 
         response = await ac.post("/token")
-        assert response.status_code == HTTPStatus.BAD_REQUEST
+        assert response.status_code == HTTPStatus.UNAUTHORIZED
 
         response = await ac.post("/token/introspect")
         assert response.status_code == HTTPStatus.UNAUTHORIZED

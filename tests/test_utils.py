@@ -38,39 +38,24 @@ def test_build_uri():
 
 def test_decode_auth_headers():
     request = Request(headers=HTTPHeaderDict(), method=RequestMethod.POST)
+    authorization = request.headers.get("Authorization", "")
 
     # No authorization header
-    with pytest.raises(InvalidClientError):
-        decode_auth_headers(request=request)
+    with pytest.raises(ValueError):
+        decode_auth_headers("")
 
     # Invalid authorization header
-    request = Request(
-        headers=HTTPHeaderDict({"authorization": ""}), method=RequestMethod.POST
-    )
-    with pytest.raises(InvalidClientError):
-        decode_auth_headers(request=request)
+    with pytest.raises(ValueError):
+        decode_auth_headers("test")
 
     # No separator
     authorization = b64encode("usernamepassword".encode("ascii"))
-
-    request = Request(
-        headers=HTTPHeaderDict(Authorization=f"basic {authorization.decode()}"),
-        method=RequestMethod.POST,
-    )
-
-    with pytest.raises(InvalidClientError):
-        decode_auth_headers(request=request)
+    with pytest.raises(ValueError):
+        decode_auth_headers(f"basic {authorization.decode()}")
 
     # No base64 digits
-    authorization = b64encode("usernamepassword".encode("ascii"))
-
-    request = Request(
-        headers=HTTPHeaderDict(Authorization="basic привет"),
-        method=RequestMethod.POST,
-    )
-
-    with pytest.raises(InvalidClientError):
-        decode_auth_headers(request=request)
+    with pytest.raises(ValueError):
+        decode_auth_headers("basic привет")
 
 
 def test_base_error_uri():

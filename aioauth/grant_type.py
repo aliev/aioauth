@@ -7,9 +7,6 @@ Different OAuth 2.0 grant types.
 
 ----
 """
-
-from typing import Tuple
-
 from .errors import (
     InvalidGrantError,
     InvalidRequestError,
@@ -21,14 +18,16 @@ from .models import Client
 from .requests import Request
 from .responses import TokenResponse
 from .storage import BaseStorage
-from .utils import decode_auth_headers, enforce_list, enforce_str, generate_token
+from .utils import enforce_list, enforce_str, generate_token
 
 
 class GrantTypeBase:
     """Base grant type that all other grant types inherit from."""
 
-    def __init__(self, storage: BaseStorage):
+    def __init__(self, storage: BaseStorage, client_id: str, client_secret: str):
         self.storage = storage
+        self.client_id = client_id
+        self.client_secret = client_secret
 
     async def create_token_response(
         self, request: Request, client: Client
@@ -53,10 +52,8 @@ class GrantTypeBase:
 
     async def validate_request(self, request: Request) -> Client:
         """Validates the client request to ensure it is valid."""
-        client_id, client_secret = self.get_client_credentials(request)
-
         client = await self.storage.get_client(
-            request, client_id=client_id, client_secret=client_secret
+            request, client_id=self.client_id, client_secret=self.client_secret
         )
 
         if not client:
@@ -71,15 +68,6 @@ class GrantTypeBase:
             raise InvalidScopeError(request=request)
 
         return client
-
-    def get_client_credentials(self, request: Request) -> Tuple[str, str]:
-        client_id = request.post.client_id
-        client_secret = request.post.client_secret
-
-        if client_id is None or client_secret is None:
-            client_id, client_secret = decode_auth_headers(request)
-
-        return client_id, client_secret
 
 
 class AuthorizationCodeGrantType(GrantTypeBase):
