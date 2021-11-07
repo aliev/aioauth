@@ -9,7 +9,7 @@ Response objects used throughout the project.
 """
 
 from http import HTTPStatus
-from typing import Dict, NamedTuple, Optional
+from typing import Dict, NamedTuple
 
 from .collections import HTTPHeaderDict
 from .constances import default_headers
@@ -92,6 +92,6 @@ class Response(NamedTuple):
     Used by :py:class:`aioauth.server.AuthorizationServer`.
     """
 
-    content: Optional[Dict] = {}
+    content: Dict = {}
     status_code: HTTPStatus = HTTPStatus.OK
     headers: HTTPHeaderDict = default_headers

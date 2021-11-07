@@ -17,7 +17,7 @@ import logging
 import random
 import string
 from base64 import b64decode, b64encode
-from typing import Callable, Dict, List, Optional, Set, Tuple, Union
+from typing import Any, Callable, Coroutine, Dict, List, Optional, Set, Tuple, Union
 from urllib.parse import quote, urlencode, urlparse, urlunsplit
 
 from .collections import HTTPHeaderDict
@@ -86,8 +86,6 @@ def enforce_list(scope: Optional[Union[str, List, Set, Tuple]]) -> List:
         scope: An iterable or string that contains scopes.
     Returns:
         A list of scopes.
-    Raises:
-        TypeError: The ``scope`` value passed is not of the proper type.
     """
     if isinstance(scope, (tuple, list, set)):
         return [str(s) for s in scope]
@@ -176,6 +174,8 @@ def decode_auth_headers(authorization: str) -> Tuple[str, str]:
         authorization: Authorization header string.
     Returns:
         Tuple of the form ``(client_id, client_secret)``.
+    Raises:
+        ValueError: Invalid `authorization` header string.
     """
     scheme, param = get_authorization_scheme_param(authorization)
     if not authorization or scheme.lower() != "basic":
@@ -212,7 +212,7 @@ def create_s256_code_challenge(code_verifier: str) -> str:
     return base64.urlsafe_b64encode(data).rstrip(b"=").decode()
 
 
-def catch_errors_and_unavailability(f) -> Callable:
+def catch_errors_and_unavailability(f) -> Callable[..., Coroutine[Any, Any, Response]]:
     """
     Decorator that adds error catching to the function passed.
 
