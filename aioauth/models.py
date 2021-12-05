@@ -75,12 +75,12 @@ class Client(NamedTuple):
         """
         return redirect_uri in self.redirect_uris
 
-    def check_grant_type(self, grant_type: GrantType) -> bool:
+    def check_grant_type(self, grant_type: Optional[GrantType]) -> bool:
         """
         Verifies passed ``grant_type`` is part of the client's
         ``grant_types`` list.
         """
-        return grant_type in self.grant_types
+        return grant_type in self.grant_types if grant_type else False
 
     def check_response_type(
         self, response_type: Optional[Union[ResponseType, str]]
@@ -91,7 +91,7 @@ class Client(NamedTuple):
         """
         return not (set(enforce_list(response_type)) - set(self.response_types))
 
-    def get_allowed_scope(self, scope) -> str:
+    def get_allowed_scope(self, scope: str) -> str:
         """
         Returns the allowed ``scope`` given the passed ``scope``.
 

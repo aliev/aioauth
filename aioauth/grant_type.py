@@ -61,7 +61,7 @@ class GrantTypeBase:
                 request=request, description="Invalid client_id parameter value."
             )
 
-        if not client.check_grant_type(request.post.grant_type):  # type: ignore
+        if not client.check_grant_type(request.post.grant_type):
             raise UnauthorizedClientError(request=request)
 
         if not client.check_scope(request.post.scope):
