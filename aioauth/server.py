@@ -186,8 +186,6 @@ class AuthorizationServer:
             TokenInactiveIntrospectionResponse, TokenActiveIntrospectionResponse
         ]
 
-        token_response = TokenInactiveIntrospectionResponse()
-
         if token and not token.is_expired and not token.revoked:
             token_response = TokenActiveIntrospectionResponse(
                 scope=token.scope,
@@ -195,6 +193,8 @@ class AuthorizationServer:
                 expires_in=token.expires_in,
                 token_type=token_type,
             )
+        else:
+            token_response = TokenInactiveIntrospectionResponse()
 
         content = token_response._asdict()
 
