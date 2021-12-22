@@ -37,19 +37,17 @@ classifiers = [
 ]
 
 require_dev = [
-    "async-asgi-testclient==1.4.4",
-    "pre-commit==2.13.0",
-    "pytest==5.4.3",
-    "pytest-asyncio==0.12.0",
-    "pytest-cov==2.9.0",
+    "async-asgi-testclient==1.4.8",
+    "pre-commit==2.16.0",
+    "pytest==6.2.5",
+    "pytest-asyncio==0.16.0",
+    "pytest-cov==3.0.0",
     "pytest-env==0.6.2",
-    "pytest-sugar==0.9.3",
-    "testfixtures==6.14.1",
-    "bump2version==0.5.11",
-    "twine==1.14.0",
+    "pytest-sugar==0.9.4",
+    "testfixtures==6.18.3",
+    "bump2version==1.0.1",
+    "twine==3.7.1",
     "wheel",
-    "fastapi==0.68.0",
-    "python-multipart==0.0.5",
 ]
 
 require_docs = [

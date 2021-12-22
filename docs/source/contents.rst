@@ -35,5 +35,3 @@
   :caption: FastAPI
   :glob:
   :maxdepth: 3
-
-  sections/fastapi/*

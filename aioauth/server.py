@@ -140,7 +140,7 @@ class AuthorizationServer:
             Below is an example utilizing FastAPI as the server framework.
         .. code-block:: python
 
-            from aioauth.fastapi.utils import to_oauth2_request, to_fastapi_response
+            from aioauth_fastapi.utils import to_oauth2_request, to_fastapi_response
 
             @app.get("/token/introspect")
             async def introspect(request: fastapi.Request) -> fastapi.Response:
@@ -233,7 +233,7 @@ class AuthorizationServer:
             Below is an example utilizing FastAPI as the server framework.
         .. code-block:: python
 
-            from aioauth.fastapi.utils import to_oauth2_request, to_fastapi_response
+            from aioauth_fastapi.utils import to_oauth2_request, to_fastapi_response
 
             @app.post("/token")
             async def token(request: fastapi.Request) -> fastapi.Response:

@@ -3,7 +3,7 @@ FastAPI
 
 .. code-block:: python
 
-    from aioauth.fastapi.router import get_oauth2_router
+    from aioauth_fastapi.router import get_oauth2_router
     from aioauth.storage import BaseStorage
     from aioauth.config import Settings
     from aioauth.server import AuthorizationServer
