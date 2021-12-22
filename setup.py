@@ -71,6 +71,7 @@ setup(
     python_requires=">=3.6.0",
     classifiers=classifiers,
     extras_require={
+        "fastapi": ["aioauth-fastapi>=0.0.1"],
         "dev": require_dev,
         "docs": require_docs + require_dev,
     },
