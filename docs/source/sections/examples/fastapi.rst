@@ -1,6 +1,17 @@
 FastAPI
 =======
 
+Installing
+----------
+
+To install aioauth with FastAPI at the command line:
+
+.. code-block::
+
+   $ pip install aioauth[fastapi]
+
+Usage example
+
 .. code-block:: python
 
     from aioauth_fastapi.router import get_oauth2_router
