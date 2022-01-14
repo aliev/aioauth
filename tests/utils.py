@@ -109,7 +109,7 @@ EMPTY_KEYS = {
         ),
         "username": Response(
             content=ErrorResponse(
-                error=ErrorType.INVALID_GRANT,
+                error=ErrorType.INVALID_REQUEST,
                 description="Invalid credentials given.",
             )._asdict(),
             status_code=HTTPStatus.BAD_REQUEST,
@@ -117,7 +117,7 @@ EMPTY_KEYS = {
         ),
         "password": Response(
             content=ErrorResponse(
-                error=ErrorType.INVALID_GRANT,
+                error=ErrorType.INVALID_REQUEST,
                 description="Invalid credentials given.",
             )._asdict(),
             status_code=HTTPStatus.BAD_REQUEST,
@@ -228,7 +228,7 @@ INVALID_KEYS = {
         ),
         "username": Response(
             content=ErrorResponse(
-                error=ErrorType.INVALID_GRANT,
+                error=ErrorType.INVALID_REQUEST,
                 description="Invalid credentials given.",
             )._asdict(),
             status_code=HTTPStatus.BAD_REQUEST,
@@ -236,7 +236,7 @@ INVALID_KEYS = {
         ),
         "password": Response(
             content=ErrorResponse(
-                error=ErrorType.INVALID_GRANT,
+                error=ErrorType.INVALID_REQUEST,
                 description="Invalid credentials given.",
             )._asdict(),
             status_code=HTTPStatus.BAD_REQUEST,
