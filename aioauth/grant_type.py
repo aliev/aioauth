@@ -160,14 +160,14 @@ class PasswordGrantType(GrantTypeBase):
         client = await super().validate_request(request)
 
         if not request.post.username or not request.post.password:
-            raise InvalidGrantError(
+            raise InvalidRequestError(
                 request=request, description="Invalid credentials given."
             )
 
         user = await self.storage.authenticate(request)
 
         if not user:
-            raise InvalidGrantError(
+            raise InvalidRequestError(
                 request=request, description="Invalid credentials given."
             )
 
