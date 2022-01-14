@@ -159,7 +159,7 @@ class PasswordGrantType(GrantTypeBase):
     async def validate_request(self, request: Request) -> Client:
         client = await super().validate_request(request)
 
-        if not request.post.password or not request.post.password:
+        if not request.post.username or not request.post.password:
             raise InvalidGrantError(
                 request=request, description="Invalid credentials given."
             )
