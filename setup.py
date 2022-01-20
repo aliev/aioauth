@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from setuptools import setup, find_packages
+from setuptools import setup
 
 here = Path(__file__).parent
 about = {}
@@ -68,6 +68,7 @@ setup(
     author_email=about["__author_email__"],
     url=about["__url__"],
     license=about["__license__"],
+    package_data={"aioauth": ["py.typed"]},
     python_requires=">=3.6.0",
     classifiers=classifiers,
     extras_require={
@@ -77,6 +78,6 @@ setup(
     },
     include_package_data=True,
     keywords="asyncio oauth2 oauth",
-    packages=find_packages(exclude=["tests"]),
+    packages=["aioauth"],
     project_urls={"Source": about["__url__"]},
 )
