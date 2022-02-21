@@ -7,16 +7,17 @@ Response objects used throughout the project.
 
 ----
 """
-
+import dataclasses
 from http import HTTPStatus
-from typing import Dict, NamedTuple
+from typing import Dict
 
 from .collections import HTTPHeaderDict
 from .constances import default_headers
 from .types import ErrorType, TokenType
 
 
-class ErrorResponse(NamedTuple):
+@dataclasses.dataclass
+class ErrorResponse:
     """Response for errors."""
 
     error: ErrorType
@@ -24,7 +25,8 @@ class ErrorResponse(NamedTuple):
     error_uri: str = ""
 
 
-class AuthorizationCodeResponse(NamedTuple):
+@dataclasses.dataclass
+class AuthorizationCodeResponse:
     """Response for ``authorization_code``.
 
     Used by :py:class:`aioauth.response_type.ResponseTypeAuthorizationCode`.
@@ -34,14 +36,16 @@ class AuthorizationCodeResponse(NamedTuple):
     scope: str
 
 
-class NoneResponse(NamedTuple):
+@dataclasses.dataclass
+class NoneResponse:
     """Response for :py:class:`aioauth.response_type.ResponseTypeNone`.
 
     See: `OAuth v2 multiple response types <openid.net/specs/oauth-v2-multiple-response-types-1_0.html#none>`_,
     """
 
 
-class TokenResponse(NamedTuple):
+@dataclasses.dataclass
+class TokenResponse:
     """Response for valid token.
 
     Used by :py:class:`aioauth.response_type.ResponseTypeToken`.
@@ -55,7 +59,8 @@ class TokenResponse(NamedTuple):
     token_type: str = "Bearer"
 
 
-class IdTokenResponse(NamedTuple):
+@dataclasses.dataclass
+class IdTokenResponse:
     """Response for OpenID id_token.
 
     Used by :py:class:`aioauth.response_type.ResponseResponseTypeIdTokenTypeToken`.
@@ -64,7 +69,8 @@ class IdTokenResponse(NamedTuple):
     id_token: str
 
 
-class TokenActiveIntrospectionResponse(NamedTuple):
+@dataclasses.dataclass
+class TokenActiveIntrospectionResponse:
     """Response for a valid access token.
 
     Used by :py:meth:`aioauth.server.AuthorizationServer.create_token_introspection_response`.
@@ -77,7 +83,8 @@ class TokenActiveIntrospectionResponse(NamedTuple):
     active: bool = True
 
 
-class TokenInactiveIntrospectionResponse(NamedTuple):
+@dataclasses.dataclass
+class TokenInactiveIntrospectionResponse:
     """For an invalid, revoked or expired token.
 
     Used by :py:meth:`aioauth.server.AuthorizationServer.create_token_introspection_response`.
@@ -86,12 +93,13 @@ class TokenInactiveIntrospectionResponse(NamedTuple):
     active: bool = False
 
 
-class Response(NamedTuple):
+@dataclasses.dataclass
+class Response:
     """General response class.
 
     Used by :py:class:`aioauth.server.AuthorizationServer`.
     """
 
-    content: Dict = {}
+    content: Dict = dataclasses.field(default_factory=dict)
     status_code: HTTPStatus = HTTPStatus.OK
     headers: HTTPHeaderDict = default_headers
