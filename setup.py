@@ -29,9 +29,10 @@ classifiers = [
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.6",
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
     "Topic :: Internet :: WWW/HTTP :: HTTP Servers",
     "Topic :: Internet :: WWW/HTTP",
 ]
@@ -69,7 +70,7 @@ setup(
     url=about["__url__"],
     license=about["__license__"],
     package_data={"aioauth": ["py.typed"]},
-    python_requires=">=3.6.0",
+    python_requires=">=3.7.0",
     classifiers=classifiers,
     extras_require={
         "fastapi": ["aioauth-fastapi>=0.0.1"],
