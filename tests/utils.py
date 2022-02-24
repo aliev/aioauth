@@ -308,11 +308,6 @@ def get_keys(query: Union[Query, Post]) -> Dict[str, Any]:
     return {key: value for key, value in asdict(query).items() if bool(value)}
 
 
-def set_values(model, values):
-    """Return a new dataclass object replacing specified fields with new values"""
-    return replace(model, **values)
-
-
 async def check_query_values(
     request: Request, responses, query_dict: Dict, endpoint_func, value
 ):
@@ -322,12 +317,12 @@ async def check_query_values(
         request_ = request
 
         if request_.method == RequestMethod.POST:
-            post = set_values(request_.post, {key: value})
-            request_ = set_values(request_, {"post": post})
+            post = replace(request_.post, **{key: value})
+            request_ = replace(request_, post=post)
 
         if request_.method == RequestMethod.GET:
-            query = set_values(request_.query, {key: value})
-            request_ = set_values(request_, {"query": query})
+            query = replace(request_.query, **{key: value})
+            request_ = replace(request_, query=query)
 
         response_expected = responses[key]
         response_actual = await endpoint_func(request_)

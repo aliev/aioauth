@@ -7,7 +7,7 @@ Memory objects used throughout the project.
 
 ----
 """
-import dataclasses
+from dataclasses import dataclass
 import time
 from typing import Any, List, Optional, Union
 
@@ -15,7 +15,7 @@ from .types import CodeChallengeMethod, GrantType, ResponseType
 from .utils import create_s256_code_challenge, enforce_list, enforce_str
 
 
-@dataclasses.dataclass
+@dataclass
 class Client:
     """OAuth2.0 client model object."""
 
@@ -111,7 +111,7 @@ class Client:
         return not (set(enforce_list(scope)) - set(enforce_list(allowed_scope)))
 
 
-@dataclasses.dataclass
+@dataclass
 class AuthorizationCode:
     code: str
     """
@@ -210,7 +210,7 @@ class AuthorizationCode:
         return self.auth_time + self.expires_in < time.time()
 
 
-@dataclasses.dataclass
+@dataclass
 class Token:
     access_token: str
     """

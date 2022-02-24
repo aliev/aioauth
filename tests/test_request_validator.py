@@ -1,4 +1,5 @@
 import time
+from dataclasses import replace
 from http import HTTPStatus
 from typing import Dict, List
 
@@ -22,7 +23,6 @@ from aioauth.utils import (
 )
 
 from .models import Defaults
-from .utils import set_values
 
 
 @pytest.mark.asyncio
@@ -101,7 +101,7 @@ async def test_invalid_grant_type(
 ):
     client: Client = storage["clients"][0]
 
-    client = set_values(client, {"grant_types": [GrantType.TYPE_AUTHORIZATION_CODE]})
+    client = replace(client, grant_types=[GrantType.TYPE_AUTHORIZATION_CODE])
 
     storage["clients"][0] = client
 
@@ -139,7 +139,7 @@ async def test_invalid_response_type(
 
     client = storage["clients"][0]
 
-    client = set_values(client, {"response_types": [ResponseType.TYPE_TOKEN]})
+    client = replace(client, response_types=[ResponseType.TYPE_TOKEN])
 
     storage["clients"][0] = client
 
@@ -196,9 +196,9 @@ async def test_expired_authorization_code(
     request_url = "https://localhost"
 
     authorization_code = storage["authorization_codes"][0]
-    storage["authorization_codes"][0] = set_values(
+    storage["authorization_codes"][0] = replace(
         authorization_code,
-        {"auth_time": time.time() - settings.AUTHORIZATION_CODE_EXPIRES_IN},
+        auth_time=(time.time() - settings.AUTHORIZATION_CODE_EXPIRES_IN),
     )
     post = Post(
         grant_type=GrantType.TYPE_AUTHORIZATION_CODE,
@@ -226,8 +226,8 @@ async def test_expired_refresh_token(
 ):
     token = storage["tokens"][0]
     refresh_token = token.refresh_token
-    storage["tokens"][0] = set_values(
-        token, {"issued_at": time.time() - (settings.TOKEN_EXPIRES_IN * 2)}
+    storage["tokens"][0] = replace(
+        token, issued_at=(time.time() - (settings.TOKEN_EXPIRES_IN * 2))
     )
     request_url = "https://localhost"
     post = Post(

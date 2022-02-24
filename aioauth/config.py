@@ -8,10 +8,10 @@ Configuration settings for aioauth server instance.
 ----
 """
 
-import dataclasses
+from dataclasses import dataclass
 
 
-@dataclasses.dataclass
+@dataclass
 class Settings:
     """Configuration options that is used by the Server class."""
 

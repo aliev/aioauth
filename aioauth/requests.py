@@ -7,7 +7,7 @@ Request objects used throughout the project.
 
 ----
 """
-import dataclasses
+from dataclasses import dataclass
 from typing import Any, Optional
 
 from .collections import HTTPHeaderDict
@@ -15,7 +15,7 @@ from .config import Settings
 from .types import CodeChallengeMethod, GrantType, RequestMethod, ResponseMode
 
 
-@dataclasses.dataclass
+@dataclass
 class Query:
     """
     Object that contains a client's query string portion of a request.
@@ -33,7 +33,7 @@ class Query:
     response_mode: Optional[ResponseMode] = None
 
 
-@dataclasses.dataclass
+@dataclass
 class Post:
     """
     Object that contains a client's post request portion of a request.
@@ -54,7 +54,7 @@ class Post:
     code_verifier: Optional[str] = None
 
 
-@dataclasses.dataclass
+@dataclass
 class Request:
     """Object that contains a client's complete request."""
 

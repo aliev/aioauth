@@ -7,7 +7,7 @@ Response objects used throughout the project.
 
 ----
 """
-import dataclasses
+from dataclasses import dataclass, field
 from http import HTTPStatus
 from typing import Dict
 
@@ -16,7 +16,7 @@ from .constances import default_headers
 from .types import ErrorType, TokenType
 
 
-@dataclasses.dataclass
+@dataclass
 class ErrorResponse:
     """Response for errors."""
 
@@ -25,7 +25,7 @@ class ErrorResponse:
     error_uri: str = ""
 
 
-@dataclasses.dataclass
+@dataclass
 class AuthorizationCodeResponse:
     """Response for ``authorization_code``.
 
@@ -36,7 +36,7 @@ class AuthorizationCodeResponse:
     scope: str
 
 
-@dataclasses.dataclass
+@dataclass
 class NoneResponse:
     """Response for :py:class:`aioauth.response_type.ResponseTypeNone`.
 
@@ -44,7 +44,7 @@ class NoneResponse:
     """
 
 
-@dataclasses.dataclass
+@dataclass
 class TokenResponse:
     """Response for valid token.
 
@@ -59,7 +59,7 @@ class TokenResponse:
     token_type: str = "Bearer"
 
 
-@dataclasses.dataclass
+@dataclass
 class IdTokenResponse:
     """Response for OpenID id_token.
 
@@ -69,7 +69,7 @@ class IdTokenResponse:
     id_token: str
 
 
-@dataclasses.dataclass
+@dataclass
 class TokenActiveIntrospectionResponse:
     """Response for a valid access token.
 
@@ -83,7 +83,7 @@ class TokenActiveIntrospectionResponse:
     active: bool = True
 
 
-@dataclasses.dataclass
+@dataclass
 class TokenInactiveIntrospectionResponse:
     """For an invalid, revoked or expired token.
 
@@ -93,13 +93,13 @@ class TokenInactiveIntrospectionResponse:
     active: bool = False
 
 
-@dataclasses.dataclass
+@dataclass
 class Response:
     """General response class.
 
     Used by :py:class:`aioauth.server.AuthorizationServer`.
     """
 
-    content: Dict = dataclasses.field(default_factory=dict)
+    content: Dict = field(default_factory=dict)
     status_code: HTTPStatus = HTTPStatus.OK
     headers: HTTPHeaderDict = default_headers
