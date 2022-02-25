@@ -10,6 +10,8 @@ pertain to a specific file or module.
 """
 
 import base64
+from dataclasses import asdict
+
 import binascii
 import functools
 import hashlib
@@ -232,7 +234,7 @@ def catch_errors_and_unavailability(f) -> Callable[..., Coroutine[Any, Any, Resp
             content = ErrorResponse(error=exc.error, description=exc.description)
             log.debug("%s %r", exc, request)
             return Response(
-                content=content._asdict(),
+                content=asdict(content),
                 status_code=exc.status_code,
                 headers=exc.headers,
             )
@@ -241,7 +243,7 @@ def catch_errors_and_unavailability(f) -> Callable[..., Coroutine[Any, Any, Resp
             log.exception("Exception caught while processing request.")
             content = ErrorResponse(error=error.error, description=error.description)
             return Response(
-                content=content._asdict(),
+                content=asdict(content),
                 status_code=error.status_code,
                 headers=error.headers,
             )

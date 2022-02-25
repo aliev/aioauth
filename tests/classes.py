@@ -1,9 +1,9 @@
+from dataclasses import replace
 from typing import Dict, List, Optional
 
 from aioauth.models import AuthorizationCode, Client, Token
 from aioauth.requests import Request
 from aioauth.storage import BaseStorage
-from tests.utils import set_values
 
 from .models import Defaults
 
@@ -52,7 +52,7 @@ class DB(BaseStorage):
         tokens: List[Token] = self.storage.get("tokens", [])
         for key, token_ in enumerate(tokens):
             if token_.refresh_token == refresh_token:
-                tokens[key] = set_values(token_, {"revoked": True})
+                tokens[key] = replace(token_, revoked=True)
 
     async def get_token(
         self,

@@ -7,15 +7,16 @@ Memory objects used throughout the project.
 
 ----
 """
-
+from dataclasses import dataclass
 import time
-from typing import Any, List, NamedTuple, Optional, Union
+from typing import Any, List, Optional, Union
 
 from .types import CodeChallengeMethod, GrantType, ResponseType
 from .utils import create_s256_code_challenge, enforce_list, enforce_str
 
 
-class Client(NamedTuple):
+@dataclass
+class Client:
     """OAuth2.0 client model object."""
 
     client_id: str
@@ -110,7 +111,8 @@ class Client(NamedTuple):
         return not (set(enforce_list(scope)) - set(enforce_list(allowed_scope)))
 
 
-class AuthorizationCode(NamedTuple):
+@dataclass
+class AuthorizationCode:
     code: str
     """
     Authorization code that the client previously received from the
@@ -208,7 +210,8 @@ class AuthorizationCode(NamedTuple):
         return self.auth_time + self.expires_in < time.time()
 
 
-class Token(NamedTuple):
+@dataclass
+class Token:
     access_token: str
     """
     Token that clients use to make API requests on behalf of the

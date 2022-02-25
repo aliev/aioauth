@@ -16,7 +16,7 @@ Warning:
 
 ----
 """
-
+from dataclasses import asdict
 from http import HTTPStatus
 from typing import Dict, List, Optional, Tuple, Type, Union
 
@@ -196,7 +196,7 @@ class AuthorizationServer:
         else:
             token_response = TokenInactiveIntrospectionResponse()
 
-        content = token_response._asdict()
+        content = asdict(token_response)
 
         return Response(
             content=content, status_code=HTTPStatus.OK, headers=default_headers
@@ -283,7 +283,7 @@ class AuthorizationServer:
         client = await grant_type.validate_request(request)
 
         response = await grant_type.create_token_response(request, client)
-        content = response._asdict()
+        content = asdict(response)
 
         return Response(
             content=content, status_code=HTTPStatus.OK, headers=default_headers
@@ -363,7 +363,7 @@ class AuthorizationServer:
             response = await response_type.create_authorization_response(
                 request, client
             )
-            responses.update(response._asdict())
+            responses.update(asdict(response))
 
         # See: https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#Combinations
         if ResponseType.TYPE_CODE in response_type_list:

@@ -7,16 +7,16 @@ Request objects used throughout the project.
 
 ----
 """
-
-
-from typing import Any, NamedTuple, Optional
+from dataclasses import dataclass
+from typing import Any, Optional
 
 from .collections import HTTPHeaderDict
 from .config import Settings
 from .types import CodeChallengeMethod, GrantType, RequestMethod, ResponseMode
 
 
-class Query(NamedTuple):
+@dataclass
+class Query:
     """
     Object that contains a client's query string portion of a request.
     Read more on query strings `here <https://en.wikipedia.org/wiki/Query_string>`__.
@@ -33,7 +33,8 @@ class Query(NamedTuple):
     response_mode: Optional[ResponseMode] = None
 
 
-class Post(NamedTuple):
+@dataclass
+class Post:
     """
     Object that contains a client's post request portion of a request.
     Read more on post requests `here <https://en.wikipedia.org/wiki/POST_(HTTP)>`__.
@@ -53,7 +54,8 @@ class Post(NamedTuple):
     code_verifier: Optional[str] = None
 
 
-class Request(NamedTuple):
+@dataclass
+class Request:
     """Object that contains a client's complete request."""
 
     method: RequestMethod

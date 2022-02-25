@@ -1,3 +1,4 @@
+from dataclasses import asdict, replace
 from http import HTTPStatus
 from typing import Any, Callable, Dict, Union
 
@@ -10,116 +11,144 @@ from aioauth.types import ErrorType, RequestMethod
 EMPTY_KEYS = {
     RequestMethod.GET: {
         "client_id": Response(
-            content=ErrorResponse(
-                error=ErrorType.INVALID_REQUEST,
-                description="Missing client_id parameter.",
-            )._asdict(),
+            content=asdict(
+                ErrorResponse(
+                    error=ErrorType.INVALID_REQUEST,
+                    description="Missing client_id parameter.",
+                )
+            ),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
         "response_type": Response(
-            content=ErrorResponse(
-                error=ErrorType.INVALID_REQUEST,
-                description="Missing response_type parameter.",
-            )._asdict(),
+            content=asdict(
+                ErrorResponse(
+                    error=ErrorType.INVALID_REQUEST,
+                    description="Missing response_type parameter.",
+                )
+            ),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
         "redirect_uri": Response(
-            content=ErrorResponse(
-                error=ErrorType.INVALID_REQUEST,
-                description="Mismatching redirect URI.",
-            )._asdict(),
+            content=asdict(
+                ErrorResponse(
+                    error=ErrorType.INVALID_REQUEST,
+                    description="Mismatching redirect URI.",
+                )
+            ),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
         "code_challenge": Response(
-            content=ErrorResponse(
-                error=ErrorType.INVALID_REQUEST,
-                description="Code challenge required.",
-            )._asdict(),
+            content=asdict(
+                ErrorResponse(
+                    error=ErrorType.INVALID_REQUEST,
+                    description="Code challenge required.",
+                )
+            ),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
         "nonce": Response(
-            content=ErrorResponse(
-                error=ErrorType.INVALID_REQUEST,
-                description="Nonce required for response_type id_token.",
-            )._asdict(),
+            content=asdict(
+                ErrorResponse(
+                    error=ErrorType.INVALID_REQUEST,
+                    description="Nonce required for response_type id_token.",
+                )
+            ),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
     },
     RequestMethod.POST: {
         "grant_type": Response(
-            content=ErrorResponse(
-                error=ErrorType.INVALID_REQUEST,
-                description="Request is missing grant type.",
-            )._asdict(),
+            content=asdict(
+                ErrorResponse(
+                    error=ErrorType.INVALID_REQUEST,
+                    description="Request is missing grant type.",
+                )
+            ),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
         "redirect_uri": Response(
-            content=ErrorResponse(
-                error=ErrorType.INVALID_REQUEST,
-                description="Mismatching redirect URI.",
-            )._asdict(),
+            content=asdict(
+                ErrorResponse(
+                    error=ErrorType.INVALID_REQUEST,
+                    description="Mismatching redirect URI.",
+                )
+            ),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
         "code": Response(
-            content=ErrorResponse(
-                error=ErrorType.INVALID_REQUEST,
-                description="Missing code parameter.",
-            )._asdict(),
+            content=asdict(
+                ErrorResponse(
+                    error=ErrorType.INVALID_REQUEST,
+                    description="Missing code parameter.",
+                )
+            ),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
         "refresh_token": Response(
-            content=ErrorResponse(
-                error=ErrorType.INVALID_REQUEST,
-                description="Missing refresh token parameter.",
-            )._asdict(),
+            content=asdict(
+                ErrorResponse(
+                    error=ErrorType.INVALID_REQUEST,
+                    description="Missing refresh token parameter.",
+                )
+            ),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
         "code_verifier": Response(
-            content=ErrorResponse(
-                error=ErrorType.INVALID_REQUEST,
-                description="Code verifier required.",
-            )._asdict(),
+            content=asdict(
+                ErrorResponse(
+                    error=ErrorType.INVALID_REQUEST,
+                    description="Code verifier required.",
+                )
+            ),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
         "client_id": Response(
-            content=ErrorResponse(
-                error=ErrorType.INVALID_CLIENT,
-                description="",
-            )._asdict(),
+            content=asdict(
+                ErrorResponse(
+                    error=ErrorType.INVALID_CLIENT,
+                    description="",
+                )
+            ),
             status_code=HTTPStatus.UNAUTHORIZED,
             headers=HTTPHeaderDict({"www-authenticate": "Basic"}),
         ),
         "client_secret": Response(
-            content=ErrorResponse(
-                error=ErrorType.INVALID_CLIENT,
-                description="",
-            )._asdict(),
+            content=asdict(
+                ErrorResponse(
+                    error=ErrorType.INVALID_CLIENT,
+                    description="",
+                )
+            ),
             status_code=HTTPStatus.UNAUTHORIZED,
             headers=HTTPHeaderDict({"www-authenticate": "Basic"}),
         ),
         "username": Response(
-            content=ErrorResponse(
-                error=ErrorType.INVALID_REQUEST,
-                description="Invalid credentials given.",
-            )._asdict(),
+            content=asdict(
+                ErrorResponse(
+                    error=ErrorType.INVALID_REQUEST,
+                    description="Invalid credentials given.",
+                )
+            ),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
         "password": Response(
-            content=ErrorResponse(
-                error=ErrorType.INVALID_REQUEST,
-                description="Invalid credentials given.",
-            )._asdict(),
+            content=asdict(
+                ErrorResponse(
+                    error=ErrorType.INVALID_REQUEST,
+                    description="Invalid credentials given.",
+                )
+            ),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
@@ -129,116 +158,144 @@ EMPTY_KEYS = {
 INVALID_KEYS = {
     RequestMethod.GET: {
         "client_id": Response(
-            content=ErrorResponse(
-                error=ErrorType.INVALID_REQUEST,
-                description="Invalid client_id parameter value.",
-            )._asdict(),
+            content=asdict(
+                ErrorResponse(
+                    error=ErrorType.INVALID_REQUEST,
+                    description="Invalid client_id parameter value.",
+                )
+            ),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
         "response_type": Response(
-            content=ErrorResponse(
-                error=ErrorType.UNSUPPORTED_RESPONSE_TYPE,
-                description="",
-            )._asdict(),
+            content=asdict(
+                ErrorResponse(
+                    error=ErrorType.UNSUPPORTED_RESPONSE_TYPE,
+                    description="",
+                )
+            ),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
         "redirect_uri": Response(
-            content=ErrorResponse(
-                error=ErrorType.INVALID_REQUEST,
-                description="Invalid redirect URI.",
-            )._asdict(),
+            content=asdict(
+                ErrorResponse(
+                    error=ErrorType.INVALID_REQUEST,
+                    description="Invalid redirect URI.",
+                )
+            ),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
         "code_challenge_method": Response(
-            content=ErrorResponse(
-                error=ErrorType.INVALID_REQUEST,
-                description="Transform algorithm not supported.",
-            )._asdict(),
+            content=asdict(
+                ErrorResponse(
+                    error=ErrorType.INVALID_REQUEST,
+                    description="Transform algorithm not supported.",
+                )
+            ),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
         "scope": Response(
-            content=ErrorResponse(
-                error=ErrorType.INVALID_SCOPE,
-                description="",
-            )._asdict(),
+            content=asdict(
+                ErrorResponse(
+                    error=ErrorType.INVALID_SCOPE,
+                    description="",
+                )
+            ),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
     },
     RequestMethod.POST: {
         "grant_type": Response(
-            content=ErrorResponse(
-                error=ErrorType.UNSUPPORTED_GRANT_TYPE,
-                description="",
-            )._asdict(),
+            content=asdict(
+                ErrorResponse(
+                    error=ErrorType.UNSUPPORTED_GRANT_TYPE,
+                    description="",
+                )
+            ),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
         "redirect_uri": Response(
-            content=ErrorResponse(
-                error=ErrorType.INVALID_REQUEST,
-                description="Invalid redirect URI.",
-            )._asdict(),
+            content=asdict(
+                ErrorResponse(
+                    error=ErrorType.INVALID_REQUEST,
+                    description="Invalid redirect URI.",
+                )
+            ),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
         "code": Response(
-            content=ErrorResponse(
-                error=ErrorType.INVALID_GRANT,
-                description="",
-            )._asdict(),
+            content=asdict(
+                ErrorResponse(
+                    error=ErrorType.INVALID_GRANT,
+                    description="",
+                )
+            ),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
         "code_verifier": Response(
-            content=ErrorResponse(
-                error=ErrorType.MISMATCHING_STATE,
-                description="CSRF Warning! State not equal in request and response.",
-            )._asdict(),
+            content=asdict(
+                ErrorResponse(
+                    error=ErrorType.MISMATCHING_STATE,
+                    description="CSRF Warning! State not equal in request and response.",
+                )
+            ),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
         "refresh_token": Response(
-            content=ErrorResponse(
-                error=ErrorType.INVALID_GRANT,
-                description="",
-            )._asdict(),
+            content=asdict(
+                ErrorResponse(
+                    error=ErrorType.INVALID_GRANT,
+                    description="",
+                )
+            ),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
         "client_id": Response(
-            content=ErrorResponse(
-                error=ErrorType.INVALID_REQUEST,
-                description="Invalid client_id parameter value.",
-            )._asdict(),
+            content=asdict(
+                ErrorResponse(
+                    error=ErrorType.INVALID_REQUEST,
+                    description="Invalid client_id parameter value.",
+                )
+            ),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
         "client_secret": Response(
-            content=ErrorResponse(
-                error=ErrorType.INVALID_REQUEST,
-                description="Invalid client_id parameter value.",
-            )._asdict(),
+            content=asdict(
+                ErrorResponse(
+                    error=ErrorType.INVALID_REQUEST,
+                    description="Invalid client_id parameter value.",
+                )
+            ),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
         "username": Response(
-            content=ErrorResponse(
-                error=ErrorType.INVALID_REQUEST,
-                description="Invalid credentials given.",
-            )._asdict(),
+            content=asdict(
+                ErrorResponse(
+                    error=ErrorType.INVALID_REQUEST,
+                    description="Invalid credentials given.",
+                )
+            ),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
         "password": Response(
-            content=ErrorResponse(
-                error=ErrorType.INVALID_REQUEST,
-                description="Invalid credentials given.",
-            )._asdict(),
+            content=asdict(
+                ErrorResponse(
+                    error=ErrorType.INVALID_REQUEST,
+                    description="Invalid credentials given.",
+                )
+            ),
             status_code=HTTPStatus.BAD_REQUEST,
             headers=default_headers,
         ),
@@ -248,12 +305,7 @@ INVALID_KEYS = {
 
 def get_keys(query: Union[Query, Post]) -> Dict[str, Any]:
     """Converts dataclass object to dict and returns dict without empty values"""
-    return {key: value for key, value in query._asdict().items() if bool(value)}
-
-
-def set_values(model, values):
-    """Sets NamedTuple instance value and returns new NamedTuple"""
-    return model.__class__(**{**model._asdict(), **values})
+    return {key: value for key, value in asdict(query).items() if bool(value)}
 
 
 async def check_query_values(
@@ -265,12 +317,12 @@ async def check_query_values(
         request_ = request
 
         if request_.method == RequestMethod.POST:
-            post = set_values(request_.post, {key: value})
-            request_ = set_values(request_, {"post": post})
+            post = replace(request_.post, **{key: value})
+            request_ = replace(request_, post=post)
 
         if request_.method == RequestMethod.GET:
-            query = set_values(request_.query, {key: value})
-            request_ = set_values(request_, {"query": query})
+            query = replace(request_.query, **{key: value})
+            request_ = replace(request_, query=query)
 
         response_expected = responses[key]
         response_actual = await endpoint_func(request_)

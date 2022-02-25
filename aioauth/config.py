@@ -8,10 +8,11 @@ Configuration settings for aioauth server instance.
 ----
 """
 
-from typing import NamedTuple
+from dataclasses import dataclass
 
 
-class Settings(NamedTuple):
+@dataclass
+class Settings:
     """Configuration options that is used by the Server class."""
 
     TOKEN_EXPIRES_IN: int = 24 * 60 * 60
