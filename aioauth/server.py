@@ -324,7 +324,7 @@ class AuthorizationServer:
         Returns:
             response: An :py:class:`aioauth.responses.Response` object.
         """
-        self.validate_request(request, [RequestMethod.GET])
+        self.validate_request(request, [RequestMethod.GET, RequestMethod.POST])
 
         response_type_list = enforce_list(request.query.response_type)
         response_type_classes = set()
