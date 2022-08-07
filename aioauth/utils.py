@@ -181,7 +181,7 @@ def decode_auth_headers(authorization: str) -> Tuple[str, str]:
     """
     scheme, param = get_authorization_scheme_param(authorization)
     if not authorization or scheme.lower() != "basic":
-        raise ValueError("Invalid authoirzation header string.")
+        raise ValueError("Invalid authorization header string.")
 
     try:
         data = b64decode(param).decode("ascii")
