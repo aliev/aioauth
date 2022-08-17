@@ -95,7 +95,10 @@ async def test_refresh_token_grant_type(
 
     # Check that previous token was revoken
     token_in_db = await db.get_token(
-        request, client_id, defaults.access_token, defaults.refresh_token
+        request=request,
+        client_id=client_id,
+        access_token=defaults.access_token,
+        refresh_token=defaults.refresh_token,
     )
     assert token_in_db.revoked
     assert token_response.scope == "read"

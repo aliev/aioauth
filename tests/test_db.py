@@ -15,6 +15,27 @@ async def test_db(storage):
     authorization_code: AuthorizationCode = storage["authorization_codes"][0]
 
     with pytest.raises(NotImplementedError):
+        await db.create_token(
+            request=request,
+            client_id=client.client_id,
+            scope="",
+            access_token=token.access_token,
+            refresh_token=token.refresh_token,
+        )
+
+    with pytest.raises(NotImplementedError):
+        await db.create_authorization_code(
+            request=request,
+            client_id=client.client_id,
+            scope="",
+            response_type="",
+            redirect_uri="",
+            code_challenge_method=None,
+            code_challenge=None,
+            code="123",
+        )
+
+    with pytest.raises(NotImplementedError):
         await db.get_token(
             request=request,
             client_id=client.client_id,

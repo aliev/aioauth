@@ -3,12 +3,14 @@ from typing import Dict, List, Optional
 
 from aioauth.models import AuthorizationCode, Client, Token
 from aioauth.requests import Request
+import time
 from aioauth.storage import BaseStorage
+from aioauth.types import TokenType
 
 from .models import Defaults
 
 
-class DB(BaseStorage):
+class DB(BaseStorage[Token, Client, AuthorizationCode, Request]):
     storage: Dict[str, List]
     defaults: Defaults
 
@@ -42,8 +44,15 @@ class DB(BaseStorage):
         access_token: str,
         refresh_token: str,
     ):
-        token = await super().create_token(
-            request, client_id, scope, access_token, refresh_token
+        token = Token(
+            client_id=client_id,
+            expires_in=request.settings.TOKEN_EXPIRES_IN,
+            refresh_token_expires_in=request.settings.REFRESH_TOKEN_EXPIRES_IN,
+            access_token=access_token,
+            refresh_token=refresh_token,
+            issued_at=int(time.time()),
+            scope=scope,
+            revoked=False,
         )
         self.storage["tokens"].append(token)
         return token
@@ -58,9 +67,9 @@ class DB(BaseStorage):
         self,
         request: Request,
         client_id: str,
+        token_type: Optional[str] = TokenType.REFRESH,
         access_token: Optional[str] = None,
         refresh_token: Optional[str] = None,
-        token_type: str = "refresh_token",
     ) -> Optional[Token]:
         tokens: List[Token] = self.storage.get("tokens", [])
         for token_ in tokens:
@@ -77,15 +86,37 @@ class DB(BaseStorage):
             ):
                 return token_
 
-    async def authenticate(self, request: Request) -> Optional[bool]:
+    async def authenticate(self, request: Request) -> bool:
         if (
             request.post.username == self.defaults.username
             and request.post.password == self.defaults.password
         ):
             return True
 
-    async def create_authorization_code(self, *args, **kwargs):
-        authorization_code = await super().create_authorization_code(*args, **kwargs)
+        return False
+
+    async def create_authorization_code(
+        self,
+        request: Request,
+        client_id: str,
+        scope: str,
+        response_type: str,
+        redirect_uri: str,
+        code_challenge_method: Optional[str],
+        code_challenge: Optional[str],
+        code: str,
+    ):
+        authorization_code = AuthorizationCode(
+            code=code,
+            client_id=client_id,
+            redirect_uri=redirect_uri,
+            response_type=response_type,
+            scope=scope,
+            auth_time=int(time.time()),
+            code_challenge_method=code_challenge_method,
+            code_challenge=code_challenge,
+            expires_in=request.settings.AUTHORIZATION_CODE_EXPIRES_IN,
+        )
         self.storage["authorization_codes"].append(authorization_code)
 
         return authorization_code

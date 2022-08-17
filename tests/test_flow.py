@@ -92,10 +92,10 @@ async def test_authorization_code_flow_plain_code_challenge(
     assert response.content["token_type"] == "Bearer"
     # Check that token was created in db
     assert await db.get_token(
-        request,
-        client_id,
-        response.content["access_token"],
-        response.content["refresh_token"],
+        request=request,
+        client_id=client_id,
+        access_token=response.content["access_token"],
+        refresh_token=response.content["refresh_token"],
     )
 
     access_token = response.content["access_token"]
@@ -121,21 +121,26 @@ async def test_authorization_code_flow_plain_code_challenge(
     assert response.content["refresh_token"] != refresh_token
     # Check that token was created in db
     assert await db.get_token(
-        request,
-        client_id,
-        response.content["access_token"],
-        response.content["refresh_token"],
+        request=request,
+        client_id=client_id,
+        access_token=response.content["access_token"],
+        refresh_token=response.content["refresh_token"],
     )
     # Check that previous token was revoken
-    token_in_db = await db.get_token(request, client_id, access_token, refresh_token)
+    token_in_db = await db.get_token(
+        request=request,
+        client_id=client_id,
+        access_token=access_token,
+        refresh_token=refresh_token,
+    )
     assert token_in_db.revoked
 
     # check that scope is previous scope
     new_token = await db.get_token(
-        request,
-        client_id,
-        response.content["access_token"],
-        response.content["refresh_token"],
+        request=request,
+        client_id=client_id,
+        access_token=response.content["access_token"],
+        refresh_token=response.content["refresh_token"],
     )
     assert set(enforce_list(new_token.scope)) == set(enforce_list(token_in_db.scope))
 
