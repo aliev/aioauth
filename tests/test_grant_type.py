@@ -100,7 +100,7 @@ async def test_refresh_token_grant_type(
         access_token=defaults.access_token,
         refresh_token=defaults.refresh_token,
     )
-    assert token_in_db.revoked
+    assert token_in_db.revoked  # type: ignore
     assert token_response.scope == "read"
 
     with pytest.raises(InvalidGrantError):

@@ -133,7 +133,7 @@ async def test_authorization_code_flow_plain_code_challenge(
         access_token=access_token,
         refresh_token=refresh_token,
     )
-    assert token_in_db.revoked
+    assert token_in_db.revoked  # type: ignore
 
     # check that scope is previous scope
     new_token = await db.get_token(
@@ -142,7 +142,7 @@ async def test_authorization_code_flow_plain_code_challenge(
         access_token=response.content["access_token"],
         refresh_token=response.content["refresh_token"],
     )
-    assert set(enforce_list(new_token.scope)) == set(enforce_list(token_in_db.scope))
+    assert set(enforce_list(new_token.scope)) == set(enforce_list(token_in_db.scope))  # type: ignore
 
 
 @pytest.mark.asyncio

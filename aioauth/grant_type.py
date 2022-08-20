@@ -15,7 +15,7 @@ from .errors import (
     UnauthorizedClientError,
 )
 from .models import Client
-from .requests import Request
+from .requests import BaseRequest
 from .responses import TokenResponse
 from .storage import BaseStorage
 from .utils import enforce_list, enforce_str, generate_token
@@ -30,7 +30,7 @@ class GrantTypeBase:
         self.client_secret = client_secret
 
     async def create_token_response(
-        self, request: Request, client: Client
+        self, request: BaseRequest, client: Client
     ) -> TokenResponse:
         """Creates token response to reply to client."""
         token = await self.storage.create_token(
@@ -50,7 +50,7 @@ class GrantTypeBase:
             token_type=token.token_type,
         )
 
-    async def validate_request(self, request: Request) -> Client:
+    async def validate_request(self, request: BaseRequest) -> Client:
         """Validates the client request to ensure it is valid."""
         client = await self.storage.get_client(
             request, client_id=self.client_id, client_secret=self.client_secret
@@ -86,7 +86,7 @@ class AuthorizationCodeGrantType(GrantTypeBase):
         See `RFC 6749 section 1.3.1 <https://tools.ietf.org/html/rfc6749#section-1.3.1>`_.
     """
 
-    async def validate_request(self, request: Request) -> Client:
+    async def validate_request(self, request: BaseRequest) -> Client:
         client = await super().validate_request(request)
 
         if not request.post.redirect_uri:
@@ -132,7 +132,7 @@ class AuthorizationCodeGrantType(GrantTypeBase):
         return client
 
     async def create_token_response(
-        self, request: Request, client: Client
+        self, request: BaseRequest, client: Client
     ) -> TokenResponse:
         token_response = await super().create_token_response(request, client)
 
@@ -156,7 +156,7 @@ class PasswordGrantType(GrantTypeBase):
     disallows the password grant entirely.
     """
 
-    async def validate_request(self, request: Request) -> Client:
+    async def validate_request(self, request: BaseRequest) -> Client:
         client = await super().validate_request(request)
 
         if not request.post.username or not request.post.password:
@@ -184,7 +184,7 @@ class RefreshTokenGrantType(GrantTypeBase):
     """
 
     async def create_token_response(
-        self, request: Request, client: Client
+        self, request: BaseRequest, client: Client
     ) -> TokenResponse:
         """Validate token request and create token response."""
         old_token = await self.storage.get_token(
@@ -226,7 +226,7 @@ class RefreshTokenGrantType(GrantTypeBase):
             token_type=token.token_type,
         )
 
-    async def validate_request(self, request: Request) -> Client:
+    async def validate_request(self, request: BaseRequest) -> Client:
         client = await super().validate_request(request)
 
         if not request.post.refresh_token:

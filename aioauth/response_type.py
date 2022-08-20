@@ -16,7 +16,7 @@ from .errors import (
     UnsupportedResponseTypeError,
 )
 from .models import Client
-from .requests import Request
+from .requests import BaseRequest
 from .responses import (
     AuthorizationCodeResponse,
     IdTokenResponse,
@@ -33,7 +33,7 @@ class ResponseTypeBase:
     def __init__(self, storage: BaseStorage):
         self.storage = storage
 
-    async def validate_request(self, request: Request) -> Client:
+    async def validate_request(self, request: BaseRequest) -> Client:
         code_challenge_methods = list(CodeChallengeMethod)
 
         if not request.query.client_id:
@@ -89,7 +89,7 @@ class ResponseTypeToken(ResponseTypeBase):
     """Response type that contains a token."""
 
     async def create_authorization_response(
-        self, request: Request, client: Client
+        self, request: BaseRequest, client: Client
     ) -> TokenResponse:
         token = await self.storage.create_token(
             request,
@@ -112,7 +112,7 @@ class ResponseTypeAuthorizationCode(ResponseTypeBase):
     """Response type that contains an authorization code."""
 
     async def create_authorization_response(
-        self, request: Request, client: Client
+        self, request: BaseRequest, client: Client
     ) -> AuthorizationCodeResponse:
         authorization_code = await self.storage.create_authorization_code(
             request,
@@ -131,7 +131,7 @@ class ResponseTypeAuthorizationCode(ResponseTypeBase):
 
 
 class ResponseTypeIdToken(ResponseTypeBase):
-    async def validate_request(self, request: Request) -> Client:
+    async def validate_request(self, request: BaseRequest) -> Client:
         client = await super().validate_request(request)
 
         # nonce is required for id_token
@@ -143,7 +143,7 @@ class ResponseTypeIdToken(ResponseTypeBase):
         return client
 
     async def create_authorization_response(
-        self, request: Request, client: Client
+        self, request: BaseRequest, client: Client
     ) -> IdTokenResponse:
         id_token = await self.storage.get_id_token(
             request,
@@ -159,6 +159,6 @@ class ResponseTypeIdToken(ResponseTypeBase):
 
 class ResponseTypeNone(ResponseTypeBase):
     async def create_authorization_response(
-        self, request: Request, client: Client
+        self, request: BaseRequest, client: Client
     ) -> NoneResponse:
         return NoneResponse()

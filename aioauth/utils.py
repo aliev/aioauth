@@ -28,7 +28,7 @@ from .errors import (
     ServerError,
     TemporarilyUnavailableError,
 )
-from .requests import Request
+from .requests import BaseRequest
 from .responses import ErrorResponse, Response
 
 UNICODE_ASCII_CHARACTER_SET = string.ascii_letters + string.digits
@@ -225,7 +225,7 @@ def catch_errors_and_unavailability(f) -> Callable[..., Coroutine[Any, Any, Resp
     """
 
     @functools.wraps(f)
-    async def wrapper(self, request: Request, *args, **kwargs) -> Response:
+    async def wrapper(self, request: BaseRequest, *args, **kwargs) -> Response:
         error: Union[TemporarilyUnavailableError, ServerError]
 
         try:

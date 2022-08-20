@@ -14,7 +14,7 @@ from urllib.parse import urljoin
 
 from .collections import HTTPHeaderDict
 from .constances import default_headers
-from .requests import Request
+from .requests import BaseRequest
 from .types import ErrorType
 
 
@@ -29,7 +29,7 @@ class OAuth2Error(Exception):
 
     def __init__(
         self,
-        request: Request,
+        request: BaseRequest,
         description: Optional[str] = None,
         headers: Optional[HTTPHeaderDict] = None,
     ):
