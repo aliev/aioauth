@@ -264,11 +264,11 @@ class AuthorizationServer(Generic[TRequest]):
 
         GrantTypeClass: Type[
             Union[
-                GrantTypeBase,
-                AuthorizationCodeGrantType,
-                PasswordGrantType,
-                RefreshTokenGrantType,
-                ClientCredentialsGrantType,
+                GrantTypeBase[TRequest],
+                AuthorizationCodeGrantType[TRequest],
+                PasswordGrantType[TRequest],
+                RefreshTokenGrantType[TRequest],
+                ClientCredentialsGrantType[TRequest],
             ]
         ]
 

@@ -10,16 +10,11 @@ action.
 ----
 """
 
-from typing import Optional, TypeVar, Generic
+from typing import Optional, Generic
 from aioauth.types import TokenType
 
-from .models import AuthorizationCode, Client, Token
+from .models import TToken, TClient, TAuthorizationCode
 from .requests import TRequest
-
-
-TToken = TypeVar("TToken", bound=Token)
-TClient = TypeVar("TClient", bound=Client)
-TAuthorizationCode = TypeVar("TAuthorizationCode", bound=AuthorizationCode)
 
 
 class BaseStorage(Generic[TToken, TClient, TAuthorizationCode, TRequest]):
