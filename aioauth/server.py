@@ -18,7 +18,7 @@ Warning:
 """
 from dataclasses import asdict
 from http import HTTPStatus
-from typing import Dict, List, Optional, Tuple, Type, Union
+from typing import Dict, Generic, List, Optional, Tuple, Type, Union
 
 from .collections import HTTPHeaderDict
 from .constances import default_headers
@@ -38,7 +38,7 @@ from .grant_type import (
     PasswordGrantType,
     RefreshTokenGrantType,
 )
-from .requests import BaseRequest
+from .requests import TRequest
 from .response_type import (
     ResponseTypeAuthorizationCode,
     ResponseTypeIdToken,
@@ -66,20 +66,20 @@ from .utils import (
 )
 
 
-class AuthorizationServer:
+class AuthorizationServer(Generic[TRequest]):
     """Interface for initializing an OAuth 2.0 server."""
 
     response_types = {
-        ResponseType.TYPE_TOKEN: ResponseTypeToken,
-        ResponseType.TYPE_CODE: ResponseTypeAuthorizationCode,
-        ResponseType.TYPE_NONE: ResponseTypeNone,
-        ResponseType.TYPE_ID_TOKEN: ResponseTypeIdToken,
+        ResponseType.TYPE_TOKEN: ResponseTypeToken[TRequest],
+        ResponseType.TYPE_CODE: ResponseTypeAuthorizationCode[TRequest],
+        ResponseType.TYPE_NONE: ResponseTypeNone[TRequest],
+        ResponseType.TYPE_ID_TOKEN: ResponseTypeIdToken[TRequest],
     }
     grant_types = {
-        GrantType.TYPE_AUTHORIZATION_CODE: AuthorizationCodeGrantType,
-        GrantType.TYPE_CLIENT_CREDENTIALS: ClientCredentialsGrantType,
-        GrantType.TYPE_PASSWORD: PasswordGrantType,
-        GrantType.TYPE_REFRESH_TOKEN: RefreshTokenGrantType,
+        GrantType.TYPE_AUTHORIZATION_CODE: AuthorizationCodeGrantType[TRequest],
+        GrantType.TYPE_CLIENT_CREDENTIALS: ClientCredentialsGrantType[TRequest],
+        GrantType.TYPE_PASSWORD: PasswordGrantType[TRequest],
+        GrantType.TYPE_REFRESH_TOKEN: RefreshTokenGrantType[TRequest],
     }
 
     def __init__(
@@ -96,7 +96,7 @@ class AuthorizationServer:
         if grant_types is not None:
             self.grant_types = grant_types
 
-    def is_secure_transport(self, request: BaseRequest) -> bool:
+    def is_secure_transport(self, request: TRequest) -> bool:
         """
         Verifies the request was sent via a protected SSL tunnel.
 
@@ -113,9 +113,7 @@ class AuthorizationServer:
             return True
         return request.url.lower().startswith("https://")
 
-    def validate_request(
-        self, request: BaseRequest, allowed_methods: List[RequestMethod]
-    ):
+    def validate_request(self, request: TRequest, allowed_methods: List[RequestMethod]):
         if not request.settings.AVAILABLE:
             raise TemporarilyUnavailableError(request=request)
 
@@ -129,9 +127,7 @@ class AuthorizationServer:
             raise MethodNotAllowedError(request=request, headers=headers)
 
     @catch_errors_and_unavailability
-    async def create_token_introspection_response(
-        self, request: BaseRequest
-    ) -> Response:
+    async def create_token_introspection_response(self, request: TRequest) -> Response:
         """
         Returns a response object with introspection of the passed token.
         For more information see `RFC7662 section 2.1 <https://tools.ietf.org/html/rfc7662#section-2.1>`_.
@@ -206,7 +202,7 @@ class AuthorizationServer:
             content=content, status_code=HTTPStatus.OK, headers=default_headers
         )
 
-    def get_client_credentials(self, request: BaseRequest) -> Tuple[str, str]:
+    def get_client_credentials(self, request: TRequest) -> Tuple[str, str]:
         client_id = request.post.client_id
         client_secret = request.post.client_secret
 
@@ -223,7 +219,7 @@ class AuthorizationServer:
         return client_id, client_secret
 
     @catch_errors_and_unavailability
-    async def create_token_response(self, request: BaseRequest) -> Response:
+    async def create_token_response(self, request: TRequest) -> Response:
         """Endpoint to obtain an access and/or ID token by presenting an
         authorization grant or refresh token.
         Validates a token request and creates a token response.
@@ -294,7 +290,7 @@ class AuthorizationServer:
         )
 
     @catch_errors_and_unavailability
-    async def create_authorization_response(self, request: BaseRequest) -> Response:
+    async def create_authorization_response(self, request: TRequest) -> Response:
         """
         Endpoint to interact with the resource owner and obtain an
         authorization grant.

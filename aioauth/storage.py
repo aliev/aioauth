@@ -14,7 +14,7 @@ from typing import Optional, TypeVar, Generic
 from aioauth.types import TokenType
 
 from .models import AuthorizationCode, Client, Token
-from .requests import BaseRequest
+from .requests import TRequest
 
 
 TToken = TypeVar("TToken", bound=Token)
@@ -22,10 +22,10 @@ TClient = TypeVar("TClient", bound=Client)
 TAuthorizationCode = TypeVar("TAuthorizationCode", bound=AuthorizationCode)
 
 
-class BaseStorage(Generic[TToken, TClient, TAuthorizationCode]):
+class BaseStorage(Generic[TToken, TClient, TAuthorizationCode, TRequest]):
     async def create_token(
         self,
-        request: BaseRequest,
+        request: TRequest,
         client_id: str,
         scope: str,
         access_token: str,
@@ -49,7 +49,7 @@ class BaseStorage(Generic[TToken, TClient, TAuthorizationCode]):
 
     async def get_token(
         self,
-        request: BaseRequest,
+        request: TRequest,
         client_id: str,
         token_type: Optional[str] = TokenType.REFRESH,
         access_token: Optional[str] = None,
@@ -73,7 +73,7 @@ class BaseStorage(Generic[TToken, TClient, TAuthorizationCode]):
 
     async def create_authorization_code(
         self,
-        request: BaseRequest,
+        request: TRequest,
         client_id: str,
         scope: str,
         response_type: str,
@@ -106,7 +106,7 @@ class BaseStorage(Generic[TToken, TClient, TAuthorizationCode]):
 
     async def get_id_token(
         self,
-        request: BaseRequest,
+        request: TRequest,
         client_id: str,
         scope: str,
         response_type: str,
@@ -122,7 +122,7 @@ class BaseStorage(Generic[TToken, TClient, TAuthorizationCode]):
         raise NotImplementedError("get_id_token must be implemented.")
 
     async def get_client(
-        self, request: BaseRequest, client_id: str, client_secret: Optional[str] = None
+        self, request: TRequest, client_id: str, client_secret: Optional[str] = None
     ) -> Optional[TClient]:
         """Gets existing client from the database if it exists.
 
@@ -142,7 +142,7 @@ class BaseStorage(Generic[TToken, TClient, TAuthorizationCode]):
         """
         raise NotImplementedError("Method get_client must be implemented")
 
-    async def authenticate(self, request: BaseRequest) -> bool:
+    async def authenticate(self, request: TRequest) -> bool:
         """Authenticates a user.
 
         Note:
@@ -157,7 +157,7 @@ class BaseStorage(Generic[TToken, TClient, TAuthorizationCode]):
         raise NotImplementedError("Method authenticate must be implemented")
 
     async def get_authorization_code(
-        self, request: BaseRequest, client_id: str, code: str
+        self, request: TRequest, client_id: str, code: str
     ) -> Optional[TAuthorizationCode]:
         """Gets existing authorization code from the database if it exists.
 
@@ -180,7 +180,7 @@ class BaseStorage(Generic[TToken, TClient, TAuthorizationCode]):
         )
 
     async def delete_authorization_code(
-        self, request: BaseRequest, client_id: str, code: str
+        self, request: TRequest, client_id: str, code: str
     ) -> None:
         """Deletes authorization code from database.
 
@@ -196,7 +196,7 @@ class BaseStorage(Generic[TToken, TClient, TAuthorizationCode]):
             "Method delete_authorization_code must be implemented for AuthorizationCodeGrantType"
         )
 
-    async def revoke_token(self, request: BaseRequest, refresh_token: str) -> None:
+    async def revoke_token(self, request: TRequest, refresh_token: str) -> None:
         """Revokes a token's from the database.
 
         Note:

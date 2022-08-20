@@ -70,6 +70,9 @@ class BaseRequest(Generic[TQuery, TPost, TUser]):
     settings: Settings = Settings()
 
 
+TRequest = TypeVar("TRequest", bound=BaseRequest)
+
+
 @dataclass
 class Request(BaseRequest[Query, Post, Any]):
     """Object that contains a client's complete request."""

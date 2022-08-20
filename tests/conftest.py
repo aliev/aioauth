@@ -11,6 +11,7 @@ from aioauth.grant_type import (
     RefreshTokenGrantType,
 )
 from aioauth.models import AuthorizationCode, Client, Token
+from aioauth.requests import Request
 from aioauth.response_type import (
     ResponseTypeAuthorizationCode,
     ResponseTypeIdToken,
@@ -106,20 +107,20 @@ def db(db_class: Type[BaseStorage]):
 
 
 @pytest.fixture
-def server(db: BaseStorage) -> AuthorizationServer:
-    server = AuthorizationServer(
+def server(db: BaseStorage) -> AuthorizationServer[Request]:
+    server = AuthorizationServer[Request](
         storage=db,
         response_types={
-            ResponseType.TYPE_TOKEN: ResponseTypeToken,
-            ResponseType.TYPE_CODE: ResponseTypeAuthorizationCode,
-            ResponseType.TYPE_NONE: ResponseTypeNone,
-            ResponseType.TYPE_ID_TOKEN: ResponseTypeIdToken,
+            ResponseType.TYPE_TOKEN: ResponseTypeToken[Request],
+            ResponseType.TYPE_CODE: ResponseTypeAuthorizationCode[Request],
+            ResponseType.TYPE_NONE: ResponseTypeNone[Request],
+            ResponseType.TYPE_ID_TOKEN: ResponseTypeIdToken[Request],
         },
         grant_types={
-            GrantType.TYPE_AUTHORIZATION_CODE: AuthorizationCodeGrantType,
-            GrantType.TYPE_CLIENT_CREDENTIALS: ClientCredentialsGrantType,
-            GrantType.TYPE_PASSWORD: PasswordGrantType,
-            GrantType.TYPE_REFRESH_TOKEN: RefreshTokenGrantType,
+            GrantType.TYPE_AUTHORIZATION_CODE: AuthorizationCodeGrantType[Request],
+            GrantType.TYPE_CLIENT_CREDENTIALS: ClientCredentialsGrantType[Request],
+            GrantType.TYPE_PASSWORD: PasswordGrantType[Request],
+            GrantType.TYPE_REFRESH_TOKEN: RefreshTokenGrantType[Request],
         },
     )
     return server

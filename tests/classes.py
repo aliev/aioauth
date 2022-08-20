@@ -10,7 +10,7 @@ from aioauth.types import TokenType
 from .models import Defaults
 
 
-class DB(BaseStorage[Token, Client, AuthorizationCode]):
+class DB(BaseStorage[Token, Client, AuthorizationCode, Request]):
     storage: Dict[str, List]
     defaults: Defaults
 
