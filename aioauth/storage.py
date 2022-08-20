@@ -11,7 +11,7 @@ action.
 """
 
 from typing import Optional, Generic
-from aioauth.types import TokenType
+from .types import TokenType
 
 from .models import TToken, TClient, TAuthorizationCode
 from .requests import TRequest
