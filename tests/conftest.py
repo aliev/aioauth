@@ -19,11 +19,10 @@ from aioauth.response_type import (
     ResponseTypeToken,
 )
 from aioauth.server import AuthorizationServer
-from aioauth.storage import BaseStorage
 from aioauth.types import CodeChallengeMethod, GrantType, ResponseType
 from aioauth.utils import generate_token
 
-from .classes import get_db_class
+from .classes import Storage, get_db_class
 from .models import Defaults
 
 
@@ -97,30 +96,34 @@ def storage(defaults: Defaults, settings: Settings) -> Dict:
 
 
 @pytest.fixture
-def db_class(defaults: Defaults, storage) -> Type[BaseStorage]:
+def db_class(defaults: Defaults, storage) -> Type[Storage]:
     return get_db_class(defaults, storage)
 
 
 @pytest.fixture
-def db(db_class: Type[BaseStorage]):
+def db(db_class: Type[Storage]):
     return db_class()
 
 
 @pytest.fixture
-def server(db: BaseStorage) -> AuthorizationServer[Request]:
-    server = AuthorizationServer[Request](
+def server(db: Storage) -> AuthorizationServer[Request, Storage]:
+    server = AuthorizationServer[Request, Storage](
         storage=db,
         response_types={
-            ResponseType.TYPE_TOKEN: ResponseTypeToken[Request],
-            ResponseType.TYPE_CODE: ResponseTypeAuthorizationCode[Request],
-            ResponseType.TYPE_NONE: ResponseTypeNone[Request],
-            ResponseType.TYPE_ID_TOKEN: ResponseTypeIdToken[Request],
+            ResponseType.TYPE_TOKEN: ResponseTypeToken[Request, Storage],
+            ResponseType.TYPE_CODE: ResponseTypeAuthorizationCode[Request, Storage],
+            ResponseType.TYPE_NONE: ResponseTypeNone[Request, Storage],
+            ResponseType.TYPE_ID_TOKEN: ResponseTypeIdToken[Request, Storage],
         },
         grant_types={
-            GrantType.TYPE_AUTHORIZATION_CODE: AuthorizationCodeGrantType[Request],
-            GrantType.TYPE_CLIENT_CREDENTIALS: ClientCredentialsGrantType[Request],
-            GrantType.TYPE_PASSWORD: PasswordGrantType[Request],
-            GrantType.TYPE_REFRESH_TOKEN: RefreshTokenGrantType[Request],
+            GrantType.TYPE_AUTHORIZATION_CODE: AuthorizationCodeGrantType[
+                Request, Storage
+            ],
+            GrantType.TYPE_CLIENT_CREDENTIALS: ClientCredentialsGrantType[
+                Request, Storage
+            ],
+            GrantType.TYPE_PASSWORD: PasswordGrantType[Request, Storage],
+            GrantType.TYPE_REFRESH_TOKEN: RefreshTokenGrantType[Request, Storage],
         },
     )
     return server

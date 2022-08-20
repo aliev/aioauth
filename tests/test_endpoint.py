@@ -8,7 +8,6 @@ from aioauth.config import Settings
 from aioauth.models import Token
 from aioauth.requests import Post, Request
 from aioauth.server import AuthorizationServer
-from aioauth.storage import BaseStorage
 from aioauth.types import ErrorType, GrantType, RequestMethod, TokenType
 from aioauth.utils import (
     catch_errors_and_unavailability,
@@ -16,6 +15,7 @@ from aioauth.utils import (
     generate_token,
 )
 
+from .classes import Storage
 from .models import Defaults
 
 
@@ -154,8 +154,8 @@ async def test_introspect_revoked_token(
 
 
 @pytest.mark.asyncio
-async def test_endpoint_availability(db_class: Type[BaseStorage]):
-    server = AuthorizationServer(storage=db_class())
+async def test_endpoint_availability(db_class: Type[Storage]):
+    server = AuthorizationServer[Request, Storage](storage=db_class())
     request = Request(method=RequestMethod.POST, settings=Settings(AVAILABLE=False))
     response = await server.create_token_introspection_response(request)
     assert response.status_code == HTTPStatus.BAD_REQUEST

@@ -10,7 +10,7 @@ action.
 ----
 """
 
-from typing import Optional, Generic
+from typing import Optional, Generic, TypeVar
 from .types import TokenType
 
 from .models import TToken, TClient, TAuthorizationCode
@@ -205,3 +205,6 @@ class BaseStorage(Generic[TToken, TClient, TAuthorizationCode, TRequest]):
         raise NotImplementedError(
             "Method revoke_token must be implemented for RefreshTokenGrantType"
         )
+
+
+TStorage = TypeVar("TStorage", bound=BaseStorage)

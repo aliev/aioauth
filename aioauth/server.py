@@ -50,7 +50,7 @@ from .responses import (
     TokenActiveIntrospectionResponse,
     TokenInactiveIntrospectionResponse,
 )
-from .storage import BaseStorage
+from .storage import TStorage
 from .types import (
     GrantType,
     RequestMethod,
@@ -66,25 +66,29 @@ from .utils import (
 )
 
 
-class AuthorizationServer(Generic[TRequest]):
+class AuthorizationServer(Generic[TRequest, TStorage]):
     """Interface for initializing an OAuth 2.0 server."""
 
     response_types = {
-        ResponseType.TYPE_TOKEN: ResponseTypeToken[TRequest],
-        ResponseType.TYPE_CODE: ResponseTypeAuthorizationCode[TRequest],
-        ResponseType.TYPE_NONE: ResponseTypeNone[TRequest],
-        ResponseType.TYPE_ID_TOKEN: ResponseTypeIdToken[TRequest],
+        ResponseType.TYPE_TOKEN: ResponseTypeToken[TRequest, TStorage],
+        ResponseType.TYPE_CODE: ResponseTypeAuthorizationCode[TRequest, TStorage],
+        ResponseType.TYPE_NONE: ResponseTypeNone[TRequest, TStorage],
+        ResponseType.TYPE_ID_TOKEN: ResponseTypeIdToken[TRequest, TStorage],
     }
     grant_types = {
-        GrantType.TYPE_AUTHORIZATION_CODE: AuthorizationCodeGrantType[TRequest],
-        GrantType.TYPE_CLIENT_CREDENTIALS: ClientCredentialsGrantType[TRequest],
-        GrantType.TYPE_PASSWORD: PasswordGrantType[TRequest],
-        GrantType.TYPE_REFRESH_TOKEN: RefreshTokenGrantType[TRequest],
+        GrantType.TYPE_AUTHORIZATION_CODE: AuthorizationCodeGrantType[
+            TRequest, TStorage
+        ],
+        GrantType.TYPE_CLIENT_CREDENTIALS: ClientCredentialsGrantType[
+            TRequest, TStorage
+        ],
+        GrantType.TYPE_PASSWORD: PasswordGrantType[TRequest, TStorage],
+        GrantType.TYPE_REFRESH_TOKEN: RefreshTokenGrantType[TRequest, TStorage],
     }
 
     def __init__(
         self,
-        storage: BaseStorage,
+        storage: TStorage,
         response_types: Optional[Dict] = None,
         grant_types: Optional[Dict] = None,
     ):
@@ -264,11 +268,11 @@ class AuthorizationServer(Generic[TRequest]):
 
         GrantTypeClass: Type[
             Union[
-                GrantTypeBase[TRequest],
-                AuthorizationCodeGrantType[TRequest],
-                PasswordGrantType[TRequest],
-                RefreshTokenGrantType[TRequest],
-                ClientCredentialsGrantType[TRequest],
+                GrantTypeBase[TRequest, TStorage],
+                AuthorizationCodeGrantType[TRequest, TStorage],
+                PasswordGrantType[TRequest, TStorage],
+                RefreshTokenGrantType[TRequest, TStorage],
+                ClientCredentialsGrantType[TRequest, TStorage],
             ]
         ]
 

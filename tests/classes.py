@@ -1,16 +1,17 @@
+import time
+
 from dataclasses import replace
 from typing import Dict, List, Optional
 
 from aioauth.models import AuthorizationCode, Client, Token
 from aioauth.requests import Request
-import time
 from aioauth.storage import BaseStorage
 from aioauth.types import TokenType
 
 from .models import Defaults
 
 
-class DB(BaseStorage[Token, Client, AuthorizationCode, Request]):
+class Storage(BaseStorage[Token, Client, AuthorizationCode, Request]):
     storage: Dict[str, List]
     defaults: Defaults
 
@@ -163,6 +164,6 @@ class DB(BaseStorage[Token, Client, AuthorizationCode, Request]):
 
 
 def get_db_class(defaults: Defaults, storage: Dict[str, List]):
-    DB.storage = storage
-    DB.defaults = defaults
-    return DB
+    Storage.storage = storage
+    Storage.defaults = defaults
+    return Storage

@@ -9,10 +9,11 @@ from aioauth.grant_type import RefreshTokenGrantType
 from aioauth.models import AuthorizationCode, Client, Token
 from aioauth.requests import Post, Request
 from aioauth.server import AuthorizationServer
-from aioauth.storage import BaseStorage
 from aioauth.types import CodeChallengeMethod, GrantType, RequestMethod, ResponseType
 from aioauth.utils import encode_auth_headers
-from tests.models import Defaults
+
+from .classes import Storage
+from .models import Defaults
 
 
 @pytest.fixture
@@ -61,7 +62,7 @@ def storage(defaults: Defaults, settings: Settings) -> Dict:
 
 @pytest.mark.asyncio
 async def test_refresh_token_grant_type(
-    server: AuthorizationServer, defaults: Defaults, db: BaseStorage
+    server: AuthorizationServer, defaults: Defaults, db: Storage
 ):
     # first create an access token
 
@@ -82,7 +83,7 @@ async def test_refresh_token_grant_type(
         headers=encode_auth_headers(client_id, client_secret),
     )
 
-    grant_type = RefreshTokenGrantType(
+    grant_type = RefreshTokenGrantType[Request, Storage](
         db, client_id=defaults.client_id, client_secret=defaults.client_secret
     )
 

@@ -7,7 +7,7 @@ from aioauth.types import RequestMethod
 
 
 @pytest.mark.asyncio
-async def test_db(storage):
+async def test_storage_class(storage):
     db = BaseStorage()
     request = Request(method=RequestMethod.POST)
     client: Client = storage["clients"][0]

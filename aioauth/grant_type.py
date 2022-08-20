@@ -18,14 +18,14 @@ from .errors import (
 from .models import Client
 from .requests import TRequest
 from .responses import TokenResponse
-from .storage import BaseStorage
+from .storage import TStorage
 from .utils import enforce_list, enforce_str, generate_token
 
 
-class GrantTypeBase(Generic[TRequest]):
+class GrantTypeBase(Generic[TRequest, TStorage]):
     """Base grant type that all other grant types inherit from."""
 
-    def __init__(self, storage: BaseStorage, client_id: str, client_secret: str):
+    def __init__(self, storage: TStorage, client_id: str, client_secret: str):
         self.storage = storage
         self.client_id = client_id
         self.client_secret = client_secret
@@ -71,7 +71,7 @@ class GrantTypeBase(Generic[TRequest]):
         return client
 
 
-class AuthorizationCodeGrantType(GrantTypeBase[TRequest]):
+class AuthorizationCodeGrantType(GrantTypeBase[TRequest, TStorage]):
     """
     The Authorization Code grant type is used by confidential and public
     clients to exchange an authorization code for an access token. After
@@ -146,7 +146,7 @@ class AuthorizationCodeGrantType(GrantTypeBase[TRequest]):
         return token_response
 
 
-class PasswordGrantType(GrantTypeBase[TRequest]):
+class PasswordGrantType(GrantTypeBase[TRequest, TStorage]):
     """
     The Password grant type is a way to exchange a user's credentials
     for an access token. Because the client application has to collect
@@ -175,7 +175,7 @@ class PasswordGrantType(GrantTypeBase[TRequest]):
         return client
 
 
-class RefreshTokenGrantType(GrantTypeBase[TRequest]):
+class RefreshTokenGrantType(GrantTypeBase[TRequest, TStorage]):
     """
     The Refresh Token grant type is used by clients to exchange a
     refresh token for an access token when the access token has expired.
@@ -238,7 +238,7 @@ class RefreshTokenGrantType(GrantTypeBase[TRequest]):
         return client
 
 
-class ClientCredentialsGrantType(GrantTypeBase[TRequest]):
+class ClientCredentialsGrantType(GrantTypeBase[TRequest, TStorage]):
     """
     The Client Credentials grant type is used by clients to obtain an
     access token outside of the context of a user. This is typically

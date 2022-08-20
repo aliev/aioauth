@@ -24,14 +24,14 @@ from .responses import (
     NoneResponse,
     TokenResponse,
 )
-from .storage import BaseStorage
+from .storage import TStorage
 from .types import CodeChallengeMethod
 
 
-class ResponseTypeBase(Generic[TRequest]):
+class ResponseTypeBase(Generic[TRequest, TStorage]):
     """Base response type that all other exceptions inherit from."""
 
-    def __init__(self, storage: BaseStorage):
+    def __init__(self, storage: TStorage):
         self.storage = storage
 
     async def validate_request(self, request: TRequest) -> Client:
@@ -86,7 +86,7 @@ class ResponseTypeBase(Generic[TRequest]):
         return client
 
 
-class ResponseTypeToken(ResponseTypeBase[TRequest]):
+class ResponseTypeToken(ResponseTypeBase[TRequest, TStorage]):
     """Response type that contains a token."""
 
     async def create_authorization_response(
@@ -109,7 +109,7 @@ class ResponseTypeToken(ResponseTypeBase[TRequest]):
         )
 
 
-class ResponseTypeAuthorizationCode(ResponseTypeBase[TRequest]):
+class ResponseTypeAuthorizationCode(ResponseTypeBase[TRequest, TStorage]):
     """Response type that contains an authorization code."""
 
     async def create_authorization_response(
@@ -131,7 +131,7 @@ class ResponseTypeAuthorizationCode(ResponseTypeBase[TRequest]):
         )
 
 
-class ResponseTypeIdToken(ResponseTypeBase[TRequest]):
+class ResponseTypeIdToken(ResponseTypeBase[TRequest, TStorage]):
     async def validate_request(self, request: TRequest) -> Client:
         client = await super().validate_request(request)
 
@@ -158,7 +158,7 @@ class ResponseTypeIdToken(ResponseTypeBase[TRequest]):
         return IdTokenResponse(id_token=id_token)
 
 
-class ResponseTypeNone(ResponseTypeBase[TRequest]):
+class ResponseTypeNone(ResponseTypeBase[TRequest, TStorage]):
     async def create_authorization_response(
         self, request: TRequest, client: Client
     ) -> NoneResponse:
