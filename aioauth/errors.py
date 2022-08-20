@@ -9,16 +9,16 @@ Errors used throughout the project.
 """
 
 from http import HTTPStatus
-from typing import Optional
+from typing import Generic, Optional
 from urllib.parse import urljoin
 
 from .collections import HTTPHeaderDict
 from .constances import default_headers
-from .requests import BaseRequest
+from .requests import TRequest
 from .types import ErrorType
 
 
-class OAuth2Error(Exception):
+class OAuth2Error(Exception, Generic[TRequest]):
     """Base exception that all other exceptions inherit from."""
 
     error: ErrorType
@@ -29,7 +29,7 @@ class OAuth2Error(Exception):
 
     def __init__(
         self,
-        request: BaseRequest,
+        request: TRequest,
         description: Optional[str] = None,
         headers: Optional[HTTPHeaderDict] = None,
     ):
@@ -47,7 +47,7 @@ class OAuth2Error(Exception):
         super().__init__(f"({self.error}) {self.description}")
 
 
-class MethodNotAllowedError(OAuth2Error):
+class MethodNotAllowedError(OAuth2Error[TRequest]):
     """
     The request is valid, but the method trying to be accessed is not
     available to the resource owner.
@@ -58,7 +58,7 @@ class MethodNotAllowedError(OAuth2Error):
     error = ErrorType.METHOD_IS_NOT_ALLOWED
 
 
-class InvalidRequestError(OAuth2Error):
+class InvalidRequestError(OAuth2Error[TRequest]):
     """
     The request is missing a required parameter, includes an invalid
     parameter value, includes a parameter more than once, or is
@@ -68,7 +68,7 @@ class InvalidRequestError(OAuth2Error):
     error = ErrorType.INVALID_REQUEST
 
 
-class InvalidClientError(OAuth2Error):
+class InvalidClientError(OAuth2Error[TRequest]):
     """
     Client authentication failed (e.g. unknown client, no client
     authentication included, or unsupported authentication method).
@@ -85,14 +85,14 @@ class InvalidClientError(OAuth2Error):
     status_code: HTTPStatus = HTTPStatus.UNAUTHORIZED
 
 
-class InsecureTransportError(OAuth2Error):
+class InsecureTransportError(OAuth2Error[TRequest]):
     """An exception will be thrown if the current request is not secure."""
 
     description = "OAuth 2 MUST utilize https."
     error = ErrorType.INSECURE_TRANSPORT
 
 
-class UnsupportedGrantTypeError(OAuth2Error):
+class UnsupportedGrantTypeError(OAuth2Error[TRequest]):
     """
     The authorization grant type is not supported by the authorization
     server.
@@ -101,7 +101,7 @@ class UnsupportedGrantTypeError(OAuth2Error):
     error = ErrorType.UNSUPPORTED_GRANT_TYPE
 
 
-class UnsupportedResponseTypeError(OAuth2Error):
+class UnsupportedResponseTypeError(OAuth2Error[TRequest]):
     """
     The authorization server does not support obtaining an authorization
     code using this method.
@@ -110,7 +110,7 @@ class UnsupportedResponseTypeError(OAuth2Error):
     error = ErrorType.UNSUPPORTED_RESPONSE_TYPE
 
 
-class InvalidGrantError(OAuth2Error):
+class InvalidGrantError(OAuth2Error[TRequest]):
     """
     The provided authorization grant (e.g. authorization code, resource
     owner credentials) or refresh token is invalid, expired, revoked, does
@@ -123,14 +123,14 @@ class InvalidGrantError(OAuth2Error):
     error = ErrorType.INVALID_GRANT
 
 
-class MismatchingStateError(OAuth2Error):
+class MismatchingStateError(OAuth2Error[TRequest]):
     """Unable to securely verify the integrity of the request and response."""
 
     description = "CSRF Warning! State not equal in request and response."
     error = ErrorType.MISMATCHING_STATE
 
 
-class UnauthorizedClientError(OAuth2Error):
+class UnauthorizedClientError(OAuth2Error[TRequest]):
     """
     The authenticated client is not authorized to use this authorization
     grant type.
@@ -139,7 +139,7 @@ class UnauthorizedClientError(OAuth2Error):
     error = ErrorType.UNAUTHORIZED_CLIENT
 
 
-class InvalidScopeError(OAuth2Error):
+class InvalidScopeError(OAuth2Error[TRequest]):
     """
     The requested scope is invalid, unknown, or malformed, or
     exceeds the scope granted by the resource owner.
@@ -150,7 +150,7 @@ class InvalidScopeError(OAuth2Error):
     error = ErrorType.INVALID_SCOPE
 
 
-class ServerError(OAuth2Error):
+class ServerError(OAuth2Error[TRequest]):
     """
     The authorization server encountered an unexpected condition that
     prevented it from fulfilling the request.  (This error code is needed
@@ -161,7 +161,7 @@ class ServerError(OAuth2Error):
     error = ErrorType.SERVER_ERROR
 
 
-class TemporarilyUnavailableError(OAuth2Error):
+class TemporarilyUnavailableError(OAuth2Error[TRequest]):
     """
     The authorization server is currently unable to handle the request
     due to a temporary overloading or maintenance of the server.

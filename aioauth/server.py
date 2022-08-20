@@ -115,16 +115,16 @@ class AuthorizationServer(Generic[TRequest]):
 
     def validate_request(self, request: TRequest, allowed_methods: List[RequestMethod]):
         if not request.settings.AVAILABLE:
-            raise TemporarilyUnavailableError(request=request)
+            raise TemporarilyUnavailableError[TRequest](request=request)
 
         if not self.is_secure_transport(request):
-            raise InsecureTransportError(request=request)
+            raise InsecureTransportError[TRequest](request=request)
 
         if request.method not in allowed_methods:
             headers = HTTPHeaderDict(
                 {**default_headers, "allow": ", ".join(allowed_methods)}
             )
-            raise MethodNotAllowedError(request=request, headers=headers)
+            raise MethodNotAllowedError[TRequest](request=request, headers=headers)
 
     @catch_errors_and_unavailability
     async def create_token_introspection_response(self, request: TRequest) -> Response:
@@ -214,7 +214,9 @@ class AuthorizationServer(Generic[TRequest]):
             try:
                 client_id, client_secret = decode_auth_headers(authorization)
             except ValueError as exc:
-                raise InvalidClientError(request=request, headers=headers) from exc
+                raise InvalidClientError[TRequest](
+                    request=request, headers=headers
+                ) from exc
 
         return client_id, client_secret
 
@@ -256,7 +258,7 @@ class AuthorizationServer(Generic[TRequest]):
 
         if not request.post.grant_type:
             # grant_type request value is empty
-            raise InvalidRequestError(
+            raise InvalidRequestError[TRequest](
                 request=request, description="Request is missing grant type."
             )
 
@@ -274,7 +276,7 @@ class AuthorizationServer(Generic[TRequest]):
             GrantTypeClass = self.grant_types[request.post.grant_type]
         except KeyError as exc:
             # grant_type request value is invalid
-            raise UnsupportedGrantTypeError(request=request) from exc
+            raise UnsupportedGrantTypeError[TRequest](request=request) from exc
 
         grant_type = GrantTypeClass(
             storage=self.storage, client_id=client_id, client_secret=client_secret
@@ -342,7 +344,7 @@ class AuthorizationServer(Generic[TRequest]):
         content = {}
 
         if not response_type_list:
-            raise InvalidRequestError(
+            raise InvalidRequestError[TRequest](
                 request=request, description="Missing response_type parameter."
             )
 

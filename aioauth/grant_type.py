@@ -58,15 +58,15 @@ class GrantTypeBase(Generic[TRequest]):
         )
 
         if not client:
-            raise InvalidRequestError(
+            raise InvalidRequestError[TRequest](
                 request=request, description="Invalid client_id parameter value."
             )
 
         if not client.check_grant_type(request.post.grant_type):
-            raise UnauthorizedClientError(request=request)
+            raise UnauthorizedClientError[TRequest](request=request)
 
         if not client.check_scope(request.post.scope):
-            raise InvalidScopeError(request=request)
+            raise InvalidScopeError[TRequest](request=request)
 
         return client
 
@@ -91,17 +91,17 @@ class AuthorizationCodeGrantType(GrantTypeBase[TRequest]):
         client = await super().validate_request(request)
 
         if not request.post.redirect_uri:
-            raise InvalidRequestError(
+            raise InvalidRequestError[TRequest](
                 request=request, description="Mismatching redirect URI."
             )
 
         if not client.check_redirect_uri(request.post.redirect_uri):
-            raise InvalidRequestError(
+            raise InvalidRequestError[TRequest](
                 request=request, description="Invalid redirect URI."
             )
 
         if not request.post.code:
-            raise InvalidRequestError(
+            raise InvalidRequestError[TRequest](
                 request=request, description="Missing code parameter."
             )
 
@@ -110,14 +110,14 @@ class AuthorizationCodeGrantType(GrantTypeBase[TRequest]):
         )
 
         if not authorization_code:
-            raise InvalidGrantError(request=request)
+            raise InvalidGrantError[TRequest](request=request)
 
         if (
             authorization_code.code_challenge
             and authorization_code.code_challenge_method
         ):
             if not request.post.code_verifier:
-                raise InvalidRequestError(
+                raise InvalidRequestError[TRequest](
                     request=request, description="Code verifier required."
                 )
 
@@ -125,10 +125,10 @@ class AuthorizationCodeGrantType(GrantTypeBase[TRequest]):
                 request.post.code_verifier
             )
             if not is_valid_code_challenge:
-                raise MismatchingStateError(request=request)
+                raise MismatchingStateError[TRequest](request=request)
 
         if authorization_code.is_expired:
-            raise InvalidGrantError(request=request)
+            raise InvalidGrantError[TRequest](request=request)
 
         return client
 
@@ -161,14 +161,14 @@ class PasswordGrantType(GrantTypeBase[TRequest]):
         client = await super().validate_request(request)
 
         if not request.post.username or not request.post.password:
-            raise InvalidRequestError(
+            raise InvalidRequestError[TRequest](
                 request=request, description="Invalid credentials given."
             )
 
         user = await self.storage.authenticate(request)
 
         if not user:
-            raise InvalidRequestError(
+            raise InvalidRequestError[TRequest](
                 request=request, description="Invalid credentials given."
             )
 
@@ -195,7 +195,7 @@ class RefreshTokenGrantType(GrantTypeBase[TRequest]):
         )
 
         if not old_token or old_token.revoked or old_token.refresh_token_expired:
-            raise InvalidGrantError(request=request)
+            raise InvalidGrantError[TRequest](request=request)
 
         # Revoke old token
         await self.storage.revoke_token(
@@ -231,7 +231,7 @@ class RefreshTokenGrantType(GrantTypeBase[TRequest]):
         client = await super().validate_request(request)
 
         if not request.post.refresh_token:
-            raise InvalidRequestError(
+            raise InvalidRequestError[TRequest](
                 request=request, description="Missing refresh token parameter."
             )
 
