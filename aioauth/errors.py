@@ -11,6 +11,7 @@ Errors used throughout the project.
 from http import HTTPStatus
 from typing import Generic, Optional
 from urllib.parse import urljoin
+from typing_extensions import Literal
 
 from .collections import HTTPHeaderDict
 from .constances import default_headers
@@ -55,7 +56,7 @@ class MethodNotAllowedError(OAuth2Error[TRequest]):
 
     description = "HTTP method is not allowed."
     status_code: HTTPStatus = HTTPStatus.METHOD_NOT_ALLOWED
-    error = ErrorType.METHOD_IS_NOT_ALLOWED
+    error: Literal["method_is_not_allowed"] = "method_is_not_allowed"
 
 
 class InvalidRequestError(OAuth2Error[TRequest]):
@@ -65,7 +66,7 @@ class InvalidRequestError(OAuth2Error[TRequest]):
     otherwise malformed.
     """
 
-    error = ErrorType.INVALID_REQUEST
+    error: Literal["invalid_request"] = "invalid_request"
 
 
 class InvalidClientError(OAuth2Error[TRequest]):
@@ -81,7 +82,7 @@ class InvalidClientError(OAuth2Error[TRequest]):
     client.
     """
 
-    error = ErrorType.INVALID_CLIENT
+    error: Literal["invalid_client"] = "invalid_client"
     status_code: HTTPStatus = HTTPStatus.UNAUTHORIZED
 
 
@@ -89,7 +90,7 @@ class InsecureTransportError(OAuth2Error[TRequest]):
     """An exception will be thrown if the current request is not secure."""
 
     description = "OAuth 2 MUST utilize https."
-    error = ErrorType.INSECURE_TRANSPORT
+    error: Literal["insecure_transport"] = "insecure_transport"
 
 
 class UnsupportedGrantTypeError(OAuth2Error[TRequest]):
@@ -98,7 +99,7 @@ class UnsupportedGrantTypeError(OAuth2Error[TRequest]):
     server.
     """
 
-    error = ErrorType.UNSUPPORTED_GRANT_TYPE
+    error: Literal["unsupported_grant_type"] = "unsupported_grant_type"
 
 
 class UnsupportedResponseTypeError(OAuth2Error[TRequest]):
@@ -107,7 +108,7 @@ class UnsupportedResponseTypeError(OAuth2Error[TRequest]):
     code using this method.
     """
 
-    error = ErrorType.UNSUPPORTED_RESPONSE_TYPE
+    error: Literal["unsupported_response_type"] = "unsupported_response_type"
 
 
 class InvalidGrantError(OAuth2Error[TRequest]):
@@ -120,14 +121,14 @@ class InvalidGrantError(OAuth2Error[TRequest]):
     See `RFC6749 section 5.2 <https://tools.ietf.org/html/rfc6749#section-5.2>`_.
     """
 
-    error = ErrorType.INVALID_GRANT
+    error: Literal["invalid_grant"] = "invalid_grant"
 
 
 class MismatchingStateError(OAuth2Error[TRequest]):
     """Unable to securely verify the integrity of the request and response."""
 
     description = "CSRF Warning! State not equal in request and response."
-    error = ErrorType.MISMATCHING_STATE
+    error: Literal["mismatching_state"] = "mismatching_state"
 
 
 class UnauthorizedClientError(OAuth2Error[TRequest]):
@@ -136,7 +137,7 @@ class UnauthorizedClientError(OAuth2Error[TRequest]):
     grant type.
     """
 
-    error = ErrorType.UNAUTHORIZED_CLIENT
+    error: Literal["unauthorized_client"] = "unauthorized_client"
 
 
 class InvalidScopeError(OAuth2Error[TRequest]):
@@ -147,7 +148,7 @@ class InvalidScopeError(OAuth2Error[TRequest]):
     See `RFC6749 section 5.2 <https://tools.ietf.org/html/rfc6749#section-5.2>`_.
     """
 
-    error = ErrorType.INVALID_SCOPE
+    error: Literal["invalid_scope"] = "invalid_scope"
 
 
 class ServerError(OAuth2Error[TRequest]):
@@ -158,7 +159,7 @@ class ServerError(OAuth2Error[TRequest]):
     to the client via a HTTP redirect.)
     """
 
-    error = ErrorType.SERVER_ERROR
+    error: Literal["temporarily_unavailable"] = "temporarily_unavailable"
 
 
 class TemporarilyUnavailableError(OAuth2Error[TRequest]):
@@ -169,4 +170,4 @@ class TemporarilyUnavailableError(OAuth2Error[TRequest]):
     status code cannot be returned to the client via a HTTP redirect.)
     """
 
-    error = ErrorType.TEMPORARILY_UNAVAILABLE
+    error: Literal["temporarily_unavailable"] = "temporarily_unavailable"

@@ -6,14 +6,13 @@ from aioauth.collections import HTTPHeaderDict
 from aioauth.constances import default_headers
 from aioauth.requests import Post, Query, Request
 from aioauth.responses import ErrorResponse, Response
-from aioauth.types import ErrorType, RequestMethod
 
 EMPTY_KEYS = {
-    RequestMethod.GET: {
+    "GET": {
         "client_id": Response(
             content=asdict(
                 ErrorResponse(
-                    error=ErrorType.INVALID_REQUEST,
+                    error="invalid_request",
                     description="Missing client_id parameter.",
                 )
             ),
@@ -23,7 +22,7 @@ EMPTY_KEYS = {
         "response_type": Response(
             content=asdict(
                 ErrorResponse(
-                    error=ErrorType.INVALID_REQUEST,
+                    error="invalid_request",
                     description="Missing response_type parameter.",
                 )
             ),
@@ -33,7 +32,7 @@ EMPTY_KEYS = {
         "redirect_uri": Response(
             content=asdict(
                 ErrorResponse(
-                    error=ErrorType.INVALID_REQUEST,
+                    error="invalid_request",
                     description="Mismatching redirect URI.",
                 )
             ),
@@ -43,7 +42,7 @@ EMPTY_KEYS = {
         "code_challenge": Response(
             content=asdict(
                 ErrorResponse(
-                    error=ErrorType.INVALID_REQUEST,
+                    error="invalid_request",
                     description="Code challenge required.",
                 )
             ),
@@ -53,7 +52,7 @@ EMPTY_KEYS = {
         "nonce": Response(
             content=asdict(
                 ErrorResponse(
-                    error=ErrorType.INVALID_REQUEST,
+                    error="invalid_request",
                     description="Nonce required for response_type id_token.",
                 )
             ),
@@ -61,11 +60,11 @@ EMPTY_KEYS = {
             headers=default_headers,
         ),
     },
-    RequestMethod.POST: {
+    "POST": {
         "grant_type": Response(
             content=asdict(
                 ErrorResponse(
-                    error=ErrorType.INVALID_REQUEST,
+                    error="invalid_request",
                     description="Request is missing grant type.",
                 )
             ),
@@ -75,7 +74,7 @@ EMPTY_KEYS = {
         "redirect_uri": Response(
             content=asdict(
                 ErrorResponse(
-                    error=ErrorType.INVALID_REQUEST,
+                    error="invalid_request",
                     description="Mismatching redirect URI.",
                 )
             ),
@@ -85,7 +84,7 @@ EMPTY_KEYS = {
         "code": Response(
             content=asdict(
                 ErrorResponse(
-                    error=ErrorType.INVALID_REQUEST,
+                    error="invalid_request",
                     description="Missing code parameter.",
                 )
             ),
@@ -95,7 +94,7 @@ EMPTY_KEYS = {
         "refresh_token": Response(
             content=asdict(
                 ErrorResponse(
-                    error=ErrorType.INVALID_REQUEST,
+                    error="invalid_request",
                     description="Missing refresh token parameter.",
                 )
             ),
@@ -105,7 +104,7 @@ EMPTY_KEYS = {
         "code_verifier": Response(
             content=asdict(
                 ErrorResponse(
-                    error=ErrorType.INVALID_REQUEST,
+                    error="invalid_request",
                     description="Code verifier required.",
                 )
             ),
@@ -115,7 +114,7 @@ EMPTY_KEYS = {
         "client_id": Response(
             content=asdict(
                 ErrorResponse(
-                    error=ErrorType.INVALID_CLIENT,
+                    error="invalid_client",
                     description="",
                 )
             ),
@@ -125,7 +124,7 @@ EMPTY_KEYS = {
         "client_secret": Response(
             content=asdict(
                 ErrorResponse(
-                    error=ErrorType.INVALID_CLIENT,
+                    error="invalid_client",
                     description="",
                 )
             ),
@@ -135,7 +134,7 @@ EMPTY_KEYS = {
         "username": Response(
             content=asdict(
                 ErrorResponse(
-                    error=ErrorType.INVALID_REQUEST,
+                    error="invalid_request",
                     description="Invalid credentials given.",
                 )
             ),
@@ -145,7 +144,7 @@ EMPTY_KEYS = {
         "password": Response(
             content=asdict(
                 ErrorResponse(
-                    error=ErrorType.INVALID_REQUEST,
+                    error="invalid_request",
                     description="Invalid credentials given.",
                 )
             ),
@@ -156,11 +155,11 @@ EMPTY_KEYS = {
 }
 
 INVALID_KEYS = {
-    RequestMethod.GET: {
+    "GET": {
         "client_id": Response(
             content=asdict(
                 ErrorResponse(
-                    error=ErrorType.INVALID_REQUEST,
+                    error="invalid_request",
                     description="Invalid client_id parameter value.",
                 )
             ),
@@ -170,7 +169,7 @@ INVALID_KEYS = {
         "response_type": Response(
             content=asdict(
                 ErrorResponse(
-                    error=ErrorType.UNSUPPORTED_RESPONSE_TYPE,
+                    error="unsupported_response_type",
                     description="",
                 )
             ),
@@ -180,7 +179,7 @@ INVALID_KEYS = {
         "redirect_uri": Response(
             content=asdict(
                 ErrorResponse(
-                    error=ErrorType.INVALID_REQUEST,
+                    error="invalid_request",
                     description="Invalid redirect URI.",
                 )
             ),
@@ -190,7 +189,7 @@ INVALID_KEYS = {
         "code_challenge_method": Response(
             content=asdict(
                 ErrorResponse(
-                    error=ErrorType.INVALID_REQUEST,
+                    error="invalid_request",
                     description="Transform algorithm not supported.",
                 )
             ),
@@ -200,7 +199,7 @@ INVALID_KEYS = {
         "scope": Response(
             content=asdict(
                 ErrorResponse(
-                    error=ErrorType.INVALID_SCOPE,
+                    error="invalid_scope",
                     description="",
                 )
             ),
@@ -208,11 +207,11 @@ INVALID_KEYS = {
             headers=default_headers,
         ),
     },
-    RequestMethod.POST: {
+    "POST": {
         "grant_type": Response(
             content=asdict(
                 ErrorResponse(
-                    error=ErrorType.UNSUPPORTED_GRANT_TYPE,
+                    error="unsupported_grant_type",
                     description="",
                 )
             ),
@@ -222,7 +221,7 @@ INVALID_KEYS = {
         "redirect_uri": Response(
             content=asdict(
                 ErrorResponse(
-                    error=ErrorType.INVALID_REQUEST,
+                    error="invalid_request",
                     description="Invalid redirect URI.",
                 )
             ),
@@ -232,7 +231,7 @@ INVALID_KEYS = {
         "code": Response(
             content=asdict(
                 ErrorResponse(
-                    error=ErrorType.INVALID_GRANT,
+                    error="invalid_grant",
                     description="",
                 )
             ),
@@ -242,7 +241,7 @@ INVALID_KEYS = {
         "code_verifier": Response(
             content=asdict(
                 ErrorResponse(
-                    error=ErrorType.MISMATCHING_STATE,
+                    error="mismatching_state",
                     description="CSRF Warning! State not equal in request and response.",
                 )
             ),
@@ -252,7 +251,7 @@ INVALID_KEYS = {
         "refresh_token": Response(
             content=asdict(
                 ErrorResponse(
-                    error=ErrorType.INVALID_GRANT,
+                    error="invalid_grant",
                     description="",
                 )
             ),
@@ -262,7 +261,7 @@ INVALID_KEYS = {
         "client_id": Response(
             content=asdict(
                 ErrorResponse(
-                    error=ErrorType.INVALID_REQUEST,
+                    error="invalid_request",
                     description="Invalid client_id parameter value.",
                 )
             ),
@@ -272,7 +271,7 @@ INVALID_KEYS = {
         "client_secret": Response(
             content=asdict(
                 ErrorResponse(
-                    error=ErrorType.INVALID_REQUEST,
+                    error="invalid_request",
                     description="Invalid client_id parameter value.",
                 )
             ),
@@ -282,7 +281,7 @@ INVALID_KEYS = {
         "username": Response(
             content=asdict(
                 ErrorResponse(
-                    error=ErrorType.INVALID_REQUEST,
+                    error="invalid_request",
                     description="Invalid credentials given.",
                 )
             ),
@@ -292,7 +291,7 @@ INVALID_KEYS = {
         "password": Response(
             content=asdict(
                 ErrorResponse(
-                    error=ErrorType.INVALID_REQUEST,
+                    error="invalid_request",
                     description="Invalid credentials given.",
                 )
             ),
@@ -316,11 +315,11 @@ async def check_query_values(
     for key in keys:
         request_ = request
 
-        if request_.method == RequestMethod.POST:
+        if request_.method == "POST":
             post = replace(request_.post, **{key: value})
             request_ = replace(request_, post=post)
 
-        if request_.method == RequestMethod.GET:
+        if request_.method == "GET":
             query = replace(request_.query, **{key: value})
             request_ = replace(request_, query=query)
 
@@ -338,10 +337,10 @@ async def check_request_validators(
 ):
     query_dict = {}
 
-    if request.method == RequestMethod.POST:
+    if request.method == "POST":
         query_dict = get_keys(request.post)
 
-    if request.method == RequestMethod.GET:
+    if request.method == "GET":
         query_dict = get_keys(request.query)
 
     responses = EMPTY_KEYS[request.method]

@@ -7,7 +7,6 @@ from aioauth.collections import HTTPHeaderDict
 from aioauth.config import Settings
 from aioauth.errors import InvalidClientError
 from aioauth.requests import Request
-from aioauth.types import RequestMethod
 from aioauth.utils import (
     build_uri,
     decode_auth_headers,
@@ -37,7 +36,7 @@ def test_build_uri():
 
 
 def test_decode_auth_headers():
-    request = Request(headers=HTTPHeaderDict(), method=RequestMethod.POST)
+    request = Request(headers=HTTPHeaderDict(), method="POST")
     authorization = request.headers.get("Authorization", "")
 
     # No authorization header
@@ -60,7 +59,7 @@ def test_decode_auth_headers():
 
 def test_base_error_uri():
     ERROR_URI = "https://google.com"
-    request = Request(settings=Settings(ERROR_URI=ERROR_URI), method=RequestMethod.POST)
+    request = Request(settings=Settings(ERROR_URI=ERROR_URI), method="POST")
 
     try:
         raise InvalidClientError(request=request)

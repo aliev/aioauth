@@ -18,7 +18,7 @@ Warning:
 """
 from dataclasses import asdict
 from http import HTTPStatus
-from typing import Dict, Generic, List, Optional, Tuple, Type, Union
+from typing import Any, Dict, Generic, List, Optional, Set, Tuple, Type, Union
 
 from .collections import HTTPHeaderDict
 from .constances import default_headers
@@ -54,7 +54,6 @@ from .storage import TStorage
 from .types import (
     GrantType,
     RequestMethod,
-    ResponseMode,
     ResponseType,
     TokenType,
 )
@@ -69,21 +68,17 @@ from .utils import (
 class AuthorizationServer(Generic[TRequest, TStorage]):
     """Interface for initializing an OAuth 2.0 server."""
 
-    response_types = {
-        ResponseType.TYPE_TOKEN: ResponseTypeToken[TRequest, TStorage],
-        ResponseType.TYPE_CODE: ResponseTypeAuthorizationCode[TRequest, TStorage],
-        ResponseType.TYPE_NONE: ResponseTypeNone[TRequest, TStorage],
-        ResponseType.TYPE_ID_TOKEN: ResponseTypeIdToken[TRequest, TStorage],
+    response_types: Dict[ResponseType, Any] = {
+        "token": ResponseTypeToken[TRequest, TStorage],
+        "code": ResponseTypeAuthorizationCode[TRequest, TStorage],
+        "none": ResponseTypeNone[TRequest, TStorage],
+        "id_token": ResponseTypeIdToken[TRequest, TStorage],
     }
-    grant_types = {
-        GrantType.TYPE_AUTHORIZATION_CODE: AuthorizationCodeGrantType[
-            TRequest, TStorage
-        ],
-        GrantType.TYPE_CLIENT_CREDENTIALS: ClientCredentialsGrantType[
-            TRequest, TStorage
-        ],
-        GrantType.TYPE_PASSWORD: PasswordGrantType[TRequest, TStorage],
-        GrantType.TYPE_REFRESH_TOKEN: RefreshTokenGrantType[TRequest, TStorage],
+    grant_types: Dict[GrantType, Any] = {
+        "authorization_code": AuthorizationCodeGrantType[TRequest, TStorage],
+        "client_credentials": ClientCredentialsGrantType[TRequest, TStorage],
+        "password": PasswordGrantType[TRequest, TStorage],
+        "refresh_token": RefreshTokenGrantType[TRequest, TStorage],
     }
 
     def __init__(
@@ -162,19 +157,19 @@ class AuthorizationServer(Generic[TRequest, TStorage]):
         Returns:
             response: An :py:class:`aioauth.responses.Response` object.
         """
-        self.validate_request(request, [RequestMethod.POST])
+        self.validate_request(request, ["POST"])
         client_id, _ = self.get_client_credentials(request)
 
-        token_types = set(TokenType)
-        token_type = TokenType.REFRESH
+        token_types: Set[TokenType] = {"access_token", "refresh_token"}
+        token_type: TokenType = "refresh_token"
 
         access_token = None
         refresh_token = request.post.token
 
         if request.post.token_type_hint in token_types:
-            token_type = request.post.token_type_hint  # type: ignore
+            token_type = request.post.token_type_hint
 
-        if token_type == TokenType.ACCESS:
+        if token_type == "access_token":
             access_token = request.post.token
             refresh_token = None
 
@@ -257,7 +252,7 @@ class AuthorizationServer(Generic[TRequest, TStorage]):
         Returns:
             response: An :py:class:`aioauth.responses.Response` object.
         """
-        self.validate_request(request, [RequestMethod.POST])
+        self.validate_request(request, ["POST"])
         client_id, client_secret = self.get_client_credentials(request)
 
         if not request.post.grant_type:
@@ -330,7 +325,7 @@ class AuthorizationServer(Generic[TRequest, TStorage]):
         Returns:
             response: An :py:class:`aioauth.responses.Response` object.
         """
-        self.validate_request(request, [RequestMethod.GET, RequestMethod.POST])
+        self.validate_request(request, ["GET", "POST"])
 
         response_type_list = enforce_list(request.query.response_type)
         response_type_classes = set()
@@ -372,14 +367,14 @@ class AuthorizationServer(Generic[TRequest, TStorage]):
             responses.update(asdict(response))
 
         # See: https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#Combinations
-        if ResponseType.TYPE_CODE in response_type_list:
+        if "code" in response_type_list:
             """
             The TYPE_CODE has lowest priority.
             The response will be placed in query.
             """
             query = responses
 
-        if ResponseType.TYPE_TOKEN in response_type_list:
+        if "token" in response_type_list:
             """
             The TYPE_TOKEN has middle priority.
             The response will be placed in fragment.
@@ -387,21 +382,21 @@ class AuthorizationServer(Generic[TRequest, TStorage]):
             query = {}
             fragment = responses
 
-        if ResponseType.TYPE_ID_TOKEN in response_type_list:
+        if "id_token" in response_type_list:
             """
             The TYPE_ID_TOKEN has highest priority.
             The response can be placed in query, fragment or content
             depending on the response_mode.
             """
-            if request.query.response_mode == ResponseMode.MODE_FORM_POST:
+            if request.query.response_mode == "form_post":
                 query = {}
                 fragment = {}
                 content = responses
-            elif request.query.response_mode == ResponseMode.MODE_FRAGMENT:
+            elif request.query.response_mode == "fragment":
                 query = {}
                 content = {}
                 fragment = responses
-            elif request.query.response_mode == ResponseMode.MODE_QUERY:
+            elif request.query.response_mode == "query":
                 content = {}
                 fragment = {}
                 query = responses

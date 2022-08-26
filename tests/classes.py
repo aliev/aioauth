@@ -6,7 +6,7 @@ from typing import Dict, List, Optional
 from aioauth.models import AuthorizationCode, Client, Token
 from aioauth.requests import Request
 from aioauth.storage import BaseStorage
-from aioauth.types import TokenType
+from aioauth.types import CodeChallengeMethod, TokenType
 
 from .models import Defaults
 
@@ -68,7 +68,7 @@ class Storage(BaseStorage[Token, Client, AuthorizationCode, Request]):
         self,
         request: Request,
         client_id: str,
-        token_type: Optional[str] = TokenType.REFRESH,
+        token_type: Optional[TokenType] = "refresh_token",
         access_token: Optional[str] = None,
         refresh_token: Optional[str] = None,
     ) -> Optional[Token]:
@@ -103,7 +103,7 @@ class Storage(BaseStorage[Token, Client, AuthorizationCode, Request]):
         scope: str,
         response_type: str,
         redirect_uri: str,
-        code_challenge_method: Optional[str],
+        code_challenge_method: Optional[CodeChallengeMethod],
         code_challenge: Optional[str],
         code: str,
     ):

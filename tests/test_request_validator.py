@@ -9,13 +9,6 @@ from aioauth.config import Settings
 from aioauth.models import Client
 from aioauth.requests import Post, Query, Request
 from aioauth.server import AuthorizationServer
-from aioauth.types import (
-    CodeChallengeMethod,
-    ErrorType,
-    GrantType,
-    RequestMethod,
-    ResponseType,
-)
 from aioauth.utils import (
     create_s256_code_challenge,
     encode_auth_headers,
@@ -29,7 +22,7 @@ from .models import Defaults
 async def test_insecure_transport_error(server: AuthorizationServer):
     request_url = "http://localhost"
 
-    request = Request(url=request_url, method=RequestMethod.GET)
+    request = Request(url=request_url, method="GET")
 
     response = await server.create_authorization_response(request)
     assert response.status_code == HTTPStatus.BAD_REQUEST
@@ -53,7 +46,7 @@ async def test_invalid_client_credentials(
     request_url = "https://localhost"
 
     post = Post(
-        grant_type=GrantType.TYPE_PASSWORD,
+        grant_type="password",
         username=defaults.username,
         password=defaults.password,
     )
@@ -61,13 +54,13 @@ async def test_invalid_client_credentials(
     request = Request(
         post=post,
         url=request_url,
-        method=RequestMethod.POST,
+        method="POST",
         headers=encode_auth_headers(client_id, "client_secret"),
     )
 
     response = await server.create_token_response(request)
     assert response.status_code == HTTPStatus.BAD_REQUEST
-    assert response.content["error"] == ErrorType.INVALID_REQUEST
+    assert response.content["error"] == "invalid_request"
 
 
 @pytest.mark.asyncio
@@ -77,7 +70,7 @@ async def test_invalid_scope(server: AuthorizationServer, defaults: Defaults):
     request_url = "https://localhost"
 
     post = Post(
-        grant_type=GrantType.TYPE_PASSWORD,
+        grant_type="password",
         username=defaults.username,
         password=defaults.password,
         scope="test test",
@@ -86,13 +79,13 @@ async def test_invalid_scope(server: AuthorizationServer, defaults: Defaults):
     request = Request(
         post=post,
         url=request_url,
-        method=RequestMethod.POST,
+        method="POST",
         headers=encode_auth_headers(client_id, client_secret),
     )
 
     response = await server.create_token_response(request)
     assert response.status_code == HTTPStatus.BAD_REQUEST
-    assert response.content["error"] == ErrorType.INVALID_SCOPE
+    assert response.content["error"] == "invalid_scope"
 
 
 @pytest.mark.asyncio
@@ -101,7 +94,7 @@ async def test_invalid_grant_type(
 ):
     client: Client = storage["clients"][0]
 
-    client = replace(client, grant_types=[GrantType.TYPE_AUTHORIZATION_CODE])
+    client = replace(client, grant_types=["authorization_code"])
 
     storage["clients"][0] = client
 
@@ -110,7 +103,7 @@ async def test_invalid_grant_type(
     request_url = "https://localhost"
 
     post = Post(
-        grant_type=GrantType.TYPE_PASSWORD,
+        grant_type="password",
         username=defaults.username,
         password=defaults.password,
         scope="test test",
@@ -119,13 +112,13 @@ async def test_invalid_grant_type(
     request = Request(
         post=post,
         url=request_url,
-        method=RequestMethod.POST,
+        method="POST",
         headers=encode_auth_headers(client_id, client_secret),
     )
 
     response = await server.create_token_response(request)
     assert response.status_code == HTTPStatus.BAD_REQUEST
-    assert response.content["error"] == ErrorType.UNAUTHORIZED_CLIENT
+    assert response.content["error"] == "unauthorized_client"
 
 
 @pytest.mark.asyncio
@@ -139,29 +132,29 @@ async def test_invalid_response_type(
 
     client = storage["clients"][0]
 
-    client = replace(client, response_types=[ResponseType.TYPE_TOKEN])
+    client = replace(client, response_types=["token"])
 
     storage["clients"][0] = client
 
     query = Query(
         client_id=defaults.client_id,
-        response_type=ResponseType.TYPE_CODE,
+        response_type="code",
         redirect_uri=defaults.redirect_uri,
         scope=defaults.scope,
         state=generate_token(10),
-        code_challenge_method=CodeChallengeMethod.S256,
+        code_challenge_method="S256",
         code_challenge=code_challenge,
     )
 
     request = Request(
         url=request_url,
         query=query,
-        method=RequestMethod.GET,
+        method="GET",
         user=user,
     )
     response = await server.create_authorization_response(request)
     assert response.status_code == HTTPStatus.BAD_REQUEST
-    assert response.content["error"] == ErrorType.UNSUPPORTED_RESPONSE_TYPE
+    assert response.content["error"] == "unsupported_response_type"
 
 
 @pytest.mark.asyncio
@@ -172,18 +165,18 @@ async def test_anonymous_user(server: AuthorizationServer, defaults: Defaults, s
 
     query = Query(
         client_id=defaults.client_id,
-        response_type=ResponseType.TYPE_CODE,
+        response_type="code",
         redirect_uri=defaults.redirect_uri,
         scope=defaults.scope,
         state=generate_token(10),
-        code_challenge_method=CodeChallengeMethod.S256,
+        code_challenge_method="S256",
         code_challenge=code_challenge,
     )
 
-    request = Request(url=request_url, query=query, method=RequestMethod.GET)
+    request = Request(url=request_url, query=query, method="GET")
     response = await server.create_authorization_response(request)
     assert response.status_code == HTTPStatus.UNAUTHORIZED
-    assert response.content["error"] == ErrorType.INVALID_CLIENT
+    assert response.content["error"] == "invalid_client"
 
 
 @pytest.mark.asyncio
@@ -201,7 +194,7 @@ async def test_expired_authorization_code(
         auth_time=(time.time() - settings.AUTHORIZATION_CODE_EXPIRES_IN),
     )
     post = Post(
-        grant_type=GrantType.TYPE_AUTHORIZATION_CODE,
+        grant_type="authorization_code",
         redirect_uri=defaults.redirect_uri,
         code=storage["authorization_codes"][0].code,
     )
@@ -209,12 +202,12 @@ async def test_expired_authorization_code(
     request = Request(
         url=request_url,
         post=post,
-        method=RequestMethod.POST,
+        method="POST",
         headers=encode_auth_headers(defaults.client_id, defaults.client_secret),
     )
     response = await server.create_token_response(request)
     assert response.status_code == HTTPStatus.BAD_REQUEST
-    assert response.content["error"] == ErrorType.INVALID_GRANT
+    assert response.content["error"] == "invalid_grant"
 
 
 @pytest.mark.asyncio
@@ -231,16 +224,16 @@ async def test_expired_refresh_token(
     )
     request_url = "https://localhost"
     post = Post(
-        grant_type=GrantType.TYPE_REFRESH_TOKEN,
+        grant_type="refresh_token",
         refresh_token=refresh_token,
     )
     request = Request(
         url=request_url,
         post=post,
-        method=RequestMethod.POST,
+        method="POST",
         headers=encode_auth_headers(defaults.client_id, defaults.client_secret),
         settings=settings,
     )
     response = await server.create_token_response(request)
     assert response.status_code == HTTPStatus.BAD_REQUEST
-    assert response.content["error"] == ErrorType.INVALID_GRANT
+    assert response.content["error"] == "invalid_grant"

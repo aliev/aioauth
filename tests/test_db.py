@@ -3,13 +3,12 @@ import pytest
 from aioauth.models import AuthorizationCode, Client, Token
 from aioauth.requests import Request
 from aioauth.storage import BaseStorage
-from aioauth.types import RequestMethod
 
 
 @pytest.mark.asyncio
 async def test_storage_class(storage):
     db = BaseStorage()
-    request = Request(method=RequestMethod.POST)
+    request = Request(method="POST")
     client: Client = storage["clients"][0]
     token: Token = storage["tokens"][0]
     authorization_code: AuthorizationCode = storage["authorization_codes"][0]
@@ -66,7 +65,7 @@ async def test_storage_class(storage):
             request=request,
             client_id=client.client_id,
             scope="",
-            response_type="",
+            response_type="token",
             redirect_uri="",
             nonce="",
         )

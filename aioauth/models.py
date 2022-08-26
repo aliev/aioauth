@@ -170,7 +170,7 @@ class AuthorizationCode:
     Authorization Server.
     """
 
-    code_challenge_method: Optional[str] = None
+    code_challenge_method: Optional[CodeChallengeMethod] = None
     """
     Only used when `RFC 7636 <tools.ietf.org/html/rfc7636>`_,
     Proof Key for Code Exchange, is used.
@@ -192,11 +192,11 @@ class AuthorizationCode:
     def check_code_challenge(self, code_verifier: str) -> bool:
         is_valid_code_challenge = False
 
-        if self.code_challenge_method == CodeChallengeMethod.PLAIN:
+        if self.code_challenge_method == "plain":
             # If the "code_challenge_method" was "plain", they are compared directly
             is_valid_code_challenge = code_verifier == self.code_challenge
 
-        if self.code_challenge_method == CodeChallengeMethod.S256:
+        if self.code_challenge_method == "S256":
             # base64url(sha256(ascii(code_verifier))) == code_challenge
             is_valid_code_challenge = (
                 create_s256_code_challenge(code_verifier) == self.code_challenge

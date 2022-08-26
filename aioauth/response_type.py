@@ -8,7 +8,7 @@ Response objects used throughout the project.
 ----
 """
 
-from typing import Generic
+from typing import Generic, List
 from .utils import generate_token
 from .errors import (
     InvalidClientError,
@@ -35,7 +35,7 @@ class ResponseTypeBase(Generic[TRequest, TStorage]):
         self.storage = storage
 
     async def validate_request(self, request: TRequest) -> Client:
-        code_challenge_methods = list(CodeChallengeMethod)
+        code_challenge_methods: List[CodeChallengeMethod] = ["plain", "S256"]
 
         if not request.query.client_id:
             raise InvalidRequestError[TRequest](

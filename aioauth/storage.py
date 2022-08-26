@@ -11,7 +11,7 @@ action.
 """
 
 from typing import Optional, Generic, TypeVar
-from .types import TokenType
+from .types import CodeChallengeMethod, ResponseType, TokenType
 
 from .models import TToken, TClient, TAuthorizationCode
 from .requests import TRequest
@@ -46,7 +46,7 @@ class BaseStorage(Generic[TToken, TClient, TAuthorizationCode, TRequest]):
         self,
         request: TRequest,
         client_id: str,
-        token_type: Optional[str] = TokenType.REFRESH,
+        token_type: Optional[TokenType] = "refresh_token",
         access_token: Optional[str] = None,
         refresh_token: Optional[str] = None,
     ) -> Optional[TToken]:
@@ -71,9 +71,9 @@ class BaseStorage(Generic[TToken, TClient, TAuthorizationCode, TRequest]):
         request: TRequest,
         client_id: str,
         scope: str,
-        response_type: str,
+        response_type: ResponseType,
         redirect_uri: str,
-        code_challenge_method: Optional[str],
+        code_challenge_method: Optional[CodeChallengeMethod],
         code_challenge: Optional[str],
         code: str,
     ) -> TAuthorizationCode:
@@ -104,7 +104,7 @@ class BaseStorage(Generic[TToken, TClient, TAuthorizationCode, TRequest]):
         request: TRequest,
         client_id: str,
         scope: str,
-        response_type: str,
+        response_type: ResponseType,
         redirect_uri: str,
         nonce: str,
     ) -> str:
