@@ -8,7 +8,7 @@ Request objects used throughout the project.
 ----
 """
 from dataclasses import dataclass
-from typing import Any, Optional
+from typing import Any, Generic, Optional, TypeVar
 
 from .collections import HTTPHeaderDict
 from .config import Settings
@@ -54,14 +54,29 @@ class Post:
     code_verifier: Optional[str] = None
 
 
+TQuery = TypeVar("TQuery", bound=Query)
+TPost = TypeVar("TPost", bound=Post)
+TUser = TypeVar("TUser")
+
+
 @dataclass
-class Request:
+class BaseRequest(Generic[TQuery, TPost, TUser]):
+    method: RequestMethod
+    query: TQuery
+    post: TPost
+    headers: HTTPHeaderDict = HTTPHeaderDict()
+    url: str = ""
+    user: Optional[TUser] = None
+    settings: Settings = Settings()
+
+
+TRequest = TypeVar("TRequest", bound=BaseRequest)
+
+
+@dataclass
+class Request(BaseRequest[Query, Post, Any]):
     """Object that contains a client's complete request."""
 
-    method: RequestMethod
-    headers: HTTPHeaderDict = HTTPHeaderDict()
     query: Query = Query()
     post: Post = Post()
-    url: str = ""
     user: Optional[Any] = None
-    settings: Settings = Settings()

@@ -33,8 +33,8 @@ class HTTPHeaderDict(UserDict):
         d['hElLo'] == 'world' # >>> True
     """
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: str, value: str):
         super().__setitem__(key.lower(), value)
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: str):
         return super().__getitem__(key.lower())

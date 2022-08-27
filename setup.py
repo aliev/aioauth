@@ -72,6 +72,7 @@ setup(
     package_data={"aioauth": ["py.typed"]},
     python_requires=">=3.7.0",
     classifiers=classifiers,
+    install_requires=["typing_extensions"],
     extras_require={
         "fastapi": ["aioauth-fastapi>=0.0.1"],
         "dev": require_dev,

@@ -9,10 +9,10 @@ from aioauth.grant_type import RefreshTokenGrantType
 from aioauth.models import AuthorizationCode, Client, Token
 from aioauth.requests import Post, Request
 from aioauth.server import AuthorizationServer
-from aioauth.storage import BaseStorage
-from aioauth.types import CodeChallengeMethod, GrantType, RequestMethod, ResponseType
 from aioauth.utils import encode_auth_headers
-from tests.models import Defaults
+
+from .classes import Storage
+from .models import Defaults
 
 
 @pytest.fixture
@@ -21,24 +21,24 @@ def storage(defaults: Defaults, settings: Settings) -> Dict:
         client_id=defaults.client_id,
         client_secret=defaults.client_secret,
         grant_types=[
-            GrantType.TYPE_AUTHORIZATION_CODE,
-            GrantType.TYPE_CLIENT_CREDENTIALS,
-            GrantType.TYPE_REFRESH_TOKEN,
-            GrantType.TYPE_PASSWORD,
+            "authorization_code",
+            "password",
+            "client_credentials",
+            "refresh_token",
         ],
         redirect_uris=[defaults.redirect_uri],
-        response_types=[ResponseType.TYPE_CODE, ResponseType.TYPE_TOKEN],
+        response_types=["code", "token"],
         scope="read write foo",
     )
 
     authorization_code = AuthorizationCode(
         code=defaults.code,
         client_id=defaults.client_id,
-        response_type=ResponseType.TYPE_CODE,
+        response_type="code",
         auth_time=int(time.time()),
         redirect_uri=defaults.redirect_uri,
         scope="read write",
-        code_challenge_method=CodeChallengeMethod.PLAIN,
+        code_challenge_method="plain",
         expires_in=settings.AUTHORIZATION_CODE_EXPIRES_IN,
     )
 
@@ -61,7 +61,7 @@ def storage(defaults: Defaults, settings: Settings) -> Dict:
 
 @pytest.mark.asyncio
 async def test_refresh_token_grant_type(
-    server: AuthorizationServer, defaults: Defaults, db: BaseStorage
+    server: AuthorizationServer, defaults: Defaults, db: Storage
 ):
     # first create an access token
 
@@ -70,7 +70,7 @@ async def test_refresh_token_grant_type(
     request_url = "https://localhost"
 
     post = Post(
-        grant_type=GrantType.TYPE_REFRESH_TOKEN,
+        grant_type="refresh_token",
         refresh_token=defaults.refresh_token,
         scope="read foo",
     )
@@ -78,11 +78,11 @@ async def test_refresh_token_grant_type(
     request = Request(
         url=request_url,
         post=post,
-        method=RequestMethod.POST,
+        method="POST",
         headers=encode_auth_headers(client_id, client_secret),
     )
 
-    grant_type = RefreshTokenGrantType(
+    grant_type = RefreshTokenGrantType[Request, Storage](
         db, client_id=defaults.client_id, client_secret=defaults.client_secret
     )
 
@@ -95,9 +95,12 @@ async def test_refresh_token_grant_type(
 
     # Check that previous token was revoken
     token_in_db = await db.get_token(
-        request, client_id, defaults.access_token, defaults.refresh_token
+        request=request,
+        client_id=client_id,
+        access_token=defaults.access_token,
+        refresh_token=defaults.refresh_token,
     )
-    assert token_in_db.revoked
+    assert token_in_db.revoked  # type: ignore
     assert token_response.scope == "read"
 
     with pytest.raises(InvalidGrantError):

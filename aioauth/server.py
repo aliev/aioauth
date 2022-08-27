@@ -18,7 +18,7 @@ Warning:
 """
 from dataclasses import asdict
 from http import HTTPStatus
-from typing import Dict, List, Optional, Tuple, Type, Union
+from typing import Any, Dict, Generic, List, Optional, Set, Tuple, Type, Union
 
 from .collections import HTTPHeaderDict
 from .constances import default_headers
@@ -38,7 +38,7 @@ from .grant_type import (
     PasswordGrantType,
     RefreshTokenGrantType,
 )
-from .requests import Request
+from .requests import TRequest
 from .response_type import (
     ResponseTypeAuthorizationCode,
     ResponseTypeIdToken,
@@ -50,11 +50,10 @@ from .responses import (
     TokenActiveIntrospectionResponse,
     TokenInactiveIntrospectionResponse,
 )
-from .storage import BaseStorage
+from .storage import TStorage
 from .types import (
     GrantType,
     RequestMethod,
-    ResponseMode,
     ResponseType,
     TokenType,
 )
@@ -66,25 +65,25 @@ from .utils import (
 )
 
 
-class AuthorizationServer:
+class AuthorizationServer(Generic[TRequest, TStorage]):
     """Interface for initializing an OAuth 2.0 server."""
 
-    response_types = {
-        ResponseType.TYPE_TOKEN: ResponseTypeToken,
-        ResponseType.TYPE_CODE: ResponseTypeAuthorizationCode,
-        ResponseType.TYPE_NONE: ResponseTypeNone,
-        ResponseType.TYPE_ID_TOKEN: ResponseTypeIdToken,
+    response_types: Dict[ResponseType, Any] = {
+        "token": ResponseTypeToken[TRequest, TStorage],
+        "code": ResponseTypeAuthorizationCode[TRequest, TStorage],
+        "none": ResponseTypeNone[TRequest, TStorage],
+        "id_token": ResponseTypeIdToken[TRequest, TStorage],
     }
-    grant_types = {
-        GrantType.TYPE_AUTHORIZATION_CODE: AuthorizationCodeGrantType,
-        GrantType.TYPE_CLIENT_CREDENTIALS: ClientCredentialsGrantType,
-        GrantType.TYPE_PASSWORD: PasswordGrantType,
-        GrantType.TYPE_REFRESH_TOKEN: RefreshTokenGrantType,
+    grant_types: Dict[GrantType, Any] = {
+        "authorization_code": AuthorizationCodeGrantType[TRequest, TStorage],
+        "client_credentials": ClientCredentialsGrantType[TRequest, TStorage],
+        "password": PasswordGrantType[TRequest, TStorage],
+        "refresh_token": RefreshTokenGrantType[TRequest, TStorage],
     }
 
     def __init__(
         self,
-        storage: BaseStorage,
+        storage: TStorage,
         response_types: Optional[Dict] = None,
         grant_types: Optional[Dict] = None,
     ):
@@ -96,7 +95,7 @@ class AuthorizationServer:
         if grant_types is not None:
             self.grant_types = grant_types
 
-    def is_secure_transport(self, request: Request) -> bool:
+    def is_secure_transport(self, request: TRequest) -> bool:
         """
         Verifies the request was sent via a protected SSL tunnel.
 
@@ -113,21 +112,21 @@ class AuthorizationServer:
             return True
         return request.url.lower().startswith("https://")
 
-    def validate_request(self, request: Request, allowed_methods: List[RequestMethod]):
+    def validate_request(self, request: TRequest, allowed_methods: List[RequestMethod]):
         if not request.settings.AVAILABLE:
-            raise TemporarilyUnavailableError(request=request)
+            raise TemporarilyUnavailableError[TRequest](request=request)
 
         if not self.is_secure_transport(request):
-            raise InsecureTransportError(request=request)
+            raise InsecureTransportError[TRequest](request=request)
 
         if request.method not in allowed_methods:
             headers = HTTPHeaderDict(
                 {**default_headers, "allow": ", ".join(allowed_methods)}
             )
-            raise MethodNotAllowedError(request=request, headers=headers)
+            raise MethodNotAllowedError[TRequest](request=request, headers=headers)
 
     @catch_errors_and_unavailability
-    async def create_token_introspection_response(self, request: Request) -> Response:
+    async def create_token_introspection_response(self, request: TRequest) -> Response:
         """
         Returns a response object with introspection of the passed token.
         For more information see `RFC7662 section 2.1 <https://tools.ietf.org/html/rfc7662#section-2.1>`_.
@@ -158,19 +157,19 @@ class AuthorizationServer:
         Returns:
             response: An :py:class:`aioauth.responses.Response` object.
         """
-        self.validate_request(request, [RequestMethod.POST])
+        self.validate_request(request, ["POST"])
         client_id, _ = self.get_client_credentials(request)
 
-        token_types = set(TokenType)
-        token_type = TokenType.REFRESH
+        token_types: Set[TokenType] = {"access_token", "refresh_token"}
+        token_type: TokenType = "refresh_token"
 
         access_token = None
         refresh_token = request.post.token
 
         if request.post.token_type_hint in token_types:
-            token_type = request.post.token_type_hint  # type: ignore
+            token_type = request.post.token_type_hint
 
-        if token_type == TokenType.ACCESS:
+        if token_type == "access_token":
             access_token = request.post.token
             refresh_token = None
 
@@ -202,7 +201,7 @@ class AuthorizationServer:
             content=content, status_code=HTTPStatus.OK, headers=default_headers
         )
 
-    def get_client_credentials(self, request: Request) -> Tuple[str, str]:
+    def get_client_credentials(self, request: TRequest) -> Tuple[str, str]:
         client_id = request.post.client_id
         client_secret = request.post.client_secret
 
@@ -214,12 +213,14 @@ class AuthorizationServer:
             try:
                 client_id, client_secret = decode_auth_headers(authorization)
             except ValueError as exc:
-                raise InvalidClientError(request=request, headers=headers) from exc
+                raise InvalidClientError[TRequest](
+                    request=request, headers=headers
+                ) from exc
 
         return client_id, client_secret
 
     @catch_errors_and_unavailability
-    async def create_token_response(self, request: Request) -> Response:
+    async def create_token_response(self, request: TRequest) -> Response:
         """Endpoint to obtain an access and/or ID token by presenting an
         authorization grant or refresh token.
         Validates a token request and creates a token response.
@@ -251,22 +252,22 @@ class AuthorizationServer:
         Returns:
             response: An :py:class:`aioauth.responses.Response` object.
         """
-        self.validate_request(request, [RequestMethod.POST])
+        self.validate_request(request, ["POST"])
         client_id, client_secret = self.get_client_credentials(request)
 
         if not request.post.grant_type:
             # grant_type request value is empty
-            raise InvalidRequestError(
+            raise InvalidRequestError[TRequest](
                 request=request, description="Request is missing grant type."
             )
 
         GrantTypeClass: Type[
             Union[
-                GrantTypeBase,
-                AuthorizationCodeGrantType,
-                PasswordGrantType,
-                RefreshTokenGrantType,
-                ClientCredentialsGrantType,
+                GrantTypeBase[TRequest, TStorage],
+                AuthorizationCodeGrantType[TRequest, TStorage],
+                PasswordGrantType[TRequest, TStorage],
+                RefreshTokenGrantType[TRequest, TStorage],
+                ClientCredentialsGrantType[TRequest, TStorage],
             ]
         ]
 
@@ -274,7 +275,7 @@ class AuthorizationServer:
             GrantTypeClass = self.grant_types[request.post.grant_type]
         except KeyError as exc:
             # grant_type request value is invalid
-            raise UnsupportedGrantTypeError(request=request) from exc
+            raise UnsupportedGrantTypeError[TRequest](request=request) from exc
 
         grant_type = GrantTypeClass(
             storage=self.storage, client_id=client_id, client_secret=client_secret
@@ -290,7 +291,7 @@ class AuthorizationServer:
         )
 
     @catch_errors_and_unavailability
-    async def create_authorization_response(self, request: Request) -> Response:
+    async def create_authorization_response(self, request: TRequest) -> Response:
         """
         Endpoint to interact with the resource owner and obtain an
         authorization grant.
@@ -324,7 +325,7 @@ class AuthorizationServer:
         Returns:
             response: An :py:class:`aioauth.responses.Response` object.
         """
-        self.validate_request(request, [RequestMethod.GET, RequestMethod.POST])
+        self.validate_request(request, ["GET", "POST"])
 
         response_type_list = enforce_list(request.query.response_type)
         response_type_classes = set()
@@ -342,7 +343,7 @@ class AuthorizationServer:
         content = {}
 
         if not response_type_list:
-            raise InvalidRequestError(
+            raise InvalidRequestError[TRequest](
                 request=request, description="Missing response_type parameter."
             )
 
@@ -366,14 +367,14 @@ class AuthorizationServer:
             responses.update(asdict(response))
 
         # See: https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#Combinations
-        if ResponseType.TYPE_CODE in response_type_list:
+        if "code" in response_type_list:
             """
             The TYPE_CODE has lowest priority.
             The response will be placed in query.
             """
             query = responses
 
-        if ResponseType.TYPE_TOKEN in response_type_list:
+        if "token" in response_type_list:
             """
             The TYPE_TOKEN has middle priority.
             The response will be placed in fragment.
@@ -381,21 +382,21 @@ class AuthorizationServer:
             query = {}
             fragment = responses
 
-        if ResponseType.TYPE_ID_TOKEN in response_type_list:
+        if "id_token" in response_type_list:
             """
             The TYPE_ID_TOKEN has highest priority.
             The response can be placed in query, fragment or content
             depending on the response_mode.
             """
-            if request.query.response_mode == ResponseMode.MODE_FORM_POST:
+            if request.query.response_mode == "form_post":
                 query = {}
                 fragment = {}
                 content = responses
-            elif request.query.response_mode == ResponseMode.MODE_FRAGMENT:
+            elif request.query.response_mode == "fragment":
                 query = {}
                 content = {}
                 fragment = responses
-            elif request.query.response_mode == ResponseMode.MODE_QUERY:
+            elif request.query.response_mode == "query":
                 content = {}
                 fragment = {}
                 query = responses

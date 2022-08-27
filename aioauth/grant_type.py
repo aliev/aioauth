@@ -7,6 +7,7 @@ Different OAuth 2.0 grant types.
 
 ----
 """
+from typing import Generic
 from .errors import (
     InvalidGrantError,
     InvalidRequestError,
@@ -15,22 +16,22 @@ from .errors import (
     UnauthorizedClientError,
 )
 from .models import Client
-from .requests import Request
+from .requests import TRequest
 from .responses import TokenResponse
-from .storage import BaseStorage
+from .storage import TStorage
 from .utils import enforce_list, enforce_str, generate_token
 
 
-class GrantTypeBase:
+class GrantTypeBase(Generic[TRequest, TStorage]):
     """Base grant type that all other grant types inherit from."""
 
-    def __init__(self, storage: BaseStorage, client_id: str, client_secret: str):
+    def __init__(self, storage: TStorage, client_id: str, client_secret: str):
         self.storage = storage
         self.client_id = client_id
         self.client_secret = client_secret
 
     async def create_token_response(
-        self, request: Request, client: Client
+        self, request: TRequest, client: Client
     ) -> TokenResponse:
         """Creates token response to reply to client."""
         token = await self.storage.create_token(
@@ -50,27 +51,27 @@ class GrantTypeBase:
             token_type=token.token_type,
         )
 
-    async def validate_request(self, request: Request) -> Client:
+    async def validate_request(self, request: TRequest) -> Client:
         """Validates the client request to ensure it is valid."""
         client = await self.storage.get_client(
             request, client_id=self.client_id, client_secret=self.client_secret
         )
 
         if not client:
-            raise InvalidRequestError(
+            raise InvalidRequestError[TRequest](
                 request=request, description="Invalid client_id parameter value."
             )
 
         if not client.check_grant_type(request.post.grant_type):
-            raise UnauthorizedClientError(request=request)
+            raise UnauthorizedClientError[TRequest](request=request)
 
         if not client.check_scope(request.post.scope):
-            raise InvalidScopeError(request=request)
+            raise InvalidScopeError[TRequest](request=request)
 
         return client
 
 
-class AuthorizationCodeGrantType(GrantTypeBase):
+class AuthorizationCodeGrantType(GrantTypeBase[TRequest, TStorage]):
     """
     The Authorization Code grant type is used by confidential and public
     clients to exchange an authorization code for an access token. After
@@ -86,21 +87,21 @@ class AuthorizationCodeGrantType(GrantTypeBase):
         See `RFC 6749 section 1.3.1 <https://tools.ietf.org/html/rfc6749#section-1.3.1>`_.
     """
 
-    async def validate_request(self, request: Request) -> Client:
+    async def validate_request(self, request: TRequest) -> Client:
         client = await super().validate_request(request)
 
         if not request.post.redirect_uri:
-            raise InvalidRequestError(
+            raise InvalidRequestError[TRequest](
                 request=request, description="Mismatching redirect URI."
             )
 
         if not client.check_redirect_uri(request.post.redirect_uri):
-            raise InvalidRequestError(
+            raise InvalidRequestError[TRequest](
                 request=request, description="Invalid redirect URI."
             )
 
         if not request.post.code:
-            raise InvalidRequestError(
+            raise InvalidRequestError[TRequest](
                 request=request, description="Missing code parameter."
             )
 
@@ -109,14 +110,14 @@ class AuthorizationCodeGrantType(GrantTypeBase):
         )
 
         if not authorization_code:
-            raise InvalidGrantError(request=request)
+            raise InvalidGrantError[TRequest](request=request)
 
         if (
             authorization_code.code_challenge
             and authorization_code.code_challenge_method
         ):
             if not request.post.code_verifier:
-                raise InvalidRequestError(
+                raise InvalidRequestError[TRequest](
                     request=request, description="Code verifier required."
                 )
 
@@ -124,15 +125,15 @@ class AuthorizationCodeGrantType(GrantTypeBase):
                 request.post.code_verifier
             )
             if not is_valid_code_challenge:
-                raise MismatchingStateError(request=request)
+                raise MismatchingStateError[TRequest](request=request)
 
         if authorization_code.is_expired:
-            raise InvalidGrantError(request=request)
+            raise InvalidGrantError[TRequest](request=request)
 
         return client
 
     async def create_token_response(
-        self, request: Request, client: Client
+        self, request: TRequest, client: Client
     ) -> TokenResponse:
         token_response = await super().create_token_response(request, client)
 
@@ -145,7 +146,7 @@ class AuthorizationCodeGrantType(GrantTypeBase):
         return token_response
 
 
-class PasswordGrantType(GrantTypeBase):
+class PasswordGrantType(GrantTypeBase[TRequest, TStorage]):
     """
     The Password grant type is a way to exchange a user's credentials
     for an access token. Because the client application has to collect
@@ -156,25 +157,25 @@ class PasswordGrantType(GrantTypeBase):
     disallows the password grant entirely.
     """
 
-    async def validate_request(self, request: Request) -> Client:
+    async def validate_request(self, request: TRequest) -> Client:
         client = await super().validate_request(request)
 
         if not request.post.username or not request.post.password:
-            raise InvalidRequestError(
+            raise InvalidRequestError[TRequest](
                 request=request, description="Invalid credentials given."
             )
 
         user = await self.storage.authenticate(request)
 
         if not user:
-            raise InvalidRequestError(
+            raise InvalidRequestError[TRequest](
                 request=request, description="Invalid credentials given."
             )
 
         return client
 
 
-class RefreshTokenGrantType(GrantTypeBase):
+class RefreshTokenGrantType(GrantTypeBase[TRequest, TStorage]):
     """
     The Refresh Token grant type is used by clients to exchange a
     refresh token for an access token when the access token has expired.
@@ -184,7 +185,7 @@ class RefreshTokenGrantType(GrantTypeBase):
     """
 
     async def create_token_response(
-        self, request: Request, client: Client
+        self, request: TRequest, client: Client
     ) -> TokenResponse:
         """Validate token request and create token response."""
         old_token = await self.storage.get_token(
@@ -194,7 +195,7 @@ class RefreshTokenGrantType(GrantTypeBase):
         )
 
         if not old_token or old_token.revoked or old_token.refresh_token_expired:
-            raise InvalidGrantError(request=request)
+            raise InvalidGrantError[TRequest](request=request)
 
         # Revoke old token
         await self.storage.revoke_token(
@@ -226,18 +227,18 @@ class RefreshTokenGrantType(GrantTypeBase):
             token_type=token.token_type,
         )
 
-    async def validate_request(self, request: Request) -> Client:
+    async def validate_request(self, request: TRequest) -> Client:
         client = await super().validate_request(request)
 
         if not request.post.refresh_token:
-            raise InvalidRequestError(
+            raise InvalidRequestError[TRequest](
                 request=request, description="Missing refresh token parameter."
             )
 
         return client
 
 
-class ClientCredentialsGrantType(GrantTypeBase):
+class ClientCredentialsGrantType(GrantTypeBase[TRequest, TStorage]):
     """
     The Client Credentials grant type is used by clients to obtain an
     access token outside of the context of a user. This is typically

@@ -11,6 +11,7 @@ from aioauth.grant_type import (
     RefreshTokenGrantType,
 )
 from aioauth.models import AuthorizationCode, Client, Token
+from aioauth.requests import Request
 from aioauth.response_type import (
     ResponseTypeAuthorizationCode,
     ResponseTypeIdToken,
@@ -18,11 +19,9 @@ from aioauth.response_type import (
     ResponseTypeToken,
 )
 from aioauth.server import AuthorizationServer
-from aioauth.storage import BaseStorage
-from aioauth.types import CodeChallengeMethod, GrantType, ResponseType
 from aioauth.utils import generate_token
 
-from .classes import get_db_class
+from .classes import Storage, get_db_class
 from .models import Defaults
 
 
@@ -52,17 +51,17 @@ def storage(defaults: Defaults, settings: Settings) -> Dict:
         client_id=defaults.client_id,
         client_secret=defaults.client_secret,
         grant_types=[
-            GrantType.TYPE_AUTHORIZATION_CODE,
-            GrantType.TYPE_CLIENT_CREDENTIALS,
-            GrantType.TYPE_REFRESH_TOKEN,
-            GrantType.TYPE_PASSWORD,
+            "authorization_code",
+            "client_credentials",
+            "refresh_token",
+            "password",
         ],
         redirect_uris=[defaults.redirect_uri],
         response_types=[
-            ResponseType.TYPE_CODE,
-            ResponseType.TYPE_TOKEN,
-            ResponseType.TYPE_NONE,
-            ResponseType.TYPE_ID_TOKEN,
+            "code",
+            "token",
+            "none",
+            "id_token",
         ],
         scope=defaults.scope,
     )
@@ -70,11 +69,11 @@ def storage(defaults: Defaults, settings: Settings) -> Dict:
     authorization_code = AuthorizationCode(
         code=defaults.code,
         client_id=defaults.client_id,
-        response_type=ResponseType.TYPE_CODE,
+        response_type="code",
         auth_time=int(time.time()),
         redirect_uri=defaults.redirect_uri,
         scope=defaults.scope,
-        code_challenge_method=CodeChallengeMethod.PLAIN,
+        code_challenge_method="plain",
         expires_in=settings.AUTHORIZATION_CODE_EXPIRES_IN,
     )
 
@@ -96,30 +95,30 @@ def storage(defaults: Defaults, settings: Settings) -> Dict:
 
 
 @pytest.fixture
-def db_class(defaults: Defaults, storage) -> Type[BaseStorage]:
+def db_class(defaults: Defaults, storage) -> Type[Storage]:
     return get_db_class(defaults, storage)
 
 
 @pytest.fixture
-def db(db_class: Type[BaseStorage]):
+def db(db_class: Type[Storage]):
     return db_class()
 
 
 @pytest.fixture
-def server(db: BaseStorage) -> AuthorizationServer:
-    server = AuthorizationServer(
+def server(db: Storage) -> AuthorizationServer[Request, Storage]:
+    server = AuthorizationServer[Request, Storage](
         storage=db,
         response_types={
-            ResponseType.TYPE_TOKEN: ResponseTypeToken,
-            ResponseType.TYPE_CODE: ResponseTypeAuthorizationCode,
-            ResponseType.TYPE_NONE: ResponseTypeNone,
-            ResponseType.TYPE_ID_TOKEN: ResponseTypeIdToken,
+            "token": ResponseTypeToken[Request, Storage],
+            "code": ResponseTypeAuthorizationCode[Request, Storage],
+            "none": ResponseTypeNone[Request, Storage],
+            "id_token": ResponseTypeIdToken[Request, Storage],
         },
         grant_types={
-            GrantType.TYPE_AUTHORIZATION_CODE: AuthorizationCodeGrantType,
-            GrantType.TYPE_CLIENT_CREDENTIALS: ClientCredentialsGrantType,
-            GrantType.TYPE_PASSWORD: PasswordGrantType,
-            GrantType.TYPE_REFRESH_TOKEN: RefreshTokenGrantType,
+            "authorization_code": AuthorizationCodeGrantType[Request, Storage],
+            "client_credentials": ClientCredentialsGrantType[Request, Storage],
+            "password": PasswordGrantType[Request, Storage],
+            "refresh_token": RefreshTokenGrantType[Request, Storage],
         },
     )
     return server

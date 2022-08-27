@@ -8,14 +8,13 @@ from aioauth.config import Settings
 from aioauth.models import Token
 from aioauth.requests import Post, Request
 from aioauth.server import AuthorizationServer
-from aioauth.storage import BaseStorage
-from aioauth.types import ErrorType, GrantType, RequestMethod, TokenType
 from aioauth.utils import (
     catch_errors_and_unavailability,
     encode_auth_headers,
     generate_token,
 )
 
+from .classes import Storage
 from .models import Defaults
 
 
@@ -33,7 +32,7 @@ async def test_internal_server_error():
             raise Exception()
 
     e = EndpointClass()
-    response = await e.server(Request(method=RequestMethod.POST))
+    response = await e.server(Request(method="POST"))
     assert response.status_code == HTTPStatus.BAD_REQUEST
 
 
@@ -48,7 +47,7 @@ async def test_invalid_token(server: AuthorizationServer, defaults: Defaults):
     request = Request(
         url=request_url,
         post=post,
-        method=RequestMethod.POST,
+        method="POST",
         headers=encode_auth_headers(client_id, client_secret),
     )
     response = await server.create_token_introspection_response(request)
@@ -80,7 +79,7 @@ async def test_expired_token(
     request = Request(
         settings=settings,
         post=post,
-        method=RequestMethod.POST,
+        method="POST",
         headers=encode_auth_headers(client_id, client_secret),
     )
 
@@ -104,7 +103,7 @@ async def test_valid_token(
     post = Post(token=token.refresh_token)
     request = Request(
         post=post,
-        method=RequestMethod.POST,
+        method="POST",
         headers=encode_auth_headers(client_id, client_secret),
         settings=settings,
     )
@@ -128,25 +127,25 @@ async def test_introspect_revoked_token(
     token = storage["tokens"][0]
 
     post = Post(
-        grant_type=GrantType.TYPE_REFRESH_TOKEN,
+        grant_type="refresh_token",
         refresh_token=token.refresh_token,
     )
     request = Request(
         settings=settings,
         url=request_url,
         post=post,
-        method=RequestMethod.POST,
+        method="POST",
         headers=encode_auth_headers(client_id, client_secret),
     )
     response = await server.create_token_response(request)
     assert response.status_code == HTTPStatus.OK
 
     # Check that refreshed token was revoked
-    post = Post(token=token.access_token, token_type_hint=TokenType.ACCESS)
+    post = Post(token=token.access_token, token_type_hint="access_token")
     request = Request(
         settings=settings,
         post=post,
-        method=RequestMethod.POST,
+        method="POST",
         headers=encode_auth_headers(client_id, client_secret),
     )
     response = await server.create_token_introspection_response(request)
@@ -154,9 +153,9 @@ async def test_introspect_revoked_token(
 
 
 @pytest.mark.asyncio
-async def test_endpoint_availability(db_class: Type[BaseStorage]):
-    server = AuthorizationServer(storage=db_class())
-    request = Request(method=RequestMethod.POST, settings=Settings(AVAILABLE=False))
+async def test_endpoint_availability(db_class: Type[Storage]):
+    server = AuthorizationServer[Request, Storage](storage=db_class())
+    request = Request(method="POST", settings=Settings(AVAILABLE=False))
     response = await server.create_token_introspection_response(request)
     assert response.status_code == HTTPStatus.BAD_REQUEST
-    assert response.content["error"] == ErrorType.TEMPORARILY_UNAVAILABLE
+    assert response.content["error"] == "temporarily_unavailable"

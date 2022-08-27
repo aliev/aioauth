@@ -7,13 +7,6 @@ from aioauth.constances import default_headers
 from aioauth.requests import Post, Query, Request
 from aioauth.server import AuthorizationServer
 from aioauth.storage import BaseStorage
-from aioauth.types import (
-    CodeChallengeMethod,
-    GrantType,
-    RequestMethod,
-    ResponseMode,
-    ResponseType,
-)
 from aioauth.utils import (
     create_s256_code_challenge,
     encode_auth_headers,
@@ -39,17 +32,17 @@ async def test_authorization_code_flow_plain_code_challenge(
 
     query = Query(
         client_id=defaults.client_id,
-        response_type=ResponseType.TYPE_CODE,
+        response_type="code",
         redirect_uri=redirect_uri,
         scope=scope,
-        code_challenge_method=CodeChallengeMethod.PLAIN,
+        code_challenge_method="plain",
         code_challenge=code_challenge,
     )
 
     request = Request(
         url=request_url,
         query=query,
-        method=RequestMethod.GET,
+        method="GET",
         user=user,
     )
 
@@ -69,7 +62,7 @@ async def test_authorization_code_flow_plain_code_challenge(
     code = query["code"]
 
     post = Post(
-        grant_type=GrantType.TYPE_AUTHORIZATION_CODE,
+        grant_type="authorization_code",
         redirect_uri=defaults.redirect_uri,
         code=code,
         code_verifier=code_challenge,
@@ -79,7 +72,7 @@ async def test_authorization_code_flow_plain_code_challenge(
     request = Request(
         url=request_url,
         post=post,
-        method=RequestMethod.POST,
+        method="POST",
         headers=encode_auth_headers(client_id, client_secret),
     )
 
@@ -92,17 +85,17 @@ async def test_authorization_code_flow_plain_code_challenge(
     assert response.content["token_type"] == "Bearer"
     # Check that token was created in db
     assert await db.get_token(
-        request,
-        client_id,
-        response.content["access_token"],
-        response.content["refresh_token"],
+        request=request,
+        client_id=client_id,
+        access_token=response.content["access_token"],
+        refresh_token=response.content["refresh_token"],
     )
 
     access_token = response.content["access_token"]
     refresh_token = response.content["refresh_token"]
 
     post = Post(
-        grant_type=GrantType.TYPE_REFRESH_TOKEN,
+        grant_type="refresh_token",
         refresh_token=refresh_token,
         scope=scope,
     )
@@ -110,7 +103,7 @@ async def test_authorization_code_flow_plain_code_challenge(
     request = Request(
         url=request_url,
         post=post,
-        method=RequestMethod.POST,
+        method="POST",
         headers=encode_auth_headers(client_id, client_secret),
     )
     await check_request_validators(request, server.create_token_response)
@@ -121,23 +114,28 @@ async def test_authorization_code_flow_plain_code_challenge(
     assert response.content["refresh_token"] != refresh_token
     # Check that token was created in db
     assert await db.get_token(
-        request,
-        client_id,
-        response.content["access_token"],
-        response.content["refresh_token"],
+        request=request,
+        client_id=client_id,
+        access_token=response.content["access_token"],
+        refresh_token=response.content["refresh_token"],
     )
     # Check that previous token was revoken
-    token_in_db = await db.get_token(request, client_id, access_token, refresh_token)
-    assert token_in_db.revoked
+    token_in_db = await db.get_token(
+        request=request,
+        client_id=client_id,
+        access_token=access_token,
+        refresh_token=refresh_token,
+    )
+    assert token_in_db.revoked  # type: ignore
 
     # check that scope is previous scope
     new_token = await db.get_token(
-        request,
-        client_id,
-        response.content["access_token"],
-        response.content["refresh_token"],
+        request=request,
+        client_id=client_id,
+        access_token=response.content["access_token"],
+        refresh_token=response.content["refresh_token"],
     )
-    assert set(enforce_list(new_token.scope)) == set(enforce_list(token_in_db.scope))
+    assert set(enforce_list(new_token.scope)) == set(enforce_list(token_in_db.scope))  # type: ignore
 
 
 @pytest.mark.asyncio
@@ -155,18 +153,18 @@ async def test_authorization_code_flow_pkce_code_challenge(
 
     query = Query(
         client_id=defaults.client_id,
-        response_type=ResponseType.TYPE_CODE,
+        response_type="code",
         redirect_uri=defaults.redirect_uri,
         scope=scope,
         state=state,
-        code_challenge_method=CodeChallengeMethod.S256,
+        code_challenge_method="S256",
         code_challenge=code_challenge,
     )
 
     request = Request(
         url=request_url,
         query=query,
-        method=RequestMethod.GET,
+        method="GET",
         user=user,
     )
     response = await server.create_authorization_response(request)
@@ -180,7 +178,7 @@ async def test_authorization_code_flow_pkce_code_challenge(
     code = query["code"]
 
     post = Post(
-        grant_type=GrantType.TYPE_AUTHORIZATION_CODE,
+        grant_type="authorization_code",
         redirect_uri=defaults.redirect_uri,
         code=code,
         scope=scope,
@@ -190,7 +188,7 @@ async def test_authorization_code_flow_pkce_code_challenge(
     request = Request(
         url=request_url,
         post=post,
-        method=RequestMethod.POST,
+        method="POST",
         headers=encode_auth_headers(client_id, client_secret),
     )
 
@@ -218,7 +216,7 @@ async def test_implicit_flow(server: AuthorizationServer, defaults: Defaults):
 
     query = Query(
         client_id=defaults.client_id,
-        response_type=ResponseType.TYPE_TOKEN,
+        response_type="token",
         redirect_uri=defaults.redirect_uri,
         scope=scope,
         state=state,
@@ -227,7 +225,7 @@ async def test_implicit_flow(server: AuthorizationServer, defaults: Defaults):
     request = Request(
         url=request_url,
         query=query,
-        method=RequestMethod.GET,
+        method="GET",
         user=user,
     )
 
@@ -247,7 +245,7 @@ async def test_password_grant_type(server: AuthorizationServer, defaults: Defaul
     request_url = "https://localhost"
 
     post = Post(
-        grant_type=GrantType.TYPE_PASSWORD,
+        grant_type="password",
         username=defaults.username,
         password=defaults.password,
     )
@@ -255,7 +253,7 @@ async def test_password_grant_type(server: AuthorizationServer, defaults: Defaul
     request = Request(
         post=post,
         url=request_url,
-        method=RequestMethod.POST,
+        method="POST",
         headers=encode_auth_headers(client_id, client_secret),
     )
 
@@ -273,7 +271,7 @@ async def test_authorization_code_flow(server: AuthorizationServer, defaults: De
 
     query = Query(
         client_id=defaults.client_id,
-        response_type=ResponseType.TYPE_CODE,
+        response_type="code",
         redirect_uri=defaults.redirect_uri,
         scope=defaults.scope,
         state=generate_token(10),
@@ -282,7 +280,7 @@ async def test_authorization_code_flow(server: AuthorizationServer, defaults: De
     request = Request(
         url=request_url,
         query=query,
-        method=RequestMethod.GET,
+        method="GET",
         user=user,
     )
 
@@ -297,7 +295,7 @@ async def test_authorization_code_flow(server: AuthorizationServer, defaults: De
     code = query["code"]
 
     post = Post(
-        grant_type=GrantType.TYPE_AUTHORIZATION_CODE,
+        grant_type="authorization_code",
         redirect_uri=defaults.redirect_uri,
         code=code,
     )
@@ -305,7 +303,7 @@ async def test_authorization_code_flow(server: AuthorizationServer, defaults: De
     request = Request(
         url=request_url,
         post=post,
-        method=RequestMethod.POST,
+        method="POST",
         headers=encode_auth_headers(client_id, client_secret),
     )
 
@@ -326,7 +324,7 @@ async def test_authorization_code_flow_credentials_in_post(
 
     query = Query(
         client_id=defaults.client_id,
-        response_type=ResponseType.TYPE_CODE,
+        response_type="code",
         redirect_uri=defaults.redirect_uri,
         scope=defaults.scope,
         state=generate_token(10),
@@ -335,7 +333,7 @@ async def test_authorization_code_flow_credentials_in_post(
     request = Request(
         url=request_url,
         query=query,
-        method=RequestMethod.GET,
+        method="GET",
         user=user,
     )
 
@@ -350,7 +348,7 @@ async def test_authorization_code_flow_credentials_in_post(
     code = query["code"]
 
     post = Post(
-        grant_type=GrantType.TYPE_AUTHORIZATION_CODE,
+        grant_type="authorization_code",
         client_id=client_id,
         client_secret=client_secret,
         redirect_uri=defaults.redirect_uri,
@@ -360,7 +358,7 @@ async def test_authorization_code_flow_credentials_in_post(
     request = Request(
         url=request_url,
         post=post,
-        method=RequestMethod.POST,
+        method="POST",
     )
 
     response = await server.create_token_response(request)
@@ -374,13 +372,13 @@ async def test_client_credentials_flow_post_data(
     request_url = "https://localhost"
 
     post = Post(
-        grant_type=GrantType.TYPE_CLIENT_CREDENTIALS,
+        grant_type="client_credentials",
         client_id=defaults.client_id,
         client_secret=defaults.client_secret,
         scope=defaults.scope,
     )
 
-    request = Request(url=request_url, post=post, method=RequestMethod.POST)
+    request = Request(url=request_url, post=post, method="POST")
 
     await check_request_validators(request, server.create_token_response)
 
@@ -395,14 +393,14 @@ async def test_client_credentials_flow_auth_header(
     request_url = "https://localhost"
 
     post = Post(
-        grant_type=GrantType.TYPE_CLIENT_CREDENTIALS,
+        grant_type="client_credentials",
         scope=defaults.scope,
     )
 
     request = Request(
         url=request_url,
         post=post,
-        method=RequestMethod.POST,
+        method="POST",
         headers=encode_auth_headers(
             client_id=defaults.client_id, client_secret=defaults.client_secret
         ),
@@ -421,7 +419,7 @@ async def test_multiple_response_types(server: AuthorizationServer, defaults: De
 
     query = Query(
         client_id=defaults.client_id,
-        response_type=f"{ResponseType.TYPE_CODE} {ResponseType.TYPE_TOKEN}",
+        response_type="code token",
         redirect_uri=defaults.redirect_uri,
         scope=defaults.scope,
         state=generate_token(10),
@@ -430,7 +428,7 @@ async def test_multiple_response_types(server: AuthorizationServer, defaults: De
     request = Request(
         url=request_url,
         query=query,
-        method=RequestMethod.GET,
+        method="GET",
         user=user,
     )
 
@@ -459,7 +457,7 @@ async def test_response_type_none(server: AuthorizationServer, defaults: Default
 
     query = Query(
         client_id=defaults.client_id,
-        response_type=ResponseType.TYPE_NONE,
+        response_type="none",
         redirect_uri=defaults.redirect_uri,
         scope=defaults.scope,
         state=generate_token(10),
@@ -468,7 +466,7 @@ async def test_response_type_none(server: AuthorizationServer, defaults: Default
     request = Request(
         url=request_url,
         query=query,
-        method=RequestMethod.GET,
+        method="GET",
         user=user,
     )
 
@@ -488,9 +486,9 @@ async def test_response_type_none(server: AuthorizationServer, defaults: Default
 @pytest.mark.parametrize(
     "response_mode,",
     [
-        ResponseMode.MODE_FORM_POST,
-        ResponseMode.MODE_FRAGMENT,
-        ResponseMode.MODE_QUERY,
+        "query",
+        "form_post",
+        "fragment",
         None,
     ],
 )
@@ -502,7 +500,7 @@ async def test_response_type_id_token(
 
     query = Query(
         client_id=defaults.client_id,
-        response_type=f"{ResponseType.TYPE_CODE} {ResponseType.TYPE_TOKEN} {ResponseType.TYPE_ID_TOKEN}",
+        response_type="code token id_token",
         redirect_uri=defaults.redirect_uri,
         scope=defaults.scope,
         state=generate_token(10),
@@ -513,7 +511,7 @@ async def test_response_type_id_token(
     request = Request(
         url=request_url,
         query=query,
-        method=RequestMethod.GET,
+        method="GET",
         user=user,
     )
 
@@ -526,7 +524,7 @@ async def test_response_type_id_token(
     fragment = dict(parse_qsl(location.fragment))
     query = dict(parse_qsl(location.query))
 
-    if response_mode == ResponseMode.MODE_FRAGMENT:
+    if response_mode == "fragment":
         assert "state" in fragment
         assert "expires_in" in fragment
         assert "refresh_token_expires_in" in fragment
@@ -536,7 +534,7 @@ async def test_response_type_id_token(
         assert "token_type" in fragment
         assert "code" in fragment
         assert "id_token" in fragment
-    elif response_mode == ResponseMode.MODE_FORM_POST:
+    elif response_mode == "form_post":
         assert "state" in response.content
         assert "expires_in" in response.content
         assert "refresh_token_expires_in" in response.content
@@ -546,7 +544,7 @@ async def test_response_type_id_token(
         assert "token_type" in response.content
         assert "code" in response.content
         assert "id_token" in response.content
-    elif response_mode == ResponseMode.MODE_QUERY:
+    elif response_mode == "query":
         assert "state" in query
         assert "expires_in" in query
         assert "refresh_token_expires_in" in query

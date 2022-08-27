@@ -9,16 +9,17 @@ Errors used throughout the project.
 """
 
 from http import HTTPStatus
-from typing import Optional
+from typing import Generic, Optional
 from urllib.parse import urljoin
+from typing_extensions import Literal
 
 from .collections import HTTPHeaderDict
 from .constances import default_headers
-from .requests import Request
+from .requests import TRequest
 from .types import ErrorType
 
 
-class OAuth2Error(Exception):
+class OAuth2Error(Exception, Generic[TRequest]):
     """Base exception that all other exceptions inherit from."""
 
     error: ErrorType
@@ -29,7 +30,7 @@ class OAuth2Error(Exception):
 
     def __init__(
         self,
-        request: Request,
+        request: TRequest,
         description: Optional[str] = None,
         headers: Optional[HTTPHeaderDict] = None,
     ):
@@ -47,7 +48,7 @@ class OAuth2Error(Exception):
         super().__init__(f"({self.error}) {self.description}")
 
 
-class MethodNotAllowedError(OAuth2Error):
+class MethodNotAllowedError(OAuth2Error[TRequest]):
     """
     The request is valid, but the method trying to be accessed is not
     available to the resource owner.
@@ -55,20 +56,20 @@ class MethodNotAllowedError(OAuth2Error):
 
     description = "HTTP method is not allowed."
     status_code: HTTPStatus = HTTPStatus.METHOD_NOT_ALLOWED
-    error = ErrorType.METHOD_IS_NOT_ALLOWED
+    error: Literal["method_is_not_allowed"] = "method_is_not_allowed"
 
 
-class InvalidRequestError(OAuth2Error):
+class InvalidRequestError(OAuth2Error[TRequest]):
     """
     The request is missing a required parameter, includes an invalid
     parameter value, includes a parameter more than once, or is
     otherwise malformed.
     """
 
-    error = ErrorType.INVALID_REQUEST
+    error: Literal["invalid_request"] = "invalid_request"
 
 
-class InvalidClientError(OAuth2Error):
+class InvalidClientError(OAuth2Error[TRequest]):
     """
     Client authentication failed (e.g. unknown client, no client
     authentication included, or unsupported authentication method).
@@ -81,36 +82,36 @@ class InvalidClientError(OAuth2Error):
     client.
     """
 
-    error = ErrorType.INVALID_CLIENT
+    error: Literal["invalid_client"] = "invalid_client"
     status_code: HTTPStatus = HTTPStatus.UNAUTHORIZED
 
 
-class InsecureTransportError(OAuth2Error):
+class InsecureTransportError(OAuth2Error[TRequest]):
     """An exception will be thrown if the current request is not secure."""
 
     description = "OAuth 2 MUST utilize https."
-    error = ErrorType.INSECURE_TRANSPORT
+    error: Literal["insecure_transport"] = "insecure_transport"
 
 
-class UnsupportedGrantTypeError(OAuth2Error):
+class UnsupportedGrantTypeError(OAuth2Error[TRequest]):
     """
     The authorization grant type is not supported by the authorization
     server.
     """
 
-    error = ErrorType.UNSUPPORTED_GRANT_TYPE
+    error: Literal["unsupported_grant_type"] = "unsupported_grant_type"
 
 
-class UnsupportedResponseTypeError(OAuth2Error):
+class UnsupportedResponseTypeError(OAuth2Error[TRequest]):
     """
     The authorization server does not support obtaining an authorization
     code using this method.
     """
 
-    error = ErrorType.UNSUPPORTED_RESPONSE_TYPE
+    error: Literal["unsupported_response_type"] = "unsupported_response_type"
 
 
-class InvalidGrantError(OAuth2Error):
+class InvalidGrantError(OAuth2Error[TRequest]):
     """
     The provided authorization grant (e.g. authorization code, resource
     owner credentials) or refresh token is invalid, expired, revoked, does
@@ -120,26 +121,26 @@ class InvalidGrantError(OAuth2Error):
     See `RFC6749 section 5.2 <https://tools.ietf.org/html/rfc6749#section-5.2>`_.
     """
 
-    error = ErrorType.INVALID_GRANT
+    error: Literal["invalid_grant"] = "invalid_grant"
 
 
-class MismatchingStateError(OAuth2Error):
+class MismatchingStateError(OAuth2Error[TRequest]):
     """Unable to securely verify the integrity of the request and response."""
 
     description = "CSRF Warning! State not equal in request and response."
-    error = ErrorType.MISMATCHING_STATE
+    error: Literal["mismatching_state"] = "mismatching_state"
 
 
-class UnauthorizedClientError(OAuth2Error):
+class UnauthorizedClientError(OAuth2Error[TRequest]):
     """
     The authenticated client is not authorized to use this authorization
     grant type.
     """
 
-    error = ErrorType.UNAUTHORIZED_CLIENT
+    error: Literal["unauthorized_client"] = "unauthorized_client"
 
 
-class InvalidScopeError(OAuth2Error):
+class InvalidScopeError(OAuth2Error[TRequest]):
     """
     The requested scope is invalid, unknown, or malformed, or
     exceeds the scope granted by the resource owner.
@@ -147,10 +148,10 @@ class InvalidScopeError(OAuth2Error):
     See `RFC6749 section 5.2 <https://tools.ietf.org/html/rfc6749#section-5.2>`_.
     """
 
-    error = ErrorType.INVALID_SCOPE
+    error: Literal["invalid_scope"] = "invalid_scope"
 
 
-class ServerError(OAuth2Error):
+class ServerError(OAuth2Error[TRequest]):
     """
     The authorization server encountered an unexpected condition that
     prevented it from fulfilling the request.  (This error code is needed
@@ -158,10 +159,10 @@ class ServerError(OAuth2Error):
     to the client via a HTTP redirect.)
     """
 
-    error = ErrorType.SERVER_ERROR
+    error: Literal["temporarily_unavailable"] = "temporarily_unavailable"
 
 
-class TemporarilyUnavailableError(OAuth2Error):
+class TemporarilyUnavailableError(OAuth2Error[TRequest]):
     """
     The authorization server is currently unable to handle the request
     due to a temporary overloading or maintenance of the server.
@@ -169,4 +170,4 @@ class TemporarilyUnavailableError(OAuth2Error):
     status code cannot be returned to the client via a HTTP redirect.)
     """
 
-    error = ErrorType.TEMPORARILY_UNAVAILABLE
+    error: Literal["temporarily_unavailable"] = "temporarily_unavailable"
