@@ -16,19 +16,20 @@ Usage example
 
     from aioauth_fastapi.router import get_oauth2_router
     from aioauth.storage import BaseStorage
+    from aioauth.models import AuthorizationCode, Client, Token
     from aioauth.config import Settings
     from aioauth.server import AuthorizationServer
     from fastapi import FastAPI
 
     app = FastAPI()
 
-    class Storage(BaseStorage):
+    class Storage(BaseStorage[Token, Client, AuthorizationCode, Request]):
         """
         Storage methods must be implemented here.
         """
 
     storage = Storage()
-    authorization_server = AuthorizationServer(storage)
+    authorization_server = AuthorizationServer[Request, Storage](storage)
 
     # NOTE: Redefinition of the default aioauth settings
     # INSECURE_TRANSPORT must be enabled for local development only!
