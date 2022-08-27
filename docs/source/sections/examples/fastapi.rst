@@ -14,15 +14,27 @@ Usage example
 
 .. code-block:: python
 
+    from dataclasses import dataclasses
     from aioauth_fastapi.router import get_oauth2_router
     from aioauth.storage import BaseStorage
-    from aioauth.requests import Request
+    from aioauth.requests import BaseRequest, Query, Post
     from aioauth.models import AuthorizationCode, Client, Token
     from aioauth.config import Settings
     from aioauth.server import AuthorizationServer
     from fastapi import FastAPI
 
     app = FastAPI()
+
+    @dataclasses
+    class User:
+        """Custom user model"""
+        first_name: str
+        last_name: str
+
+
+    class Request(BaseRequest[Query, Post, User]):
+        """Custom Request model"""
+
 
     class Storage(BaseStorage[Token, Client, AuthorizationCode, Request]):
         """

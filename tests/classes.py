@@ -1,14 +1,25 @@
 import time
 
-from dataclasses import replace
+from dataclasses import replace, dataclass
 from typing import Dict, List, Optional
 
 from aioauth.models import AuthorizationCode, Client, Token
-from aioauth.requests import Request
+from aioauth.requests import BaseRequest, Post, Query
 from aioauth.storage import BaseStorage
 from aioauth.types import CodeChallengeMethod, TokenType
 
 from .models import Defaults
+
+
+@dataclass
+class User:
+    first_name: str
+    last_name: str
+
+
+@dataclass
+class Request(BaseRequest[Query, Post, User]):
+    ...
 
 
 class Storage(BaseStorage[Token, Client, AuthorizationCode, Request]):
