@@ -16,6 +16,7 @@ Usage example
 
     from aioauth_fastapi.router import get_oauth2_router
     from aioauth.storage import BaseStorage
+    from aioauth.requests import Request
     from aioauth.models import AuthorizationCode, Client, Token
     from aioauth.config import Settings
     from aioauth.server import AuthorizationServer
