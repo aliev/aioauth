@@ -102,4 +102,6 @@ class Response:
 
     content: Dict = field(default_factory=dict)
     status_code: HTTPStatus = HTTPStatus.OK
-    headers: HTTPHeaderDict = default_headers
+    headers: HTTPHeaderDict = field(
+        default_factory=lambda: default_headers
+    )  # pragma: no cover
