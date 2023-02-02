@@ -12,11 +12,11 @@ EMPTY_KEYS = {
         "client_id": Response(
             content=asdict(
                 ErrorResponse(
-                    error="invalid_request",
+                    error="invalid_client",
                     description="Missing client_id parameter.",
                 )
             ),
-            status_code=HTTPStatus.BAD_REQUEST,
+            status_code=HTTPStatus.UNAUTHORIZED,
             headers=default_headers,
         ),
         "response_type": Response(
@@ -159,11 +159,11 @@ INVALID_KEYS = {
         "client_id": Response(
             content=asdict(
                 ErrorResponse(
-                    error="invalid_request",
+                    error="invalid_client",
                     description="Invalid client_id parameter value.",
                 )
             ),
-            status_code=HTTPStatus.BAD_REQUEST,
+            status_code=HTTPStatus.UNAUTHORIZED,
             headers=default_headers,
         ),
         "response_type": Response(
@@ -261,21 +261,21 @@ INVALID_KEYS = {
         "client_id": Response(
             content=asdict(
                 ErrorResponse(
-                    error="invalid_request",
+                    error="invalid_client",
                     description="Invalid client_id parameter value.",
                 )
             ),
-            status_code=HTTPStatus.BAD_REQUEST,
+            status_code=HTTPStatus.UNAUTHORIZED,
             headers=default_headers,
         ),
         "client_secret": Response(
             content=asdict(
                 ErrorResponse(
-                    error="invalid_request",
+                    error="invalid_client",
                     description="Invalid client_id parameter value.",
                 )
             ),
-            status_code=HTTPStatus.BAD_REQUEST,
+            status_code=HTTPStatus.UNAUTHORIZED,
             headers=default_headers,
         ),
         "username": Response(

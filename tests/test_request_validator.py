@@ -59,8 +59,8 @@ async def test_invalid_client_credentials(
     )
 
     response = await server.create_token_response(request)
-    assert response.status_code == HTTPStatus.BAD_REQUEST
-    assert response.content["error"] == "invalid_request"
+    assert response.status_code == HTTPStatus.UNAUTHORIZED
+    assert response.content["error"] == "invalid_client"
 
 
 @pytest.mark.asyncio
