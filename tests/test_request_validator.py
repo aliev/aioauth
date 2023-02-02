@@ -2,6 +2,7 @@ import time
 from dataclasses import replace
 from http import HTTPStatus
 from typing import Dict, List
+from urllib.parse import urlparse, parse_qs
 
 import pytest
 
@@ -25,7 +26,9 @@ async def test_insecure_transport_error(server: AuthorizationServer):
     request = Request(url=request_url, method="GET")
 
     response = await server.create_authorization_response(request)
-    assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert response.status_code == HTTPStatus.FOUND
+    query_params = parse_qs(urlparse(response.headers["Location"]).query)
+    assert query_params["error"] == ["insecure_transport"]
 
 
 @pytest.mark.asyncio
@@ -153,8 +156,9 @@ async def test_invalid_response_type(
         user=user,
     )
     response = await server.create_authorization_response(request)
-    assert response.status_code == HTTPStatus.BAD_REQUEST
-    assert response.content["error"] == "unsupported_response_type"
+    assert response.status_code == HTTPStatus.FOUND
+    query_params = parse_qs(urlparse(response.headers["Location"]).query)
+    assert query_params["error"] == ["unsupported_response_type"]
 
 
 @pytest.mark.asyncio
