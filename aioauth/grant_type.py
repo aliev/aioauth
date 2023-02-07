@@ -7,7 +7,7 @@ Different OAuth 2.0 grant types.
 
 ----
 """
-from typing import Generic
+from typing import Generic, Optional
 from .errors import (
     InvalidClientError,
     InvalidGrantError,
@@ -31,15 +31,19 @@ class GrantTypeBase(Generic[TRequest, TStorage]):
         self.storage = storage
         self.client_id = client_id
         self.client_secret = client_secret
+        self.scope: Optional[str] = None
 
     async def create_token_response(
         self, request: TRequest, client: Client
     ) -> TokenResponse:
         """Creates token response to reply to client."""
+        if self.scope is None:
+            raise RuntimeError("validate_request() must be called first")
+
         token = await self.storage.create_token(
             request,
             client.client_id,
-            request.post.scope,
+            self.scope,
             generate_token(42),
             generate_token(48),
         )
@@ -70,6 +74,7 @@ class GrantTypeBase(Generic[TRequest, TStorage]):
         if not client.check_scope(request.post.scope):
             raise InvalidScopeError[TRequest](request=request)
 
+        self.scope = request.post.scope
         return client
 
 
@@ -132,6 +137,7 @@ class AuthorizationCodeGrantType(GrantTypeBase[TRequest, TStorage]):
         if authorization_code.is_expired:
             raise InvalidGrantError[TRequest](request=request)
 
+        self.scope = authorization_code.scope
         return client
 
     async def create_token_response(
