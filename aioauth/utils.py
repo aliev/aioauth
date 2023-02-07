@@ -19,11 +19,15 @@ import logging
 import random
 import string
 from base64 import b64decode, b64encode
+from http import HTTPStatus
 from typing import Any, Callable, Coroutine, Dict, List, Optional, Set, Tuple, Union
 from urllib.parse import quote, urlencode, urlparse, urlunsplit
 
 from .collections import HTTPHeaderDict
 from .errors import (
+    InvalidClientError,
+    InvalidRedirectURIError,
+    MethodNotAllowedError,
     OAuth2Error,
     ServerError,
     TemporarilyUnavailableError,
@@ -213,7 +217,9 @@ def create_s256_code_challenge(code_verifier: str) -> str:
     return base64.urlsafe_b64encode(data).rstrip(b"=").decode()
 
 
-def catch_errors_and_unavailability(f) -> Callable[..., Coroutine[Any, Any, Response]]:
+def catch_errors_and_unavailability(
+    redirect=False,
+) -> Callable[..., Callable[..., Coroutine[Any, Any, Response]]]:
     """
     Decorator that adds error catching to the function passed.
 
@@ -223,30 +229,55 @@ def catch_errors_and_unavailability(f) -> Callable[..., Coroutine[Any, Any, Resp
         A callable with error catching capabilities.
     """
 
-    @functools.wraps(f)
-    async def wrapper(self, request, *args, **kwargs) -> Response:
-        error: Union[TemporarilyUnavailableError, ServerError]
+    non_redirect_exceptions = (
+        (MethodNotAllowedError, InvalidClientError, InvalidRedirectURIError)
+        if redirect
+        else (OAuth2Error,)
+    )
 
-        try:
-            response = await f(self, request, *args, **kwargs)
-        except OAuth2Error as exc:
-            content = ErrorResponse(error=exc.error, description=exc.description)
-            log.debug("%s %r", exc, request)
-            return Response(
-                content=asdict(content),
-                status_code=exc.status_code,
-                headers=exc.headers,
-            )
-        except Exception:
-            error = ServerError(request=request)
-            log.exception("Exception caught while processing request.")
-            content = ErrorResponse(error=error.error, description=error.description)
-            return Response(
-                content=asdict(content),
-                status_code=error.status_code,
-                headers=error.headers,
-            )
+    def decorator(f) -> Callable[..., Coroutine[Any, Any, Response]]:
+        @functools.wraps(f)
+        async def wrapper(self, request, *args, **kwargs) -> Response:
+            error: Union[TemporarilyUnavailableError, ServerError]
 
-        return response
+            try:
+                response = await f(self, request, *args, **kwargs)
+            except non_redirect_exceptions as exc:  # type: ignore
+                content = ErrorResponse(error=exc.error, description=exc.description)
+                log.debug("%s %r", exc, request)
+                return Response(
+                    content=asdict(content),
+                    status_code=exc.status_code,
+                    headers=exc.headers,
+                )
+            except OAuth2Error as exc:
+                log.debug("%s %r", exc, request)
+                query: Dict[str, str] = {
+                    "error": exc.error,
+                }
+                if exc.description:
+                    query["error_description"] = exc.description
+                if request.settings.ERROR_URI:
+                    query["error_uri"] = request.settings.ERROR_URI
+                location = build_uri(request.query.redirect_uri, query)
+                return Response(
+                    status_code=HTTPStatus.FOUND,
+                    headers=HTTPHeaderDict({"location": location}),
+                )
+            except Exception:
+                error = ServerError(request=request)
+                log.exception("Exception caught while processing request.")
+                content = ErrorResponse(
+                    error=error.error, description=error.description
+                )
+                return Response(
+                    content=asdict(content),
+                    status_code=error.status_code,
+                    headers=error.headers,
+                )
 
-    return wrapper
+            return response
+
+        return wrapper
+
+    return decorator

@@ -125,7 +125,7 @@ class AuthorizationServer(Generic[TRequest, TStorage]):
             )
             raise MethodNotAllowedError[TRequest](request=request, headers=headers)
 
-    @catch_errors_and_unavailability
+    @catch_errors_and_unavailability()
     async def create_token_introspection_response(self, request: TRequest) -> Response:
         """
         Returns a response object with introspection of the passed token.
@@ -219,7 +219,7 @@ class AuthorizationServer(Generic[TRequest, TStorage]):
 
         return client_id, client_secret
 
-    @catch_errors_and_unavailability
+    @catch_errors_and_unavailability()
     async def create_token_response(self, request: TRequest) -> Response:
         """Endpoint to obtain an access and/or ID token by presenting an
         authorization grant or refresh token.
@@ -290,7 +290,7 @@ class AuthorizationServer(Generic[TRequest, TStorage]):
             content=content, status_code=HTTPStatus.OK, headers=default_headers
         )
 
-    @catch_errors_and_unavailability
+    @catch_errors_and_unavailability(redirect=True)
     async def create_authorization_response(self, request: TRequest) -> Response:
         """
         Endpoint to interact with the resource owner and obtain an

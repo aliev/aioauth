@@ -171,3 +171,11 @@ class TemporarilyUnavailableError(OAuth2Error[TRequest]):
     """
 
     error: Literal["temporarily_unavailable"] = "temporarily_unavailable"
+
+
+class InvalidRedirectURIError(OAuth2Error[TRequest]):
+    """
+    The requested redirect URI is missing or not allowed.
+    """
+
+    error: Literal["invalid_request"] = "invalid_request"

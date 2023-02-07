@@ -12,6 +12,7 @@ from typing import Generic, List
 from .utils import generate_token
 from .errors import (
     InvalidClientError,
+    InvalidRedirectURIError,
     InvalidRequestError,
     InvalidScopeError,
     UnsupportedResponseTypeError,
@@ -38,7 +39,7 @@ class ResponseTypeBase(Generic[TRequest, TStorage]):
         code_challenge_methods: List[CodeChallengeMethod] = ["plain", "S256"]
 
         if not request.query.client_id:
-            raise InvalidRequestError[TRequest](
+            raise InvalidClientError[TRequest](
                 request=request, description="Missing client_id parameter."
             )
 
@@ -47,17 +48,17 @@ class ResponseTypeBase(Generic[TRequest, TStorage]):
         )
 
         if not client:
-            raise InvalidRequestError[TRequest](
+            raise InvalidClientError[TRequest](
                 request=request, description="Invalid client_id parameter value."
             )
 
         if not request.query.redirect_uri:
-            raise InvalidRequestError[TRequest](
+            raise InvalidRedirectURIError[TRequest](
                 request=request, description="Mismatching redirect URI."
             )
 
         if not client.check_redirect_uri(request.query.redirect_uri):
-            raise InvalidRequestError[TRequest](
+            raise InvalidRedirectURIError[TRequest](
                 request=request, description="Invalid redirect URI."
             )
 

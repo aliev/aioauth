@@ -9,7 +9,9 @@ Different OAuth 2.0 grant types.
 """
 from typing import Generic, Optional
 from .errors import (
+    InvalidClientError,
     InvalidGrantError,
+    InvalidRedirectURIError,
     InvalidRequestError,
     InvalidScopeError,
     MismatchingStateError,
@@ -62,7 +64,7 @@ class GrantTypeBase(Generic[TRequest, TStorage]):
         )
 
         if not client:
-            raise InvalidRequestError[TRequest](
+            raise InvalidClientError[TRequest](
                 request=request, description="Invalid client_id parameter value."
             )
 
@@ -96,12 +98,12 @@ class AuthorizationCodeGrantType(GrantTypeBase[TRequest, TStorage]):
         client = await super().validate_request(request)
 
         if not request.post.redirect_uri:
-            raise InvalidRequestError[TRequest](
+            raise InvalidRedirectURIError[TRequest](
                 request=request, description="Mismatching redirect URI."
             )
 
         if not client.check_redirect_uri(request.post.redirect_uri):
-            raise InvalidRequestError[TRequest](
+            raise InvalidRedirectURIError[TRequest](
                 request=request, description="Invalid redirect URI."
             )
 

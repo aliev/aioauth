@@ -12,22 +12,19 @@ EMPTY_KEYS = {
         "client_id": Response(
             content=asdict(
                 ErrorResponse(
-                    error="invalid_request",
+                    error="invalid_client",
                     description="Missing client_id parameter.",
                 )
             ),
-            status_code=HTTPStatus.BAD_REQUEST,
+            status_code=HTTPStatus.UNAUTHORIZED,
             headers=default_headers,
         ),
         "response_type": Response(
-            content=asdict(
-                ErrorResponse(
-                    error="invalid_request",
-                    description="Missing response_type parameter.",
-                )
+            content={},
+            status_code=HTTPStatus.FOUND,
+            headers=HTTPHeaderDict(
+                location="https://ownauth.com/callback?error=invalid_request&error_description=Missing%20response_type%20parameter."
             ),
-            status_code=HTTPStatus.BAD_REQUEST,
-            headers=default_headers,
         ),
         "redirect_uri": Response(
             content=asdict(
@@ -40,24 +37,18 @@ EMPTY_KEYS = {
             headers=default_headers,
         ),
         "code_challenge": Response(
-            content=asdict(
-                ErrorResponse(
-                    error="invalid_request",
-                    description="Code challenge required.",
-                )
+            content={},
+            status_code=HTTPStatus.FOUND,
+            headers=HTTPHeaderDict(
+                location="https://ownauth.com/callback?error=invalid_request&error_description=Code%20challenge%20required."
             ),
-            status_code=HTTPStatus.BAD_REQUEST,
-            headers=default_headers,
         ),
         "nonce": Response(
-            content=asdict(
-                ErrorResponse(
-                    error="invalid_request",
-                    description="Nonce required for response_type id_token.",
-                )
+            content={},
+            status_code=HTTPStatus.FOUND,
+            headers=HTTPHeaderDict(
+                location="https://ownauth.com/callback?error=invalid_request&error_description=Nonce%20required%20for%20response_type%20id_token."
             ),
-            status_code=HTTPStatus.BAD_REQUEST,
-            headers=default_headers,
         ),
     },
     "POST": {
@@ -159,22 +150,19 @@ INVALID_KEYS = {
         "client_id": Response(
             content=asdict(
                 ErrorResponse(
-                    error="invalid_request",
+                    error="invalid_client",
                     description="Invalid client_id parameter value.",
                 )
             ),
-            status_code=HTTPStatus.BAD_REQUEST,
+            status_code=HTTPStatus.UNAUTHORIZED,
             headers=default_headers,
         ),
         "response_type": Response(
-            content=asdict(
-                ErrorResponse(
-                    error="unsupported_response_type",
-                    description="",
-                )
+            content={},
+            status_code=HTTPStatus.FOUND,
+            headers=HTTPHeaderDict(
+                location="https://ownauth.com/callback?error=unsupported_response_type"
             ),
-            status_code=HTTPStatus.BAD_REQUEST,
-            headers=default_headers,
         ),
         "redirect_uri": Response(
             content=asdict(
@@ -187,24 +175,18 @@ INVALID_KEYS = {
             headers=default_headers,
         ),
         "code_challenge_method": Response(
-            content=asdict(
-                ErrorResponse(
-                    error="invalid_request",
-                    description="Transform algorithm not supported.",
-                )
+            content={},
+            status_code=HTTPStatus.FOUND,
+            headers=HTTPHeaderDict(
+                location="https://ownauth.com/callback?error=invalid_request&error_description=Transform%20algorithm%20not%20supported."
             ),
-            status_code=HTTPStatus.BAD_REQUEST,
-            headers=default_headers,
         ),
         "scope": Response(
-            content=asdict(
-                ErrorResponse(
-                    error="invalid_scope",
-                    description="",
-                )
+            content={},
+            status_code=HTTPStatus.FOUND,
+            headers=HTTPHeaderDict(
+                location="https://ownauth.com/callback?error=invalid_scope"
             ),
-            status_code=HTTPStatus.BAD_REQUEST,
-            headers=default_headers,
         ),
     },
     "POST": {
@@ -261,21 +243,21 @@ INVALID_KEYS = {
         "client_id": Response(
             content=asdict(
                 ErrorResponse(
-                    error="invalid_request",
+                    error="invalid_client",
                     description="Invalid client_id parameter value.",
                 )
             ),
-            status_code=HTTPStatus.BAD_REQUEST,
+            status_code=HTTPStatus.UNAUTHORIZED,
             headers=default_headers,
         ),
         "client_secret": Response(
             content=asdict(
                 ErrorResponse(
-                    error="invalid_request",
+                    error="invalid_client",
                     description="Invalid client_id parameter value.",
                 )
             ),
-            status_code=HTTPStatus.BAD_REQUEST,
+            status_code=HTTPStatus.UNAUTHORIZED,
             headers=default_headers,
         ),
         "username": Response(

@@ -27,7 +27,7 @@ async def test_internal_server_error():
             if available is not None:
                 self.available = available
 
-        @catch_errors_and_unavailability
+        @catch_errors_and_unavailability()
         async def server(self, request):
             raise Exception()
 
