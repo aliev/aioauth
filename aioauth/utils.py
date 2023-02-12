@@ -20,14 +20,22 @@ import random
 import string
 from base64 import b64decode, b64encode
 from http import HTTPStatus
-from typing import Any, Callable, Coroutine, Dict, List, Optional, Set, Tuple, Union
+from typing import (
+    Any,
+    Callable,
+    Coroutine,
+    Dict,
+    List,
+    Optional,
+    Set,
+    Tuple,
+    Type,
+    Union,
+)
 from urllib.parse import quote, urlencode, urlparse, urlunsplit
 
 from .collections import HTTPHeaderDict
 from .errors import (
-    InvalidClientError,
-    InvalidRedirectURIError,
-    MethodNotAllowedError,
     OAuth2Error,
     ServerError,
     TemporarilyUnavailableError,
@@ -218,7 +226,7 @@ def create_s256_code_challenge(code_verifier: str) -> str:
 
 
 def catch_errors_and_unavailability(
-    redirect=False,
+    redirect_on_exc: Tuple[Type[OAuth2Error], ...] = (OAuth2Error,)
 ) -> Callable[..., Callable[..., Coroutine[Any, Any, Response]]]:
     """
     Decorator that adds error catching to the function passed.
@@ -229,12 +237,6 @@ def catch_errors_and_unavailability(
         A callable with error catching capabilities.
     """
 
-    non_redirect_exceptions = (
-        (MethodNotAllowedError, InvalidClientError, InvalidRedirectURIError)
-        if redirect
-        else (OAuth2Error,)
-    )
-
     def decorator(f) -> Callable[..., Coroutine[Any, Any, Response]]:
         @functools.wraps(f)
         async def wrapper(self, request, *args, **kwargs) -> Response:
@@ -242,7 +244,7 @@ def catch_errors_and_unavailability(
 
             try:
                 response = await f(self, request, *args, **kwargs)
-            except non_redirect_exceptions as exc:  # type: ignore
+            except redirect_on_exc as exc:
                 content = ErrorResponse(error=exc.error, description=exc.description)
                 log.debug("%s %r", exc, request)
                 return Response(
