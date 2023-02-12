@@ -25,6 +25,7 @@ from .constances import default_headers
 from .errors import (
     InsecureTransportError,
     InvalidClientError,
+    InvalidRedirectURIError,
     InvalidRequestError,
     MethodNotAllowedError,
     TemporarilyUnavailableError,
@@ -290,7 +291,13 @@ class AuthorizationServer(Generic[TRequest, TStorage]):
             content=content, status_code=HTTPStatus.OK, headers=default_headers
         )
 
-    @catch_errors_and_unavailability(redirect=True)
+    @catch_errors_and_unavailability(
+        redirect_on_exc=(
+            MethodNotAllowedError,
+            InvalidClientError,
+            InvalidRedirectURIError,
+        )
+    )
     async def create_authorization_response(self, request: TRequest) -> Response:
         """
         Endpoint to interact with the resource owner and obtain an
