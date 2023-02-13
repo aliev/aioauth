@@ -292,7 +292,7 @@ class AuthorizationServer(Generic[TRequest, TStorage]):
         )
 
     @catch_errors_and_unavailability(
-        redirect_on_exc=(
+        skip_redirect_on_exc=(
             MethodNotAllowedError,
             InvalidClientError,
             InvalidRedirectURIError,
