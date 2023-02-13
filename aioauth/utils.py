@@ -226,7 +226,7 @@ def create_s256_code_challenge(code_verifier: str) -> str:
 
 
 def catch_errors_and_unavailability(
-    redirect_on_exc: Tuple[Type[OAuth2Error], ...] = (OAuth2Error,)
+    skip_redirect_on_exc: Tuple[Type[OAuth2Error], ...] = (OAuth2Error,)
 ) -> Callable[..., Callable[..., Coroutine[Any, Any, Response]]]:
     """
     Decorator that adds error catching to the function passed.
@@ -244,7 +244,7 @@ def catch_errors_and_unavailability(
 
             try:
                 response = await f(self, request, *args, **kwargs)
-            except redirect_on_exc as exc:
+            except skip_redirect_on_exc as exc:
                 content = ErrorResponse(error=exc.error, description=exc.description)
                 log.debug("%s %r", exc, request)
                 return Response(
