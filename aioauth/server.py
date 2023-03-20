@@ -254,7 +254,15 @@ class AuthorizationServer(Generic[TRequest, TStorage]):
             response: An :py:class:`aioauth.responses.Response` object.
         """
         self.validate_request(request, ["POST"])
-        client_id, client_secret = self.get_client_credentials(request)
+
+        client_secret: Optional[str] = None
+        if request.post.grant_type in {"client_credentials", "password"}:
+            # client_secret is only expected for client_credentials, password grant types
+            # https://www.oauth.com/oauth2-servers/access-tokens/client-credentials/
+            # https://www.oauth.com/oauth2-servers/access-tokens/password-grant/
+            client_id, client_secret = self.get_client_credentials(request)
+        else:
+            client_id = request.post.client_id
 
         if not request.post.grant_type:
             # grant_type request value is empty

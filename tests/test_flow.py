@@ -24,19 +24,18 @@ async def test_authorization_code_flow_plain_code_challenge(
 ):
     code_challenge = generate_token(128)
     client_id = defaults.client_id
-    client_secret = defaults.client_secret
     scope = defaults.scope
     redirect_uri = defaults.redirect_uri
     request_url = "https://localhost"
     user = "username"
 
     query = Query(
-        client_id=defaults.client_id,
-        response_type="code",
-        redirect_uri=redirect_uri,
-        scope=scope,
-        code_challenge_method="plain",
+        client_id=client_id,
         code_challenge=code_challenge,
+        code_challenge_method="plain",
+        redirect_uri=redirect_uri,
+        response_type="code",
+        scope=scope,
     )
 
     request = Request(
@@ -62,10 +61,11 @@ async def test_authorization_code_flow_plain_code_challenge(
     code = query["code"]
 
     post = Post(
-        grant_type="authorization_code",
-        redirect_uri=defaults.redirect_uri,
+        client_id=client_id,
         code=code,
         code_verifier=code_challenge,
+        grant_type="authorization_code",
+        redirect_uri=defaults.redirect_uri,
         scope=scope,
     )
 
@@ -73,7 +73,6 @@ async def test_authorization_code_flow_plain_code_challenge(
         url=request_url,
         post=post,
         method="POST",
-        headers=encode_auth_headers(client_id, client_secret),
     )
 
     await check_request_validators(request, server.create_token_response)
@@ -95,6 +94,7 @@ async def test_authorization_code_flow_plain_code_challenge(
     refresh_token = response.content["refresh_token"]
 
     post = Post(
+        client_id=client_id,
         grant_type="refresh_token",
         refresh_token=refresh_token,
         scope=scope,
@@ -104,7 +104,6 @@ async def test_authorization_code_flow_plain_code_challenge(
         url=request_url,
         post=post,
         method="POST",
-        headers=encode_auth_headers(client_id, client_secret),
     )
     await check_request_validators(request, server.create_token_response)
     response = await server.create_token_response(request)
@@ -143,7 +142,6 @@ async def test_authorization_code_flow_pkce_code_challenge(
     server: AuthorizationServer, defaults: Defaults, db: BaseStorage
 ):
     client_id = defaults.client_id
-    client_secret = defaults.client_secret
     code_verifier = generate_token(128)
     scope = defaults.scope
     code_challenge = create_s256_code_challenge(code_verifier)
@@ -178,18 +176,18 @@ async def test_authorization_code_flow_pkce_code_challenge(
     code = query["code"]
 
     post = Post(
+        client_id=client_id,
+        code=code,
+        code_verifier=code_verifier,
         grant_type="authorization_code",
         redirect_uri=defaults.redirect_uri,
-        code=code,
         scope=scope,
-        code_verifier=code_verifier,
     )
 
     request = Request(
         url=request_url,
         post=post,
         method="POST",
-        headers=encode_auth_headers(client_id, client_secret),
     )
 
     await check_request_validators(request, server.create_token_response)
@@ -265,7 +263,6 @@ async def test_password_grant_type(server: AuthorizationServer, defaults: Defaul
 @pytest.mark.asyncio
 async def test_authorization_code_flow(server: AuthorizationServer, defaults: Defaults):
     client_id = defaults.client_id
-    client_secret = defaults.client_secret
     request_url = "https://localhost"
     user = "username"
 
@@ -294,17 +291,18 @@ async def test_authorization_code_flow(server: AuthorizationServer, defaults: De
     query = dict(parse_qsl(location.query))
     code = query["code"]
 
+    print(f"client_id: {client_id}", flush=True)
     post = Post(
+        client_id=client_id,
+        code=code,
         grant_type="authorization_code",
         redirect_uri=defaults.redirect_uri,
-        code=code,
     )
 
     request = Request(
         url=request_url,
         post=post,
         method="POST",
-        headers=encode_auth_headers(client_id, client_secret),
     )
 
     await check_request_validators(request, server.create_token_response)
@@ -318,7 +316,6 @@ async def test_authorization_code_flow_credentials_in_post(
     server: AuthorizationServer, defaults: Defaults
 ):
     client_id = defaults.client_id
-    client_secret = defaults.client_secret
     request_url = "https://localhost"
     user = "username"
 
@@ -350,7 +347,6 @@ async def test_authorization_code_flow_credentials_in_post(
     post = Post(
         grant_type="authorization_code",
         client_id=client_id,
-        client_secret=client_secret,
         redirect_uri=defaults.redirect_uri,
         code=code,
     )
@@ -372,9 +368,9 @@ async def test_client_credentials_flow_post_data(
     request_url = "https://localhost"
 
     post = Post(
-        grant_type="client_credentials",
         client_id=defaults.client_id,
         client_secret=defaults.client_secret,
+        grant_type="client_credentials",
         scope=defaults.scope,
     )
 
