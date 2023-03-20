@@ -168,7 +168,7 @@ class PasswordGrantType(GrantTypeBase[TRequest, TStorage]):
     async def validate_request(self, request: TRequest) -> Client:
         # Password grant requires a client_secret
         if self.client_secret is None:
-            raise InvalidClientError(request, "")
+            raise InvalidClientError[TRequest](request)
 
         client = await super().validate_request(request)
 
@@ -262,6 +262,6 @@ class ClientCredentialsGrantType(GrantTypeBase[TRequest, TStorage]):
     async def validate_request(self, request: TRequest) -> Client:
         # client_credentials grant requires a client_secret
         if self.client_secret is None:
-            raise InvalidClientError(request, "")
+            raise InvalidClientError[TRequest](request)
 
         return await super().validate_request(request)

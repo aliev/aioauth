@@ -291,7 +291,6 @@ async def test_authorization_code_flow(server: AuthorizationServer, defaults: De
     query = dict(parse_qsl(location.query))
     code = query["code"]
 
-    print(f"client_id: {client_id}", flush=True)
     post = Post(
         client_id=client_id,
         code=code,
