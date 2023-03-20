@@ -198,16 +198,16 @@ async def test_expired_authorization_code(
         auth_time=(time.time() - settings.AUTHORIZATION_CODE_EXPIRES_IN),
     )
     post = Post(
+        client_id=defaults.client_id,
+        code=storage["authorization_codes"][0].code,
         grant_type="authorization_code",
         redirect_uri=defaults.redirect_uri,
-        code=storage["authorization_codes"][0].code,
     )
 
     request = Request(
         url=request_url,
         post=post,
         method="POST",
-        headers=encode_auth_headers(defaults.client_id, defaults.client_secret),
     )
     response = await server.create_token_response(request)
     assert response.status_code == HTTPStatus.BAD_REQUEST
@@ -228,6 +228,7 @@ async def test_expired_refresh_token(
     )
     request_url = "https://localhost"
     post = Post(
+        client_id=defaults.client_id,
         grant_type="refresh_token",
         refresh_token=refresh_token,
     )
@@ -235,7 +236,6 @@ async def test_expired_refresh_token(
         url=request_url,
         post=post,
         method="POST",
-        headers=encode_auth_headers(defaults.client_id, defaults.client_secret),
         settings=settings,
     )
     response = await server.create_token_response(request)

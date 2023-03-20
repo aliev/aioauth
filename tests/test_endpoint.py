@@ -127,6 +127,8 @@ async def test_introspect_revoked_token(
     token = storage["tokens"][0]
 
     post = Post(
+        client_id=client_id,
+        client_secret=client_secret,
         grant_type="refresh_token",
         refresh_token=token.refresh_token,
     )
@@ -135,7 +137,6 @@ async def test_introspect_revoked_token(
         url=request_url,
         post=post,
         method="POST",
-        headers=encode_auth_headers(client_id, client_secret),
     )
     response = await server.create_token_response(request)
     assert response.status_code == HTTPStatus.OK

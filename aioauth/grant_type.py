@@ -27,7 +27,7 @@ from .utils import enforce_list, enforce_str, generate_token
 class GrantTypeBase(Generic[TRequest, TStorage]):
     """Base grant type that all other grant types inherit from."""
 
-    def __init__(self, storage: TStorage, client_id: str, client_secret: str):
+    def __init__(self, storage: TStorage, client_id: str, client_secret: Optional[str]):
         self.storage = storage
         self.client_id = client_id
         self.client_secret = client_secret
@@ -166,6 +166,10 @@ class PasswordGrantType(GrantTypeBase[TRequest, TStorage]):
     """
 
     async def validate_request(self, request: TRequest) -> Client:
+        # Password grant requires a client_secret
+        if self.client_secret is None:
+            raise InvalidClientError[TRequest](request)
+
         client = await super().validate_request(request)
 
         if not request.post.username or not request.post.password:
@@ -254,3 +258,10 @@ class ClientCredentialsGrantType(GrantTypeBase[TRequest, TStorage]):
     access a user's resources.
     See `RFC 6749 section 4.4 <https://tools.ietf.org/html/rfc6749#section-4.4>`_.
     """
+
+    async def validate_request(self, request: TRequest) -> Client:
+        # client_credentials grant requires a client_secret
+        if self.client_secret is None:
+            raise InvalidClientError[TRequest](request)
+
+        return await super().validate_request(request)

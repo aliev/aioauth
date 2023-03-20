@@ -106,21 +106,10 @@ EMPTY_KEYS = {
             content=asdict(
                 ErrorResponse(
                     error="invalid_client",
-                    description="",
+                    description="Invalid client_id parameter value.",
                 )
             ),
             status_code=HTTPStatus.UNAUTHORIZED,
-            headers=HTTPHeaderDict({"www-authenticate": "Basic"}),
-        ),
-        "client_secret": Response(
-            content=asdict(
-                ErrorResponse(
-                    error="invalid_client",
-                    description="",
-                )
-            ),
-            status_code=HTTPStatus.UNAUTHORIZED,
-            headers=HTTPHeaderDict({"www-authenticate": "Basic"}),
         ),
         "username": Response(
             content=asdict(
@@ -250,16 +239,6 @@ INVALID_KEYS = {
             status_code=HTTPStatus.UNAUTHORIZED,
             headers=default_headers,
         ),
-        "client_secret": Response(
-            content=asdict(
-                ErrorResponse(
-                    error="invalid_client",
-                    description="Invalid client_id parameter value.",
-                )
-            ),
-            status_code=HTTPStatus.UNAUTHORIZED,
-            headers=default_headers,
-        ),
         "username": Response(
             content=asdict(
                 ErrorResponse(
@@ -325,7 +304,30 @@ async def check_request_validators(
     if request.method == "GET":
         query_dict = get_keys(request.query)
 
-    responses = EMPTY_KEYS[request.method]
+    # Make a copy of the responses dict because we may override some values
+    responses = dict(EMPTY_KEYS[request.method])
+
+    # client_credentials and password grant types may include credentials in
+    # headers, so the expected error response needs to be overriden for those
+    # grant types.
+    if query_dict.get("grant_type") in {"client_credentials", "password"}:
+        if request.method == "GET":
+            headers = default_headers
+        else:
+            headers = HTTPHeaderDict({"www-authenticate": "Basic"})
+        invalid_client_response = Response(
+            content=asdict(
+                ErrorResponse(
+                    error="invalid_client",
+                    description="",
+                )
+            ),
+            status_code=HTTPStatus.UNAUTHORIZED,
+            headers=headers,
+        )
+        responses["client_id"] = invalid_client_response
+        responses["client_secret"] = invalid_client_response
+
     await check_query_values(request, responses, query_dict, endpoint_func, None)
 
     responses = INVALID_KEYS[request.method]
