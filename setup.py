@@ -46,7 +46,6 @@ require_dev = [
     "pytest-env==0.6.2",
     "pytest-sugar==0.9.4",
     "testfixtures==6.18.3",
-    "bump2version==1.0.1",
     "twine==3.7.1",
     "wheel",
 ]
