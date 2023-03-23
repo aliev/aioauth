@@ -16,9 +16,16 @@ Warning:
 
 ----
 """
+import sys
 from dataclasses import asdict
 from http import HTTPStatus
-from typing import Any, Dict, Generic, List, Optional, Tuple, Type, Union, get_args
+from typing import Any, Dict, Generic, List, Optional, Tuple, Type, Union
+
+
+if sys.version_info >= (3, 8):
+    from typing import get_args
+else:
+    from typing_extensions import get_args
 
 from .collections import HTTPHeaderDict
 from .constances import default_headers

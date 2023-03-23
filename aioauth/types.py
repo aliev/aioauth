@@ -7,7 +7,12 @@ Containers that contain constants used throughout the project.
 
 ----
 """
-from typing_extensions import Literal
+import sys
+
+if sys.version_info >= (3, 8):
+    from typing import Literal
+else:
+    from typing_extensions import Literal
 
 
 ErrorType = Literal[
