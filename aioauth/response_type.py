@@ -7,8 +7,14 @@ Response objects used throughout the project.
 
 ----
 """
+import sys
+from typing import Generic, Tuple
 
-from typing import Generic, get_args, Tuple
+if sys.version_info >= (3, 8):
+    from typing import get_args
+else:
+    from typing_extensions import get_args
+
 from .utils import generate_token
 from .errors import (
     InvalidClientError,
