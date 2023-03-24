@@ -178,7 +178,7 @@ def encode_auth_headers(client_id: str, client_secret: str) -> HTTPHeaderDict:
 
 def decode_auth_headers(authorization: str) -> Tuple[str, str]:
     """
-    Decodes an encrypted HTTP basic authentication string.
+    Decodes an encoded HTTP basic authentication string.
     Returns a tuple of the form ``(client_id, client_secret)``, and
     raises a :py:class:`aioauth.errors.InvalidClientError` exception if nothing
     could be decoded.
