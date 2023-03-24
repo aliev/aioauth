@@ -215,14 +215,14 @@ class AuthorizationServer(Generic[TRequest, TStorage]):
 
         if client_id is None or client_secret is None:
             authorization = request.headers.get("Authorization", "")
-            headers = HTTPHeaderDict({"WWW-Authenticate": "Basic"})
 
             # Get client credentials from the Authorization header.
             try:
                 client_id, client_secret = decode_auth_headers(authorization)
             except ValueError as exc:
                 raise InvalidClientError[TRequest](
-                    request=request, headers=headers
+                    description="Invalid client_id parameter value.",
+                    request=request,
                 ) from exc
 
         return client_id, client_secret
@@ -263,11 +263,26 @@ class AuthorizationServer(Generic[TRequest, TStorage]):
         self.validate_request(request, ["POST"])
 
         client_secret: Optional[str] = None
-        if request.post.grant_type in {"client_credentials", "password"}:
-            # client_secret is only expected for client_credentials, password grant types
+
+        if request.post.grant_type == "client_credentials":
+            # client_secret is required for the client_credentials grant type
             # https://www.oauth.com/oauth2-servers/access-tokens/client-credentials/
-            # https://www.oauth.com/oauth2-servers/access-tokens/password-grant/
             client_id, client_secret = self.get_client_credentials(request)
+        elif request.post.grant_type == "password":
+            # client_secret is optional for the password grant type
+            # https://www.oauth.com/oauth2-servers/access-tokens/password-grant/
+            try:
+                client_id, client_secret = self.get_client_credentials(request)
+                # Prefer client_secret to be None rather than a blank string
+                client_secret = client_secret or None
+            except InvalidClientError as exc:
+                # When InvalidClientError is raised here it probably means that
+                # client_secret could not be found and the basic auth header
+                # had no useful data. client_secret is optional for the password
+                # grant type, so make sure we have a client_id and try to proceed.
+                client_id = request.post.client_id
+                if not client_id:
+                    raise exc
         else:
             client_id = request.post.client_id
 

@@ -166,10 +166,6 @@ class PasswordGrantType(GrantTypeBase[TRequest, TStorage]):
     """
 
     async def validate_request(self, request: TRequest) -> Client:
-        # Password grant requires a client_secret
-        if self.client_secret is None:
-            raise InvalidClientError[TRequest](request)
-
         client = await super().validate_request(request)
 
         if not request.post.username or not request.post.password:

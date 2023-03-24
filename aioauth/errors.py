@@ -85,6 +85,21 @@ class InvalidClientError(OAuth2Error[TRequest]):
     error: ErrorType = "invalid_client"
     status_code: HTTPStatus = HTTPStatus.UNAUTHORIZED
 
+    def __init__(
+        self,
+        request: TRequest,
+        description: Optional[str] = None,
+        headers: Optional[HTTPHeaderDict] = None,
+    ):
+        super().__init__(request, description, headers or HTTPHeaderDict())
+
+        auth_values = [f"error={self.error}"]
+        if self.description:
+            auth_values.append(f"error_description={self.description}")
+        if self.error_uri:
+            auth_values.append(f"error_uri={self.error_uri}")
+        self.headers["WWW-Authenticate"] = "Basic " + ", ".join(auth_values)
+
 
 class InsecureTransportError(OAuth2Error[TRequest]):
     """An exception will be thrown if the current request is not secure."""
