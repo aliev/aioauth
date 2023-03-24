@@ -148,7 +148,7 @@ class AuthorizationCodeGrantType(GrantTypeBase[TRequest, TStorage]):
         await self.storage.delete_authorization_code(
             request,
             client.client_id,
-            request.post.code,  # type: ignore
+            request.post.code,
         )
 
         return token_response

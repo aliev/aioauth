@@ -56,7 +56,7 @@ class MethodNotAllowedError(OAuth2Error[TRequest]):
 
     description = "HTTP method is not allowed."
     status_code: HTTPStatus = HTTPStatus.METHOD_NOT_ALLOWED
-    error: Literal["method_is_not_allowed"] = "method_is_not_allowed"
+    error: ErrorType = "method_is_not_allowed"
 
 
 class InvalidRequestError(OAuth2Error[TRequest]):
@@ -82,7 +82,7 @@ class InvalidClientError(OAuth2Error[TRequest]):
     client.
     """
 
-    error: Literal["invalid_client"] = "invalid_client"
+    error: ErrorType = "invalid_client"
     status_code: HTTPStatus = HTTPStatus.UNAUTHORIZED
 
 
@@ -90,7 +90,7 @@ class InsecureTransportError(OAuth2Error[TRequest]):
     """An exception will be thrown if the current request is not secure."""
 
     description = "OAuth 2 MUST utilize https."
-    error: Literal["insecure_transport"] = "insecure_transport"
+    error: ErrorType = "insecure_transport"
 
 
 class UnsupportedGrantTypeError(OAuth2Error[TRequest]):
@@ -99,7 +99,7 @@ class UnsupportedGrantTypeError(OAuth2Error[TRequest]):
     server.
     """
 
-    error: Literal["unsupported_grant_type"] = "unsupported_grant_type"
+    error: ErrorType = "unsupported_grant_type"
 
 
 class UnsupportedResponseTypeError(OAuth2Error[TRequest]):
@@ -108,7 +108,7 @@ class UnsupportedResponseTypeError(OAuth2Error[TRequest]):
     code using this method.
     """
 
-    error: Literal["unsupported_response_type"] = "unsupported_response_type"
+    error: ErrorType = "unsupported_response_type"
 
 
 class InvalidGrantError(OAuth2Error[TRequest]):
@@ -121,7 +121,7 @@ class InvalidGrantError(OAuth2Error[TRequest]):
     See `RFC6749 section 5.2 <https://tools.ietf.org/html/rfc6749#section-5.2>`_.
     """
 
-    error: Literal["invalid_grant"] = "invalid_grant"
+    error: ErrorType = "invalid_grant"
 
 
 class MismatchingStateError(OAuth2Error[TRequest]):
@@ -137,7 +137,7 @@ class UnauthorizedClientError(OAuth2Error[TRequest]):
     grant type.
     """
 
-    error: Literal["unauthorized_client"] = "unauthorized_client"
+    error: ErrorType = "unauthorized_client"
 
 
 class InvalidScopeError(OAuth2Error[TRequest]):
@@ -148,7 +148,7 @@ class InvalidScopeError(OAuth2Error[TRequest]):
     See `RFC6749 section 5.2 <https://tools.ietf.org/html/rfc6749#section-5.2>`_.
     """
 
-    error: Literal["invalid_scope"] = "invalid_scope"
+    error: ErrorType = "invalid_scope"
 
 
 class ServerError(OAuth2Error[TRequest]):
@@ -159,7 +159,7 @@ class ServerError(OAuth2Error[TRequest]):
     to the client via a HTTP redirect.)
     """
 
-    error: Literal["temporarily_unavailable"] = "temporarily_unavailable"
+    error: ErrorType = "server_error"
 
 
 class TemporarilyUnavailableError(OAuth2Error[TRequest]):
@@ -170,7 +170,7 @@ class TemporarilyUnavailableError(OAuth2Error[TRequest]):
     status code cannot be returned to the client via a HTTP redirect.)
     """
 
-    error: Literal["temporarily_unavailable"] = "temporarily_unavailable"
+    error: ErrorType = "temporarily_unavailable"
 
 
 class InvalidRedirectURIError(OAuth2Error[TRequest]):
@@ -178,4 +178,4 @@ class InvalidRedirectURIError(OAuth2Error[TRequest]):
     The requested redirect URI is missing or not allowed.
     """
 
-    error: Literal["invalid_request"] = "invalid_request"
+    error: ErrorType = "invalid_request"

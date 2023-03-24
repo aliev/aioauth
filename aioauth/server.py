@@ -16,9 +16,16 @@ Warning:
 
 ----
 """
+import sys
 from dataclasses import asdict
 from http import HTTPStatus
-from typing import Any, Dict, Generic, List, Optional, Set, Tuple, Type, Union
+from typing import Any, Dict, Generic, List, Optional, Tuple, Type, Union
+
+
+if sys.version_info >= (3, 8):
+    from typing import get_args
+else:
+    from typing_extensions import get_args
 
 from .collections import HTTPHeaderDict
 from .constances import default_headers
@@ -161,7 +168,7 @@ class AuthorizationServer(Generic[TRequest, TStorage]):
         self.validate_request(request, ["POST"])
         client_id, _ = self.get_client_credentials(request)
 
-        token_types: Set[TokenType] = {"access_token", "refresh_token"}
+        token_types: Tuple[TokenType, ...] = get_args(TokenType)
         token_type: TokenType = "refresh_token"
 
         access_token = None

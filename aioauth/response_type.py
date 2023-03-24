@@ -7,8 +7,14 @@ Response objects used throughout the project.
 
 ----
 """
+import sys
+from typing import Generic, Tuple
 
-from typing import Generic, List
+if sys.version_info >= (3, 8):
+    from typing import get_args
+else:
+    from typing_extensions import get_args
+
 from .utils import generate_token
 from .errors import (
     InvalidClientError,
@@ -36,7 +42,9 @@ class ResponseTypeBase(Generic[TRequest, TStorage]):
         self.storage = storage
 
     async def validate_request(self, request: TRequest) -> Client:
-        code_challenge_methods: List[CodeChallengeMethod] = ["plain", "S256"]
+        code_challenge_methods: Tuple[CodeChallengeMethod, ...] = get_args(
+            CodeChallengeMethod
+        )
 
         if not request.query.client_id:
             raise InvalidClientError[TRequest](
