@@ -215,14 +215,14 @@ class AuthorizationServer(Generic[TRequest, TStorage]):
 
         if client_id is None or client_secret is None:
             authorization = request.headers.get("Authorization", "")
-            headers = HTTPHeaderDict({"WWW-Authenticate": "Basic"})
 
             # Get client credentials from the Authorization header.
             try:
                 client_id, client_secret = decode_auth_headers(authorization)
             except ValueError as exc:
                 raise InvalidClientError[TRequest](
-                    request=request, headers=headers
+                    description="Invalid client_id parameter value.",
+                    request=request,
                 ) from exc
 
         return client_id, client_secret
