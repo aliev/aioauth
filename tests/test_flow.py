@@ -288,6 +288,31 @@ async def test_password_grant_type_without_client_secret(
 
 
 @pytest.mark.asyncio
+async def test_password_grant_type_without_client_secret_using_basic_auth(
+    server: AuthorizationServer, defaults: Defaults
+):
+    client_id = defaults.client_id
+    request_url = "https://localhost"
+
+    post = Post(
+        grant_type="password",
+        username=defaults.username,
+        password=defaults.password,
+    )
+
+    request = Request(
+        post=post,
+        url=request_url,
+        method="POST",
+        headers=encode_auth_headers(client_id, ""),
+    )
+
+    await check_request_validators(request, server.create_token_response)
+    response = await server.create_token_response(request)
+    assert response.status_code == HTTPStatus.OK
+
+
+@pytest.mark.asyncio
 async def test_authorization_code_flow(server: AuthorizationServer, defaults: Defaults):
     client_id = defaults.client_id
     request_url = "https://localhost"
