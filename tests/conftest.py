@@ -26,17 +26,30 @@ from .models import Defaults
 
 
 @pytest.fixture
-def defaults() -> Defaults:
-    return Defaults(
-        client_id=generate_token(48),
-        client_secret=generate_token(48),
-        code=generate_token(5),
-        refresh_token=generate_token(48),
-        access_token=generate_token(42),
-        username="root",
-        password="toor",
-        redirect_uri="https://ownauth.com/callback",
-        scope="read write",
+def defaults(request) -> Defaults:
+    marker = request.node.get_closest_marker("override_defaults")
+    kwargs = marker.kwargs if marker else {}
+
+    access_token: str = kwargs.get("access_token", generate_token(42))
+    client_id: str = kwargs.get("client_id", generate_token(48))
+    client_secret: str = kwargs.get("client_secret", generate_token(48))
+    code: str = kwargs.get("code", generate_token(5))
+    password: str = kwargs.get("password", "toor")
+    redirect_uri: str = kwargs.get("redirect_uri", "https://ownauth.com/callback")
+    refresh_token: str = kwargs.get("refresh_token", generate_token(48))
+    scope: str = kwargs.get("scope", "scope")
+    username: str = kwargs.get("username", "root")
+
+    yield Defaults(
+        client_id=client_id,
+        client_secret=client_secret,
+        code=code,
+        refresh_token=refresh_token,
+        access_token=access_token,
+        username=username,
+        password=password,
+        redirect_uri=redirect_uri,
+        scope=scope,
     )
 
 
