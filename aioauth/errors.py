@@ -93,11 +93,11 @@ class InvalidClientError(OAuth2Error[TRequest]):
     ):
         super().__init__(request, description, headers or HTTPHeaderDict())
 
-        auth_values = ["error={}".format(self.error)]
+        auth_values = [f"error={self.error}"]
         if self.description:
-            auth_values.append("error_description={}".format(self.description))
+            auth_values.append(f"error_description={self.description}")
         if self.error_uri:
-            auth_values.append("error_uri={}".format(self.error_uri))
+            auth_values.append(f"error_uri={self.error_uri}")
         self.headers["WWW-Authenticate"] = "Basic " + ", ".join(auth_values)
 
 
