@@ -263,6 +263,7 @@ async def test_password_grant_type_with_client_secret(
 
 
 @pytest.mark.asyncio
+@pytest.mark.override_defaults(client_secret="")
 async def test_password_grant_type_without_client_secret(
     server: AuthorizationServer, defaults: Defaults
 ):
@@ -288,6 +289,7 @@ async def test_password_grant_type_without_client_secret(
 
 
 @pytest.mark.asyncio
+@pytest.mark.override_defaults(client_secret="")
 async def test_password_grant_type_without_client_secret_using_basic_auth(
     server: AuthorizationServer, defaults: Defaults
 ):

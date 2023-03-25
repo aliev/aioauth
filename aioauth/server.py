@@ -273,14 +273,15 @@ class AuthorizationServer(Generic[TRequest, TStorage]):
             # https://www.oauth.com/oauth2-servers/access-tokens/password-grant/
             try:
                 client_id, client_secret = self.get_client_credentials(request)
-                # Prefer client_secret to be None rather than a blank string
-                client_secret = client_secret or None
             except InvalidClientError as exc:
                 # When InvalidClientError is raised here it probably means that
                 # client_secret could not be found and the basic auth header
                 # had no useful data. client_secret is optional for the password
                 # grant type, so make sure we have a client_id and try to proceed.
                 client_id = request.post.client_id
+                # client_secret must not be None. When client_secret is None,
+                # storage.get_client will not run standard checks on the client_secret
+                client_secret = request.post.client_secret or ""
                 if not client_id:
                     raise exc
         else:
