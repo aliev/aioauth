@@ -11,7 +11,7 @@ from aioauth.grant_type import (
     RefreshTokenGrantType,
 )
 from aioauth.models import AuthorizationCode, Client, Token
-from aioauth.requests import Request
+from aioauth.requests import TRequest
 from aioauth.response_type import (
     ResponseTypeAuthorizationCode,
     ResponseTypeIdToken,
@@ -19,9 +19,10 @@ from aioauth.response_type import (
     ResponseTypeToken,
 )
 from aioauth.server import AuthorizationServer
+from aioauth.storage import TStorage
 from aioauth.utils import generate_token
 
-from .classes import Storage, get_db_class
+from .classes import get_db_class
 from .models import Defaults
 
 
@@ -41,15 +42,15 @@ def defaults(request) -> Defaults:
     username: str = kwargs.get("username", "root")
 
     yield Defaults(
+        access_token=access_token,
         client_id=client_id,
         client_secret=client_secret,
         code=code,
-        refresh_token=refresh_token,
-        access_token=access_token,
-        username=username,
         password=password,
         redirect_uri=redirect_uri,
+        refresh_token=refresh_token,
         scope=scope,
+        username=username,
     )
 
 
@@ -108,30 +109,30 @@ def storage(defaults: Defaults, settings: Settings) -> Dict:
 
 
 @pytest.fixture
-def db_class(defaults: Defaults, storage) -> Type[Storage]:
+def db_class(defaults: Defaults, storage) -> Type[TStorage]:
     return get_db_class(defaults, storage)
 
 
 @pytest.fixture
-def db(db_class: Type[Storage]):
+def db(db_class: Type[TStorage]):
     return db_class()
 
 
 @pytest.fixture
-def server(db: Storage) -> AuthorizationServer[Request, Storage]:
-    server = AuthorizationServer[Request, Storage](
+def server(db: TStorage) -> AuthorizationServer[TRequest, TStorage]:
+    server = AuthorizationServer[TRequest, TStorage](
         storage=db,
         response_types={
-            "token": ResponseTypeToken[Request, Storage],
-            "code": ResponseTypeAuthorizationCode[Request, Storage],
-            "none": ResponseTypeNone[Request, Storage],
-            "id_token": ResponseTypeIdToken[Request, Storage],
+            "token": ResponseTypeToken[TRequest, TStorage],
+            "code": ResponseTypeAuthorizationCode[TRequest, TStorage],
+            "none": ResponseTypeNone[TRequest, TStorage],
+            "id_token": ResponseTypeIdToken[TRequest, TStorage],
         },
         grant_types={
-            "authorization_code": AuthorizationCodeGrantType[Request, Storage],
-            "client_credentials": ClientCredentialsGrantType[Request, Storage],
-            "password": PasswordGrantType[Request, Storage],
-            "refresh_token": RefreshTokenGrantType[Request, Storage],
+            "authorization_code": AuthorizationCodeGrantType[TRequest, TStorage],
+            "client_credentials": ClientCredentialsGrantType[TRequest, TStorage],
+            "password": PasswordGrantType[TRequest, TStorage],
+            "refresh_token": RefreshTokenGrantType[TRequest, TStorage],
         },
     )
     return server
