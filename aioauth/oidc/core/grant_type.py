@@ -53,17 +53,26 @@ class AuthorizationCodeGrantType(OAuth2AuthorizationCodeGrantType[TRequest, TSto
             generate_token(48),
         )
 
+        # validate_request will have already ensured the request includes a code.
+        assert request.post.code is not None
+
+        authorization_code = await self.storage.get_authorization_code(
+            request=request,
+            client_id=client.client_id,
+            code=request.post.code,
+        )
+
+        # validate_request will have already ensured the code was valid.
+        assert authorization_code is not None
+
         id_token = await self.storage.get_id_token(
             client_id=client.client_id,
-            nonce=None,
+            nonce=authorization_code.nonce,
             redirect_uri=request.query.redirect_uri,
             request=request,
             response_type="code",
             scope=self.scope,
         )
-
-        # validate_request will have already ensured the request includes a code.
-        assert request.post.code is not None
 
         await self.storage.delete_authorization_code(
             request,

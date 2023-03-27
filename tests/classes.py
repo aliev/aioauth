@@ -117,17 +117,19 @@ class Storage(BaseStorage[Token, Client, AuthorizationCode, Request]):
         code_challenge_method: Optional[CodeChallengeMethod],
         code_challenge: Optional[str],
         code: str,
+        nonce: Optional[str],
     ):
         authorization_code = AuthorizationCode(
-            code=code,
+            auth_time=int(time.time()),
             client_id=client_id,
+            code=code,
+            code_challenge=code_challenge,
+            code_challenge_method=code_challenge_method,
+            expires_in=request.settings.AUTHORIZATION_CODE_EXPIRES_IN,
+            nonce=nonce,
             redirect_uri=redirect_uri,
             response_type=response_type,
             scope=scope,
-            auth_time=int(time.time()),
-            code_challenge_method=code_challenge_method,
-            code_challenge=code_challenge,
-            expires_in=request.settings.AUTHORIZATION_CODE_EXPIRES_IN,
         )
         self.storage["authorization_codes"].append(authorization_code)
 

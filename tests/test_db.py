@@ -24,14 +24,15 @@ async def test_storage_class(storage):
 
     with pytest.raises(NotImplementedError):
         await db.create_authorization_code(
-            request=request,
             client_id=client.client_id,
-            scope="",
-            response_type="",
-            redirect_uri="",
-            code_challenge_method=None,
-            code_challenge=None,
             code="123",
+            code_challenge=None,
+            code_challenge_method=None,
+            nonce="nonce",
+            redirect_uri="",
+            request=request,
+            response_type="",
+            scope="",
         )
 
     with pytest.raises(NotImplementedError):
