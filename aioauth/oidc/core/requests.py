@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 
-from typing import Any, Optional
+from typing import Any, Optional, TypeVar
 
 from aioauth.requests import BaseRequest, Query as BaseQuery, Post
 
@@ -17,3 +17,6 @@ class Request(BaseRequest[Query, Post, Any]):
     query: Query = field(default_factory=Query)
     post: Post = field(default_factory=Post)
     user: Optional[Any] = None
+
+
+TRequest = TypeVar("TRequest", bound=Request)

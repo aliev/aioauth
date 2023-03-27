@@ -119,20 +119,33 @@ def db(db_class: Type[TStorage]):
 
 
 @pytest.fixture
-def server(db: TStorage) -> AuthorizationServer[TRequest, TStorage]:
-    server = AuthorizationServer[TRequest, TStorage](
-        storage=db,
-        response_types={
-            "token": ResponseTypeToken[TRequest, TStorage],
-            "code": ResponseTypeAuthorizationCode[TRequest, TStorage],
-            "none": ResponseTypeNone[TRequest, TStorage],
-            "id_token": ResponseTypeIdToken[TRequest, TStorage],
-        },
-        grant_types={
+def server(request, db: TStorage) -> AuthorizationServer[TRequest, TStorage]:
+    marker = request.node.get_closest_marker("override_server")
+    kwargs = marker.kwargs if marker else {}
+
+    grant_types = kwargs.get(
+        "grant_types",
+        {
             "authorization_code": AuthorizationCodeGrantType[TRequest, TStorage],
             "client_credentials": ClientCredentialsGrantType[TRequest, TStorage],
             "password": PasswordGrantType[TRequest, TStorage],
             "refresh_token": RefreshTokenGrantType[TRequest, TStorage],
         },
+    )
+    storage = kwargs.get("storage", db)
+    response_types = kwargs.get(
+        "response_types",
+        {
+            "code": ResponseTypeAuthorizationCode[TRequest, TStorage],
+            "id_token": ResponseTypeIdToken[TRequest, TStorage],
+            "none": ResponseTypeNone[TRequest, TStorage],
+            "token": ResponseTypeToken[TRequest, TStorage],
+        },
+    )
+
+    server = AuthorizationServer[TRequest, TStorage](
+        grant_types=grant_types,
+        response_types=response_types,
+        storage=storage,
     )
     return server
