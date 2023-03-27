@@ -11,12 +11,11 @@ from aioauth.requests import Post, Request
 from aioauth.server import AuthorizationServer
 from aioauth.utils import encode_auth_headers
 
-from .classes import Storage
-from .models import Defaults
+from tests.classes import BasicServerConfig, Storage
 
 
 @pytest.fixture
-def storage(defaults: Defaults, settings: Settings) -> Dict:
+def storage(defaults: BasicServerConfig, settings: Settings) -> Dict:
     client = Client(
         client_id=defaults.client_id,
         client_secret=defaults.client_secret,
@@ -61,10 +60,8 @@ def storage(defaults: Defaults, settings: Settings) -> Dict:
 
 @pytest.mark.asyncio
 async def test_refresh_token_grant_type(
-    server: AuthorizationServer, defaults: Defaults, db: Storage
+    server: AuthorizationServer, defaults: BasicServerConfig, db: Storage
 ):
-    # first create an access token
-
     client_id = defaults.client_id
     client_secret = defaults.client_secret
     request_url = "https://localhost"
@@ -72,7 +69,7 @@ async def test_refresh_token_grant_type(
     post = Post(
         grant_type="refresh_token",
         refresh_token=defaults.refresh_token,
-        scope="read foo",
+        scope=defaults.scope,
     )
 
     request = Request(
@@ -101,7 +98,7 @@ async def test_refresh_token_grant_type(
         refresh_token=defaults.refresh_token,
     )
     assert token_in_db.revoked  # type: ignore
-    assert token_response.scope == "read"
+    assert token_response.scope == defaults.scope
 
     with pytest.raises(InvalidGrantError):
         token_response = await grant_type.create_token_response(request, client)

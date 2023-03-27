@@ -1,7 +1,6 @@
 import time
 from dataclasses import replace
 from http import HTTPStatus
-from typing import Dict, List
 from urllib.parse import urlparse, parse_qs
 
 import pytest
@@ -16,7 +15,7 @@ from aioauth.utils import (
     generate_token,
 )
 
-from .models import Defaults
+from .classes import BasicServerConfig, StorageConfig
 
 
 @pytest.mark.asyncio
@@ -43,7 +42,7 @@ async def test_allowed_methods(server: AuthorizationServer):
 
 @pytest.mark.asyncio
 async def test_invalid_client_credentials(
-    server: AuthorizationServer, defaults: Defaults
+    server: AuthorizationServer, defaults: BasicServerConfig
 ):
     client_id = defaults.client_id
     request_url = "https://localhost"
@@ -67,7 +66,7 @@ async def test_invalid_client_credentials(
 
 
 @pytest.mark.asyncio
-async def test_invalid_scope(server: AuthorizationServer, defaults: Defaults):
+async def test_invalid_scope(server: AuthorizationServer, defaults: BasicServerConfig):
     client_id = defaults.client_id
     client_secret = defaults.client_secret
     request_url = "https://localhost"
@@ -93,13 +92,13 @@ async def test_invalid_scope(server: AuthorizationServer, defaults: Defaults):
 
 @pytest.mark.asyncio
 async def test_invalid_grant_type(
-    server: AuthorizationServer, defaults: Defaults, storage
+    server: AuthorizationServer, defaults: BasicServerConfig, storage_config
 ):
-    client: Client = storage["clients"][0]
+    client: Client = storage_config.clients[0]
 
     client = replace(client, grant_types=["authorization_code"])
 
-    storage["clients"][0] = client
+    storage_config.clients[0] = client
 
     client_id = defaults.client_id
     client_secret = defaults.client_secret
@@ -126,18 +125,20 @@ async def test_invalid_grant_type(
 
 @pytest.mark.asyncio
 async def test_invalid_response_type(
-    server: AuthorizationServer, defaults: Defaults, storage
+    server: AuthorizationServer,
+    defaults: BasicServerConfig,
+    storage_config: StorageConfig,
 ):
     code_verifier = generate_token(128)
     code_challenge = create_s256_code_challenge(code_verifier)
     request_url = "https://localhost"
     user = "username"
 
-    client = storage["clients"][0]
+    client = storage_config.clients[0]
 
     client = replace(client, response_types=["token"])
 
-    storage["clients"][0] = client
+    storage_config.clients[0] = client
 
     query = Query(
         client_id=defaults.client_id,
@@ -162,7 +163,7 @@ async def test_invalid_response_type(
 
 
 @pytest.mark.asyncio
-async def test_anonymous_user(server: AuthorizationServer, defaults: Defaults, storage):
+async def test_anonymous_user(server: AuthorizationServer, defaults: BasicServerConfig):
     code_verifier = generate_token(128)
     code_challenge = create_s256_code_challenge(code_verifier)
     request_url = "https://localhost"
@@ -187,20 +188,20 @@ async def test_anonymous_user(server: AuthorizationServer, defaults: Defaults, s
 @pytest.mark.override_defaults(client_secret="")
 async def test_expired_authorization_code(
     server: AuthorizationServer,
-    defaults: Defaults,
-    storage: Dict[str, List],
+    defaults: BasicServerConfig,
+    storage_config: StorageConfig,
     settings: Settings,
 ):
     request_url = "https://localhost"
 
-    authorization_code = storage["authorization_codes"][0]
-    storage["authorization_codes"][0] = replace(
+    authorization_code = storage_config.authorization_codes[0]
+    storage_config.authorization_codes[0] = replace(
         authorization_code,
         auth_time=(time.time() - settings.AUTHORIZATION_CODE_EXPIRES_IN),
     )
     post = Post(
         client_id=defaults.client_id,
-        code=storage["authorization_codes"][0].code,
+        code=storage_config.authorization_codes[0].code,
         grant_type="authorization_code",
         redirect_uri=defaults.redirect_uri,
     )
@@ -219,13 +220,13 @@ async def test_expired_authorization_code(
 @pytest.mark.override_defaults(client_secret="")
 async def test_expired_refresh_token(
     server: AuthorizationServer,
-    defaults: Defaults,
-    storage: Dict[str, List],
+    defaults: BasicServerConfig,
+    storage_config: StorageConfig,
     settings: Settings,
 ):
-    token = storage["tokens"][0]
+    token = storage_config.tokens[0]
     refresh_token = token.refresh_token
-    storage["tokens"][0] = replace(
+    storage_config.tokens[0] = replace(
         token, issued_at=(time.time() - (settings.TOKEN_EXPIRES_IN * 2))
     )
     request_url = "https://localhost"

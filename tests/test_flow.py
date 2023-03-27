@@ -1,4 +1,5 @@
 from http import HTTPStatus
+from typing import Any, Callable, Dict
 from urllib.parse import parse_qsl, urlparse
 
 import pytest
@@ -7,6 +8,7 @@ from aioauth.constances import default_headers
 from aioauth.requests import Post, Query, Request
 from aioauth.server import AuthorizationServer
 from aioauth.storage import BaseStorage
+from aioauth.types import GrantType, ResponseType
 from aioauth.utils import (
     create_s256_code_challenge,
     encode_auth_headers,
@@ -14,15 +16,20 @@ from aioauth.utils import (
     generate_token,
 )
 
-from .conftest import Defaults
-from .utils import check_request_validators
+from tests.classes import BasicServerConfig, Storage
+from tests.utils import check_request_validators
 
 
 @pytest.mark.asyncio
 @pytest.mark.override_defaults(client_secret="")
 async def test_authorization_code_flow_plain_code_challenge(
-    server: AuthorizationServer, defaults: Defaults, db: BaseStorage
+    db: BaseStorage,
+    defaults: BasicServerConfig,
+    default_server_factory: Callable[
+        [Dict[GrantType, Any], Dict[ResponseType, Any], Storage], AuthorizationServer
+    ],
 ):
+    server = default_server_factory()
     code_challenge = generate_token(128)
     client_id = defaults.client_id
     scope = defaults.scope
@@ -141,7 +148,7 @@ async def test_authorization_code_flow_plain_code_challenge(
 @pytest.mark.asyncio
 @pytest.mark.override_defaults(client_secret="")
 async def test_authorization_code_flow_pkce_code_challenge(
-    server: AuthorizationServer, defaults: Defaults, db: BaseStorage
+    server: AuthorizationServer, defaults: BasicServerConfig, db: BaseStorage
 ):
     client_id = defaults.client_id
     code_verifier = generate_token(128)
@@ -208,7 +215,7 @@ async def test_authorization_code_flow_pkce_code_challenge(
 
 
 @pytest.mark.asyncio
-async def test_implicit_flow(server: AuthorizationServer, defaults: Defaults):
+async def test_implicit_flow(server: AuthorizationServer, defaults: BasicServerConfig):
     request_url = "https://localhost"
     state = generate_token(10)
     scope = defaults.scope
@@ -240,7 +247,7 @@ async def test_implicit_flow(server: AuthorizationServer, defaults: Defaults):
 
 @pytest.mark.asyncio
 async def test_password_grant_type_with_client_secret(
-    server: AuthorizationServer, defaults: Defaults
+    server: AuthorizationServer, defaults: BasicServerConfig
 ):
     client_id = defaults.client_id
     client_secret = defaults.client_secret
@@ -267,7 +274,7 @@ async def test_password_grant_type_with_client_secret(
 @pytest.mark.asyncio
 @pytest.mark.override_defaults(client_secret="")
 async def test_password_grant_type_without_client_secret(
-    server: AuthorizationServer, defaults: Defaults
+    server: AuthorizationServer, defaults: BasicServerConfig
 ):
     client_id = defaults.client_id
     request_url = "https://localhost"
@@ -293,7 +300,7 @@ async def test_password_grant_type_without_client_secret(
 @pytest.mark.asyncio
 @pytest.mark.override_defaults(client_secret="")
 async def test_password_grant_type_without_client_secret_using_basic_auth(
-    server: AuthorizationServer, defaults: Defaults
+    server: AuthorizationServer, defaults: BasicServerConfig
 ):
     client_id = defaults.client_id
     request_url = "https://localhost"
@@ -318,7 +325,9 @@ async def test_password_grant_type_without_client_secret_using_basic_auth(
 
 @pytest.mark.asyncio
 @pytest.mark.override_defaults(client_secret="")
-async def test_authorization_code_flow(server: AuthorizationServer, defaults: Defaults):
+async def test_authorization_code_flow(
+    server: AuthorizationServer, defaults: BasicServerConfig
+):
     client_id = defaults.client_id
     request_url = "https://localhost"
     user = "username"
@@ -370,7 +379,7 @@ async def test_authorization_code_flow(server: AuthorizationServer, defaults: De
 @pytest.mark.asyncio
 @pytest.mark.override_defaults(client_secret="")
 async def test_authorization_code_flow_credentials_in_post(
-    server: AuthorizationServer, defaults: Defaults
+    server: AuthorizationServer, defaults: BasicServerConfig
 ):
     client_id = defaults.client_id
     request_url = "https://localhost"
@@ -420,7 +429,7 @@ async def test_authorization_code_flow_credentials_in_post(
 
 @pytest.mark.asyncio
 async def test_client_credentials_flow_post_data(
-    server: AuthorizationServer, defaults: Defaults
+    server: AuthorizationServer, defaults: BasicServerConfig
 ):
     request_url = "https://localhost"
 
@@ -441,7 +450,7 @@ async def test_client_credentials_flow_post_data(
 
 @pytest.mark.asyncio
 async def test_client_credentials_flow_auth_header(
-    server: AuthorizationServer, defaults: Defaults
+    server: AuthorizationServer, defaults: BasicServerConfig
 ):
     request_url = "https://localhost"
 
@@ -466,7 +475,9 @@ async def test_client_credentials_flow_auth_header(
 
 
 @pytest.mark.asyncio
-async def test_multiple_response_types(server: AuthorizationServer, defaults: Defaults):
+async def test_multiple_response_types(
+    server: AuthorizationServer, defaults: BasicServerConfig
+):
     request_url = "https://localhost"
     user = "username"
 
@@ -504,7 +515,9 @@ async def test_multiple_response_types(server: AuthorizationServer, defaults: De
 
 
 @pytest.mark.asyncio
-async def test_response_type_none(server: AuthorizationServer, defaults: Defaults):
+async def test_response_type_none(
+    server: AuthorizationServer, defaults: BasicServerConfig
+):
     request_url = "https://localhost"
     user = "username"
 
@@ -546,7 +559,7 @@ async def test_response_type_none(server: AuthorizationServer, defaults: Default
     ],
 )
 async def test_response_type_id_token(
-    server: AuthorizationServer, defaults: Defaults, response_mode
+    server: AuthorizationServer, defaults: BasicServerConfig, response_mode
 ):
     request_url = "https://localhost"
     user = "username"
