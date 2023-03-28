@@ -184,6 +184,7 @@ async def test_anonymous_user(server: AuthorizationServer, defaults: Defaults, s
 
 
 @pytest.mark.asyncio
+@pytest.mark.override_defaults(client_secret="")
 async def test_expired_authorization_code(
     server: AuthorizationServer,
     defaults: Defaults,
@@ -215,6 +216,7 @@ async def test_expired_authorization_code(
 
 
 @pytest.mark.asyncio
+@pytest.mark.override_defaults(client_secret="")
 async def test_expired_refresh_token(
     server: AuthorizationServer,
     defaults: Defaults,

@@ -19,6 +19,7 @@ from .utils import check_request_validators
 
 
 @pytest.mark.asyncio
+@pytest.mark.override_defaults(client_secret="")
 async def test_authorization_code_flow_plain_code_challenge(
     server: AuthorizationServer, defaults: Defaults, db: BaseStorage
 ):
@@ -138,6 +139,7 @@ async def test_authorization_code_flow_plain_code_challenge(
 
 
 @pytest.mark.asyncio
+@pytest.mark.override_defaults(client_secret="")
 async def test_authorization_code_flow_pkce_code_challenge(
     server: AuthorizationServer, defaults: Defaults, db: BaseStorage
 ):
@@ -315,6 +317,7 @@ async def test_password_grant_type_without_client_secret_using_basic_auth(
 
 
 @pytest.mark.asyncio
+@pytest.mark.override_defaults(client_secret="")
 async def test_authorization_code_flow(server: AuthorizationServer, defaults: Defaults):
     client_id = defaults.client_id
     request_url = "https://localhost"
@@ -365,6 +368,7 @@ async def test_authorization_code_flow(server: AuthorizationServer, defaults: De
 
 
 @pytest.mark.asyncio
+@pytest.mark.override_defaults(client_secret="")
 async def test_authorization_code_flow_credentials_in_post(
     server: AuthorizationServer, defaults: Defaults
 ):
