@@ -20,7 +20,12 @@ from aioauth.server import AuthorizationServer
 from aioauth.types import GrantType, ResponseType
 
 from tests import factories
-from tests.classes import BasicServerConfig, Storage, StorageConfig
+from tests.classes import (
+    BasicServerConfig,
+    Storage,
+    StorageConfig,
+    QueryableAuthorizationServer,
+)
 
 
 @pytest.fixture
@@ -62,9 +67,7 @@ def storage_factory() -> Callable[[StorageConfig], Storage]:
 
 @pytest.fixture
 def db(storage_factory: Type[Storage], storage_config: StorageConfig):
-    return storage_factory(
-        storage_config=storage_config,
-    )
+    return storage_factory(storage_config=storage_config)
 
 
 @pytest.fixture
@@ -87,7 +90,7 @@ def default_server_factory(db: Storage):
         response_types: Dict[ResponseType, Any] = default_response_types,
         storage: Storage = db,
     ) -> AuthorizationServer:
-        return AuthorizationServer[Request, Storage](
+        return QueryableAuthorizationServer[Request, Storage](
             grant_types=grant_types,
             response_types=response_types,
             storage=db,

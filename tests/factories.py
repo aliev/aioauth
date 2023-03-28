@@ -1,8 +1,9 @@
 import time
-from typing import Dict
+from typing import Dict, List, Optional
 
 from aioauth.config import Settings
 from aioauth.models import AuthorizationCode, Client, Token
+from aioauth.types import GrantType, ResponseType
 from aioauth.utils import generate_token
 
 from tests.classes import BasicServerConfig, Storage, StorageConfig
@@ -32,26 +33,40 @@ def defaults_factory(
     )
 
 
+def client_factory(
+    client_id: str = generate_token(42),
+    client_secret: str = generate_token(48),
+    grant_types: Optional[List[GrantType]] = None,
+    redirect_uris: Optional[List[str]] = None,
+    response_types: Optional[List[ResponseType]] = None,
+    scope: str = "scope",
+) -> Client:
+    _redirect_uris = redirect_uris or ["https://ownauth.com/callback"]
+    _response_types = response_types or ["code", "id_token", "none", "token"]
+    _grant_types = grant_types or [
+        "authorization_code",
+        "client_credentials",
+        "password",
+        "refresh_token",
+    ]
+    return Client(
+        client_id=client_id,
+        client_secret=client_secret,
+        grant_types=_grant_types,
+        redirect_uris=_redirect_uris,
+        response_types=_response_types,
+        scope=scope,
+    )
+
+
 def storage_config_factory(
     defaults: BasicServerConfig,
     settings: Settings,
 ) -> Dict:
-    client = Client(
+    client = client_factory(
         client_id=defaults.client_id,
         client_secret=defaults.client_secret,
-        grant_types=[
-            "authorization_code",
-            "client_credentials",
-            "refresh_token",
-            "password",
-        ],
         redirect_uris=[defaults.redirect_uri],
-        response_types=[
-            "code",
-            "id_token",
-            "none",
-            "token",
-        ],
         scope=defaults.scope,
     )
 
@@ -85,4 +100,17 @@ def storage_config_factory(
 
 
 def storage_factory(storage_config: StorageConfig) -> Storage:
-    return Storage(config=storage_config)
+    server_config = storage_config.server_config
+    client = client_factory(
+        client_id=server_config.client_id,
+        client_secret=server_config.client_secret,
+        redirect_uris=[server_config.redirect_uri],
+        scope=server_config.scope,
+    )
+
+    return Storage(
+        authorization_codes=storage_config.authorization_codes,
+        clients=[client],
+        tokens=storage_config.tokens,
+        users={server_config.username: server_config.password},
+    )

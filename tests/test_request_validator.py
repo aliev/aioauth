@@ -6,7 +6,6 @@ from urllib.parse import urlparse, parse_qs
 import pytest
 
 from aioauth.config import Settings
-from aioauth.models import Client
 from aioauth.requests import Post, Query, Request
 from aioauth.server import AuthorizationServer
 from aioauth.utils import (
@@ -15,7 +14,7 @@ from aioauth.utils import (
     generate_token,
 )
 
-from .classes import BasicServerConfig, StorageConfig
+from .classes import BasicServerConfig, StorageConfig, QueryableAuthorizationServer
 
 
 @pytest.mark.asyncio
@@ -94,11 +93,7 @@ async def test_invalid_scope(server: AuthorizationServer, defaults: BasicServerC
 async def test_invalid_grant_type(
     server: AuthorizationServer, defaults: BasicServerConfig, storage_config
 ):
-    client: Client = storage_config.clients[0]
-
-    client = replace(client, grant_types=["authorization_code"])
-
-    storage_config.clients[0] = client
+    server.clients[0].grant_types = ["authorization_code"]
 
     client_id = defaults.client_id
     client_secret = defaults.client_secret
@@ -125,7 +120,7 @@ async def test_invalid_grant_type(
 
 @pytest.mark.asyncio
 async def test_invalid_response_type(
-    server: AuthorizationServer,
+    server: QueryableAuthorizationServer,
     defaults: BasicServerConfig,
     storage_config: StorageConfig,
 ):
@@ -134,11 +129,7 @@ async def test_invalid_response_type(
     request_url = "https://localhost"
     user = "username"
 
-    client = storage_config.clients[0]
-
-    client = replace(client, response_types=["token"])
-
-    storage_config.clients[0] = client
+    server.clients[0].response_types = ["token"]
 
     query = Query(
         client_id=defaults.client_id,

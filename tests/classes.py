@@ -1,12 +1,13 @@
 import time
-from typing import NamedTuple
+from typing import Dict, NamedTuple
 
 from dataclasses import replace, dataclass, field
 from typing import List, Optional
 
 from aioauth.models import AuthorizationCode, Client, Token
-from aioauth.requests import BaseRequest, Post, Query
-from aioauth.storage import BaseStorage
+from aioauth.requests import BaseRequest, Post, Query, TRequest
+from aioauth.server import AuthorizationServer
+from aioauth.storage import BaseStorage, TStorage
 from aioauth.types import CodeChallengeMethod, TokenType
 
 
@@ -42,16 +43,25 @@ class StorageConfig:
 
 
 class Storage(BaseStorage[Token, Client, AuthorizationCode, Request]):
-    def __init__(self, config: StorageConfig):
-        self.config: StorageConfig = config
+    def __init__(
+        self,
+        authorization_codes: List[AuthorizationCode],
+        clients: List[Client],
+        tokens: List[Token],
+        users: Dict[str, str] = {},
+    ):
+        self.clients: List[Client] = clients
+        self.tokens: List[Token] = tokens
+        self.authorization_codes: List[AuthorizationCode] = authorization_codes
+        self.users: Dict[str, str] = users
 
     def _get_by_client_secret(self, client_id: str, client_secret: str):
-        for client in self.config.clients:
+        for client in self.clients:
             if client.client_id == client_id and client.client_secret == client_secret:
                 return client
 
     def _get_by_client_id(self, client_id: str):
-        for client in self.config.clients:
+        for client in self.clients:
             if client.client_id == client_id:
                 return client
 
@@ -81,11 +91,11 @@ class Storage(BaseStorage[Token, Client, AuthorizationCode, Request]):
             scope=scope,
             revoked=False,
         )
-        self.config.tokens.append(token)
+        self.tokens.append(token)
         return token
 
     async def revoke_token(self, request: Request, refresh_token: str) -> None:
-        tokens = self.config.tokens
+        tokens = self.tokens
         for key, token_ in enumerate(tokens):
             if token_.refresh_token == refresh_token:
                 tokens[key] = replace(token_, revoked=True)
@@ -98,7 +108,7 @@ class Storage(BaseStorage[Token, Client, AuthorizationCode, Request]):
         access_token: Optional[str] = None,
         refresh_token: Optional[str] = None,
     ) -> Optional[Token]:
-        for token_ in self.config.tokens:
+        for token_ in self.tokens:
             if (
                 refresh_token is not None
                 and refresh_token == token_.refresh_token
@@ -113,13 +123,9 @@ class Storage(BaseStorage[Token, Client, AuthorizationCode, Request]):
                 return token_
 
     async def authenticate(self, request: Request) -> bool:
-        if (
-            request.post.username == self.config.server_config.username
-            and request.post.password == self.config.server_config.password
-        ):
-            return True
-
-        return False
+        password = request.post.password
+        username = request.post.username
+        return username in self.users and self.users[username] == password
 
     async def create_authorization_code(
         self,
@@ -143,14 +149,14 @@ class Storage(BaseStorage[Token, Client, AuthorizationCode, Request]):
             code_challenge=code_challenge,
             expires_in=request.settings.AUTHORIZATION_CODE_EXPIRES_IN,
         )
-        self.config.authorization_codes.append(authorization_code)
+        self.authorization_codes.append(authorization_code)
 
         return authorization_code
 
     async def get_authorization_code(
         self, request: Request, client_id: str, code: str
     ) -> Optional[AuthorizationCode]:
-        for authorization_code in self.config.authorization_codes:
+        for authorization_code in self.authorization_codes:
             if (
                 authorization_code.code == code
                 and authorization_code.client_id == client_id
@@ -163,7 +169,7 @@ class Storage(BaseStorage[Token, Client, AuthorizationCode, Request]):
         client_id: str,
         code: str,
     ):
-        authorization_codes = self.config.authorization_codes
+        authorization_codes = self.authorization_codes
         for authorization_code in authorization_codes:
             if (
                 authorization_code.client_id == client_id
@@ -181,3 +187,9 @@ class Storage(BaseStorage[Token, Client, AuthorizationCode, Request]):
         nonce: str,
     ) -> str:
         return "generated id token"
+
+
+class QueryableAuthorizationServer(AuthorizationServer[TRequest, TStorage]):
+    @property
+    def clients(self) -> List[Client]:
+        return self.storage.clients
