@@ -269,7 +269,11 @@ class AuthorizationServer(Generic[TRequest, TStorage]):
             # https://www.oauth.com/oauth2-servers/access-tokens/client-credentials/
             client_id, client_secret = self.get_client_credentials(request)
         else:
-            # for other grant types, client_secret is required if the client has one.
+            # for other grant types, client_secret is required if the client has one:
+            # If the client type is confidential or the client was issued client credentials
+            # (or assigned other authentication requirements), the client MUST authenticate
+            # with the authorization server as described in Section 3.2.1.
+            # https://www.rfc-editor.org/rfc/rfc6749#section-4.1.3
             try:
                 client_id, client_secret = self.get_client_credentials(request)
             except InvalidClientError as exc:
