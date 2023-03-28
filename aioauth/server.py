@@ -268,9 +268,8 @@ class AuthorizationServer(Generic[TRequest, TStorage]):
             # client_secret is required for the client_credentials grant type
             # https://www.oauth.com/oauth2-servers/access-tokens/client-credentials/
             client_id, client_secret = self.get_client_credentials(request)
-        elif request.post.grant_type == "password":
-            # client_secret is optional for the password grant type
-            # https://www.oauth.com/oauth2-servers/access-tokens/password-grant/
+        else:
+            # for other grant types, client_secret is required if the client has one.
             try:
                 client_id, client_secret = self.get_client_credentials(request)
             except InvalidClientError as exc:
@@ -284,8 +283,6 @@ class AuthorizationServer(Generic[TRequest, TStorage]):
                 client_secret = request.post.client_secret or ""
                 if not client_id:
                     raise exc
-        else:
-            client_id = request.post.client_id
 
         if not request.post.grant_type:
             # grant_type request value is empty
