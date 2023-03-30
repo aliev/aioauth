@@ -41,6 +41,7 @@ class AuthorizationCodeGrantType(OAuth2AuthorizationCodeGrantType[TRequest, TSto
 
         Extends the OAuth2 authorization_code grant type such that an id_token
         is always included with the access_token.
+        https://openid.net/specs/openid-connect-core-1_0.html#TokenResponse
         """
         if self.scope is None:
             raise RuntimeError("validate_request() must be called first")
