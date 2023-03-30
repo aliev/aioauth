@@ -1,5 +1,5 @@
 import time
-from typing import Dict, NamedTuple
+from typing import Any, Dict, Generic, NamedTuple
 
 from dataclasses import replace, dataclass, field
 from typing import List, Optional
@@ -8,7 +8,7 @@ from aioauth.models import AuthorizationCode, Client, Token
 from aioauth.requests import BaseRequest, Post, Query, TRequest
 from aioauth.server import AuthorizationServer
 from aioauth.storage import BaseStorage, TStorage
-from aioauth.types import CodeChallengeMethod, TokenType
+from aioauth.types import CodeChallengeMethod, GrantType, ResponseType, TokenType
 
 
 class BasicServerConfig(NamedTuple):
@@ -193,3 +193,15 @@ class QueryableAuthorizationServer(AuthorizationServer[TRequest, TStorage]):
     @property
     def clients(self) -> List[Client]:
         return self.storage.clients
+
+
+@dataclass
+class AuthorizationContext(Generic[TRequest, TStorage]):
+    clients: List[Client]
+    grant_types: Dict[GrantType, Any]
+    initial_authorization_codes: List[AuthorizationCode]
+    initial_tokens: List[Token]
+    response_types: Dict[ResponseType, Any]
+    server: AuthorizationServer[TRequest, TStorage]
+    storage: TStorage
+    users: Dict[str, str]
