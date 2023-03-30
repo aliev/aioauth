@@ -20,12 +20,28 @@ from aioauth.server import AuthorizationServer
 from aioauth.types import GrantType, ResponseType
 
 from tests import factories
+from tests.authorization_context import AuthorizationContext
 from tests.classes import (
     BasicServerConfig,
     Storage,
     StorageConfig,
     QueryableAuthorizationServer,
 )
+
+
+DEFAULT_GRANT_TYPES = {
+    "authorization_code": AuthorizationCodeGrantType[Request, Storage],
+    "client_credentials": ClientCredentialsGrantType[Request, Storage],
+    "password": PasswordGrantType[Request, Storage],
+    "refresh_token": RefreshTokenGrantType[Request, Storage],
+}
+
+DEFAULT_RESPONSE_TYPES = {
+    "code": ResponseTypeAuthorizationCode[Request, Storage],
+    "id_token": ResponseTypeIdToken[Request, Storage],
+    "none": ResponseTypeNone[Request, Storage],
+    "token": ResponseTypeToken[Request, Storage],
+}
 
 
 @pytest.fixture
@@ -72,22 +88,9 @@ def db(storage_factory: Type[Storage], storage_config: StorageConfig):
 
 @pytest.fixture
 def default_server_factory(db: Storage):
-    default_grant_types = {
-        "authorization_code": AuthorizationCodeGrantType[Request, Storage],
-        "client_credentials": ClientCredentialsGrantType[Request, Storage],
-        "password": PasswordGrantType[Request, Storage],
-        "refresh_token": RefreshTokenGrantType[Request, Storage],
-    }
-    default_response_types = {
-        "code": ResponseTypeAuthorizationCode[Request, Storage],
-        "id_token": ResponseTypeIdToken[Request, Storage],
-        "none": ResponseTypeNone[Request, Storage],
-        "token": ResponseTypeToken[Request, Storage],
-    }
-
     def _default_server_factory(
-        grant_types: Dict[GrantType, Any] = default_grant_types,
-        response_types: Dict[ResponseType, Any] = default_response_types,
+        grant_types: Dict[GrantType, Any] = DEFAULT_GRANT_TYPES,
+        response_types: Dict[ResponseType, Any] = DEFAULT_RESPONSE_TYPES,
         storage: Storage = db,
     ) -> AuthorizationServer:
         return QueryableAuthorizationServer[Request, Storage](
@@ -102,3 +105,19 @@ def default_server_factory(db: Storage):
 @pytest.fixture
 def server(default_server_factory) -> AuthorizationServer[Request, Storage]:
     return default_server_factory()
+
+
+@pytest.fixture
+def context() -> AuthorizationContext:
+    clients = [factories.client_factory()]
+    initial_authorization_codes = []
+    initial_tokens = []
+    users = {}
+    return AuthorizationContext(
+        clients=clients,
+        initial_authorization_codes=initial_authorization_codes,
+        initial_tokens=initial_tokens,
+        grant_types=DEFAULT_GRANT_TYPES,
+        response_types=DEFAULT_RESPONSE_TYPES,
+        users=users,
+    )
