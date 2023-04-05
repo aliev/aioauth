@@ -11,11 +11,11 @@ from aioauth.requests import Post, Request
 from aioauth.server import AuthorizationServer
 from aioauth.utils import encode_auth_headers
 
-from tests.classes import BasicServerConfig, Storage
+from tests.classes import Defaults, Storage
 
 
 @pytest.fixture
-def storage(defaults: BasicServerConfig, settings: Settings) -> Dict:
+def storage(defaults: Defaults, settings: Settings) -> Dict:
     client = Client(
         client_id=defaults.client_id,
         client_secret=defaults.client_secret,
@@ -60,7 +60,7 @@ def storage(defaults: BasicServerConfig, settings: Settings) -> Dict:
 
 @pytest.mark.asyncio
 async def test_refresh_token_grant_type(
-    server: AuthorizationServer, defaults: BasicServerConfig, db: Storage
+    server: AuthorizationServer, defaults: Defaults, db: Storage
 ):
     client_id = defaults.client_id
     client_secret = defaults.client_secret

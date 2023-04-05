@@ -20,7 +20,7 @@ from aioauth.types import GrantType, ResponseType
 from aioauth.utils import generate_token
 
 from tests.authorization_context import AuthorizationContext
-from tests.classes import BasicServerConfig, Storage, StorageConfig
+from tests.classes import Defaults, Storage, StorageConfig
 
 
 def access_token_factory() -> str:
@@ -134,7 +134,7 @@ def token_factory(
 
 
 def storage_config_factory(
-    defaults: BasicServerConfig,
+    defaults: Defaults,
     settings: Settings,
 ) -> Dict:
     client = client_factory(

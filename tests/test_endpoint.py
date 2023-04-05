@@ -14,7 +14,7 @@ from aioauth.utils import (
     generate_token,
 )
 
-from .classes import BasicServerConfig, Storage, StorageConfig
+from .classes import Defaults, Storage, StorageConfig
 
 
 @pytest.mark.asyncio
@@ -36,7 +36,7 @@ async def test_internal_server_error():
 
 
 @pytest.mark.asyncio
-async def test_invalid_token(server: AuthorizationServer, defaults: BasicServerConfig):
+async def test_invalid_token(server: AuthorizationServer, defaults: Defaults):
     client_id = defaults.client_id
     client_secret = defaults.client_secret
     request_url = "https://localhost"
@@ -58,7 +58,7 @@ async def test_invalid_token(server: AuthorizationServer, defaults: BasicServerC
 async def test_expired_token(
     server: AuthorizationServer,
     storage_config: StorageConfig,
-    defaults: BasicServerConfig,
+    defaults: Defaults,
 ):
     settings = Settings(INSECURE_TRANSPORT=True)
     token = Token(
@@ -93,7 +93,7 @@ async def test_expired_token(
 async def test_valid_token(
     server: AuthorizationServer,
     storage_config: StorageConfig,
-    defaults: BasicServerConfig,
+    defaults: Defaults,
     settings: Settings,
 ):
     client_id = defaults.client_id
@@ -118,7 +118,7 @@ async def test_valid_token(
 async def test_introspect_revoked_token(
     server: AuthorizationServer,
     storage_config: StorageConfig,
-    defaults: BasicServerConfig,
+    defaults: Defaults,
     settings: Settings,
 ):
     client_id = defaults.client_id

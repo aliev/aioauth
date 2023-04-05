@@ -11,7 +11,7 @@ from aioauth.storage import BaseStorage, TStorage
 from aioauth.types import CodeChallengeMethod, GrantType, ResponseType, TokenType
 
 
-class BasicServerConfig(NamedTuple):
+class Defaults(NamedTuple):
     client_id: str
     client_secret: str
     code: str
@@ -36,7 +36,7 @@ class Request(BaseRequest[Query, Post, User]):
 
 @dataclass
 class StorageConfig:
-    server_config: BasicServerConfig
+    server_config: Defaults
     authorization_codes: List[AuthorizationCode] = field(default_factory=list)
     clients: List[Client] = field(default_factory=list)
     tokens: List[Token] = field(default_factory=list)
@@ -187,12 +187,6 @@ class Storage(BaseStorage[Token, Client, AuthorizationCode, Request]):
         nonce: str,
     ) -> str:
         return "generated id token"
-
-
-class QueryableAuthorizationServer(AuthorizationServer[TRequest, TStorage]):
-    @property
-    def clients(self) -> List[Client]:
-        return self.storage.clients
 
 
 @dataclass
