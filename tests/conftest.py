@@ -3,12 +3,6 @@ from typing import Any, Callable, Dict, Type
 import pytest
 
 from aioauth.config import Settings
-from aioauth.grant_type import (
-    AuthorizationCodeGrantType,
-    ClientCredentialsGrantType,
-    PasswordGrantType,
-    RefreshTokenGrantType,
-)
 from aioauth.requests import Request
 from aioauth.response_type import (
     ResponseTypeAuthorizationCode,
@@ -29,13 +23,6 @@ from tests.classes import (
 )
 
 
-DEFAULT_GRANT_TYPES = {
-    "authorization_code": AuthorizationCodeGrantType[Request, Storage],
-    "client_credentials": ClientCredentialsGrantType[Request, Storage],
-    "password": PasswordGrantType[Request, Storage],
-    "refresh_token": RefreshTokenGrantType[Request, Storage],
-}
-
 DEFAULT_RESPONSE_TYPES = {
     "code": ResponseTypeAuthorizationCode[Request, Storage],
     "id_token": ResponseTypeIdToken[Request, Storage],
@@ -45,16 +32,42 @@ DEFAULT_RESPONSE_TYPES = {
 
 
 @pytest.fixture
-def defaults_factory() -> BasicServerConfig:
-    return factories.defaults_factory
-
-
-@pytest.fixture
-def defaults(request, defaults_factory) -> BasicServerConfig:
+def defaults(request, context) -> BasicServerConfig:
     marker = request.node.get_closest_marker("override_defaults")
     kwargs = marker.kwargs if marker else {}
+    print(context)
 
-    yield defaults_factory(**kwargs)
+    default_client = context.clients[0]
+    default_token = context.initial_tokens[0]
+    default_access_token = default_token.access_token
+    default_refresh_token = default_token.refresh_token
+    default_code = context.initial_authorization_codes[0]
+    usernames = list(context.users.keys())
+    default_user = usernames[0] if usernames else ""
+    default_password = context.users.get(default_user, "")
+    default_redirect_uri = default_client.redirect_uris[0]
+
+    access_token: str = kwargs.get("access_token", default_access_token)
+    client_id: str = kwargs.get("client_id", default_client.client_id)
+    client_secret: str = kwargs.get("client_secret", default_client.client_secret)
+    code: str = kwargs.get("code", default_code)
+    password: str = kwargs.get("password", default_password)
+    redirect_uri: str = kwargs.get("redirect_uri", default_redirect_uri)
+    refresh_token: str = kwargs.get("refresh_token", default_refresh_token)
+    scope: str = kwargs.get("scope", default_client.scope)
+    username: str = kwargs.get("username", default_user)
+
+    yield BasicServerConfig(
+        client_id=client_id,
+        client_secret=client_secret,
+        code=code,
+        refresh_token=refresh_token,
+        access_token=access_token,
+        username=username,
+        password=password,
+        redirect_uri=redirect_uri,
+        scope=scope,
+    )
 
 
 @pytest.fixture
@@ -89,7 +102,7 @@ def db(storage_factory: Type[Storage], storage_config: StorageConfig):
 @pytest.fixture
 def default_server_factory(db: Storage):
     def _default_server_factory(
-        grant_types: Dict[GrantType, Any] = DEFAULT_GRANT_TYPES,
+        grant_types: Dict[GrantType, Any] = factories.grant_types_factory(),
         response_types: Dict[ResponseType, Any] = DEFAULT_RESPONSE_TYPES,
         storage: Storage = db,
     ) -> AuthorizationServer:
@@ -109,15 +122,4 @@ def server(default_server_factory) -> AuthorizationServer[Request, Storage]:
 
 @pytest.fixture
 def context() -> AuthorizationContext:
-    clients = [factories.client_factory()]
-    initial_authorization_codes = []
-    initial_tokens = []
-    users = {}
-    return AuthorizationContext(
-        clients=clients,
-        initial_authorization_codes=initial_authorization_codes,
-        initial_tokens=initial_tokens,
-        grant_types=DEFAULT_GRANT_TYPES,
-        response_types=DEFAULT_RESPONSE_TYPES,
-        users=users,
-    )
+    return factories.context_factory()

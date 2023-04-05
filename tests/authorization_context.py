@@ -19,8 +19,8 @@ class AuthorizationContext:
         response_types: Optional[Dict[ResponseType, Any]] = None,
         users: Dict[str, str] = None,
     ):
-        self._initial_authorization_codes = initial_authorization_codes or []
-        self._initial_tokens = initial_tokens or []
+        self.initial_authorization_codes = initial_authorization_codes or []
+        self.initial_tokens = initial_tokens or []
 
         self.clients: List[Client] = clients or []
         self.grant_types = grant_types or {}
@@ -38,8 +38,8 @@ class AuthorizationContext:
     @cached_property
     def storage(self) -> Storage:
         return Storage(
-            authorization_codes=self._initial_authorization_codes,
+            authorization_codes=self.initial_authorization_codes,
             clients=self.clients,
-            tokens=self._initial_tokens,
+            tokens=self.initial_tokens,
             users=self.users,
         )
