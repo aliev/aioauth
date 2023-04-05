@@ -1,7 +1,7 @@
 import time
 from typing import Any, Dict, Generic, NamedTuple
 
-from dataclasses import replace, dataclass, field
+from dataclasses import replace, dataclass
 from typing import List, Optional
 
 from aioauth.models import AuthorizationCode, Client, Token
@@ -32,14 +32,6 @@ class User:
 @dataclass
 class Request(BaseRequest[Query, Post, User]):
     ...
-
-
-@dataclass
-class StorageConfig:
-    server_config: Defaults
-    authorization_codes: List[AuthorizationCode] = field(default_factory=list)
-    clients: List[Client] = field(default_factory=list)
-    tokens: List[Token] = field(default_factory=list)
 
 
 class Storage(BaseStorage[Token, Client, AuthorizationCode, Request]):

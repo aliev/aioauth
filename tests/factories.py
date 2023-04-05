@@ -20,7 +20,7 @@ from aioauth.types import GrantType, ResponseType
 from aioauth.utils import generate_token
 
 from tests.authorization_context import AuthorizationContext
-from tests.classes import Defaults, Storage, StorageConfig
+from tests.classes import Storage
 
 
 def access_token_factory() -> str:
@@ -63,6 +63,10 @@ def response_types_factory() -> Dict[str, ResponseType]:
         "none": ResponseTypeNone[Request, Storage],
         "token": ResponseTypeToken[Request, Storage],
     }
+
+
+def settings_factory() -> Settings:
+    return Settings(INSECURE_TRANSPORT=True)
 
 
 def client_factory(
@@ -133,69 +137,13 @@ def token_factory(
     )
 
 
-def storage_config_factory(
-    defaults: Defaults,
-    settings: Settings,
-) -> Dict:
-    client = client_factory(
-        client_id=defaults.client_id,
-        client_secret=defaults.client_secret,
-        redirect_uris=[defaults.redirect_uri],
-        scope=defaults.scope,
-    )
-
-    authorization_code = authorization_code_factory(
-        code=defaults.code,
-        client_id=defaults.client_id,
-        response_type="code",
-        auth_time=int(time.time()),
-        redirect_uri=defaults.redirect_uri,
-        scope=defaults.scope,
-        code_challenge_method="plain",
-        expires_in=settings.AUTHORIZATION_CODE_EXPIRES_IN,
-    )
-
-    token = token_factory(
-        access_token=defaults.access_token,
-        client_id=defaults.client_id,
-        expires_in=settings.TOKEN_EXPIRES_IN,
-        issued_at=int(time.time()),
-        refresh_token=defaults.refresh_token,
-        refresh_token_expires_in=settings.REFRESH_TOKEN_EXPIRES_IN,
-        scope=defaults.scope,
-    )
-
-    return StorageConfig(
-        authorization_codes=[authorization_code],
-        clients=[client],
-        server_config=defaults,
-        tokens=[token],
-    )
-
-
-def storage_factory(storage_config: StorageConfig) -> Storage:
-    server_config = storage_config.server_config
-    client = client_factory(
-        client_id=server_config.client_id,
-        client_secret=server_config.client_secret,
-        redirect_uris=[server_config.redirect_uri],
-        scope=server_config.scope,
-    )
-
-    return Storage(
-        authorization_codes=storage_config.authorization_codes,
-        clients=[client],
-        tokens=storage_config.tokens,
-        users={server_config.username: server_config.password},
-    )
-
-
 def context_factory(
     clients: Optional[List[Client]] = None,
     grant_types: Optional[Dict[str, GrantType]] = None,
     initial_authorization_codes: Optional[List[AuthorizationCode]] = None,
     initial_tokens: Optional[List[Token]] = None,
     response_types: Optional[Dict[str, ResponseType]] = None,
+    settings: Optional[Settings] = None,
     users: Optional[Dict[str, str]] = None,
 ) -> AuthorizationContext:
     _clients = clients or [
@@ -219,6 +167,7 @@ def context_factory(
     ]
     _grant_types = grant_types or grant_types_factory()
     _response_types = response_types or response_types_factory()
+    _settings = settings or settings_factory()
     _users = users or {"root": "toor"}
     return AuthorizationContext(
         clients=_clients,
@@ -226,5 +175,6 @@ def context_factory(
         initial_tokens=_initial_tokens,
         grant_types=_grant_types,
         response_types=_response_types,
+        settings=_settings,
         users=_users,
     )

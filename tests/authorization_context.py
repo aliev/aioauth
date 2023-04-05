@@ -1,6 +1,7 @@
 from functools import cached_property
 from typing import Any, Dict, List, Optional
 
+from aioauth.config import Settings
 from aioauth.models import AuthorizationCode, Client, Token
 from aioauth.types import GrantType, ResponseType
 from aioauth.requests import Request
@@ -17,6 +18,7 @@ class AuthorizationContext:
         initial_authorization_codes: Optional[List[AuthorizationCode]] = None,
         initial_tokens: Optional[List[Token]] = None,
         response_types: Optional[Dict[ResponseType, Any]] = None,
+        settings: Optional[Settings] = None,
         users: Dict[str, str] = None,
     ):
         self.initial_authorization_codes = initial_authorization_codes or []
@@ -25,6 +27,7 @@ class AuthorizationContext:
         self.clients: List[Client] = clients or []
         self.grant_types = grant_types or {}
         self.response_types = response_types or {}
+        self.settings = settings or Settings(INSECURE_TRANSPORT=True)
         self.users = users or {}
 
     @cached_property

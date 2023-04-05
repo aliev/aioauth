@@ -9,8 +9,17 @@ from tests.authorization_context import AuthorizationContext
 from tests.classes import (
     Defaults,
     Storage,
-    StorageConfig,
 )
+
+
+@pytest.fixture
+def context_factory():
+    return factories.context_factory
+
+
+@pytest.fixture
+def context() -> AuthorizationContext:
+    return factories.context_factory()
 
 
 @pytest.fixture
@@ -37,16 +46,8 @@ def defaults(context) -> Defaults:
 
 
 @pytest.fixture
-def settings() -> Settings:
-    return Settings(INSECURE_TRANSPORT=True)
-
-
-@pytest.fixture
-def storage_config(
-    defaults: Defaults,
-    settings: Settings,
-) -> StorageConfig:
-    return factories.storage_config_factory(defaults=defaults, settings=settings)
+def settings(context) -> Settings:
+    return context.settings
 
 
 @pytest.fixture
@@ -57,13 +58,3 @@ def db(context):
 @pytest.fixture
 def server(context) -> AuthorizationServer[Request, Storage]:
     return context.server
-
-
-@pytest.fixture
-def context_factory():
-    return factories.context_factory
-
-
-@pytest.fixture
-def context() -> AuthorizationContext:
-    return factories.context_factory()
