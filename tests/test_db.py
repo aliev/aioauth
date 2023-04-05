@@ -5,11 +5,10 @@ from aioauth.requests import Request
 from aioauth.storage import BaseStorage
 
 from tests import factories
-from tests.classes import AuthorizationContext
 
 
 @pytest.mark.asyncio
-async def test_storage_class(context: AuthorizationContext):
+async def test_storage_class():
     db = BaseStorage()
     request = Request(method="POST")
     client: Client = factories.client_factory()
