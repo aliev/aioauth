@@ -1,5 +1,6 @@
 import time
-from functools import cached_property
+import sys
+
 from typing import Any, Dict, List, Optional
 
 from dataclasses import replace, dataclass
@@ -10,6 +11,11 @@ from aioauth.requests import BaseRequest, Post, Query, TRequest
 from aioauth.server import AuthorizationServer
 from aioauth.storage import BaseStorage
 from aioauth.types import CodeChallengeMethod, GrantType, ResponseType, TokenType
+
+if sys.version_info >= (3, 8):
+    from functools import cached_property
+else:
+    from backports.cached_property import cached_property
 
 
 @dataclass
