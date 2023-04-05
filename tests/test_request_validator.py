@@ -4,7 +4,6 @@ from urllib.parse import urlparse, parse_qs
 
 import pytest
 
-from aioauth.config import Settings
 from aioauth.requests import Post, Query, Request
 from aioauth.server import AuthorizationServer
 from aioauth.utils import (
@@ -14,7 +13,7 @@ from aioauth.utils import (
 )
 
 from tests import factories
-from tests.classes import Defaults
+from tests.classes import AuthorizationContext
 
 
 @pytest.mark.asyncio
@@ -40,16 +39,19 @@ async def test_allowed_methods(server: AuthorizationServer):
 
 
 @pytest.mark.asyncio
-async def test_invalid_client_credentials(
-    server: AuthorizationServer, defaults: Defaults
-):
-    client_id = defaults.client_id
+async def test_invalid_client_credentials(context_factory):
+    username = "username"
+    password = "password"
+    context = context_factory(users={username: password})
+    server = context.server
+    client = context.clients[0]
+    client_id = client.client_id
     request_url = "https://localhost"
 
     post = Post(
         grant_type="password",
-        username=defaults.username,
-        password=defaults.password,
+        username=username,
+        password=password,
     )
 
     request = Request(
@@ -65,16 +67,21 @@ async def test_invalid_client_credentials(
 
 
 @pytest.mark.asyncio
-async def test_invalid_scope(server: AuthorizationServer, defaults: Defaults):
-    client_id = defaults.client_id
-    client_secret = defaults.client_secret
+async def test_invalid_scope(context_factory):
+    username = "username"
+    password = "password"
+    context = context_factory(users={username: password})
+    client = context.clients[0]
+    server = context.server
+    client_id = client.client_id
+    client_secret = client.client_secret
     request_url = "https://localhost"
 
     post = Post(
         grant_type="password",
-        username=defaults.username,
-        password=defaults.password,
-        scope="test test",
+        username=username,
+        password=password,
+        scope="bad scope here",
     )
 
     request = Request(
@@ -158,16 +165,18 @@ async def test_invalid_response_type():
 
 
 @pytest.mark.asyncio
-async def test_anonymous_user(server: AuthorizationServer, defaults: Defaults):
+async def test_anonymous_user(context: AuthorizationContext):
+    client = context.clients[0]
+    server = context.server
     code_verifier = generate_token(128)
     code_challenge = create_s256_code_challenge(code_verifier)
     request_url = "https://localhost"
 
     query = Query(
-        client_id=defaults.client_id,
+        client_id=client.client_id,
         response_type="code",
-        redirect_uri=defaults.redirect_uri,
-        scope=defaults.scope,
+        redirect_uri=client.redirect_uris[0],
+        scope=client.scope,
         state=generate_token(10),
         code_challenge_method="S256",
         code_challenge=code_challenge,
@@ -180,9 +189,8 @@ async def test_anonymous_user(server: AuthorizationServer, defaults: Defaults):
 
 
 @pytest.mark.asyncio
-async def test_expired_authorization_code(
-    settings: Settings,
-):
+async def test_expired_authorization_code():
+    settings = factories.settings_factory()
     client = factories.client_factory(client_secret="")
     authorization_code = factories.authorization_code_factory(
         auth_time=(time.time() - settings.AUTHORIZATION_CODE_EXPIRES_IN),
@@ -213,9 +221,8 @@ async def test_expired_authorization_code(
 
 
 @pytest.mark.asyncio
-async def test_expired_refresh_token(
-    settings: Settings,
-):
+async def test_expired_refresh_token():
+    settings = factories.settings_factory()
     client = factories.client_factory(client_secret="")
     token = factories.token_factory(
         issued_at=(time.time() - (settings.TOKEN_EXPIRES_IN * 2))

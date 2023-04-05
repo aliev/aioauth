@@ -5,7 +5,7 @@ from aioauth.requests import Request
 from aioauth.storage import BaseStorage
 
 from tests import factories
-from tests.authorization_context import AuthorizationContext
+from tests.classes import AuthorizationContext
 
 
 @pytest.mark.asyncio

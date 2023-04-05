@@ -1,26 +1,15 @@
 import time
-from typing import Any, Dict, Generic, NamedTuple
+from functools import cached_property
+from typing import Any, Dict, List, Optional
 
 from dataclasses import replace, dataclass
-from typing import List, Optional
 
+from aioauth.config import Settings
 from aioauth.models import AuthorizationCode, Client, Token
 from aioauth.requests import BaseRequest, Post, Query, TRequest
 from aioauth.server import AuthorizationServer
-from aioauth.storage import BaseStorage, TStorage
+from aioauth.storage import BaseStorage
 from aioauth.types import CodeChallengeMethod, GrantType, ResponseType, TokenType
-
-
-class Defaults(NamedTuple):
-    client_id: str
-    client_secret: str
-    code: str
-    refresh_token: str
-    access_token: str
-    username: str
-    password: str
-    redirect_uri: str
-    scope: str
 
 
 @dataclass
@@ -181,13 +170,39 @@ class Storage(BaseStorage[Token, Client, AuthorizationCode, Request]):
         return "generated id token"
 
 
-@dataclass
-class AuthorizationContext(Generic[TRequest, TStorage]):
-    clients: List[Client]
-    grant_types: Dict[GrantType, Any]
-    initial_authorization_codes: List[AuthorizationCode]
-    initial_tokens: List[Token]
-    response_types: Dict[ResponseType, Any]
-    server: AuthorizationServer[TRequest, TStorage]
-    storage: TStorage
-    users: Dict[str, str]
+class AuthorizationContext:
+    def __init__(
+        self,
+        clients: Optional[List[Client]] = None,
+        grant_types: Optional[Dict[GrantType, Any]] = None,
+        initial_authorization_codes: Optional[List[AuthorizationCode]] = None,
+        initial_tokens: Optional[List[Token]] = None,
+        response_types: Optional[Dict[ResponseType, Any]] = None,
+        settings: Optional[Settings] = None,
+        users: Dict[str, str] = None,
+    ):
+        self.initial_authorization_codes = initial_authorization_codes or []
+        self.initial_tokens = initial_tokens or []
+
+        self.clients: List[Client] = clients or []
+        self.grant_types = grant_types or {}
+        self.response_types = response_types or {}
+        self.settings = settings or Settings(INSECURE_TRANSPORT=True)
+        self.users = users or {}
+
+    @cached_property
+    def server(self) -> AuthorizationServer[TRequest, Storage]:
+        return AuthorizationServer(
+            grant_types=self.grant_types,
+            response_types=self.response_types,
+            storage=self.storage,
+        )
+
+    @cached_property
+    def storage(self) -> Storage:
+        return Storage(
+            authorization_codes=self.initial_authorization_codes,
+            clients=self.clients,
+            tokens=self.initial_tokens,
+            users=self.users,
+        )

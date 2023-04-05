@@ -19,8 +19,7 @@ from aioauth.response_type import (
 from aioauth.types import GrantType, ResponseType
 from aioauth.utils import generate_token
 
-from tests.authorization_context import AuthorizationContext
-from tests.classes import Storage
+from tests.classes import AuthorizationContext, Storage
 
 
 def access_token_factory() -> str:

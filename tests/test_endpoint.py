@@ -6,15 +6,13 @@ import pytest
 
 from aioauth.config import Settings
 from aioauth.requests import Post, Request
-from aioauth.server import AuthorizationServer
 from aioauth.utils import (
     catch_errors_and_unavailability,
     encode_auth_headers,
 )
 
 from tests import factories
-from tests.authorization_context import AuthorizationContext
-from tests.classes import Defaults
+from tests.classes import AuthorizationContext
 
 
 @pytest.mark.asyncio
@@ -36,9 +34,11 @@ async def test_internal_server_error():
 
 
 @pytest.mark.asyncio
-async def test_invalid_token(server: AuthorizationServer, defaults: Defaults):
-    client_id = defaults.client_id
-    client_secret = defaults.client_secret
+async def test_invalid_token(context: AuthorizationContext):
+    client = context.clients[0]
+    client_id = client.client_id
+    client_secret = client.client_secret
+    server = context.server
     request_url = "https://localhost"
     token = "invalid token"
 
