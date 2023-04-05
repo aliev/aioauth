@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from setuptools import setup
+from setuptools import setup, find_namespace_packages
 
 here = Path(__file__).parent
 about = {}
@@ -79,6 +79,6 @@ setup(
     },
     include_package_data=True,
     keywords="asyncio oauth2 oauth",
-    packages=["aioauth"],
+    packages=find_namespace_packages(include=["aioauth", "aioauth.*"]),
     project_urls={"Source": about["__url__"]},
 )
