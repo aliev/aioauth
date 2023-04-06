@@ -162,7 +162,7 @@ class ResponseTypeIdToken(ResponseTypeBase[TRequest, TStorage]):
             request.query.scope,
             request.query.response_type,  # type: ignore
             request.query.redirect_uri,
-            request.query.nonce,  # type: ignore
+            nonce=request.query.nonce,  # type: ignore
         )
 
         return IdTokenResponse(id_token=id_token)
