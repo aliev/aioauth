@@ -4,14 +4,16 @@ from aioauth.models import AuthorizationCode, Client, Token
 from aioauth.requests import Request
 from aioauth.storage import BaseStorage
 
+from tests import factories
+
 
 @pytest.mark.asyncio
-async def test_storage_class(storage):
+async def test_storage_class():
     db = BaseStorage()
     request = Request(method="POST")
-    client: Client = storage["clients"][0]
-    token: Token = storage["tokens"][0]
-    authorization_code: AuthorizationCode = storage["authorization_codes"][0]
+    client: Client = factories.client_factory()
+    token: Token = factories.token_factory()
+    authorization_code: AuthorizationCode = factories.authorization_code_factory()
 
     with pytest.raises(NotImplementedError):
         await db.create_token(
