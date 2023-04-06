@@ -7,6 +7,8 @@ Different OAuth 2.0 grant types with OpenID Connect extensions.
 
 ----
 """
+from typing import TYPE_CHECKING
+
 from aioauth.grant_type import (
     AuthorizationCodeGrantType as OAuth2AuthorizationCodeGrantType,
 )
@@ -54,8 +56,9 @@ class AuthorizationCodeGrantType(OAuth2AuthorizationCodeGrantType[TRequest, TSto
             generate_token(48),
         )
 
-        # validate_request will have already ensured the request includes a code.
-        assert request.post.code is not None
+        if TYPE_CHECKING:
+            # validate_request will have already ensured the request includes a code.
+            assert request.post.code is not None
 
         authorization_code = await self.storage.get_authorization_code(
             request=request,
@@ -63,8 +66,9 @@ class AuthorizationCodeGrantType(OAuth2AuthorizationCodeGrantType[TRequest, TSto
             code=request.post.code,
         )
 
-        # validate_request will have already ensured the code was valid.
-        assert authorization_code is not None
+        if TYPE_CHECKING:
+            # validate_request will have already ensured the code was valid.
+            assert authorization_code is not None
 
         id_token = await self.storage.get_id_token(
             client_id=client.client_id,
