@@ -124,7 +124,9 @@ class Storage(BaseStorage[Token, Client, AuthorizationCode, Request]):
         code_challenge_method: Optional[CodeChallengeMethod],
         code_challenge: Optional[str],
         code: str,
+        **kwargs,
     ):
+        nonce = kwargs.get("nonce")
         authorization_code = AuthorizationCode(
             code=code,
             client_id=client_id,
@@ -135,6 +137,7 @@ class Storage(BaseStorage[Token, Client, AuthorizationCode, Request]):
             code_challenge_method=code_challenge_method,
             code_challenge=code_challenge,
             expires_in=request.settings.AUTHORIZATION_CODE_EXPIRES_IN,
+            nonce=nonce,
         )
         self.authorization_codes.append(authorization_code)
 

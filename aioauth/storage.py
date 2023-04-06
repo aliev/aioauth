@@ -76,7 +76,7 @@ class BaseStorage(Generic[TToken, TClient, TAuthorizationCode, TRequest]):
         code_challenge_method: Optional[CodeChallengeMethod],
         code_challenge: Optional[str],
         code: str,
-        nonce: Optional[str],
+        **kwargs,
     ) -> TAuthorizationCode:
         """Generates an authorization token and stores it in the database.
 
