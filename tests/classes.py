@@ -175,6 +175,7 @@ class Storage(BaseStorage[Token, Client, AuthorizationCode, Request]):
         response_type: str,
         redirect_uri: str,
         nonce: str,
+        **kwargs,
     ) -> str:
         return "generated id token"
 
