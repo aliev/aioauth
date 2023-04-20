@@ -194,3 +194,13 @@ class InvalidRedirectURIError(OAuth2Error[TRequest]):
     """
 
     error: ErrorType = "invalid_request"
+
+
+class UnsupportedTokenTypeError(OAuth2Error[TRequest]):
+    """
+    The authorization server does not support the revocation of the presented
+    token type. That is, the client tried to revoke an access token on a server
+    not supporting this feature.
+    """
+
+    error: ErrorType = "unsupported_token_type"

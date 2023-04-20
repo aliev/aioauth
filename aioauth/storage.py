@@ -191,7 +191,13 @@ class BaseStorage(Generic[TToken, TClient, TAuthorizationCode, TRequest]):
             "Method delete_authorization_code must be implemented for AuthorizationCodeGrantType"
         )
 
-    async def revoke_token(self, request: TRequest, refresh_token: str) -> None:
+    async def revoke_token(
+        self,
+        request: TRequest,
+        token_type: Optional[TokenType] = "refresh_token",
+        access_token: Optional[str] = None,
+        refresh_token: Optional[str] = None,
+    ) -> None:
         """Revokes a token's from the database.
 
         Note:

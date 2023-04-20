@@ -158,3 +158,67 @@ async def test_endpoint_availability(context_factory):
     response = await server.create_token_introspection_response(request)
     assert response.status_code == HTTPStatus.BAD_REQUEST
     assert response.content["error"] == "temporarily_unavailable"
+
+
+@pytest.mark.asyncio
+async def test_revoke_refresh_token(context: AuthorizationContext):
+    client = context.clients[0]
+    client_id = client.client_id
+    client_secret = client.client_secret
+
+    settings = context.settings
+    token = context.initial_tokens[0]
+    server = context.server
+
+    post = Post(token=token.refresh_token, token_type_hint="refresh_token")
+    request = Request(
+        post=post,
+        method="POST",
+        headers=encode_auth_headers(client_id, client_secret),
+        settings=settings,
+    )
+
+    response = await server.revoke_token(request)
+    assert response.status_code == HTTPStatus.NO_CONTENT
+
+    # Check that the token was revoked
+    request = Request(
+        settings=settings,
+        post=post,
+        method="POST",
+        headers=encode_auth_headers(client_id, client_secret),
+    )
+    response = await server.create_token_introspection_response(request)
+    assert not response.content["active"], "The refresh_token must be revoked"
+
+
+@pytest.mark.asyncio
+async def test_revoke_access_token(context: AuthorizationContext):
+    client = context.clients[0]
+    client_id = client.client_id
+    client_secret = client.client_secret
+
+    settings = context.settings
+    token = context.initial_tokens[0]
+    server = context.server
+
+    post = Post(token=token.access_token, token_type_hint="access_token")
+    request = Request(
+        post=post,
+        method="POST",
+        headers=encode_auth_headers(client_id, client_secret),
+        settings=settings,
+    )
+
+    response = await server.revoke_token(request)
+    assert response.status_code == HTTPStatus.NO_CONTENT
+
+    # Check that the token was revoked
+    request = Request(
+        settings=settings,
+        post=post,
+        method="POST",
+        headers=encode_auth_headers(client_id, client_secret),
+    )
+    response = await server.create_token_introspection_response(request)
+    assert not response.content["active"], "The access_token must be revoked"

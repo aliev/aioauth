@@ -23,6 +23,7 @@ ErrorType = Literal[
     "unauthorized_client",
     "unsupported_grant_type",
     "unsupported_response_type",
+    "unsupported_token_type",
     "insecure_transport",
     "mismatching_state",
     "method_is_not_allowed",
