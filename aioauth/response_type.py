@@ -125,14 +125,15 @@ class ResponseTypeAuthorizationCode(ResponseTypeBase[TRequest, TStorage]):
         self, request: TRequest, client: Client
     ) -> AuthorizationCodeResponse:
         authorization_code = await self.storage.create_authorization_code(
-            request,
-            client.client_id,
-            request.query.scope,
-            request.query.response_type,  # type: ignore
-            request.query.redirect_uri,
-            request.query.code_challenge_method,
-            request.query.code_challenge,
-            generate_token(42),
+            client_id=client.client_id,
+            code=generate_token(42),
+            code_challenge=request.query.code_challenge,
+            code_challenge_method=request.query.code_challenge_method,
+            nonce=request.query.nonce,
+            redirect_uri=request.query.redirect_uri,
+            request=request,
+            response_type=request.query.response_type,  # type: ignore
+            scope=request.query.scope,
         )
         return AuthorizationCodeResponse(
             code=authorization_code.code,
@@ -161,7 +162,7 @@ class ResponseTypeIdToken(ResponseTypeBase[TRequest, TStorage]):
             request.query.scope,
             request.query.response_type,  # type: ignore
             request.query.redirect_uri,
-            request.query.nonce,  # type: ignore
+            nonce=request.query.nonce,  # type: ignore
         )
 
         return IdTokenResponse(id_token=id_token)
