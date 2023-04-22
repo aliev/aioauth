@@ -38,6 +38,7 @@ from .errors import (
     TemporarilyUnavailableError,
     UnsupportedGrantTypeError,
     UnsupportedResponseTypeError,
+    UnsupportedTokenTypeError,
 )
 from .grant_type import (
     AuthorizationCodeGrantType,
@@ -447,3 +448,77 @@ class AuthorizationServer(Generic[TRequest, TStorage]):
             headers=HTTPHeaderDict({"location": location}),
             content=content,
         )
+
+    @catch_errors_and_unavailability()
+    async def revoke_token(self, request: TRequest) -> Response:
+        """Endpoint to revoke an access token or refresh token.
+        For more information see
+        `RFC7009 <https://tools.ietf.org/html/rfc7009>`_.
+
+        Note:
+            The API endpoint that leverages this function is usually
+            ``/revoke``.
+        Example:
+            Below is an example utilizing FastAPI as the server framework.
+        .. code-block:: python
+
+            from aioauth_fastapi.utils import to_oauth2_request, to_fastapi_response
+
+            @app.post("/revoke")
+            async def revoke(request: fastapi.Request) -> fastapi.Response:
+                # Converts a fastapi.Request to an aioauth.Request.
+                oauth2_request: aioauth.Request = await to_oauth2_request(request)
+                # Creates the response via this function call.
+                oauth2_response: aioauth.Response = await server.revoke_token(oauth2_request)
+                # Converts an aioauth.Response to a fastapi.Response.
+                response: fastapi.Response = await to_fastapi_response(oauth2_response)
+                return response
+
+        Args:
+            request: An :py:class:`aioauth.requests.Request` object.
+
+        Returns:
+            response: An :py:class:`aioauth.responses.Response` object.
+        """
+        self.validate_request(request, ["POST"])
+        client_id, _ = self.get_client_credentials(request)
+
+        if not request.post.token:
+            raise InvalidRequestError[TRequest](
+                request=request, description="Request is missing token."
+            )
+
+        if request.post.token_type_hint and request.post.token_type_hint not in {
+            "refresh_token",
+            "access_token",
+        }:
+            raise UnsupportedTokenTypeError[TRequest](request=request)
+
+        access_token = (
+            request.post.token
+            if request.post.token_type_hint != "refresh_token"
+            else None
+        )
+        refresh_token = (
+            request.post.token
+            if request.post.token_type_hint != "access_token"
+            else None
+        )
+
+        token = await self.storage.get_token(
+            request=request,
+            client_id=client_id,
+            access_token=access_token,
+            refresh_token=refresh_token,
+            token_type=request.post.token_type_hint,
+        )
+
+        if token:
+            await self.storage.revoke_token(
+                request=request,
+                access_token=access_token,
+                refresh_token=refresh_token,
+                token_type=request.post.token_type_hint,
+            )
+
+        return Response(status_code=HTTPStatus.NO_CONTENT)
