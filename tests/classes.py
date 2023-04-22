@@ -81,10 +81,18 @@ class Storage(BaseStorage[Token, Client, AuthorizationCode, Request]):
         self.tokens.append(token)
         return token
 
-    async def revoke_token(self, request: Request, refresh_token: str) -> None:
+    async def revoke_token(
+        self,
+        request: Request,
+        token_type: Optional[TokenType] = "refresh_token",
+        access_token: Optional[str] = None,
+        refresh_token: Optional[str] = None,
+    ) -> None:
         tokens = self.tokens
         for key, token_ in enumerate(tokens):
             if token_.refresh_token == refresh_token:
+                tokens[key] = replace(token_, revoked=True)
+            elif token_.access_token == access_token:
                 tokens[key] = replace(token_, revoked=True)
 
     async def get_token(
