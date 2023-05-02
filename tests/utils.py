@@ -19,9 +19,10 @@ EMPTY_KEYS = {
             status_code=HTTPStatus.UNAUTHORIZED,
             headers=HTTPHeaderDict(
                 {
+                    **default_headers,
                     "www-authenticate": (
                         "Basic error=invalid_client, error_description=Missing client_id parameter."
-                    )
+                    ),
                 }
             ),
         ),
@@ -118,9 +119,10 @@ EMPTY_KEYS = {
             status_code=HTTPStatus.UNAUTHORIZED,
             headers=HTTPHeaderDict(
                 {
+                    **default_headers,
                     "www-authenticate": (
                         "Basic error=invalid_client, error_description=Invalid client_id parameter value."
-                    )
+                    ),
                 }
             ),
         ),
@@ -159,9 +161,10 @@ INVALID_KEYS = {
             status_code=HTTPStatus.UNAUTHORIZED,
             headers=HTTPHeaderDict(
                 {
+                    **default_headers,
                     "www-authenticate": (
                         "Basic error=invalid_client, error_description=Invalid client_id parameter value."
-                    )
+                    ),
                 }
             ),
         ),
@@ -258,9 +261,10 @@ INVALID_KEYS = {
             status_code=HTTPStatus.UNAUTHORIZED,
             headers=HTTPHeaderDict(
                 {
+                    **default_headers,
                     "www-authenticate": (
                         "Basic error=invalid_client, error_description=Invalid client_id parameter value."
-                    )
+                    ),
                 }
             ),
         ),
