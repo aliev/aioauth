@@ -91,7 +91,9 @@ class InvalidClientError(OAuth2Error[TRequest]):
         description: Optional[str] = None,
         headers: Optional[HTTPHeaderDict] = None,
     ):
-        super().__init__(request, description, headers or default_headers)
+        super().__init__(
+            request, description, headers or HTTPHeaderDict(default_headers)
+        )
 
         auth_values = [f"error={self.error}"]
         if self.description:
