@@ -198,7 +198,7 @@ class AuthorizationServer(Generic[TRequest, TStorage]):
                 scope=token.scope,
                 client_id=token.client_id,
                 expires_in=token.expires_in,
-                token_type=token_type,
+                token_type=token.token_type,
             )
         else:
             token_response = TokenInactiveIntrospectionResponse()
