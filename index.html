@@ -1,0 +1,328 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>🔐 aioauth &mdash; aioauth 1.5.3 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/clipboard.min.js"></script>
+        <script src="_static/copybutton.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Plug-and-Play" href="sections/understanding/plug_and_play.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="#" class="icon icon-home"> aioauth
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">🔐 aioauth</a></li>
+</ul>
+<p><span class="caption-text">Understanding</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="sections/understanding/plug_and_play.html">Plug-and-Play</a></li>
+</ul>
+<p><span class="caption-text">Using</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="sections/using/configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sections/using/server_database.html">Server &amp; Database</a></li>
+</ul>
+<p><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="sections/examples/aiohttp.html">Aiohttp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sections/examples/fastapi.html">FastAPI</a></li>
+</ul>
+<p><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="sections/documentation/collections.html">Collections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sections/documentation/config.html">Config</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sections/documentation/constances.html">Constances</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sections/documentation/errors.html">Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sections/documentation/grant_type.html">Grant Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sections/documentation/models.html">Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sections/documentation/requests.html">Requests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sections/documentation/response_type.html">Response Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sections/documentation/responses.html">Responses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sections/documentation/server.html">Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sections/documentation/storage.html">Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sections/documentation/types.html">Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sections/documentation/utils.html">Utils</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">aioauth</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="#" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>🔐 aioauth</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <section id="aioauth">
+<h1>🔐 aioauth<a class="headerlink" href="#aioauth" title="Permalink to this headline">¶</a></h1>
+<p>aioauth is a spec-compliant OAuth 2.0 asynchronous Python module. aioauth works out-of-the-box with asynchronous server frameworks like FastAPI, Starlette, aiohttp, and others, as well as asynchronous database modules like Motor (MongoDB), aiopg (PostgreSQL), aiomysql (MySQL), or ORMs like Gino, sqlalchemy, or Tortoise.</p>
+<p>The magic of aioauth is its plug-and-play methods that allow the use of virtually any server or database framework.</p>
+<section id="installing">
+<h2>Installing<a class="headerlink" href="#installing" title="Permalink to this headline">¶</a></h2>
+<p>To install aioauth at the command line:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install aioauth
+</pre></div>
+</div>
+<p>To install pre-releases:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install git+https://github.com/aliev/aioauth
+</pre></div>
+</div>
+</section>
+<section id="supported-rfc">
+<h2>Supported RFC<a class="headerlink" href="#supported-rfc" title="Permalink to this headline">¶</a></h2>
+<p>aioauth supports the following RFCs:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://tools.ietf.org/html/rfc6749">RFC 6749 - The OAuth 2.0 Authorization Framework</a></p></li>
+<li><p><a class="reference external" href="https://tools.ietf.org/html/rfc7662">RFC 7662 - OAuth 2.0 Token Introspection</a></p></li>
+<li><p><a class="reference external" href="https://tools.ietf.org/html/rfc7636">RFC 7636 - Proof Key for Code Exchange by OAuth Public Clients</a></p></li>
+</ul>
+</section>
+<section id="pages">
+<h2>Pages<a class="headerlink" href="#pages" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/aliev/aioauth/pull/21">Github Project</a></p></li>
+<li><p><a class="reference external" href="https://github.com/aliev/aioauth/issues">Issues</a></p></li>
+<li><p><a class="reference external" href="https://github.com/aliev/aioauth/discussions">Discussion</a></p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="sections">
+<h1>Sections<a class="headerlink" href="#sections" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+<p><span class="caption-text">Understanding</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="sections/understanding/plug_and_play.html">Plug-and-Play</a></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p><span class="caption-text">Using</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="sections/using/configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sections/using/server_database.html">Server &amp; Database</a></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="sections/examples/aiohttp.html">Aiohttp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sections/examples/fastapi.html">FastAPI</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="sections/examples/fastapi.html#installing">Installing</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="sections/documentation/collections.html">Collections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sections/documentation/config.html">Config</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sections/documentation/constances.html">Constances</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sections/documentation/errors.html">Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sections/documentation/grant_type.html">Grant Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sections/documentation/models.html">Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sections/documentation/requests.html">Requests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sections/documentation/response_type.html">Response Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sections/documentation/responses.html">Responses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sections/documentation/server.html">Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sections/documentation/storage.html">Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sections/documentation/types.html">Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sections/documentation/utils.html">Utils</a></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+<section id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</section>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="sections/understanding/plug_and_play.html" class="btn btn-neutral float-right" title="Plug-and-Play" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright .
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

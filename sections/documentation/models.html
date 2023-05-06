@@ -1,0 +1,539 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Models &mdash; aioauth 1.5.3 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/clipboard.min.js"></script>
+        <script src="../../_static/copybutton.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Requests" href="requests.html" />
+    <link rel="prev" title="Grant Type" href="grant_type.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> aioauth
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">🔐 aioauth</a></li>
+</ul>
+<p><span class="caption-text">Understanding</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../understanding/plug_and_play.html">Plug-and-Play</a></li>
+</ul>
+<p><span class="caption-text">Using</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../using/configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../using/server_database.html">Server &amp; Database</a></li>
+</ul>
+<p><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../examples/aiohttp.html">Aiohttp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/fastapi.html">FastAPI</a></li>
+</ul>
+<p><span class="caption-text">Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="collections.html">Collections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="config.html">Config</a></li>
+<li class="toctree-l1"><a class="reference internal" href="constances.html">Constances</a></li>
+<li class="toctree-l1"><a class="reference internal" href="errors.html">Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="grant_type.html">Grant Type</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="requests.html">Requests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="response_type.html">Response Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="responses.html">Responses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="server.html">Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="storage.html">Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="types.html">Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utils</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">aioauth</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Models</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../_sources/sections/documentation/models.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <section id="module-aioauth.models">
+<span id="models"></span><h1>Models<a class="headerlink" href="#module-aioauth.models" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">aioauth</span> <span class="kn">import</span> <span class="n">models</span>
+</pre></div>
+</div>
+<p>Memory objects used throughout the project.</p>
+<hr class="docutils" />
+<dl class="py class">
+<dt id="aioauth.models.Client">
+<em class="property">class </em><code class="sig-name descname">Client</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">client_id</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">client_secret</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">grant_types</span><span class="p">:</span> <span class="n">List<span class="p">[</span>Literal<span class="p">[</span>authorization_code<span class="p">, </span>password<span class="p">, </span>client_credentials<span class="p">, </span>refresh_token<span class="p">]</span><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">response_types</span><span class="p">:</span> <span class="n">List<span class="p">[</span>Literal<span class="p">[</span>token<span class="p">, </span>code<span class="p">, </span>none<span class="p">, </span>id_token<span class="p">]</span><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">redirect_uris</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">scope</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">''</span></em>, <em class="sig-param"><span class="n">user</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Any<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/aioauth/models.html#Client"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aioauth.models.Client" title="Permalink to this definition">¶</a></dt>
+<dd><p>OAuth2.0 client model object.</p>
+<dl class="py attribute">
+<dt id="aioauth.models.Client.client_id">
+<code class="sig-name descname">client_id</code><em class="property">: str</em><a class="headerlink" href="#aioauth.models.Client.client_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Public identifier for the client. It must also be unique across all
+clients that the authorization server handles.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="aioauth.models.Client.client_secret">
+<code class="sig-name descname">client_secret</code><em class="property">: str</em><a class="headerlink" href="#aioauth.models.Client.client_secret" title="Permalink to this definition">¶</a></dt>
+<dd><p>Client secret is a secret known only to the client and the
+authorization server. Used for secure communication between the
+client and authorization server.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="aioauth.models.Client.grant_types">
+<code class="sig-name descname">grant_types</code><em class="property">: List<span class="p">[</span>Literal<span class="p">[</span>authorization_code<span class="p">, </span>password<span class="p">, </span>client_credentials<span class="p">, </span>refresh_token<span class="p">]</span><span class="p">]</span></em><a class="headerlink" href="#aioauth.models.Client.grant_types" title="Permalink to this definition">¶</a></dt>
+<dd><p>The method(s) in which an application gets an access token from the
+provider. Each grant type is optimized for a particular use case,
+whether that’s a web app, a native app, a device without the ability
+to launch a web browser, or server-to-server applications.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="aioauth.models.Client.response_types">
+<code class="sig-name descname">response_types</code><em class="property">: List<span class="p">[</span>Literal<span class="p">[</span>token<span class="p">, </span>code<span class="p">, </span>none<span class="p">, </span>id_token<span class="p">]</span><span class="p">]</span></em><a class="headerlink" href="#aioauth.models.Client.response_types" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list containing the types of the response expected.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="aioauth.models.Client.redirect_uris">
+<code class="sig-name descname">redirect_uris</code><em class="property">: List<span class="p">[</span>str<span class="p">]</span></em><a class="headerlink" href="#aioauth.models.Client.redirect_uris" title="Permalink to this definition">¶</a></dt>
+<dd><p>After a user successfully authorizes an application, the
+authorization server will redirect the user back to the application
+with either an authorization code or access token in the URL.
+Because the redirect URL will contain sensitive information, it is
+critical that the service doesn’t redirect the user to arbitrary
+locations.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="aioauth.models.Client.scope">
+<code class="sig-name descname">scope</code><em class="property">: str</em><em class="property"> = ''</em><a class="headerlink" href="#aioauth.models.Client.scope" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scope is a mechanism that limit an application’s access to a user’s
+account. An application can request one or more scopes, this
+information is then presented to the user in the consent screen, and
+the access token issued to the application will be limited to the
+scopes granted.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="aioauth.models.Client.user">
+<code class="sig-name descname">user</code><em class="property">: Optional<span class="p">[</span>Any<span class="p">]</span></em><em class="property"> = None</em><a class="headerlink" href="#aioauth.models.Client.user" title="Permalink to this definition">¶</a></dt>
+<dd><p>The user who is the creator of the Client.
+This optional attribute can be useful if you are creating a server that
+can be managed by multiple users.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aioauth.models.Client.check_redirect_uri">
+<code class="sig-name descname">check_redirect_uri</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">redirect_uri</span></em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../../_modules/aioauth/models.html#Client.check_redirect_uri"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aioauth.models.Client.check_redirect_uri" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verifies passed <code class="docutils literal notranslate"><span class="pre">redirect_uri</span></code> is part of the Clients’s
+<code class="docutils literal notranslate"><span class="pre">redirect_uris</span></code> list.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aioauth.models.Client.check_grant_type">
+<code class="sig-name descname">check_grant_type</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">grant_type</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Literal<span class="p">[</span>authorization_code<span class="p">, </span>password<span class="p">, </span>client_credentials<span class="p">, </span>refresh_token<span class="p">]</span><span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../../_modules/aioauth/models.html#Client.check_grant_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aioauth.models.Client.check_grant_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verifies passed <code class="docutils literal notranslate"><span class="pre">grant_type</span></code> is part of the client’s
+<code class="docutils literal notranslate"><span class="pre">grant_types</span></code> list.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aioauth.models.Client.check_response_type">
+<code class="sig-name descname">check_response_type</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">response_type</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Union<span class="p">[</span>Literal<span class="p">[</span>token<span class="p">, </span>code<span class="p">, </span>none<span class="p">, </span>id_token<span class="p">]</span><span class="p">, </span>str<span class="p">]</span><span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../../_modules/aioauth/models.html#Client.check_response_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aioauth.models.Client.check_response_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verifies passed <code class="docutils literal notranslate"><span class="pre">response_type</span></code> is part of the client’s
+<code class="docutils literal notranslate"><span class="pre">response_types</span></code> list.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aioauth.models.Client.get_allowed_scope">
+<code class="sig-name descname">get_allowed_scope</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scope</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="../../_modules/aioauth/models.html#Client.get_allowed_scope"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aioauth.models.Client.get_allowed_scope" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the allowed <code class="docutils literal notranslate"><span class="pre">scope</span></code> given the passed <code class="docutils literal notranslate"><span class="pre">scope</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Note that the passed <code class="docutils literal notranslate"><span class="pre">scope</span></code> may contain multiple scopes
+seperated by a space character.</p>
+</aside>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aioauth.models.Client.check_scope">
+<code class="sig-name descname">check_scope</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scope</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../../_modules/aioauth/models.html#Client.check_scope"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aioauth.models.Client.check_scope" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="aioauth.models.AuthorizationCode">
+<em class="property">class </em><code class="sig-name descname">AuthorizationCode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">code</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">client_id</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">redirect_uri</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">response_type</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">scope</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">auth_time</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">expires_in</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">code_challenge</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">code_challenge_method</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Literal<span class="p">[</span>plain<span class="p">, </span>S256<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">nonce</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">user</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Any<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/aioauth/models.html#AuthorizationCode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aioauth.models.AuthorizationCode" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py attribute">
+<dt id="aioauth.models.AuthorizationCode.code">
+<code class="sig-name descname">code</code><em class="property">: str</em><a class="headerlink" href="#aioauth.models.AuthorizationCode.code" title="Permalink to this definition">¶</a></dt>
+<dd><p>Authorization code that the client previously received from the
+authorization server.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="aioauth.models.AuthorizationCode.client_id">
+<code class="sig-name descname">client_id</code><em class="property">: str</em><a class="headerlink" href="#aioauth.models.AuthorizationCode.client_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Public identifier for the client. It must also be unique across all
+clients that the authorization server handles.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="aioauth.models.AuthorizationCode.redirect_uri">
+<code class="sig-name descname">redirect_uri</code><em class="property">: str</em><a class="headerlink" href="#aioauth.models.AuthorizationCode.redirect_uri" title="Permalink to this definition">¶</a></dt>
+<dd><p>After a user successfully authorizes an application, the
+authorization server will redirect the user back to the application
+with either an authorization code or access token in the URL.
+Because the redirect URL will contain sensitive information, it is
+critical that the service doesn’t redirect the user to arbitrary
+locations.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="aioauth.models.AuthorizationCode.response_type">
+<code class="sig-name descname">response_type</code><em class="property">: str</em><a class="headerlink" href="#aioauth.models.AuthorizationCode.response_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>A string containing the type of the response expected.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="aioauth.models.AuthorizationCode.scope">
+<code class="sig-name descname">scope</code><em class="property">: str</em><a class="headerlink" href="#aioauth.models.AuthorizationCode.scope" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scope is a mechanism that limit an application’s access to a user’s
+account. An application can request one or more scopes, this
+information is then presented to the user in the consent screen, and
+the access token issued to the application will be limited to the
+scopes granted.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="aioauth.models.AuthorizationCode.auth_time">
+<code class="sig-name descname">auth_time</code><em class="property">: int</em><a class="headerlink" href="#aioauth.models.AuthorizationCode.auth_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>JSON Web Token Claim indicating the time when the authentication
+occurred.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="aioauth.models.AuthorizationCode.expires_in">
+<code class="sig-name descname">expires_in</code><em class="property">: int</em><a class="headerlink" href="#aioauth.models.AuthorizationCode.expires_in" title="Permalink to this definition">¶</a></dt>
+<dd><p>Time delta in which authorization_code will expire.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="aioauth.models.AuthorizationCode.code_challenge">
+<code class="sig-name descname">code_challenge</code><em class="property">: Optional<span class="p">[</span>str<span class="p">]</span></em><em class="property"> = None</em><a class="headerlink" href="#aioauth.models.AuthorizationCode.code_challenge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Only used when <a class="reference external" href="tools.ietf.org/html/rfc7636">RFC 7636</a>,
+Proof Key for Code Exchange, is used.
+PKCE works by having the app generate a random value at the
+beginning of the flow called a Code Verifier. The app hashes the
+Code Verifier and the result is called the Code Challenge. The app
+then kicks off the flow in the normal way, except that it includes
+the Code Challenge in the query string for the request to the
+Authorization Server.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="aioauth.models.AuthorizationCode.code_challenge_method">
+<code class="sig-name descname">code_challenge_method</code><em class="property">: Optional<span class="p">[</span>Literal<span class="p">[</span>plain<span class="p">, </span>S256<span class="p">]</span><span class="p">]</span></em><em class="property"> = None</em><a class="headerlink" href="#aioauth.models.AuthorizationCode.code_challenge_method" title="Permalink to this definition">¶</a></dt>
+<dd><p>Only used when <a class="reference external" href="tools.ietf.org/html/rfc7636">RFC 7636</a>,
+Proof Key for Code Exchange, is used.
+Method used to transform the code verifier into the code challenge.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="aioauth.models.AuthorizationCode.nonce">
+<code class="sig-name descname">nonce</code><em class="property">: Optional<span class="p">[</span>str<span class="p">]</span></em><em class="property"> = None</em><a class="headerlink" href="#aioauth.models.AuthorizationCode.nonce" title="Permalink to this definition">¶</a></dt>
+<dd><p>Only used when <a class="reference external" href="tools.ietf.org/html/rfc7636">RFC 7636</a>,
+Proof Key for Code Exchange, is used.
+Random piece of data.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="aioauth.models.AuthorizationCode.user">
+<code class="sig-name descname">user</code><em class="property">: Optional<span class="p">[</span>Any<span class="p">]</span></em><em class="property"> = None</em><a class="headerlink" href="#aioauth.models.AuthorizationCode.user" title="Permalink to this definition">¶</a></dt>
+<dd><p>The user who owns the AuthorizationCode.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aioauth.models.AuthorizationCode.check_code_challenge">
+<code class="sig-name descname">check_code_challenge</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">code_verifier</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../../_modules/aioauth/models.html#AuthorizationCode.check_code_challenge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aioauth.models.AuthorizationCode.check_code_challenge" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="aioauth.models.AuthorizationCode.is_expired">
+<em class="property">property </em><code class="sig-name descname">is_expired</code><a class="headerlink" href="#aioauth.models.AuthorizationCode.is_expired" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if the authorization_code has expired.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="aioauth.models.Token">
+<em class="property">class </em><code class="sig-name descname">Token</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">access_token</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">refresh_token</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">scope</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">issued_at</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">expires_in</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">refresh_token_expires_in</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">client_id</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">token_type</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'Bearer'</span></em>, <em class="sig-param"><span class="n">revoked</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">user</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Any<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/aioauth/models.html#Token"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aioauth.models.Token" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py attribute">
+<dt id="aioauth.models.Token.access_token">
+<code class="sig-name descname">access_token</code><em class="property">: str</em><a class="headerlink" href="#aioauth.models.Token.access_token" title="Permalink to this definition">¶</a></dt>
+<dd><p>Token that clients use to make API requests on behalf of the
+resource owner.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="aioauth.models.Token.refresh_token">
+<code class="sig-name descname">refresh_token</code><em class="property">: str</em><a class="headerlink" href="#aioauth.models.Token.refresh_token" title="Permalink to this definition">¶</a></dt>
+<dd><p>Token used by clients to exchange a refresh token for an access
+token when the access token has expired.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="aioauth.models.Token.scope">
+<code class="sig-name descname">scope</code><em class="property">: str</em><a class="headerlink" href="#aioauth.models.Token.scope" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scope is a mechanism that limit an application’s access to a user’s
+account. An application can request one or more scopes, this
+information is then presented to the user in the consent screen, and
+the access token issued to the application will be limited to the
+scopes granted.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="aioauth.models.Token.issued_at">
+<code class="sig-name descname">issued_at</code><em class="property">: int</em><a class="headerlink" href="#aioauth.models.Token.issued_at" title="Permalink to this definition">¶</a></dt>
+<dd><p>Time date in which token was issued at.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="aioauth.models.Token.expires_in">
+<code class="sig-name descname">expires_in</code><em class="property">: int</em><a class="headerlink" href="#aioauth.models.Token.expires_in" title="Permalink to this definition">¶</a></dt>
+<dd><p>Time delta in which token will expire.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="aioauth.models.Token.refresh_token_expires_in">
+<code class="sig-name descname">refresh_token_expires_in</code><em class="property">: int</em><a class="headerlink" href="#aioauth.models.Token.refresh_token_expires_in" title="Permalink to this definition">¶</a></dt>
+<dd><p>Time delta in which refresh token will expire.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="aioauth.models.Token.client_id">
+<code class="sig-name descname">client_id</code><em class="property">: str</em><a class="headerlink" href="#aioauth.models.Token.client_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Public identifier for the client. It must also be unique across all
+clients that the authorization server handles.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="aioauth.models.Token.token_type">
+<code class="sig-name descname">token_type</code><em class="property">: str</em><em class="property"> = 'Bearer'</em><a class="headerlink" href="#aioauth.models.Token.token_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Type of token expected.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="aioauth.models.Token.revoked">
+<code class="sig-name descname">revoked</code><em class="property">: bool</em><em class="property"> = False</em><a class="headerlink" href="#aioauth.models.Token.revoked" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flag that indicates whether or not the token has been revoked.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="aioauth.models.Token.user">
+<code class="sig-name descname">user</code><em class="property">: Optional<span class="p">[</span>Any<span class="p">]</span></em><em class="property"> = None</em><a class="headerlink" href="#aioauth.models.Token.user" title="Permalink to this definition">¶</a></dt>
+<dd><p>The user who owns the Token.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aioauth.models.Token.is_expired">
+<em class="property">property </em><code class="sig-name descname">is_expired</code><a class="headerlink" href="#aioauth.models.Token.is_expired" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if the token has expired.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aioauth.models.Token.refresh_token_expired">
+<em class="property">property </em><code class="sig-name descname">refresh_token_expired</code><a class="headerlink" href="#aioauth.models.Token.refresh_token_expired" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if refresh token has expired.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="requests.html" class="btn btn-neutral float-right" title="Requests" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="grant_type.html" class="btn btn-neutral float-left" title="Grant Type" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright .
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

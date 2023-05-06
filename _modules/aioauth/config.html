@@ -1,0 +1,272 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>aioauth.config &mdash; aioauth 1.5.3 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/clipboard.min.js"></script>
+        <script src="../../_static/copybutton.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> aioauth
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">🔐 aioauth</a></li>
+</ul>
+<p><span class="caption-text">Understanding</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/understanding/plug_and_play.html">Plug-and-Play</a></li>
+</ul>
+<p><span class="caption-text">Using</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/using/configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/using/server_database.html">Server &amp; Database</a></li>
+</ul>
+<p><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/examples/aiohttp.html">Aiohttp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/examples/fastapi.html">FastAPI</a></li>
+</ul>
+<p><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/collections.html">Collections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/config.html">Config</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/constances.html">Constances</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/errors.html">Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/grant_type.html">Grant Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/models.html">Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/requests.html">Requests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/response_type.html">Response Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/responses.html">Responses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/server.html">Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/storage.html">Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/types.html">Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/utils.html">Utils</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">aioauth</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>aioauth.config</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for aioauth.config</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. code-block:: python</span>
+
+<span class="sd">    from aioauth import config</span>
+
+<span class="sd">Configuration settings for aioauth server instance.</span>
+
+<span class="sd">----</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+
+
+<div class="viewcode-block" id="Settings"><a class="viewcode-back" href="../../sections/documentation/config.html#aioauth.config.Settings">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Settings</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Configuration options that is used by the Server class.&quot;&quot;&quot;</span>
+
+    <span class="n">TOKEN_EXPIRES_IN</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span>
+    <span class="sd">&quot;&quot;&quot;Access token lifetime in seconds. Defaults to 24 hours.&quot;&quot;&quot;</span>
+
+    <span class="n">REFRESH_TOKEN_EXPIRES_IN</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">TOKEN_EXPIRES_IN</span> <span class="o">*</span> <span class="mi">2</span>
+    <span class="sd">&quot;&quot;&quot;Refresh token lifetime in seconds. Defaults to TOKEN_EXPIRES_IN * 2 (48 hours).&quot;&quot;&quot;</span>
+
+    <span class="n">AUTHORIZATION_CODE_EXPIRES_IN</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span> <span class="o">*</span> <span class="mi">60</span>
+    <span class="sd">&quot;&quot;&quot;Authorization code lifetime in seconds. Defaults to 5 minutes.&quot;&quot;&quot;</span>
+
+    <span class="n">INSECURE_TRANSPORT</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="sd">&quot;&quot;&quot;Allow connections over SSL only.</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        When this option is disabled server will raise &quot;HTTP method is</span>
+<span class="sd">        not allowed&quot; error when attempting to access the server without</span>
+<span class="sd">        a valid SSL tunnel.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">ERROR_URI</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;URI to redirect resource owner when server encounters error.&quot;&quot;&quot;</span>
+
+    <span class="n">AVAILABLE</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="sd">&quot;&quot;&quot;Boolean indicating whether or not the server is available.&quot;&quot;&quot;</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright .
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

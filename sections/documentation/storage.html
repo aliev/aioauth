@@ -1,0 +1,468 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Storage &mdash; aioauth 1.5.3 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/clipboard.min.js"></script>
+        <script src="../../_static/copybutton.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Types" href="types.html" />
+    <link rel="prev" title="Server" href="server.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> aioauth
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">🔐 aioauth</a></li>
+</ul>
+<p><span class="caption-text">Understanding</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../understanding/plug_and_play.html">Plug-and-Play</a></li>
+</ul>
+<p><span class="caption-text">Using</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../using/configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../using/server_database.html">Server &amp; Database</a></li>
+</ul>
+<p><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../examples/aiohttp.html">Aiohttp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/fastapi.html">FastAPI</a></li>
+</ul>
+<p><span class="caption-text">Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="collections.html">Collections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="config.html">Config</a></li>
+<li class="toctree-l1"><a class="reference internal" href="constances.html">Constances</a></li>
+<li class="toctree-l1"><a class="reference internal" href="errors.html">Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="grant_type.html">Grant Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="requests.html">Requests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="response_type.html">Response Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="responses.html">Responses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="server.html">Server</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="types.html">Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utils</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">aioauth</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Storage</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../_sources/sections/documentation/storage.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <section id="module-aioauth.storage">
+<span id="storage"></span><h1>Storage<a class="headerlink" href="#module-aioauth.storage" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">aioauth</span> <span class="kn">import</span> <span class="n">storage</span>
+</pre></div>
+</div>
+<p>Storage helper class for storing and retrieving client and resource
+owner information. See the examples on the sidebar to view this in
+action.</p>
+<hr class="docutils" />
+<dl class="py class">
+<dt id="aioauth.storage.BaseStorage">
+<em class="property">class </em><code class="sig-name descname">BaseStorage</code><a class="reference internal" href="../../_modules/aioauth/storage.html#BaseStorage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aioauth.storage.BaseStorage" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt id="aioauth.storage.BaseStorage.create_token">
+<em class="property">async </em><code class="sig-name descname">create_token</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span><span class="p">:</span> <span class="n">TRequest</span></em>, <em class="sig-param"><span class="n">client_id</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">scope</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">access_token</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">refresh_token</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; TToken<a class="reference internal" href="../../_modules/aioauth/storage.html#BaseStorage.create_token"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aioauth.storage.BaseStorage.create_token" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a user token and stores it in the database.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Generated token <em>must</em> be stored in the database.</p>
+</aside>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Method is used by all core grant types, but only used for
+<a class="reference internal" href="response_type.html#aioauth.response_type.ResponseTypeToken" title="aioauth.response_type.ResponseTypeToken"><code class="xref py py-class docutils literal notranslate"><span class="pre">aioauth.response_type.ResponseTypeToken</span></code></a>.</p>
+</aside>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> – An <a class="reference internal" href="requests.html#aioauth.requests.Request" title="aioauth.requests.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">aioauth.requests.Request</span></code></a>.</p></li>
+<li><p><strong>client_id</strong> – A user client ID.</p></li>
+<li><p><strong>scope</strong> – The scopes for the token.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The new generated <a class="reference internal" href="models.html#aioauth.models.Token" title="aioauth.models.Token"><code class="xref py py-class docutils literal notranslate"><span class="pre">aioauth.models.Token</span></code></a>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aioauth.storage.BaseStorage.get_token">
+<em class="property">async </em><code class="sig-name descname">get_token</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span><span class="p">:</span> <span class="n">TRequest</span></em>, <em class="sig-param"><span class="n">client_id</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">token_type</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Literal<span class="p">[</span>access_token<span class="p">, </span>refresh_token<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">'refresh_token'</span></em>, <em class="sig-param"><span class="n">access_token</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">refresh_token</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; Optional<span class="p">[</span>TToken<span class="p">]</span><a class="reference internal" href="../../_modules/aioauth/storage.html#BaseStorage.get_token"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aioauth.storage.BaseStorage.get_token" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets existing token from the database.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Method is used by
+<a class="reference internal" href="server.html#aioauth.server.AuthorizationServer" title="aioauth.server.AuthorizationServer"><code class="xref py py-class docutils literal notranslate"><span class="pre">aioauth.server.AuthorizationServer</span></code></a>,  and by the
+grant type <code class="xref py py-class docutils literal notranslate"><span class="pre">aioauth.grant_types.RefreshTokenGrantType</span></code>.</p>
+</aside>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> – An <a class="reference internal" href="requests.html#aioauth.requests.Request" title="aioauth.requests.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">aioauth.requests.Request</span></code></a>.</p></li>
+<li><p><strong>client_id</strong> – A user client ID.</p></li>
+<li><p><strong>access_token</strong> – The user access token.</p></li>
+<li><p><strong>refresh_token</strong> – The user refresh token.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An optional <a class="reference internal" href="models.html#aioauth.models.Token" title="aioauth.models.Token"><code class="xref py py-class docutils literal notranslate"><span class="pre">aioauth.models.Token</span></code></a> object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aioauth.storage.BaseStorage.create_authorization_code">
+<em class="property">async </em><code class="sig-name descname">create_authorization_code</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span><span class="p">:</span> <span class="n">TRequest</span></em>, <em class="sig-param"><span class="n">client_id</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">scope</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">response_type</span><span class="p">:</span> <span class="n">Literal<span class="p">[</span>token<span class="p">, </span>code<span class="p">, </span>none<span class="p">, </span>id_token<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">redirect_uri</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">code_challenge_method</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Literal<span class="p">[</span>plain<span class="p">, </span>S256<span class="p">]</span><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">code_challenge</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">code</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span> &#x2192; TAuthorizationCode<a class="reference internal" href="../../_modules/aioauth/storage.html#BaseStorage.create_authorization_code"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aioauth.storage.BaseStorage.create_authorization_code" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates an authorization token and stores it in the database.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Generated authorization token <em>must</em> be stored in the database.</p>
+</aside>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This must is used by the response type
+<code class="xref py py-class docutils literal notranslate"><span class="pre">aioauth.respose_type.ResponseTypeAuthorizationCode</span></code>.</p>
+</aside>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> – An <a class="reference internal" href="requests.html#aioauth.requests.Request" title="aioauth.requests.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">aioauth.requests.Request</span></code></a>.</p></li>
+<li><p><strong>client_id</strong> – A user client ID.</p></li>
+<li><p><strong>scope</strong> – The scopes for the token.</p></li>
+<li><p><strong>response_type</strong> – An <code class="xref py py-class docutils literal notranslate"><span class="pre">aioauth.types.ResponseType</span></code>.</p></li>
+<li><p><strong>redirect_uri</strong> – The redirect URI.</p></li>
+<li><p><strong>code_challenge_method</strong> – An <code class="xref py py-class docutils literal notranslate"><span class="pre">aioauth.types.CodeChallengeMethod</span></code>.</p></li>
+<li><p><strong>code_challenge</strong> – Code challenge string.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An <a class="reference internal" href="models.html#aioauth.models.AuthorizationCode" title="aioauth.models.AuthorizationCode"><code class="xref py py-class docutils literal notranslate"><span class="pre">aioauth.models.AuthorizationCode</span></code></a> object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aioauth.storage.BaseStorage.get_id_token">
+<em class="property">async </em><code class="sig-name descname">get_id_token</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span><span class="p">:</span> <span class="n">TRequest</span></em>, <em class="sig-param"><span class="n">client_id</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">scope</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">response_type</span><span class="p">:</span> <span class="n">Literal<span class="p">[</span>token<span class="p">, </span>code<span class="p">, </span>none<span class="p">, </span>id_token<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">redirect_uri</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="../../_modules/aioauth/storage.html#BaseStorage.get_id_token"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aioauth.storage.BaseStorage.get_id_token" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an id_token.
+For more information see <a class="reference external" href="https://openid.net/specs/openid-connect-core-1_0.html#IDToken">OpenID Connect Core 1.0 incorporating errata set 1 section 2</a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Method is used by response type <a class="reference internal" href="response_type.html#aioauth.response_type.ResponseTypeIdToken" title="aioauth.response_type.ResponseTypeIdToken"><code class="xref py py-class docutils literal notranslate"><span class="pre">aioauth.response_type.ResponseTypeIdToken</span></code></a>
+and <code class="xref py py-class docutils literal notranslate"><span class="pre">aioauth.oidc.core.grant_type.AuthorizationCodeGrantType</span></code>.</p>
+</aside>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aioauth.storage.BaseStorage.get_client">
+<em class="property">async </em><code class="sig-name descname">get_client</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span><span class="p">:</span> <span class="n">TRequest</span></em>, <em class="sig-param"><span class="n">client_id</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">client_secret</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; Optional<span class="p">[</span>TClient<span class="p">]</span><a class="reference internal" href="../../_modules/aioauth/storage.html#BaseStorage.get_client"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aioauth.storage.BaseStorage.get_client" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets existing client from the database if it exists.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If client does not exists in database this method <em>must</em>
+return <code class="docutils literal notranslate"><span class="pre">None</span></code> to indicate to the validator that the
+requested <code class="docutils literal notranslate"><span class="pre">client_id</span></code> does not exist or is invalid.</p>
+</aside>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This method is used by all core grant types, as well as
+all core response types.</p>
+</aside>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> – An <a class="reference internal" href="requests.html#aioauth.requests.Request" title="aioauth.requests.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">aioauth.requests.Request</span></code></a>.</p></li>
+<li><p><strong>client_id</strong> – A user client ID.</p></li>
+<li><p><strong>client_secret</strong> – An optional user client secret.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An optional <a class="reference internal" href="models.html#aioauth.models.Client" title="aioauth.models.Client"><code class="xref py py-class docutils literal notranslate"><span class="pre">aioauth.models.Client</span></code></a> object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aioauth.storage.BaseStorage.authenticate">
+<em class="property">async </em><code class="sig-name descname">authenticate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span><span class="p">:</span> <span class="n">TRequest</span></em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../../_modules/aioauth/storage.html#BaseStorage.authenticate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aioauth.storage.BaseStorage.authenticate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Authenticates a user.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This method is used by the grant type
+<a class="reference internal" href="grant_type.html#aioauth.grant_type.PasswordGrantType" title="aioauth.grant_type.PasswordGrantType"><code class="xref py py-class docutils literal notranslate"><span class="pre">aioauth.grant_type.PasswordGrantType</span></code></a>.</p>
+</aside>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>request</strong> – An <a class="reference internal" href="requests.html#aioauth.requests.Request" title="aioauth.requests.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">aioauth.requests.Request</span></code></a>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Boolean indicating whether or not the user was authenticated
+successfully.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aioauth.storage.BaseStorage.get_authorization_code">
+<em class="property">async </em><code class="sig-name descname">get_authorization_code</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span><span class="p">:</span> <span class="n">TRequest</span></em>, <em class="sig-param"><span class="n">client_id</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">code</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; Optional<span class="p">[</span>TAuthorizationCode<span class="p">]</span><a class="reference internal" href="../../_modules/aioauth/storage.html#BaseStorage.get_authorization_code"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aioauth.storage.BaseStorage.get_authorization_code" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets existing authorization code from the database if it exists.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If authorization code does not exists this function <em>must</em>
+return <code class="docutils literal notranslate"><span class="pre">None</span></code> to indicate to the validator that the
+requested authorization code does not exist or is invalid.</p>
+</aside>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This method is used by the grant type
+<a class="reference internal" href="grant_type.html#aioauth.grant_type.AuthorizationCodeGrantType" title="aioauth.grant_type.AuthorizationCodeGrantType"><code class="xref py py-class docutils literal notranslate"><span class="pre">aioauth.grant_type.AuthorizationCodeGrantType</span></code></a>.</p>
+</aside>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> – An <a class="reference internal" href="requests.html#aioauth.requests.Request" title="aioauth.requests.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">aioauth.requests.Request</span></code></a>.</p></li>
+<li><p><strong>client_id</strong> – A user client ID.</p></li>
+<li><p><strong>code</strong> – An authorization code.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An optional <a class="reference internal" href="models.html#aioauth.models.AuthorizationCode" title="aioauth.models.AuthorizationCode"><code class="xref py py-class docutils literal notranslate"><span class="pre">aioauth.models.AuthorizationCode</span></code></a>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aioauth.storage.BaseStorage.delete_authorization_code">
+<em class="property">async </em><code class="sig-name descname">delete_authorization_code</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span><span class="p">:</span> <span class="n">TRequest</span></em>, <em class="sig-param"><span class="n">client_id</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">code</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../../_modules/aioauth/storage.html#BaseStorage.delete_authorization_code"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aioauth.storage.BaseStorage.delete_authorization_code" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deletes authorization code from database.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This method is used by the grant type
+<a class="reference internal" href="grant_type.html#aioauth.grant_type.AuthorizationCodeGrantType" title="aioauth.grant_type.AuthorizationCodeGrantType"><code class="xref py py-class docutils literal notranslate"><span class="pre">aioauth.grant_type.AuthorizationCodeGrantType</span></code></a>.</p>
+</aside>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> – An <a class="reference internal" href="requests.html#aioauth.requests.Request" title="aioauth.requests.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">aioauth.requests.Request</span></code></a>.</p></li>
+<li><p><strong>client_id</strong> – A user client ID.</p></li>
+<li><p><strong>code</strong> – An authorization code.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aioauth.storage.BaseStorage.revoke_token">
+<em class="property">async </em><code class="sig-name descname">revoke_token</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span><span class="p">:</span> <span class="n">TRequest</span></em>, <em class="sig-param"><span class="n">token_type</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Literal<span class="p">[</span>access_token<span class="p">, </span>refresh_token<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">'refresh_token'</span></em>, <em class="sig-param"><span class="n">access_token</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">refresh_token</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../../_modules/aioauth/storage.html#BaseStorage.revoke_token"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aioauth.storage.BaseStorage.revoke_token" title="Permalink to this definition">¶</a></dt>
+<dd><p>Revokes a token’s from the database.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This method <em>must</em> set <code class="docutils literal notranslate"><span class="pre">revoked</span></code> to <code class="docutils literal notranslate"><span class="pre">True</span></code> for an
+existing token record. This method is used by the grant type
+<code class="xref py py-class docutils literal notranslate"><span class="pre">aioauth.grant_types.RefreshTokenGrantType</span></code>.</p>
+</aside>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> – An <a class="reference internal" href="requests.html#aioauth.requests.Request" title="aioauth.requests.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">aioauth.requests.Request</span></code></a>.</p></li>
+<li><p><strong>refresh_token</strong> – The user refresh token.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="types.html" class="btn btn-neutral float-right" title="Types" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="server.html" class="btn btn-neutral float-left" title="Server" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright .
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,495 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>aioauth.grant_type &mdash; aioauth 1.5.3 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/clipboard.min.js"></script>
+        <script src="../../_static/copybutton.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> aioauth
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">🔐 aioauth</a></li>
+</ul>
+<p><span class="caption-text">Understanding</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/understanding/plug_and_play.html">Plug-and-Play</a></li>
+</ul>
+<p><span class="caption-text">Using</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/using/configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/using/server_database.html">Server &amp; Database</a></li>
+</ul>
+<p><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/examples/aiohttp.html">Aiohttp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/examples/fastapi.html">FastAPI</a></li>
+</ul>
+<p><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/collections.html">Collections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/config.html">Config</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/constances.html">Constances</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/errors.html">Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/grant_type.html">Grant Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/models.html">Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/requests.html">Requests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/response_type.html">Response Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/responses.html">Responses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/server.html">Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/storage.html">Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/types.html">Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/utils.html">Utils</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">aioauth</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>aioauth.grant_type</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for aioauth.grant_type</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. code-block:: python</span>
+
+<span class="sd">    from aioauth import grant_type</span>
+
+<span class="sd">Different OAuth 2.0 grant types.</span>
+
+<span class="sd">----</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">.errors</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">InvalidClientError</span><span class="p">,</span>
+    <span class="n">InvalidGrantError</span><span class="p">,</span>
+    <span class="n">InvalidRedirectURIError</span><span class="p">,</span>
+    <span class="n">InvalidRequestError</span><span class="p">,</span>
+    <span class="n">InvalidScopeError</span><span class="p">,</span>
+    <span class="n">MismatchingStateError</span><span class="p">,</span>
+    <span class="n">UnauthorizedClientError</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">Client</span>
+<span class="kn">from</span> <span class="nn">.requests</span> <span class="kn">import</span> <span class="n">TRequest</span>
+<span class="kn">from</span> <span class="nn">.responses</span> <span class="kn">import</span> <span class="n">TokenResponse</span>
+<span class="kn">from</span> <span class="nn">.storage</span> <span class="kn">import</span> <span class="n">TStorage</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">enforce_list</span><span class="p">,</span> <span class="n">enforce_str</span><span class="p">,</span> <span class="n">generate_token</span>
+
+
+<div class="viewcode-block" id="GrantTypeBase"><a class="viewcode-back" href="../../sections/documentation/grant_type.html#aioauth.grant_type.GrantTypeBase">[docs]</a><span class="k">class</span> <span class="nc">GrantTypeBase</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">TRequest</span><span class="p">,</span> <span class="n">TStorage</span><span class="p">]):</span>
+    <span class="sd">&quot;&quot;&quot;Base grant type that all other grant types inherit from.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storage</span><span class="p">:</span> <span class="n">TStorage</span><span class="p">,</span> <span class="n">client_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">client_secret</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">storage</span> <span class="o">=</span> <span class="n">storage</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client_id</span> <span class="o">=</span> <span class="n">client_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client_secret</span> <span class="o">=</span> <span class="n">client_secret</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="GrantTypeBase.create_token_response"><a class="viewcode-back" href="../../sections/documentation/grant_type.html#aioauth.grant_type.GrantTypeBase.create_token_response">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">create_token_response</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">TRequest</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">Client</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TokenResponse</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Creates token response to reply to client.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scope</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;validate_request() must be called first&quot;</span><span class="p">)</span>
+
+        <span class="n">token</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">create_token</span><span class="p">(</span>
+            <span class="n">request</span><span class="p">,</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">client_id</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">,</span>
+            <span class="n">generate_token</span><span class="p">(</span><span class="mi">42</span><span class="p">),</span>
+            <span class="n">generate_token</span><span class="p">(</span><span class="mi">48</span><span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">TokenResponse</span><span class="p">(</span>
+            <span class="n">expires_in</span><span class="o">=</span><span class="n">token</span><span class="o">.</span><span class="n">expires_in</span><span class="p">,</span>
+            <span class="n">refresh_token_expires_in</span><span class="o">=</span><span class="n">token</span><span class="o">.</span><span class="n">refresh_token_expires_in</span><span class="p">,</span>
+            <span class="n">access_token</span><span class="o">=</span><span class="n">token</span><span class="o">.</span><span class="n">access_token</span><span class="p">,</span>
+            <span class="n">refresh_token</span><span class="o">=</span><span class="n">token</span><span class="o">.</span><span class="n">refresh_token</span><span class="p">,</span>
+            <span class="n">scope</span><span class="o">=</span><span class="n">token</span><span class="o">.</span><span class="n">scope</span><span class="p">,</span>
+            <span class="n">token_type</span><span class="o">=</span><span class="n">token</span><span class="o">.</span><span class="n">token_type</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="GrantTypeBase.validate_request"><a class="viewcode-back" href="../../sections/documentation/grant_type.html#aioauth.grant_type.GrantTypeBase.validate_request">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">validate_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">TRequest</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Client</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Validates the client request to ensure it is valid.&quot;&quot;&quot;</span>
+        <span class="n">client</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">get_client</span><span class="p">(</span>
+            <span class="n">request</span><span class="p">,</span> <span class="n">client_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">client_id</span><span class="p">,</span> <span class="n">client_secret</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">client_secret</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">client</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidClientError</span><span class="p">[</span><span class="n">TRequest</span><span class="p">](</span>
+                <span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Invalid client_id parameter value.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">client</span><span class="o">.</span><span class="n">check_grant_type</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">post</span><span class="o">.</span><span class="n">grant_type</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">UnauthorizedClientError</span><span class="p">[</span><span class="n">TRequest</span><span class="p">](</span><span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">client</span><span class="o">.</span><span class="n">check_scope</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">post</span><span class="o">.</span><span class="n">scope</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">InvalidScopeError</span><span class="p">[</span><span class="n">TRequest</span><span class="p">](</span><span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">scope</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">post</span><span class="o">.</span><span class="n">scope</span>
+        <span class="k">return</span> <span class="n">client</span></div></div>
+
+
+<div class="viewcode-block" id="AuthorizationCodeGrantType"><a class="viewcode-back" href="../../sections/documentation/grant_type.html#aioauth.grant_type.AuthorizationCodeGrantType">[docs]</a><span class="k">class</span> <span class="nc">AuthorizationCodeGrantType</span><span class="p">(</span><span class="n">GrantTypeBase</span><span class="p">[</span><span class="n">TRequest</span><span class="p">,</span> <span class="n">TStorage</span><span class="p">]):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The Authorization Code grant type is used by confidential and public</span>
+<span class="sd">    clients to exchange an authorization code for an access token. After</span>
+<span class="sd">    the user returns to the client via the redirect URL, the application</span>
+<span class="sd">    will get the authorization code from the URL and use it to request</span>
+<span class="sd">    an access token.</span>
+<span class="sd">    It is recommended that all clients use `RFC 7636 &lt;https://tools.ietf.org/html/rfc7636&gt;`_</span>
+<span class="sd">    Proof Key for Code Exchange extension with this flow as well to</span>
+<span class="sd">    provide better security.</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        Note that ``aioauth`` implements RFC 7636 out-of-the-box.</span>
+<span class="sd">        See `RFC 6749 section 1.3.1 &lt;https://tools.ietf.org/html/rfc6749#section-1.3.1&gt;`_.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="AuthorizationCodeGrantType.validate_request"><a class="viewcode-back" href="../../sections/documentation/grant_type.html#aioauth.grant_type.AuthorizationCodeGrantType.validate_request">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">validate_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">TRequest</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Client</span><span class="p">:</span>
+        <span class="n">client</span> <span class="o">=</span> <span class="k">await</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">validate_request</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">post</span><span class="o">.</span><span class="n">redirect_uri</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidRedirectURIError</span><span class="p">[</span><span class="n">TRequest</span><span class="p">](</span>
+                <span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Mismatching redirect URI.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">client</span><span class="o">.</span><span class="n">check_redirect_uri</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">post</span><span class="o">.</span><span class="n">redirect_uri</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">InvalidRedirectURIError</span><span class="p">[</span><span class="n">TRequest</span><span class="p">](</span>
+                <span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Invalid redirect URI.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">post</span><span class="o">.</span><span class="n">code</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidRequestError</span><span class="p">[</span><span class="n">TRequest</span><span class="p">](</span>
+                <span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Missing code parameter.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">authorization_code</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">get_authorization_code</span><span class="p">(</span>
+            <span class="n">request</span><span class="p">,</span> <span class="n">client</span><span class="o">.</span><span class="n">client_id</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">post</span><span class="o">.</span><span class="n">code</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">authorization_code</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidGrantError</span><span class="p">[</span><span class="n">TRequest</span><span class="p">](</span><span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">authorization_code</span><span class="o">.</span><span class="n">code_challenge</span>
+            <span class="ow">and</span> <span class="n">authorization_code</span><span class="o">.</span><span class="n">code_challenge_method</span>
+        <span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">post</span><span class="o">.</span><span class="n">code_verifier</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">InvalidRequestError</span><span class="p">[</span><span class="n">TRequest</span><span class="p">](</span>
+                    <span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Code verifier required.&quot;</span>
+                <span class="p">)</span>
+
+            <span class="n">is_valid_code_challenge</span> <span class="o">=</span> <span class="n">authorization_code</span><span class="o">.</span><span class="n">check_code_challenge</span><span class="p">(</span>
+                <span class="n">request</span><span class="o">.</span><span class="n">post</span><span class="o">.</span><span class="n">code_verifier</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">is_valid_code_challenge</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">MismatchingStateError</span><span class="p">[</span><span class="n">TRequest</span><span class="p">](</span><span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">authorization_code</span><span class="o">.</span><span class="n">is_expired</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidGrantError</span><span class="p">[</span><span class="n">TRequest</span><span class="p">](</span><span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">scope</span> <span class="o">=</span> <span class="n">authorization_code</span><span class="o">.</span><span class="n">scope</span>
+        <span class="k">return</span> <span class="n">client</span></div>
+
+<div class="viewcode-block" id="AuthorizationCodeGrantType.create_token_response"><a class="viewcode-back" href="../../sections/documentation/grant_type.html#aioauth.grant_type.AuthorizationCodeGrantType.create_token_response">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">create_token_response</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">TRequest</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">Client</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TokenResponse</span><span class="p">:</span>
+        <span class="n">token_response</span> <span class="o">=</span> <span class="k">await</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">create_token_response</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">client</span><span class="p">)</span>
+
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">delete_authorization_code</span><span class="p">(</span>
+            <span class="n">request</span><span class="p">,</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">client_id</span><span class="p">,</span>
+            <span class="n">request</span><span class="o">.</span><span class="n">post</span><span class="o">.</span><span class="n">code</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">token_response</span></div></div>
+
+
+<div class="viewcode-block" id="PasswordGrantType"><a class="viewcode-back" href="../../sections/documentation/grant_type.html#aioauth.grant_type.PasswordGrantType">[docs]</a><span class="k">class</span> <span class="nc">PasswordGrantType</span><span class="p">(</span><span class="n">GrantTypeBase</span><span class="p">[</span><span class="n">TRequest</span><span class="p">,</span> <span class="n">TStorage</span><span class="p">]):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The Password grant type is a way to exchange a user&#39;s credentials</span>
+<span class="sd">    for an access token. Because the client application has to collect</span>
+<span class="sd">    the user&#39;s password and send it to the authorization server, it is</span>
+<span class="sd">    not recommended that this grant be used at all anymore.</span>
+<span class="sd">    See `RFC 6749 section 1.3.3 &lt;https://tools.ietf.org/html/rfc6749#section-1.3.3&gt;`_.</span>
+<span class="sd">    The latest `OAuth 2.0 Security Best Current Practice &lt;https://tools.ietf.org/html/draft-ietf-oauth-security-topics-13#section-3.4&gt;`_</span>
+<span class="sd">    disallows the password grant entirely.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="PasswordGrantType.validate_request"><a class="viewcode-back" href="../../sections/documentation/grant_type.html#aioauth.grant_type.PasswordGrantType.validate_request">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">validate_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">TRequest</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Client</span><span class="p">:</span>
+        <span class="n">client</span> <span class="o">=</span> <span class="k">await</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">validate_request</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">post</span><span class="o">.</span><span class="n">username</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">post</span><span class="o">.</span><span class="n">password</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidRequestError</span><span class="p">[</span><span class="n">TRequest</span><span class="p">](</span>
+                <span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Invalid credentials given.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">user</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">authenticate</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">user</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidRequestError</span><span class="p">[</span><span class="n">TRequest</span><span class="p">](</span>
+                <span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Invalid credentials given.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">client</span></div></div>
+
+
+<div class="viewcode-block" id="RefreshTokenGrantType"><a class="viewcode-back" href="../../sections/documentation/grant_type.html#aioauth.grant_type.RefreshTokenGrantType">[docs]</a><span class="k">class</span> <span class="nc">RefreshTokenGrantType</span><span class="p">(</span><span class="n">GrantTypeBase</span><span class="p">[</span><span class="n">TRequest</span><span class="p">,</span> <span class="n">TStorage</span><span class="p">]):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The Refresh Token grant type is used by clients to exchange a</span>
+<span class="sd">    refresh token for an access token when the access token has expired.</span>
+<span class="sd">    This allows clients to continue to have a valid access token without</span>
+<span class="sd">    further interaction with the user.</span>
+<span class="sd">    See `RFC 6749 section 1.5 &lt;https://tools.ietf.org/html/rfc6749#section-1.5&gt;`_.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="RefreshTokenGrantType.create_token_response"><a class="viewcode-back" href="../../sections/documentation/grant_type.html#aioauth.grant_type.RefreshTokenGrantType.create_token_response">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">create_token_response</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">TRequest</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">Client</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TokenResponse</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Validate token request and create token response.&quot;&quot;&quot;</span>
+        <span class="n">old_token</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">get_token</span><span class="p">(</span>
+            <span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">,</span>
+            <span class="n">client_id</span><span class="o">=</span><span class="n">client</span><span class="o">.</span><span class="n">client_id</span><span class="p">,</span>
+            <span class="n">refresh_token</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">post</span><span class="o">.</span><span class="n">refresh_token</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">old_token</span> <span class="ow">or</span> <span class="n">old_token</span><span class="o">.</span><span class="n">revoked</span> <span class="ow">or</span> <span class="n">old_token</span><span class="o">.</span><span class="n">refresh_token_expired</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidGrantError</span><span class="p">[</span><span class="n">TRequest</span><span class="p">](</span><span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">)</span>
+
+        <span class="c1"># Revoke old token</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">revoke_token</span><span class="p">(</span>
+            <span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">,</span> <span class="n">refresh_token</span><span class="o">=</span><span class="n">old_token</span><span class="o">.</span><span class="n">refresh_token</span>
+        <span class="p">)</span>
+
+        <span class="c1"># new token should have at max the same scope as the old token</span>
+        <span class="c1"># (see https://www.oauth.com/oauth2-servers/making-authenticated-requests/refreshing-an-access-token/)</span>
+        <span class="n">new_scope</span> <span class="o">=</span> <span class="n">old_token</span><span class="o">.</span><span class="n">scope</span>
+        <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">post</span><span class="o">.</span><span class="n">scope</span><span class="p">:</span>
+            <span class="c1"># restrict requested tokens to requested scopes in the old token</span>
+            <span class="n">new_scope</span> <span class="o">=</span> <span class="n">enforce_str</span><span class="p">(</span>
+                <span class="nb">list</span><span class="p">(</span>
+                    <span class="nb">set</span><span class="p">(</span><span class="n">enforce_list</span><span class="p">(</span><span class="n">old_token</span><span class="o">.</span><span class="n">scope</span><span class="p">))</span>
+                    <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">enforce_list</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">post</span><span class="o">.</span><span class="n">scope</span><span class="p">))</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="n">token</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">create_token</span><span class="p">(</span>
+            <span class="n">request</span><span class="p">,</span> <span class="n">client</span><span class="o">.</span><span class="n">client_id</span><span class="p">,</span> <span class="n">new_scope</span><span class="p">,</span> <span class="n">generate_token</span><span class="p">(</span><span class="mi">42</span><span class="p">),</span> <span class="n">generate_token</span><span class="p">(</span><span class="mi">48</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">TokenResponse</span><span class="p">(</span>
+            <span class="n">expires_in</span><span class="o">=</span><span class="n">token</span><span class="o">.</span><span class="n">expires_in</span><span class="p">,</span>
+            <span class="n">refresh_token_expires_in</span><span class="o">=</span><span class="n">token</span><span class="o">.</span><span class="n">refresh_token_expires_in</span><span class="p">,</span>
+            <span class="n">access_token</span><span class="o">=</span><span class="n">token</span><span class="o">.</span><span class="n">access_token</span><span class="p">,</span>
+            <span class="n">refresh_token</span><span class="o">=</span><span class="n">token</span><span class="o">.</span><span class="n">refresh_token</span><span class="p">,</span>
+            <span class="n">scope</span><span class="o">=</span><span class="n">token</span><span class="o">.</span><span class="n">scope</span><span class="p">,</span>
+            <span class="n">token_type</span><span class="o">=</span><span class="n">token</span><span class="o">.</span><span class="n">token_type</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="RefreshTokenGrantType.validate_request"><a class="viewcode-back" href="../../sections/documentation/grant_type.html#aioauth.grant_type.RefreshTokenGrantType.validate_request">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">validate_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">TRequest</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Client</span><span class="p">:</span>
+        <span class="n">client</span> <span class="o">=</span> <span class="k">await</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">validate_request</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">post</span><span class="o">.</span><span class="n">refresh_token</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidRequestError</span><span class="p">[</span><span class="n">TRequest</span><span class="p">](</span>
+                <span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Missing refresh token parameter.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">client</span></div></div>
+
+
+<div class="viewcode-block" id="ClientCredentialsGrantType"><a class="viewcode-back" href="../../sections/documentation/grant_type.html#aioauth.grant_type.ClientCredentialsGrantType">[docs]</a><span class="k">class</span> <span class="nc">ClientCredentialsGrantType</span><span class="p">(</span><span class="n">GrantTypeBase</span><span class="p">[</span><span class="n">TRequest</span><span class="p">,</span> <span class="n">TStorage</span><span class="p">]):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The Client Credentials grant type is used by clients to obtain an</span>
+<span class="sd">    access token outside of the context of a user. This is typically</span>
+<span class="sd">    used by clients to access resources about themselves rather than to</span>
+<span class="sd">    access a user&#39;s resources.</span>
+<span class="sd">    See `RFC 6749 section 4.4 &lt;https://tools.ietf.org/html/rfc6749#section-4.4&gt;`_.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ClientCredentialsGrantType.validate_request"><a class="viewcode-back" href="../../sections/documentation/grant_type.html#aioauth.grant_type.ClientCredentialsGrantType.validate_request">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">validate_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">TRequest</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Client</span><span class="p">:</span>
+        <span class="c1"># client_credentials grant requires a client_secret</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">client_secret</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidClientError</span><span class="p">[</span><span class="n">TRequest</span><span class="p">](</span><span class="n">request</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="k">await</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">validate_request</span><span class="p">(</span><span class="n">request</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright .
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

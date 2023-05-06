@@ -1,0 +1,381 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>http &mdash; aioauth 1.5.3 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> aioauth
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">🔐 aioauth</a></li>
+</ul>
+<p><span class="caption-text">Understanding</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../sections/understanding/plug_and_play.html">Plug-and-Play</a></li>
+</ul>
+<p><span class="caption-text">Using</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../sections/using/configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../sections/using/server_database.html">Server &amp; Database</a></li>
+</ul>
+<p><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../sections/examples/aiohttp.html">Aiohttp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../sections/examples/fastapi.html">FastAPI</a></li>
+</ul>
+<p><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../sections/documentation/collections.html">Collections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../sections/documentation/config.html">Config</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../sections/documentation/constances.html">Constances</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../sections/documentation/errors.html">Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../sections/documentation/grant_type.html">Grant Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../sections/documentation/models.html">Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../sections/documentation/requests.html">Requests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../sections/documentation/response_type.html">Response Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../sections/documentation/responses.html">Responses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../sections/documentation/server.html">Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../sections/documentation/storage.html">Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../sections/documentation/types.html">Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../sections/documentation/utils.html">Utils</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">aioauth</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">Module code</a> &raquo;</li>
+        
+      <li>http</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for http</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">IntEnum</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;HTTPStatus&#39;</span><span class="p">]</span>
+
+<span class="k">class</span> <span class="nc">HTTPStatus</span><span class="p">(</span><span class="n">IntEnum</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;HTTP status codes and reason phrases</span>
+
+<span class="sd">    Status codes from the following RFCs are all observed:</span>
+
+<span class="sd">        * RFC 7231: Hypertext Transfer Protocol (HTTP/1.1), obsoletes 2616</span>
+<span class="sd">        * RFC 6585: Additional HTTP Status Codes</span>
+<span class="sd">        * RFC 3229: Delta encoding in HTTP</span>
+<span class="sd">        * RFC 4918: HTTP Extensions for WebDAV, obsoletes 2518</span>
+<span class="sd">        * RFC 5842: Binding Extensions to WebDAV</span>
+<span class="sd">        * RFC 7238: Permanent Redirect</span>
+<span class="sd">        * RFC 2295: Transparent Content Negotiation in HTTP</span>
+<span class="sd">        * RFC 2774: An HTTP Extension Framework</span>
+<span class="sd">        * RFC 7725: An HTTP Status Code to Report Legal Obstacles</span>
+<span class="sd">        * RFC 7540: Hypertext Transfer Protocol Version 2 (HTTP/2)</span>
+<span class="sd">        * RFC 2324: Hyper Text Coffee Pot Control Protocol (HTCPCP/1.0)</span>
+<span class="sd">        * RFC 8297: An HTTP Status Code for Indicating Hints</span>
+<span class="sd">        * RFC 8470: Using Early Data in HTTP</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">phrase</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="nb">int</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_value_</span> <span class="o">=</span> <span class="n">value</span>
+
+        <span class="n">obj</span><span class="o">.</span><span class="n">phrase</span> <span class="o">=</span> <span class="n">phrase</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">description</span>
+        <span class="k">return</span> <span class="n">obj</span>
+
+    <span class="c1"># informational</span>
+    <span class="n">CONTINUE</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span> <span class="s1">&#39;Continue&#39;</span><span class="p">,</span> <span class="s1">&#39;Request received, please continue&#39;</span>
+    <span class="n">SWITCHING_PROTOCOLS</span> <span class="o">=</span> <span class="p">(</span><span class="mi">101</span><span class="p">,</span> <span class="s1">&#39;Switching Protocols&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;Switching to new protocol; obey Upgrade header&#39;</span><span class="p">)</span>
+    <span class="n">PROCESSING</span> <span class="o">=</span> <span class="mi">102</span><span class="p">,</span> <span class="s1">&#39;Processing&#39;</span>
+    <span class="n">EARLY_HINTS</span> <span class="o">=</span> <span class="mi">103</span><span class="p">,</span> <span class="s1">&#39;Early Hints&#39;</span>
+
+    <span class="c1"># success</span>
+    <span class="n">OK</span> <span class="o">=</span> <span class="mi">200</span><span class="p">,</span> <span class="s1">&#39;OK&#39;</span><span class="p">,</span> <span class="s1">&#39;Request fulfilled, document follows&#39;</span>
+    <span class="n">CREATED</span> <span class="o">=</span> <span class="mi">201</span><span class="p">,</span> <span class="s1">&#39;Created&#39;</span><span class="p">,</span> <span class="s1">&#39;Document created, URL follows&#39;</span>
+    <span class="n">ACCEPTED</span> <span class="o">=</span> <span class="p">(</span><span class="mi">202</span><span class="p">,</span> <span class="s1">&#39;Accepted&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Request accepted, processing continues off-line&#39;</span><span class="p">)</span>
+    <span class="n">NON_AUTHORITATIVE_INFORMATION</span> <span class="o">=</span> <span class="p">(</span><span class="mi">203</span><span class="p">,</span>
+        <span class="s1">&#39;Non-Authoritative Information&#39;</span><span class="p">,</span> <span class="s1">&#39;Request fulfilled from cache&#39;</span><span class="p">)</span>
+    <span class="n">NO_CONTENT</span> <span class="o">=</span> <span class="mi">204</span><span class="p">,</span> <span class="s1">&#39;No Content&#39;</span><span class="p">,</span> <span class="s1">&#39;Request fulfilled, nothing follows&#39;</span>
+    <span class="n">RESET_CONTENT</span> <span class="o">=</span> <span class="mi">205</span><span class="p">,</span> <span class="s1">&#39;Reset Content&#39;</span><span class="p">,</span> <span class="s1">&#39;Clear input form for further input&#39;</span>
+    <span class="n">PARTIAL_CONTENT</span> <span class="o">=</span> <span class="mi">206</span><span class="p">,</span> <span class="s1">&#39;Partial Content&#39;</span><span class="p">,</span> <span class="s1">&#39;Partial content follows&#39;</span>
+    <span class="n">MULTI_STATUS</span> <span class="o">=</span> <span class="mi">207</span><span class="p">,</span> <span class="s1">&#39;Multi-Status&#39;</span>
+    <span class="n">ALREADY_REPORTED</span> <span class="o">=</span> <span class="mi">208</span><span class="p">,</span> <span class="s1">&#39;Already Reported&#39;</span>
+    <span class="n">IM_USED</span> <span class="o">=</span> <span class="mi">226</span><span class="p">,</span> <span class="s1">&#39;IM Used&#39;</span>
+
+    <span class="c1"># redirection</span>
+    <span class="n">MULTIPLE_CHOICES</span> <span class="o">=</span> <span class="p">(</span><span class="mi">300</span><span class="p">,</span> <span class="s1">&#39;Multiple Choices&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Object has several resources -- see URI list&#39;</span><span class="p">)</span>
+    <span class="n">MOVED_PERMANENTLY</span> <span class="o">=</span> <span class="p">(</span><span class="mi">301</span><span class="p">,</span> <span class="s1">&#39;Moved Permanently&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Object moved permanently -- see URI list&#39;</span><span class="p">)</span>
+    <span class="n">FOUND</span> <span class="o">=</span> <span class="mi">302</span><span class="p">,</span> <span class="s1">&#39;Found&#39;</span><span class="p">,</span> <span class="s1">&#39;Object moved temporarily -- see URI list&#39;</span>
+    <span class="n">SEE_OTHER</span> <span class="o">=</span> <span class="mi">303</span><span class="p">,</span> <span class="s1">&#39;See Other&#39;</span><span class="p">,</span> <span class="s1">&#39;Object moved -- see Method and URL list&#39;</span>
+    <span class="n">NOT_MODIFIED</span> <span class="o">=</span> <span class="p">(</span><span class="mi">304</span><span class="p">,</span> <span class="s1">&#39;Not Modified&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Document has not changed since given time&#39;</span><span class="p">)</span>
+    <span class="n">USE_PROXY</span> <span class="o">=</span> <span class="p">(</span><span class="mi">305</span><span class="p">,</span> <span class="s1">&#39;Use Proxy&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;You must use proxy specified in Location to access this resource&#39;</span><span class="p">)</span>
+    <span class="n">TEMPORARY_REDIRECT</span> <span class="o">=</span> <span class="p">(</span><span class="mi">307</span><span class="p">,</span> <span class="s1">&#39;Temporary Redirect&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Object moved temporarily -- see URI list&#39;</span><span class="p">)</span>
+    <span class="n">PERMANENT_REDIRECT</span> <span class="o">=</span> <span class="p">(</span><span class="mi">308</span><span class="p">,</span> <span class="s1">&#39;Permanent Redirect&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Object moved permanently -- see URI list&#39;</span><span class="p">)</span>
+
+    <span class="c1"># client error</span>
+    <span class="n">BAD_REQUEST</span> <span class="o">=</span> <span class="p">(</span><span class="mi">400</span><span class="p">,</span> <span class="s1">&#39;Bad Request&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Bad request syntax or unsupported method&#39;</span><span class="p">)</span>
+    <span class="n">UNAUTHORIZED</span> <span class="o">=</span> <span class="p">(</span><span class="mi">401</span><span class="p">,</span> <span class="s1">&#39;Unauthorized&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;No permission -- see authorization schemes&#39;</span><span class="p">)</span>
+    <span class="n">PAYMENT_REQUIRED</span> <span class="o">=</span> <span class="p">(</span><span class="mi">402</span><span class="p">,</span> <span class="s1">&#39;Payment Required&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;No payment -- see charging schemes&#39;</span><span class="p">)</span>
+    <span class="n">FORBIDDEN</span> <span class="o">=</span> <span class="p">(</span><span class="mi">403</span><span class="p">,</span> <span class="s1">&#39;Forbidden&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Request forbidden -- authorization will not help&#39;</span><span class="p">)</span>
+    <span class="n">NOT_FOUND</span> <span class="o">=</span> <span class="p">(</span><span class="mi">404</span><span class="p">,</span> <span class="s1">&#39;Not Found&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Nothing matches the given URI&#39;</span><span class="p">)</span>
+    <span class="n">METHOD_NOT_ALLOWED</span> <span class="o">=</span> <span class="p">(</span><span class="mi">405</span><span class="p">,</span> <span class="s1">&#39;Method Not Allowed&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Specified method is invalid for this resource&#39;</span><span class="p">)</span>
+    <span class="n">NOT_ACCEPTABLE</span> <span class="o">=</span> <span class="p">(</span><span class="mi">406</span><span class="p">,</span> <span class="s1">&#39;Not Acceptable&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;URI not available in preferred format&#39;</span><span class="p">)</span>
+    <span class="n">PROXY_AUTHENTICATION_REQUIRED</span> <span class="o">=</span> <span class="p">(</span><span class="mi">407</span><span class="p">,</span>
+        <span class="s1">&#39;Proxy Authentication Required&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;You must authenticate with this proxy before proceeding&#39;</span><span class="p">)</span>
+    <span class="n">REQUEST_TIMEOUT</span> <span class="o">=</span> <span class="p">(</span><span class="mi">408</span><span class="p">,</span> <span class="s1">&#39;Request Timeout&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Request timed out; try again later&#39;</span><span class="p">)</span>
+    <span class="n">CONFLICT</span> <span class="o">=</span> <span class="mi">409</span><span class="p">,</span> <span class="s1">&#39;Conflict&#39;</span><span class="p">,</span> <span class="s1">&#39;Request conflict&#39;</span>
+    <span class="n">GONE</span> <span class="o">=</span> <span class="p">(</span><span class="mi">410</span><span class="p">,</span> <span class="s1">&#39;Gone&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;URI no longer exists and has been permanently removed&#39;</span><span class="p">)</span>
+    <span class="n">LENGTH_REQUIRED</span> <span class="o">=</span> <span class="p">(</span><span class="mi">411</span><span class="p">,</span> <span class="s1">&#39;Length Required&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Client must specify Content-Length&#39;</span><span class="p">)</span>
+    <span class="n">PRECONDITION_FAILED</span> <span class="o">=</span> <span class="p">(</span><span class="mi">412</span><span class="p">,</span> <span class="s1">&#39;Precondition Failed&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Precondition in headers is false&#39;</span><span class="p">)</span>
+    <span class="n">REQUEST_ENTITY_TOO_LARGE</span> <span class="o">=</span> <span class="p">(</span><span class="mi">413</span><span class="p">,</span> <span class="s1">&#39;Request Entity Too Large&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Entity is too large&#39;</span><span class="p">)</span>
+    <span class="n">REQUEST_URI_TOO_LONG</span> <span class="o">=</span> <span class="p">(</span><span class="mi">414</span><span class="p">,</span> <span class="s1">&#39;Request-URI Too Long&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;URI is too long&#39;</span><span class="p">)</span>
+    <span class="n">UNSUPPORTED_MEDIA_TYPE</span> <span class="o">=</span> <span class="p">(</span><span class="mi">415</span><span class="p">,</span> <span class="s1">&#39;Unsupported Media Type&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Entity body in unsupported format&#39;</span><span class="p">)</span>
+    <span class="n">REQUESTED_RANGE_NOT_SATISFIABLE</span> <span class="o">=</span> <span class="p">(</span><span class="mi">416</span><span class="p">,</span>
+        <span class="s1">&#39;Requested Range Not Satisfiable&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Cannot satisfy request range&#39;</span><span class="p">)</span>
+    <span class="n">EXPECTATION_FAILED</span> <span class="o">=</span> <span class="p">(</span><span class="mi">417</span><span class="p">,</span> <span class="s1">&#39;Expectation Failed&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Expect condition could not be satisfied&#39;</span><span class="p">)</span>
+    <span class="n">IM_A_TEAPOT</span> <span class="o">=</span> <span class="p">(</span><span class="mi">418</span><span class="p">,</span> <span class="s1">&#39;I</span><span class="se">\&#39;</span><span class="s1">m a Teapot&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Server refuses to brew coffee because it is a teapot.&#39;</span><span class="p">)</span>
+    <span class="n">MISDIRECTED_REQUEST</span> <span class="o">=</span> <span class="p">(</span><span class="mi">421</span><span class="p">,</span> <span class="s1">&#39;Misdirected Request&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Server is not able to produce a response&#39;</span><span class="p">)</span>
+    <span class="n">UNPROCESSABLE_ENTITY</span> <span class="o">=</span> <span class="mi">422</span><span class="p">,</span> <span class="s1">&#39;Unprocessable Entity&#39;</span>
+    <span class="n">LOCKED</span> <span class="o">=</span> <span class="mi">423</span><span class="p">,</span> <span class="s1">&#39;Locked&#39;</span>
+    <span class="n">FAILED_DEPENDENCY</span> <span class="o">=</span> <span class="mi">424</span><span class="p">,</span> <span class="s1">&#39;Failed Dependency&#39;</span>
+    <span class="n">TOO_EARLY</span> <span class="o">=</span> <span class="mi">425</span><span class="p">,</span> <span class="s1">&#39;Too Early&#39;</span>
+    <span class="n">UPGRADE_REQUIRED</span> <span class="o">=</span> <span class="mi">426</span><span class="p">,</span> <span class="s1">&#39;Upgrade Required&#39;</span>
+    <span class="n">PRECONDITION_REQUIRED</span> <span class="o">=</span> <span class="p">(</span><span class="mi">428</span><span class="p">,</span> <span class="s1">&#39;Precondition Required&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;The origin server requires the request to be conditional&#39;</span><span class="p">)</span>
+    <span class="n">TOO_MANY_REQUESTS</span> <span class="o">=</span> <span class="p">(</span><span class="mi">429</span><span class="p">,</span> <span class="s1">&#39;Too Many Requests&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;The user has sent too many requests in &#39;</span>
+        <span class="s1">&#39;a given amount of time (&quot;rate limiting&quot;)&#39;</span><span class="p">)</span>
+    <span class="n">REQUEST_HEADER_FIELDS_TOO_LARGE</span> <span class="o">=</span> <span class="p">(</span><span class="mi">431</span><span class="p">,</span>
+        <span class="s1">&#39;Request Header Fields Too Large&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;The server is unwilling to process the request because its header &#39;</span>
+        <span class="s1">&#39;fields are too large&#39;</span><span class="p">)</span>
+    <span class="n">UNAVAILABLE_FOR_LEGAL_REASONS</span> <span class="o">=</span> <span class="p">(</span><span class="mi">451</span><span class="p">,</span>
+        <span class="s1">&#39;Unavailable For Legal Reasons&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;The server is denying access to the &#39;</span>
+        <span class="s1">&#39;resource as a consequence of a legal demand&#39;</span><span class="p">)</span>
+
+    <span class="c1"># server errors</span>
+    <span class="n">INTERNAL_SERVER_ERROR</span> <span class="o">=</span> <span class="p">(</span><span class="mi">500</span><span class="p">,</span> <span class="s1">&#39;Internal Server Error&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Server got itself in trouble&#39;</span><span class="p">)</span>
+    <span class="n">NOT_IMPLEMENTED</span> <span class="o">=</span> <span class="p">(</span><span class="mi">501</span><span class="p">,</span> <span class="s1">&#39;Not Implemented&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Server does not support this operation&#39;</span><span class="p">)</span>
+    <span class="n">BAD_GATEWAY</span> <span class="o">=</span> <span class="p">(</span><span class="mi">502</span><span class="p">,</span> <span class="s1">&#39;Bad Gateway&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Invalid responses from another server/proxy&#39;</span><span class="p">)</span>
+    <span class="n">SERVICE_UNAVAILABLE</span> <span class="o">=</span> <span class="p">(</span><span class="mi">503</span><span class="p">,</span> <span class="s1">&#39;Service Unavailable&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;The server cannot process the request due to a high load&#39;</span><span class="p">)</span>
+    <span class="n">GATEWAY_TIMEOUT</span> <span class="o">=</span> <span class="p">(</span><span class="mi">504</span><span class="p">,</span> <span class="s1">&#39;Gateway Timeout&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;The gateway server did not receive a timely response&#39;</span><span class="p">)</span>
+    <span class="n">HTTP_VERSION_NOT_SUPPORTED</span> <span class="o">=</span> <span class="p">(</span><span class="mi">505</span><span class="p">,</span> <span class="s1">&#39;HTTP Version Not Supported&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Cannot fulfill request&#39;</span><span class="p">)</span>
+    <span class="n">VARIANT_ALSO_NEGOTIATES</span> <span class="o">=</span> <span class="mi">506</span><span class="p">,</span> <span class="s1">&#39;Variant Also Negotiates&#39;</span>
+    <span class="n">INSUFFICIENT_STORAGE</span> <span class="o">=</span> <span class="mi">507</span><span class="p">,</span> <span class="s1">&#39;Insufficient Storage&#39;</span>
+    <span class="n">LOOP_DETECTED</span> <span class="o">=</span> <span class="mi">508</span><span class="p">,</span> <span class="s1">&#39;Loop Detected&#39;</span>
+    <span class="n">NOT_EXTENDED</span> <span class="o">=</span> <span class="mi">510</span><span class="p">,</span> <span class="s1">&#39;Not Extended&#39;</span>
+    <span class="n">NETWORK_AUTHENTICATION_REQUIRED</span> <span class="o">=</span> <span class="p">(</span><span class="mi">511</span><span class="p">,</span>
+        <span class="s1">&#39;Network Authentication Required&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;The client needs to authenticate to gain network access&#39;</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright .
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
