@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>aioauth.errors &mdash; aioauth 1.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=dfaa61b1" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=72d88caf"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            aioauth
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">🔐 aioauth</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Understanding</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/understanding/plug_and_play.html">Plug-and-Play</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Using</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/using/configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/using/server_database.html">Server &amp; Database</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/examples/aiohttp.html">Aiohttp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/examples/fastapi.html">FastAPI</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/collections.html">Collections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/config.html">Config</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/constances.html">Constances</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/errors.html">Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/grant_type.html">Grant Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/models.html">Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/requests.html">Requests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/response_type.html">Response Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/responses.html">Responses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/server.html">Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/storage.html">Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/types.html">Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/utils.html">Utils</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">aioauth</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">aioauth.errors</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for aioauth.errors</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. code-block:: python</span>
+
+<span class="sd">    from aioauth import errors</span>
+
+<span class="sd">Errors used throughout the project.</span>
+
+<span class="sd">----</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">http</span> <span class="kn">import</span> <span class="n">HTTPStatus</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="kn">import</span> <span class="n">urljoin</span>
+<span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Literal</span>
+
+<span class="kn">from</span> <span class="nn">.collections</span> <span class="kn">import</span> <span class="n">HTTPHeaderDict</span>
+<span class="kn">from</span> <span class="nn">.constances</span> <span class="kn">import</span> <span class="n">default_headers</span>
+<span class="kn">from</span> <span class="nn">.requests</span> <span class="kn">import</span> <span class="n">TRequest</span>
+<span class="kn">from</span> <span class="nn">.types</span> <span class="kn">import</span> <span class="n">ErrorType</span>
+
+
+<span class="k">class</span> <span class="nc">OAuth2Error</span><span class="p">(</span><span class="ne">Exception</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">TRequest</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base exception that all other exceptions inherit from.&quot;&quot;&quot;</span>
+
+    <span class="n">error</span><span class="p">:</span> <span class="n">ErrorType</span>
+    <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">status_code</span><span class="p">:</span> <span class="n">HTTPStatus</span> <span class="o">=</span> <span class="n">HTTPStatus</span><span class="o">.</span><span class="n">BAD_REQUEST</span>
+    <span class="n">error_uri</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">headers</span><span class="p">:</span> <span class="n">HTTPHeaderDict</span> <span class="o">=</span> <span class="n">default_headers</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">request</span><span class="p">:</span> <span class="n">TRequest</span><span class="p">,</span>
+        <span class="n">description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">headers</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">HTTPHeaderDict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">request</span> <span class="o">=</span> <span class="n">request</span>
+
+        <span class="k">if</span> <span class="n">description</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">description</span>
+
+        <span class="k">if</span> <span class="n">headers</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">headers</span> <span class="o">=</span> <span class="n">headers</span>
+
+        <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">ERROR_URI</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">error_uri</span> <span class="o">=</span> <span class="n">urljoin</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">ERROR_URI</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="si">}</span><span class="s2">) </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="MethodNotAllowedError">
+<a class="viewcode-back" href="../../sections/documentation/errors.html#aioauth.errors.MethodNotAllowedError">[docs]</a>
+<span class="k">class</span> <span class="nc">MethodNotAllowedError</span><span class="p">(</span><span class="n">OAuth2Error</span><span class="p">[</span><span class="n">TRequest</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The request is valid, but the method trying to be accessed is not</span>
+<span class="sd">    available to the resource owner.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;HTTP method is not allowed.&quot;</span>
+    <span class="n">status_code</span><span class="p">:</span> <span class="n">HTTPStatus</span> <span class="o">=</span> <span class="n">HTTPStatus</span><span class="o">.</span><span class="n">METHOD_NOT_ALLOWED</span>
+    <span class="n">error</span><span class="p">:</span> <span class="n">ErrorType</span> <span class="o">=</span> <span class="s2">&quot;method_is_not_allowed&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="InvalidRequestError">
+<a class="viewcode-back" href="../../sections/documentation/errors.html#aioauth.errors.InvalidRequestError">[docs]</a>
+<span class="k">class</span> <span class="nc">InvalidRequestError</span><span class="p">(</span><span class="n">OAuth2Error</span><span class="p">[</span><span class="n">TRequest</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The request is missing a required parameter, includes an invalid</span>
+<span class="sd">    parameter value, includes a parameter more than once, or is</span>
+<span class="sd">    otherwise malformed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">error</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;invalid_request&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;invalid_request&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="InvalidClientError">
+<a class="viewcode-back" href="../../sections/documentation/errors.html#aioauth.errors.InvalidClientError">[docs]</a>
+<span class="k">class</span> <span class="nc">InvalidClientError</span><span class="p">(</span><span class="n">OAuth2Error</span><span class="p">[</span><span class="n">TRequest</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Client authentication failed (e.g. unknown client, no client</span>
+<span class="sd">    authentication included, or unsupported authentication method).</span>
+<span class="sd">    The authorization server **may** return an ``HTTP 401`` (Unauthorized) status</span>
+<span class="sd">    code to indicate which HTTP authentication schemes are supported.</span>
+<span class="sd">    If the client attempted to authenticate via the ``Authorization`` request</span>
+<span class="sd">    header field, the authorization server **must** respond with an</span>
+<span class="sd">    ``HTTP 401`` (Unauthorized) status code, and include the ``WWW-Authenticate``</span>
+<span class="sd">    response header field matching the authentication scheme used by the</span>
+<span class="sd">    client.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">error</span><span class="p">:</span> <span class="n">ErrorType</span> <span class="o">=</span> <span class="s2">&quot;invalid_client&quot;</span>
+    <span class="n">status_code</span><span class="p">:</span> <span class="n">HTTPStatus</span> <span class="o">=</span> <span class="n">HTTPStatus</span><span class="o">.</span><span class="n">UNAUTHORIZED</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">request</span><span class="p">:</span> <span class="n">TRequest</span><span class="p">,</span>
+        <span class="n">description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">headers</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">HTTPHeaderDict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">request</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">headers</span> <span class="ow">or</span> <span class="n">HTTPHeaderDict</span><span class="p">(</span><span class="n">default_headers</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="n">auth_values</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;error=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">:</span>
+            <span class="n">auth_values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;error_description=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">error_uri</span><span class="p">:</span>
+            <span class="n">auth_values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;error_uri=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">error_uri</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s2">&quot;WWW-Authenticate&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Basic &quot;</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">auth_values</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="InsecureTransportError">
+<a class="viewcode-back" href="../../sections/documentation/errors.html#aioauth.errors.InsecureTransportError">[docs]</a>
+<span class="k">class</span> <span class="nc">InsecureTransportError</span><span class="p">(</span><span class="n">OAuth2Error</span><span class="p">[</span><span class="n">TRequest</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;An exception will be thrown if the current request is not secure.&quot;&quot;&quot;</span>
+
+    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;OAuth 2 MUST utilize https.&quot;</span>
+    <span class="n">error</span><span class="p">:</span> <span class="n">ErrorType</span> <span class="o">=</span> <span class="s2">&quot;insecure_transport&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="UnsupportedGrantTypeError">
+<a class="viewcode-back" href="../../sections/documentation/errors.html#aioauth.errors.UnsupportedGrantTypeError">[docs]</a>
+<span class="k">class</span> <span class="nc">UnsupportedGrantTypeError</span><span class="p">(</span><span class="n">OAuth2Error</span><span class="p">[</span><span class="n">TRequest</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The authorization grant type is not supported by the authorization</span>
+<span class="sd">    server.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">error</span><span class="p">:</span> <span class="n">ErrorType</span> <span class="o">=</span> <span class="s2">&quot;unsupported_grant_type&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="UnsupportedResponseTypeError">
+<a class="viewcode-back" href="../../sections/documentation/errors.html#aioauth.errors.UnsupportedResponseTypeError">[docs]</a>
+<span class="k">class</span> <span class="nc">UnsupportedResponseTypeError</span><span class="p">(</span><span class="n">OAuth2Error</span><span class="p">[</span><span class="n">TRequest</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The authorization server does not support obtaining an authorization</span>
+<span class="sd">    code using this method.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">error</span><span class="p">:</span> <span class="n">ErrorType</span> <span class="o">=</span> <span class="s2">&quot;unsupported_response_type&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="InvalidGrantError">
+<a class="viewcode-back" href="../../sections/documentation/errors.html#aioauth.errors.InvalidGrantError">[docs]</a>
+<span class="k">class</span> <span class="nc">InvalidGrantError</span><span class="p">(</span><span class="n">OAuth2Error</span><span class="p">[</span><span class="n">TRequest</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The provided authorization grant (e.g. authorization code, resource</span>
+<span class="sd">    owner credentials) or refresh token is invalid, expired, revoked, does</span>
+<span class="sd">    not match the redirection URI used in the authorization request, or was</span>
+<span class="sd">    issued to another client.</span>
+
+<span class="sd">    See `RFC6749 section 5.2 &lt;https://tools.ietf.org/html/rfc6749#section-5.2&gt;`_.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">error</span><span class="p">:</span> <span class="n">ErrorType</span> <span class="o">=</span> <span class="s2">&quot;invalid_grant&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="MismatchingStateError">
+<a class="viewcode-back" href="../../sections/documentation/errors.html#aioauth.errors.MismatchingStateError">[docs]</a>
+<span class="k">class</span> <span class="nc">MismatchingStateError</span><span class="p">(</span><span class="n">OAuth2Error</span><span class="p">[</span><span class="n">TRequest</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Unable to securely verify the integrity of the request and response.&quot;&quot;&quot;</span>
+
+    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;CSRF Warning! State not equal in request and response.&quot;</span>
+    <span class="n">error</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;mismatching_state&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;mismatching_state&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="UnauthorizedClientError">
+<a class="viewcode-back" href="../../sections/documentation/errors.html#aioauth.errors.UnauthorizedClientError">[docs]</a>
+<span class="k">class</span> <span class="nc">UnauthorizedClientError</span><span class="p">(</span><span class="n">OAuth2Error</span><span class="p">[</span><span class="n">TRequest</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The authenticated client is not authorized to use this authorization</span>
+<span class="sd">    grant type.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">error</span><span class="p">:</span> <span class="n">ErrorType</span> <span class="o">=</span> <span class="s2">&quot;unauthorized_client&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="InvalidScopeError">
+<a class="viewcode-back" href="../../sections/documentation/errors.html#aioauth.errors.InvalidScopeError">[docs]</a>
+<span class="k">class</span> <span class="nc">InvalidScopeError</span><span class="p">(</span><span class="n">OAuth2Error</span><span class="p">[</span><span class="n">TRequest</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The requested scope is invalid, unknown, or malformed, or</span>
+<span class="sd">    exceeds the scope granted by the resource owner.</span>
+
+<span class="sd">    See `RFC6749 section 5.2 &lt;https://tools.ietf.org/html/rfc6749#section-5.2&gt;`_.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">error</span><span class="p">:</span> <span class="n">ErrorType</span> <span class="o">=</span> <span class="s2">&quot;invalid_scope&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="ServerError">
+<a class="viewcode-back" href="../../sections/documentation/errors.html#aioauth.errors.ServerError">[docs]</a>
+<span class="k">class</span> <span class="nc">ServerError</span><span class="p">(</span><span class="n">OAuth2Error</span><span class="p">[</span><span class="n">TRequest</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The authorization server encountered an unexpected condition that</span>
+<span class="sd">    prevented it from fulfilling the request.  (This error code is needed</span>
+<span class="sd">    because a ``HTTP 500`` (Internal Server Error) status code cannot be returned</span>
+<span class="sd">    to the client via a HTTP redirect.)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">error</span><span class="p">:</span> <span class="n">ErrorType</span> <span class="o">=</span> <span class="s2">&quot;server_error&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="TemporarilyUnavailableError">
+<a class="viewcode-back" href="../../sections/documentation/errors.html#aioauth.errors.TemporarilyUnavailableError">[docs]</a>
+<span class="k">class</span> <span class="nc">TemporarilyUnavailableError</span><span class="p">(</span><span class="n">OAuth2Error</span><span class="p">[</span><span class="n">TRequest</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The authorization server is currently unable to handle the request</span>
+<span class="sd">    due to a temporary overloading or maintenance of the server.</span>
+<span class="sd">    (This error code is needed because a ``HTTP 503`` (Service Unavailable)</span>
+<span class="sd">    status code cannot be returned to the client via a HTTP redirect.)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">error</span><span class="p">:</span> <span class="n">ErrorType</span> <span class="o">=</span> <span class="s2">&quot;temporarily_unavailable&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="InvalidRedirectURIError">
+<a class="viewcode-back" href="../../sections/documentation/errors.html#aioauth.errors.InvalidRedirectURIError">[docs]</a>
+<span class="k">class</span> <span class="nc">InvalidRedirectURIError</span><span class="p">(</span><span class="n">OAuth2Error</span><span class="p">[</span><span class="n">TRequest</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The requested redirect URI is missing or not allowed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">error</span><span class="p">:</span> <span class="n">ErrorType</span> <span class="o">=</span> <span class="s2">&quot;invalid_request&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="UnsupportedTokenTypeError">
+<a class="viewcode-back" href="../../sections/documentation/errors.html#aioauth.errors.UnsupportedTokenTypeError">[docs]</a>
+<span class="k">class</span> <span class="nc">UnsupportedTokenTypeError</span><span class="p">(</span><span class="n">OAuth2Error</span><span class="p">[</span><span class="n">TRequest</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The authorization server does not support the revocation of the presented</span>
+<span class="sd">    token type. That is, the client tried to revoke an access token on a server</span>
+<span class="sd">    not supporting this feature.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">error</span><span class="p">:</span> <span class="n">ErrorType</span> <span class="o">=</span> <span class="s2">&quot;unsupported_token_type&quot;</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

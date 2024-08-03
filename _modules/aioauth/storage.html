@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>aioauth.storage &mdash; aioauth 1.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=dfaa61b1" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=72d88caf"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            aioauth
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">🔐 aioauth</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Understanding</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/understanding/plug_and_play.html">Plug-and-Play</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Using</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/using/configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/using/server_database.html">Server &amp; Database</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/examples/aiohttp.html">Aiohttp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/examples/fastapi.html">FastAPI</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/collections.html">Collections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/config.html">Config</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/constances.html">Constances</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/errors.html">Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/grant_type.html">Grant Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/models.html">Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/requests.html">Requests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/response_type.html">Response Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/responses.html">Responses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/server.html">Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/storage.html">Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/types.html">Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/utils.html">Utils</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">aioauth</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">aioauth.storage</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for aioauth.storage</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. code-block:: python</span>
+
+<span class="sd">    from aioauth import storage</span>
+
+<span class="sd">Storage helper class for storing and retrieving client and resource</span>
+<span class="sd">owner information. See the examples on the sidebar to view this in</span>
+<span class="sd">action.</span>
+
+<span class="sd">----</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">TypeVar</span>
+<span class="kn">from</span> <span class="nn">.types</span> <span class="kn">import</span> <span class="n">CodeChallengeMethod</span><span class="p">,</span> <span class="n">ResponseType</span><span class="p">,</span> <span class="n">TokenType</span>
+
+<span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">TToken</span><span class="p">,</span> <span class="n">TClient</span><span class="p">,</span> <span class="n">TAuthorizationCode</span>
+<span class="kn">from</span> <span class="nn">.requests</span> <span class="kn">import</span> <span class="n">TRequest</span>
+
+
+<div class="viewcode-block" id="BaseStorage">
+<a class="viewcode-back" href="../../sections/documentation/storage.html#aioauth.storage.BaseStorage">[docs]</a>
+<span class="k">class</span> <span class="nc">BaseStorage</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">TToken</span><span class="p">,</span> <span class="n">TClient</span><span class="p">,</span> <span class="n">TAuthorizationCode</span><span class="p">,</span> <span class="n">TRequest</span><span class="p">]):</span>
+<div class="viewcode-block" id="BaseStorage.create_token">
+<a class="viewcode-back" href="../../sections/documentation/storage.html#aioauth.storage.BaseStorage.create_token">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">create_token</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">request</span><span class="p">:</span> <span class="n">TRequest</span><span class="p">,</span>
+        <span class="n">client_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">scope</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">access_token</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">refresh_token</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TToken</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generates a user token and stores it in the database.</span>
+
+<span class="sd">        Warning:</span>
+<span class="sd">            Generated token *must* be stored in the database.</span>
+<span class="sd">        Note:</span>
+<span class="sd">            Method is used by all core grant types, but only used for</span>
+<span class="sd">            :py:class:`aioauth.response_type.ResponseTypeToken`.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            request: An :py:class:`aioauth.requests.Request`.</span>
+<span class="sd">            client_id: A user client ID.</span>
+<span class="sd">            scope: The scopes for the token.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            The new generated :py:class:`aioauth.models.Token`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Method create_token must be implemented&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BaseStorage.get_token">
+<a class="viewcode-back" href="../../sections/documentation/storage.html#aioauth.storage.BaseStorage.get_token">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_token</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">request</span><span class="p">:</span> <span class="n">TRequest</span><span class="p">,</span>
+        <span class="n">client_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">token_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TokenType</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;refresh_token&quot;</span><span class="p">,</span>
+        <span class="n">access_token</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">refresh_token</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TToken</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Gets existing token from the database.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            Method is used by</span>
+<span class="sd">            :py:class:`aioauth.server.AuthorizationServer`,  and by the</span>
+<span class="sd">            grant type :py:class:`aioauth.grant_types.RefreshTokenGrantType`.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            request: An :py:class:`aioauth.requests.Request`.</span>
+<span class="sd">            client_id: A user client ID.</span>
+<span class="sd">            access_token: The user access token.</span>
+<span class="sd">            refresh_token: The user refresh token.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            An optional :py:class:`aioauth.models.Token` object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Method get_token must be implemented&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BaseStorage.create_authorization_code">
+<a class="viewcode-back" href="../../sections/documentation/storage.html#aioauth.storage.BaseStorage.create_authorization_code">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">create_authorization_code</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">request</span><span class="p">:</span> <span class="n">TRequest</span><span class="p">,</span>
+        <span class="n">client_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">scope</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">response_type</span><span class="p">:</span> <span class="n">ResponseType</span><span class="p">,</span>
+        <span class="n">redirect_uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">code_challenge_method</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">CodeChallengeMethod</span><span class="p">],</span>
+        <span class="n">code_challenge</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">code</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TAuthorizationCode</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generates an authorization token and stores it in the database.</span>
+
+<span class="sd">        Warning:</span>
+<span class="sd">            Generated authorization token *must* be stored in the database.</span>
+<span class="sd">        Note:</span>
+<span class="sd">            This must is used by the response type</span>
+<span class="sd">            :py:class:`aioauth.respose_type.ResponseTypeAuthorizationCode`.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            request: An :py:class:`aioauth.requests.Request`.</span>
+<span class="sd">            client_id: A user client ID.</span>
+<span class="sd">            scope: The scopes for the token.</span>
+<span class="sd">            response_type: An :py:class:`aioauth.types.ResponseType`.</span>
+<span class="sd">            redirect_uri: The redirect URI.</span>
+<span class="sd">            code_challenge_method: An :py:class:`aioauth.types.CodeChallengeMethod`.</span>
+<span class="sd">            code_challenge: Code challenge string.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            An :py:class:`aioauth.models.AuthorizationCode` object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;Method create_authorization_code must be implemented&quot;</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BaseStorage.get_id_token">
+<a class="viewcode-back" href="../../sections/documentation/storage.html#aioauth.storage.BaseStorage.get_id_token">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_id_token</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">request</span><span class="p">:</span> <span class="n">TRequest</span><span class="p">,</span>
+        <span class="n">client_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">scope</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">response_type</span><span class="p">:</span> <span class="n">ResponseType</span><span class="p">,</span>
+        <span class="n">redirect_uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns an id_token.</span>
+<span class="sd">        For more information see `OpenID Connect Core 1.0 incorporating errata set 1 section 2 &lt;https://openid.net/specs/openid-connect-core-1_0.html#IDToken&gt;`_.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            Method is used by response type :py:class:`aioauth.response_type.ResponseTypeIdToken`</span>
+<span class="sd">            and :py:class:`aioauth.oidc.core.grant_type.AuthorizationCodeGrantType`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;get_id_token must be implemented.&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BaseStorage.get_client">
+<a class="viewcode-back" href="../../sections/documentation/storage.html#aioauth.storage.BaseStorage.get_client">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_client</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">TRequest</span><span class="p">,</span> <span class="n">client_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">client_secret</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TClient</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Gets existing client from the database if it exists.</span>
+
+<span class="sd">        Warning:</span>
+<span class="sd">            If client does not exists in database this method *must*</span>
+<span class="sd">            return ``None`` to indicate to the validator that the</span>
+<span class="sd">            requested ``client_id`` does not exist or is invalid.</span>
+<span class="sd">        Note:</span>
+<span class="sd">            This method is used by all core grant types, as well as</span>
+<span class="sd">            all core response types.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            request: An :py:class:`aioauth.requests.Request`.</span>
+<span class="sd">            client_id: A user client ID.</span>
+<span class="sd">            client_secret: An optional user client secret.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            An optional :py:class:`aioauth.models.Client` object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Method get_client must be implemented&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BaseStorage.authenticate">
+<a class="viewcode-back" href="../../sections/documentation/storage.html#aioauth.storage.BaseStorage.authenticate">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">authenticate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">TRequest</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Authenticates a user.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            This method is used by the grant type</span>
+<span class="sd">            :py:class:`aioauth.grant_type.PasswordGrantType`.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            request: An :py:class:`aioauth.requests.Request`.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Boolean indicating whether or not the user was authenticated</span>
+<span class="sd">            successfully.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Method authenticate must be implemented&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BaseStorage.get_authorization_code">
+<a class="viewcode-back" href="../../sections/documentation/storage.html#aioauth.storage.BaseStorage.get_authorization_code">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_authorization_code</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">TRequest</span><span class="p">,</span> <span class="n">client_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">code</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TAuthorizationCode</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Gets existing authorization code from the database if it exists.</span>
+
+<span class="sd">        Warning:</span>
+<span class="sd">            If authorization code does not exists this function *must*</span>
+<span class="sd">            return ``None`` to indicate to the validator that the</span>
+<span class="sd">            requested authorization code does not exist or is invalid.</span>
+<span class="sd">        Note:</span>
+<span class="sd">            This method is used by the grant type</span>
+<span class="sd">            :py:class:`aioauth.grant_type.AuthorizationCodeGrantType`.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            request: An :py:class:`aioauth.requests.Request`.</span>
+<span class="sd">            client_id: A user client ID.</span>
+<span class="sd">            code: An authorization code.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            An optional :py:class:`aioauth.models.AuthorizationCode`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;Method get_authorization_code must be implemented for AuthorizationCodeGrantType&quot;</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BaseStorage.delete_authorization_code">
+<a class="viewcode-back" href="../../sections/documentation/storage.html#aioauth.storage.BaseStorage.delete_authorization_code">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">delete_authorization_code</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">TRequest</span><span class="p">,</span> <span class="n">client_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">code</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Deletes authorization code from database.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            This method is used by the grant type</span>
+<span class="sd">            :py:class:`aioauth.grant_type.AuthorizationCodeGrantType`.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            request: An :py:class:`aioauth.requests.Request`.</span>
+<span class="sd">            client_id: A user client ID.</span>
+<span class="sd">            code: An authorization code.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;Method delete_authorization_code must be implemented for AuthorizationCodeGrantType&quot;</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BaseStorage.revoke_token">
+<a class="viewcode-back" href="../../sections/documentation/storage.html#aioauth.storage.BaseStorage.revoke_token">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">revoke_token</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">request</span><span class="p">:</span> <span class="n">TRequest</span><span class="p">,</span>
+        <span class="n">token_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TokenType</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;refresh_token&quot;</span><span class="p">,</span>
+        <span class="n">access_token</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">refresh_token</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Revokes a token&#39;s from the database.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            This method *must* set ``revoked`` to ``True`` for an</span>
+<span class="sd">            existing token record. This method is used by the grant type</span>
+<span class="sd">            :py:class:`aioauth.grant_types.RefreshTokenGrantType`.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            request: An :py:class:`aioauth.requests.Request`.</span>
+<span class="sd">            refresh_token: The user refresh token.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;Method revoke_token must be implemented for RefreshTokenGrantType&quot;</span>
+        <span class="p">)</span></div>
+</div>
+
+
+
+<span class="n">TStorage</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;TStorage&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">BaseStorage</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

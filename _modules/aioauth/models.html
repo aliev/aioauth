@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>aioauth.models &mdash; aioauth 1.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=dfaa61b1" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=72d88caf"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            aioauth
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">🔐 aioauth</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Understanding</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/understanding/plug_and_play.html">Plug-and-Play</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Using</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/using/configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/using/server_database.html">Server &amp; Database</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/examples/aiohttp.html">Aiohttp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/examples/fastapi.html">FastAPI</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/collections.html">Collections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/config.html">Config</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/constances.html">Constances</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/errors.html">Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/grant_type.html">Grant Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/models.html">Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/requests.html">Requests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/response_type.html">Response Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/responses.html">Responses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/server.html">Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/storage.html">Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/types.html">Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sections/documentation/utils.html">Utils</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">aioauth</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">aioauth.models</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for aioauth.models</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. code-block:: python</span>
+
+<span class="sd">    from aioauth import models</span>
+
+<span class="sd">Memory objects used throughout the project.</span>
+
+<span class="sd">----</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">from</span> <span class="nn">.types</span> <span class="kn">import</span> <span class="n">CodeChallengeMethod</span><span class="p">,</span> <span class="n">GrantType</span><span class="p">,</span> <span class="n">ResponseType</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">create_s256_code_challenge</span><span class="p">,</span> <span class="n">enforce_list</span><span class="p">,</span> <span class="n">enforce_str</span>
+
+
+<div class="viewcode-block" id="Client">
+<a class="viewcode-back" href="../../sections/documentation/models.html#aioauth.models.Client">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Client</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;OAuth2.0 client model object.&quot;&quot;&quot;</span>
+
+    <span class="n">client_id</span><span class="p">:</span> <span class="nb">str</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Public identifier for the client. It must also be unique across all</span>
+<span class="sd">    clients that the authorization server handles.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">client_secret</span><span class="p">:</span> <span class="nb">str</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Client secret is a secret known only to the client and the</span>
+<span class="sd">    authorization server. Used for secure communication between the</span>
+<span class="sd">    client and authorization server.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">grant_types</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">GrantType</span><span class="p">]</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The method(s) in which an application gets an access token from the</span>
+<span class="sd">    provider. Each grant type is optimized for a particular use case,</span>
+<span class="sd">    whether that’s a web app, a native app, a device without the ability</span>
+<span class="sd">    to launch a web browser, or server-to-server applications.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">response_types</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ResponseType</span><span class="p">]</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A list containing the types of the response expected.&quot;&quot;&quot;</span>
+
+    <span class="n">redirect_uris</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    After a user successfully authorizes an application, the</span>
+<span class="sd">    authorization server will redirect the user back to the application</span>
+<span class="sd">    with either an authorization code or access token in the URL.</span>
+<span class="sd">    Because the redirect URL will contain sensitive information, it is</span>
+<span class="sd">    critical that the service doesn’t redirect the user to arbitrary</span>
+<span class="sd">    locations.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">scope</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Scope is a mechanism that limit an application&#39;s access to a user&#39;s</span>
+<span class="sd">    account. An application can request one or more scopes, this</span>
+<span class="sd">    information is then presented to the user in the consent screen, and</span>
+<span class="sd">    the access token issued to the application will be limited to the</span>
+<span class="sd">    scopes granted.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">user</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The user who is the creator of the Client.</span>
+<span class="sd">    This optional attribute can be useful if you are creating a server that</span>
+<span class="sd">    can be managed by multiple users.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Client.check_redirect_uri">
+<a class="viewcode-back" href="../../sections/documentation/models.html#aioauth.models.Client.check_redirect_uri">[docs]</a>
+    <span class="k">def</span> <span class="nf">check_redirect_uri</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">redirect_uri</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Verifies passed ``redirect_uri`` is part of the Clients&#39;s</span>
+<span class="sd">        ``redirect_uris`` list.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">redirect_uri</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">redirect_uris</span></div>
+
+
+<div class="viewcode-block" id="Client.check_grant_type">
+<a class="viewcode-back" href="../../sections/documentation/models.html#aioauth.models.Client.check_grant_type">[docs]</a>
+    <span class="k">def</span> <span class="nf">check_grant_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grant_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">GrantType</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Verifies passed ``grant_type`` is part of the client&#39;s</span>
+<span class="sd">        ``grant_types`` list.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">grant_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">grant_types</span> <span class="k">if</span> <span class="n">grant_type</span> <span class="k">else</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="Client.check_response_type">
+<a class="viewcode-back" href="../../sections/documentation/models.html#aioauth.models.Client.check_response_type">[docs]</a>
+    <span class="k">def</span> <span class="nf">check_response_type</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">response_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">ResponseType</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Verifies passed ``response_type`` is part of the client&#39;s</span>
+<span class="sd">        ``response_types`` list.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">enforce_list</span><span class="p">(</span><span class="n">response_type</span><span class="p">))</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">response_types</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="Client.get_allowed_scope">
+<a class="viewcode-back" href="../../sections/documentation/models.html#aioauth.models.Client.get_allowed_scope">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_allowed_scope</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the allowed ``scope`` given the passed ``scope``.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            Note that the passed ``scope`` may contain multiple scopes</span>
+<span class="sd">            seperated by a space character.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">scope</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">allowed</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>
+        <span class="n">scopes</span> <span class="o">=</span> <span class="n">enforce_list</span><span class="p">(</span><span class="n">scope</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">enforce_str</span><span class="p">([</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">scopes</span> <span class="k">if</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">allowed</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="Client.check_scope">
+<a class="viewcode-back" href="../../sections/documentation/models.html#aioauth.models.Client.check_scope">[docs]</a>
+    <span class="k">def</span> <span class="nf">check_scope</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="n">allowed_scope</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_allowed_scope</span><span class="p">(</span><span class="n">scope</span><span class="p">)</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">enforce_list</span><span class="p">(</span><span class="n">scope</span><span class="p">))</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">enforce_list</span><span class="p">(</span><span class="n">allowed_scope</span><span class="p">)))</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="AuthorizationCode">
+<a class="viewcode-back" href="../../sections/documentation/models.html#aioauth.models.AuthorizationCode">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">AuthorizationCode</span><span class="p">:</span>
+    <span class="n">code</span><span class="p">:</span> <span class="nb">str</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Authorization code that the client previously received from the</span>
+<span class="sd">    authorization server.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">client_id</span><span class="p">:</span> <span class="nb">str</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Public identifier for the client. It must also be unique across all</span>
+<span class="sd">    clients that the authorization server handles.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">redirect_uri</span><span class="p">:</span> <span class="nb">str</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    After a user successfully authorizes an application, the</span>
+<span class="sd">    authorization server will redirect the user back to the application</span>
+<span class="sd">    with either an authorization code or access token in the URL.</span>
+<span class="sd">    Because the redirect URL will contain sensitive information, it is</span>
+<span class="sd">    critical that the service doesn’t redirect the user to arbitrary</span>
+<span class="sd">    locations.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">response_type</span><span class="p">:</span> <span class="nb">str</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A string containing the type of the response expected.&quot;&quot;&quot;</span>
+
+    <span class="n">scope</span><span class="p">:</span> <span class="nb">str</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Scope is a mechanism that limit an application&#39;s access to a user&#39;s</span>
+<span class="sd">    account. An application can request one or more scopes, this</span>
+<span class="sd">    information is then presented to the user in the consent screen, and</span>
+<span class="sd">    the access token issued to the application will be limited to the</span>
+<span class="sd">    scopes granted.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">auth_time</span><span class="p">:</span> <span class="nb">int</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    JSON Web Token Claim indicating the time when the authentication</span>
+<span class="sd">    occurred.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">expires_in</span><span class="p">:</span> <span class="nb">int</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Time delta in which authorization_code will expire.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">code_challenge</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Only used when `RFC 7636 &lt;tools.ietf.org/html/rfc7636&gt;`_,</span>
+<span class="sd">    Proof Key for Code Exchange, is used.</span>
+<span class="sd">    PKCE works by having the app generate a random value at the</span>
+<span class="sd">    beginning of the flow called a Code Verifier. The app hashes the</span>
+<span class="sd">    Code Verifier and the result is called the Code Challenge. The app</span>
+<span class="sd">    then kicks off the flow in the normal way, except that it includes</span>
+<span class="sd">    the Code Challenge in the query string for the request to the</span>
+<span class="sd">    Authorization Server.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">code_challenge_method</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">CodeChallengeMethod</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Only used when `RFC 7636 &lt;tools.ietf.org/html/rfc7636&gt;`_,</span>
+<span class="sd">    Proof Key for Code Exchange, is used.</span>
+<span class="sd">    Method used to transform the code verifier into the code challenge.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">nonce</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Only used when `RFC 7636 &lt;tools.ietf.org/html/rfc7636&gt;`_,</span>
+<span class="sd">    Proof Key for Code Exchange, is used.</span>
+<span class="sd">    Random piece of data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">user</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The user who owns the AuthorizationCode.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="AuthorizationCode.check_code_challenge">
+<a class="viewcode-back" href="../../sections/documentation/models.html#aioauth.models.AuthorizationCode.check_code_challenge">[docs]</a>
+    <span class="k">def</span> <span class="nf">check_code_challenge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code_verifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="n">is_valid_code_challenge</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">code_challenge_method</span> <span class="o">==</span> <span class="s2">&quot;plain&quot;</span><span class="p">:</span>
+            <span class="c1"># If the &quot;code_challenge_method&quot; was &quot;plain&quot;, they are compared directly</span>
+            <span class="n">is_valid_code_challenge</span> <span class="o">=</span> <span class="n">code_verifier</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">code_challenge</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">code_challenge_method</span> <span class="o">==</span> <span class="s2">&quot;S256&quot;</span><span class="p">:</span>
+            <span class="c1"># base64url(sha256(ascii(code_verifier))) == code_challenge</span>
+            <span class="n">is_valid_code_challenge</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">create_s256_code_challenge</span><span class="p">(</span><span class="n">code_verifier</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">code_challenge</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">is_valid_code_challenge</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_expired</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks if the authorization_code has expired.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_time</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">expires_in</span> <span class="o">&lt;</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="Token">
+<a class="viewcode-back" href="../../sections/documentation/models.html#aioauth.models.Token">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Token</span><span class="p">:</span>
+    <span class="n">access_token</span><span class="p">:</span> <span class="nb">str</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Token that clients use to make API requests on behalf of the</span>
+<span class="sd">    resource owner.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">refresh_token</span><span class="p">:</span> <span class="nb">str</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Token used by clients to exchange a refresh token for an access</span>
+<span class="sd">    token when the access token has expired.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">scope</span><span class="p">:</span> <span class="nb">str</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Scope is a mechanism that limit an application&#39;s access to a user&#39;s</span>
+<span class="sd">    account. An application can request one or more scopes, this</span>
+<span class="sd">    information is then presented to the user in the consent screen, and</span>
+<span class="sd">    the access token issued to the application will be limited to the</span>
+<span class="sd">    scopes granted.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">issued_at</span><span class="p">:</span> <span class="nb">int</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Time date in which token was issued at.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">expires_in</span><span class="p">:</span> <span class="nb">int</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Time delta in which token will expire.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">refresh_token_expires_in</span><span class="p">:</span> <span class="nb">int</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Time delta in which refresh token will expire.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">client_id</span><span class="p">:</span> <span class="nb">str</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Public identifier for the client. It must also be unique across all</span>
+<span class="sd">    clients that the authorization server handles.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">token_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Bearer&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Type of token expected.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">revoked</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Flag that indicates whether or not the token has been revoked.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">user</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The user who owns the Token.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_expired</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks if the token has expired.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">issued_at</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">expires_in</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">refresh_token_expired</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks if refresh token has expired.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">issued_at</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">refresh_token_expires_in</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span></div>
+
+
+
+<span class="n">TToken</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;TToken&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">Token</span><span class="p">)</span>
+<span class="n">TClient</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;TClient&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">Client</span><span class="p">)</span>
+<span class="n">TAuthorizationCode</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;TAuthorizationCode&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">AuthorizationCode</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
