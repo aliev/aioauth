@@ -314,6 +314,17 @@ async def check_query_values(
             request_ = replace(request_, query=query)
 
         response_expected = responses[key]
+
+        if (
+            request_.method == "GET"
+            and request_.query.state
+            and response_expected.status_code == HTTPStatus.FOUND
+        ):
+            # error redirects should include the state parameter
+            headers = HTTPHeaderDict(**response_expected.headers)
+            headers["location"] += f"&state={request_.query.state}"
+            response_expected = replace(response_expected, headers=headers)
+
         response_actual = await endpoint_func(request_)
 
         assert (
