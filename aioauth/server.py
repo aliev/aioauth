@@ -167,7 +167,16 @@ class AuthorizationServer(Generic[TRequest, TStorage]):
             response: An :py:class:`aioauth.responses.Response` object.
         """
         self.validate_request(request, ["POST"])
-        client_id, _ = self.get_client_credentials(request)
+        client_id, client_secret = self.get_client_credentials(
+            request, secret_required=True
+        )
+
+        client = await self.storage.get_client(
+            request, client_id=client_id, client_secret=client_secret
+        )
+
+        if not client:
+            raise InvalidClientError[TRequest](request)
 
         token_types: Tuple[TokenType, ...] = get_args(TokenType)
         token_type: TokenType = "refresh_token"
@@ -210,7 +219,9 @@ class AuthorizationServer(Generic[TRequest, TStorage]):
             content=content, status_code=HTTPStatus.OK, headers=default_headers
         )
 
-    def get_client_credentials(self, request: TRequest) -> Tuple[str, str]:
+    def get_client_credentials(
+        self, request: TRequest, secret_required: bool
+    ) -> Tuple[str, str]:
         client_id = request.post.client_id
         client_secret = request.post.client_secret
 
@@ -221,10 +232,18 @@ class AuthorizationServer(Generic[TRequest, TStorage]):
             try:
                 client_id, client_secret = decode_auth_headers(authorization)
             except ValueError as exc:
-                raise InvalidClientError[TRequest](
-                    description="Invalid client_id parameter value.",
-                    request=request,
-                ) from exc
+                if client_id is None or secret_required:
+                    # Either we didn't find a client ID at all, or we found
+                    # a client ID but no secret and a secret is required.
+                    raise InvalidClientError[TRequest](
+                        description="Invalid client_id parameter value.",
+                        request=request,
+                    ) from exc
+
+        # client_secret must not be None. When client_secret is None,
+        # storage.get_client will not run standard checks on the client_secret
+        if client_secret is None:
+            client_secret = ""
 
         return client_id, client_secret
 
@@ -265,29 +284,19 @@ class AuthorizationServer(Generic[TRequest, TStorage]):
 
         client_secret: Optional[str] = None
 
-        if request.post.grant_type == "client_credentials":
-            # client_secret is required for the client_credentials grant type
-            # https://www.oauth.com/oauth2-servers/access-tokens/client-credentials/
-            client_id, client_secret = self.get_client_credentials(request)
-        else:
-            # for other grant types, client_secret is required if the client has one:
-            # If the client type is confidential or the client was issued client credentials
-            # (or assigned other authentication requirements), the client MUST authenticate
-            # with the authorization server as described in Section 3.2.1.
-            # https://www.rfc-editor.org/rfc/rfc6749#section-4.1.3
-            try:
-                client_id, client_secret = self.get_client_credentials(request)
-            except InvalidClientError as exc:
-                # When InvalidClientError is raised here it probably means that
-                # client_secret could not be found and the basic auth header
-                # had no useful data. client_secret is optional for the password
-                # grant type, so make sure we have a client_id and try to proceed.
-                client_id = request.post.client_id
-                # client_secret must not be None. When client_secret is None,
-                # storage.get_client will not run standard checks on the client_secret
-                client_secret = request.post.client_secret or ""
-                if not client_id:
-                    raise exc
+        # client_secret is required for the client_credentials grant type
+        # https://www.oauth.com/oauth2-servers/access-tokens/client-credentials/
+        #
+        # for other grant types, client_secret is required if the client has one:
+        # If the client type is confidential or the client was issued client credentials
+        # (or assigned other authentication requirements), the client MUST authenticate
+        # with the authorization server as described in Section 3.2.1.
+        # https://www.rfc-editor.org/rfc/rfc6749#section-4.1.3
+        secret_required = request.post.grant_type == "client_credentials"
+
+        client_id, client_secret = self.get_client_credentials(
+            request, secret_required=secret_required
+        )
 
         if not request.post.grant_type:
             # grant_type request value is empty
@@ -481,7 +490,16 @@ class AuthorizationServer(Generic[TRequest, TStorage]):
             response: An :py:class:`aioauth.responses.Response` object.
         """
         self.validate_request(request, ["POST"])
-        client_id, _ = self.get_client_credentials(request)
+        client_id, client_secret = self.get_client_credentials(
+            request, secret_required=False
+        )
+
+        client = await self.storage.get_client(
+            request, client_id=client_id, client_secret=client_secret
+        )
+
+        if not client:
+            raise InvalidClientError[TRequest](request)
 
         if not request.post.token:
             raise InvalidRequestError[TRequest](
