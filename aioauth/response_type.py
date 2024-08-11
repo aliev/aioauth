@@ -42,13 +42,15 @@ class ResponseTypeBase(Generic[TRequest, TStorage]):
         self.storage = storage
 
     async def validate_request(self, request: TRequest) -> Client:
+        state = request.query.state
+
         code_challenge_methods: Tuple[CodeChallengeMethod, ...] = get_args(
             CodeChallengeMethod
         )
 
         if not request.query.client_id:
             raise InvalidClientError[TRequest](
-                request=request, description="Missing client_id parameter."
+                request=request, description="Missing client_id parameter.", state=state
             )
 
         client = await self.storage.get_client(
@@ -57,39 +59,43 @@ class ResponseTypeBase(Generic[TRequest, TStorage]):
 
         if not client:
             raise InvalidClientError[TRequest](
-                request=request, description="Invalid client_id parameter value."
+                request=request,
+                description="Invalid client_id parameter value.",
+                state=state,
             )
 
         if not request.query.redirect_uri:
             raise InvalidRedirectURIError[TRequest](
-                request=request, description="Mismatching redirect URI."
+                request=request, description="Mismatching redirect URI.", state=state
             )
 
         if not client.check_redirect_uri(request.query.redirect_uri):
             raise InvalidRedirectURIError[TRequest](
-                request=request, description="Invalid redirect URI."
+                request=request, description="Invalid redirect URI.", state=state
             )
 
         if request.query.code_challenge_method:
             if request.query.code_challenge_method not in code_challenge_methods:
                 raise InvalidRequestError[TRequest](
-                    request=request, description="Transform algorithm not supported."
+                    request=request,
+                    description="Transform algorithm not supported.",
+                    state=state,
                 )
 
             if not request.query.code_challenge:
                 raise InvalidRequestError[TRequest](
-                    request=request, description="Code challenge required."
+                    request=request, description="Code challenge required.", state=state
                 )
 
         if not client.check_response_type(request.query.response_type):
-            raise UnsupportedResponseTypeError[TRequest](request=request)
+            raise UnsupportedResponseTypeError[TRequest](request=request, state=state)
 
         if not client.check_scope(request.query.scope):
-            raise InvalidScopeError[TRequest](request=request)
+            raise InvalidScopeError[TRequest](request=request, state=state)
 
         if not request.user:
             raise InvalidClientError[TRequest](
-                request=request, description="User is not authorized"
+                request=request, description="User is not authorized", state=state
             )
 
         return client
@@ -150,6 +156,7 @@ class ResponseTypeIdToken(ResponseTypeBase[TRequest, TStorage]):
             raise InvalidRequestError[TRequest](
                 request=request,
                 description="Nonce required for response_type id_token.",
+                state=request.query.state,
             )
         return client
 

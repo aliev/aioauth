@@ -382,13 +382,17 @@ class AuthorizationServer(Generic[TRequest, TStorage]):
         # Response content
         content = {}
 
+        state = request.query.state
+
         if not response_type_list:
             raise InvalidRequestError[TRequest](
-                request=request, description="Missing response_type parameter."
+                request=request,
+                description="Missing response_type parameter.",
+                state=state,
             )
 
-        if request.query.state:
-            responses["state"] = request.query.state
+        if state:
+            responses["state"] = state
 
         for response_type in response_type_list:
             ResponseTypeClass = self.response_types.get(response_type)
@@ -396,7 +400,7 @@ class AuthorizationServer(Generic[TRequest, TStorage]):
                 response_type_classes.add(ResponseTypeClass)
 
         if not response_type_classes:
-            raise UnsupportedResponseTypeError(request=request)
+            raise UnsupportedResponseTypeError(request=request, state=state)
 
         for ResponseTypeClass in response_type_classes:
             response_type = ResponseTypeClass(storage=self.storage)
