@@ -27,12 +27,14 @@ class OAuth2Error(Exception, Generic[TRequest]):
     status_code: HTTPStatus = HTTPStatus.BAD_REQUEST
     error_uri: str = ""
     headers: HTTPHeaderDict = default_headers
+    state: str = ""
 
     def __init__(
         self,
         request: TRequest,
         description: Optional[str] = None,
         headers: Optional[HTTPHeaderDict] = None,
+        state: Optional[str] = None,
     ):
         self.request = request
 
@@ -41,6 +43,9 @@ class OAuth2Error(Exception, Generic[TRequest]):
 
         if headers is not None:
             self.headers = headers
+
+        if state is not None:
+            self.state = state
 
         if request.settings.ERROR_URI:
             self.error_uri = urljoin(request.settings.ERROR_URI, self.error)
@@ -90,9 +95,10 @@ class InvalidClientError(OAuth2Error[TRequest]):
         request: TRequest,
         description: Optional[str] = None,
         headers: Optional[HTTPHeaderDict] = None,
+        state: Optional[str] = None,
     ):
         super().__init__(
-            request, description, headers or HTTPHeaderDict(default_headers)
+            request, description, headers or HTTPHeaderDict(default_headers), state
         )
 
         auth_values = [f"error={self.error}"]
