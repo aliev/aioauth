@@ -261,6 +261,8 @@ def catch_errors_and_unavailability(
                     query["error_description"] = exc.description
                 if request.settings.ERROR_URI:
                     query["error_uri"] = request.settings.ERROR_URI
+                if exc.state:
+                    query["state"] = exc.state
                 location = build_uri(request.query.redirect_uri, query)
                 return Response(
                     status_code=HTTPStatus.FOUND,

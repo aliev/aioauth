@@ -4,7 +4,7 @@ from typing import Any, Callable, Dict, Union
 
 from aioauth.collections import HTTPHeaderDict
 from aioauth.constances import default_headers
-from aioauth.requests import Post, Query, Request
+from aioauth.requests import BaseRequest, Post, Query
 from aioauth.responses import ErrorResponse, Response
 
 EMPTY_KEYS = {
@@ -298,7 +298,7 @@ def get_keys(query: Union[Query, Post]) -> Dict[str, Any]:
 
 
 async def check_query_values(
-    request: Request, responses, query_dict: Dict, endpoint_func, value
+    request: BaseRequest, responses, query_dict: Dict, endpoint_func, value
 ):
     keys = set(query_dict.keys()) & set(responses.keys())
 
@@ -314,6 +314,17 @@ async def check_query_values(
             request_ = replace(request_, query=query)
 
         response_expected = responses[key]
+
+        if (
+            request_.method == "GET"
+            and request_.query.state
+            and response_expected.status_code == HTTPStatus.FOUND
+        ):
+            # error redirects should include the state parameter
+            headers = HTTPHeaderDict(**response_expected.headers)
+            headers["location"] += f"&state={request_.query.state}"
+            response_expected = replace(response_expected, headers=headers)
+
         response_actual = await endpoint_func(request_)
 
         assert (
@@ -322,7 +333,7 @@ async def check_query_values(
 
 
 async def check_request_validators(
-    request: Request,
+    request: BaseRequest,
     endpoint_func: Callable,
 ):
     query_dict = {}
