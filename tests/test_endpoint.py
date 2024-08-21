@@ -161,6 +161,51 @@ async def test_endpoint_availability(context_factory):
 
 
 @pytest.mark.asyncio
+async def test_introspect_token_with_wrong_client_secret(context: AuthorizationContext):
+    client = context.clients[0]
+    client_id = client.client_id
+    client_secret = client.client_secret
+
+    settings = context.settings
+    token = context.initial_tokens[0]
+    server = context.server
+
+    post = Post(token=token.refresh_token)
+    request = Request(
+        post=post,
+        method="POST",
+        headers=encode_auth_headers(client_id, f"not {client_secret}"),
+        settings=settings,
+    )
+
+    response = await server.create_token_introspection_response(request)
+    assert response.status_code == HTTPStatus.UNAUTHORIZED
+    assert response.content["error"] == "invalid_client"
+
+
+@pytest.mark.asyncio
+async def test_introspect_token_without_client_secret():
+    client = factories.client_factory(client_secret="")
+    context = factories.context_factory(clients=[client])
+    client_id = client.client_id
+
+    settings = context.settings
+    token = context.initial_tokens[0]
+    server = context.server
+
+    post = Post(token=token.refresh_token, client_id=client_id)
+    request = Request(
+        post=post,
+        method="POST",
+        settings=settings,
+    )
+
+    response = await server.create_token_introspection_response(request)
+    assert response.status_code == HTTPStatus.UNAUTHORIZED
+    assert response.content["error"] == "invalid_client"
+
+
+@pytest.mark.asyncio
 async def test_revoke_refresh_token(context: AuthorizationContext):
     client = context.clients[0]
     client_id = client.client_id
@@ -222,3 +267,53 @@ async def test_revoke_access_token(context: AuthorizationContext):
     )
     response = await server.create_token_introspection_response(request)
     assert not response.content["active"], "The access_token must be revoked"
+
+
+@pytest.mark.asyncio
+async def test_revoke_access_token_without_client_secret():
+    client = factories.client_factory(client_secret="")
+    context = factories.context_factory(clients=[client])
+    client_id = client.client_id
+
+    settings = context.settings
+    token = context.initial_tokens[0]
+    server = context.server
+
+    post = Post(
+        token=token.access_token,
+        token_type_hint="access_token",
+        client_id=client_id,
+    )
+    request = Request(
+        post=post,
+        method="POST",
+        settings=settings,
+    )
+
+    response = await server.revoke_token(request)
+    assert response.status_code == HTTPStatus.NO_CONTENT
+
+
+@pytest.mark.asyncio
+async def test_revoke_access_token_with_wrong_client_secret(
+    context: AuthorizationContext,
+):
+    client = context.clients[0]
+    client_id = client.client_id
+    client_secret = client.client_secret
+
+    settings = context.settings
+    token = context.initial_tokens[0]
+    server = context.server
+
+    post = Post(token=token.access_token, token_type_hint="access_token")
+    request = Request(
+        post=post,
+        method="POST",
+        headers=encode_auth_headers(client_id, f"not {client_secret}"),
+        settings=settings,
+    )
+
+    response = await server.revoke_token(request)
+    assert response.status_code == HTTPStatus.UNAUTHORIZED
+    assert response.content["error"] == "invalid_client"
