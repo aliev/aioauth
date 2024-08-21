@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🔐 aioauth &mdash; aioauth 1.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="_static/custom.css?v=dfaa61b1" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=72d88caf"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Plug-and-Play" href="sections/understanding/plug_and_play.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="#" class="icon icon-home">
+            aioauth
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">🔐 aioauth</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Understanding</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="sections/understanding/plug_and_play.html">Plug-and-Play</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Using</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="sections/using/configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sections/using/server_database.html">Server &amp; Database</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="sections/examples/aiohttp.html">Aiohttp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sections/examples/fastapi.html">FastAPI</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="sections/documentation/collections.html">Collections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sections/documentation/config.html">Config</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sections/documentation/constances.html">Constances</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sections/documentation/errors.html">Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sections/documentation/grant_type.html">Grant Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sections/documentation/models.html">Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sections/documentation/requests.html">Requests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sections/documentation/response_type.html">Response Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sections/documentation/responses.html">Responses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sections/documentation/server.html">Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sections/documentation/storage.html">Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sections/documentation/types.html">Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sections/documentation/utils.html">Utils</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">aioauth</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">🔐 aioauth</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="aioauth">
+<h1>🔐 aioauth<a class="headerlink" href="#aioauth" title="Link to this heading"></a></h1>
+<p>aioauth is a spec-compliant OAuth 2.0 asynchronous Python module. aioauth works out-of-the-box with asynchronous server frameworks like FastAPI, Starlette, aiohttp, and others, as well as asynchronous database modules like Motor (MongoDB), aiopg (PostgreSQL), aiomysql (MySQL), or ORMs like Gino, sqlalchemy, or Tortoise.</p>
+<p>The magic of aioauth is its plug-and-play methods that allow the use of virtually any server or database framework.</p>
+<section id="installing">
+<h2>Installing<a class="headerlink" href="#installing" title="Link to this heading"></a></h2>
+<p>To install aioauth at the command line:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install aioauth
+</pre></div>
+</div>
+<p>To install pre-releases:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install git+https://github.com/aliev/aioauth
+</pre></div>
+</div>
+</section>
+<section id="supported-rfc">
+<h2>Supported RFC<a class="headerlink" href="#supported-rfc" title="Link to this heading"></a></h2>
+<p>aioauth supports the following RFCs:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://tools.ietf.org/html/rfc6749">RFC 6749 - The OAuth 2.0 Authorization Framework</a></p></li>
+<li><p><a class="reference external" href="https://tools.ietf.org/html/rfc7662">RFC 7662 - OAuth 2.0 Token Introspection</a></p></li>
+<li><p><a class="reference external" href="https://tools.ietf.org/html/rfc7636">RFC 7636 - Proof Key for Code Exchange by OAuth Public Clients</a></p></li>
+</ul>
+</section>
+<section id="pages">
+<h2>Pages<a class="headerlink" href="#pages" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/aliev/aioauth/pull/21">Github Project</a></p></li>
+<li><p><a class="reference external" href="https://github.com/aliev/aioauth/issues">Issues</a></p></li>
+<li><p><a class="reference external" href="https://github.com/aliev/aioauth/discussions">Discussion</a></p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="sections">
+<h1>Sections<a class="headerlink" href="#sections" title="Link to this heading"></a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Understanding</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="sections/understanding/plug_and_play.html">Plug-and-Play</a></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Using</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="sections/using/configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sections/using/server_database.html">Server &amp; Database</a></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="sections/examples/aiohttp.html">Aiohttp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sections/examples/fastapi.html">FastAPI</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="sections/examples/fastapi.html#installing">Installing</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="sections/documentation/collections.html">Collections</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="sections/documentation/collections.html#aioauth.collections.HTTPHeaderDict"><code class="docutils literal notranslate"><span class="pre">HTTPHeaderDict</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sections/documentation/config.html">Config</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="sections/documentation/config.html#aioauth.config.Settings"><code class="docutils literal notranslate"><span class="pre">Settings</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/config.html#aioauth.config.Settings.TOKEN_EXPIRES_IN"><code class="docutils literal notranslate"><span class="pre">Settings.TOKEN_EXPIRES_IN</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/config.html#aioauth.config.Settings.REFRESH_TOKEN_EXPIRES_IN"><code class="docutils literal notranslate"><span class="pre">Settings.REFRESH_TOKEN_EXPIRES_IN</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/config.html#aioauth.config.Settings.AUTHORIZATION_CODE_EXPIRES_IN"><code class="docutils literal notranslate"><span class="pre">Settings.AUTHORIZATION_CODE_EXPIRES_IN</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/config.html#aioauth.config.Settings.INSECURE_TRANSPORT"><code class="docutils literal notranslate"><span class="pre">Settings.INSECURE_TRANSPORT</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/config.html#aioauth.config.Settings.ERROR_URI"><code class="docutils literal notranslate"><span class="pre">Settings.ERROR_URI</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/config.html#aioauth.config.Settings.AVAILABLE"><code class="docutils literal notranslate"><span class="pre">Settings.AVAILABLE</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sections/documentation/constances.html">Constances</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="sections/documentation/constances.html#aioauth.constances.default_headers"><code class="docutils literal notranslate"><span class="pre">default_headers</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sections/documentation/errors.html">Errors</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="sections/documentation/errors.html#aioauth.errors.MethodNotAllowedError"><code class="docutils literal notranslate"><span class="pre">MethodNotAllowedError</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/errors.html#aioauth.errors.MethodNotAllowedError.description"><code class="docutils literal notranslate"><span class="pre">MethodNotAllowedError.description</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/errors.html#aioauth.errors.MethodNotAllowedError.status_code"><code class="docutils literal notranslate"><span class="pre">MethodNotAllowedError.status_code</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/errors.html#aioauth.errors.MethodNotAllowedError.error"><code class="docutils literal notranslate"><span class="pre">MethodNotAllowedError.error</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sections/documentation/errors.html#aioauth.errors.InvalidRequestError"><code class="docutils literal notranslate"><span class="pre">InvalidRequestError</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/errors.html#aioauth.errors.InvalidRequestError.error"><code class="docutils literal notranslate"><span class="pre">InvalidRequestError.error</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sections/documentation/errors.html#aioauth.errors.InvalidClientError"><code class="docutils literal notranslate"><span class="pre">InvalidClientError</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/errors.html#aioauth.errors.InvalidClientError.error"><code class="docutils literal notranslate"><span class="pre">InvalidClientError.error</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/errors.html#aioauth.errors.InvalidClientError.status_code"><code class="docutils literal notranslate"><span class="pre">InvalidClientError.status_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sections/documentation/errors.html#aioauth.errors.InsecureTransportError"><code class="docutils literal notranslate"><span class="pre">InsecureTransportError</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/errors.html#aioauth.errors.InsecureTransportError.description"><code class="docutils literal notranslate"><span class="pre">InsecureTransportError.description</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/errors.html#aioauth.errors.InsecureTransportError.error"><code class="docutils literal notranslate"><span class="pre">InsecureTransportError.error</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sections/documentation/errors.html#aioauth.errors.UnsupportedGrantTypeError"><code class="docutils literal notranslate"><span class="pre">UnsupportedGrantTypeError</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/errors.html#aioauth.errors.UnsupportedGrantTypeError.error"><code class="docutils literal notranslate"><span class="pre">UnsupportedGrantTypeError.error</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sections/documentation/errors.html#aioauth.errors.UnsupportedResponseTypeError"><code class="docutils literal notranslate"><span class="pre">UnsupportedResponseTypeError</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/errors.html#aioauth.errors.UnsupportedResponseTypeError.error"><code class="docutils literal notranslate"><span class="pre">UnsupportedResponseTypeError.error</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sections/documentation/errors.html#aioauth.errors.InvalidGrantError"><code class="docutils literal notranslate"><span class="pre">InvalidGrantError</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/errors.html#aioauth.errors.InvalidGrantError.error"><code class="docutils literal notranslate"><span class="pre">InvalidGrantError.error</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sections/documentation/errors.html#aioauth.errors.MismatchingStateError"><code class="docutils literal notranslate"><span class="pre">MismatchingStateError</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/errors.html#aioauth.errors.MismatchingStateError.description"><code class="docutils literal notranslate"><span class="pre">MismatchingStateError.description</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/errors.html#aioauth.errors.MismatchingStateError.error"><code class="docutils literal notranslate"><span class="pre">MismatchingStateError.error</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sections/documentation/errors.html#aioauth.errors.UnauthorizedClientError"><code class="docutils literal notranslate"><span class="pre">UnauthorizedClientError</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/errors.html#aioauth.errors.UnauthorizedClientError.error"><code class="docutils literal notranslate"><span class="pre">UnauthorizedClientError.error</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sections/documentation/errors.html#aioauth.errors.InvalidScopeError"><code class="docutils literal notranslate"><span class="pre">InvalidScopeError</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/errors.html#aioauth.errors.InvalidScopeError.error"><code class="docutils literal notranslate"><span class="pre">InvalidScopeError.error</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sections/documentation/errors.html#aioauth.errors.ServerError"><code class="docutils literal notranslate"><span class="pre">ServerError</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/errors.html#aioauth.errors.ServerError.error"><code class="docutils literal notranslate"><span class="pre">ServerError.error</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sections/documentation/errors.html#aioauth.errors.TemporarilyUnavailableError"><code class="docutils literal notranslate"><span class="pre">TemporarilyUnavailableError</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/errors.html#aioauth.errors.TemporarilyUnavailableError.error"><code class="docutils literal notranslate"><span class="pre">TemporarilyUnavailableError.error</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sections/documentation/errors.html#aioauth.errors.InvalidRedirectURIError"><code class="docutils literal notranslate"><span class="pre">InvalidRedirectURIError</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/errors.html#aioauth.errors.InvalidRedirectURIError.error"><code class="docutils literal notranslate"><span class="pre">InvalidRedirectURIError.error</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sections/documentation/errors.html#aioauth.errors.UnsupportedTokenTypeError"><code class="docutils literal notranslate"><span class="pre">UnsupportedTokenTypeError</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/errors.html#aioauth.errors.UnsupportedTokenTypeError.error"><code class="docutils literal notranslate"><span class="pre">UnsupportedTokenTypeError.error</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sections/documentation/grant_type.html">Grant Type</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="sections/documentation/grant_type.html#aioauth.grant_type.GrantTypeBase"><code class="docutils literal notranslate"><span class="pre">GrantTypeBase</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/grant_type.html#aioauth.grant_type.GrantTypeBase.create_token_response"><code class="docutils literal notranslate"><span class="pre">GrantTypeBase.create_token_response()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/grant_type.html#aioauth.grant_type.GrantTypeBase.validate_request"><code class="docutils literal notranslate"><span class="pre">GrantTypeBase.validate_request()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sections/documentation/grant_type.html#aioauth.grant_type.AuthorizationCodeGrantType"><code class="docutils literal notranslate"><span class="pre">AuthorizationCodeGrantType</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/grant_type.html#aioauth.grant_type.AuthorizationCodeGrantType.validate_request"><code class="docutils literal notranslate"><span class="pre">AuthorizationCodeGrantType.validate_request()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/grant_type.html#aioauth.grant_type.AuthorizationCodeGrantType.create_token_response"><code class="docutils literal notranslate"><span class="pre">AuthorizationCodeGrantType.create_token_response()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sections/documentation/grant_type.html#aioauth.grant_type.PasswordGrantType"><code class="docutils literal notranslate"><span class="pre">PasswordGrantType</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/grant_type.html#aioauth.grant_type.PasswordGrantType.validate_request"><code class="docutils literal notranslate"><span class="pre">PasswordGrantType.validate_request()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sections/documentation/grant_type.html#aioauth.grant_type.RefreshTokenGrantType"><code class="docutils literal notranslate"><span class="pre">RefreshTokenGrantType</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/grant_type.html#aioauth.grant_type.RefreshTokenGrantType.create_token_response"><code class="docutils literal notranslate"><span class="pre">RefreshTokenGrantType.create_token_response()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/grant_type.html#aioauth.grant_type.RefreshTokenGrantType.validate_request"><code class="docutils literal notranslate"><span class="pre">RefreshTokenGrantType.validate_request()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sections/documentation/grant_type.html#aioauth.grant_type.ClientCredentialsGrantType"><code class="docutils literal notranslate"><span class="pre">ClientCredentialsGrantType</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/grant_type.html#aioauth.grant_type.ClientCredentialsGrantType.validate_request"><code class="docutils literal notranslate"><span class="pre">ClientCredentialsGrantType.validate_request()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sections/documentation/models.html">Models</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="sections/documentation/models.html#aioauth.models.Client"><code class="docutils literal notranslate"><span class="pre">Client</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/models.html#aioauth.models.Client.client_id"><code class="docutils literal notranslate"><span class="pre">Client.client_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/models.html#aioauth.models.Client.client_secret"><code class="docutils literal notranslate"><span class="pre">Client.client_secret</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/models.html#aioauth.models.Client.grant_types"><code class="docutils literal notranslate"><span class="pre">Client.grant_types</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/models.html#aioauth.models.Client.response_types"><code class="docutils literal notranslate"><span class="pre">Client.response_types</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/models.html#aioauth.models.Client.redirect_uris"><code class="docutils literal notranslate"><span class="pre">Client.redirect_uris</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/models.html#aioauth.models.Client.scope"><code class="docutils literal notranslate"><span class="pre">Client.scope</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/models.html#aioauth.models.Client.user"><code class="docutils literal notranslate"><span class="pre">Client.user</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/models.html#aioauth.models.Client.check_redirect_uri"><code class="docutils literal notranslate"><span class="pre">Client.check_redirect_uri()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/models.html#aioauth.models.Client.check_grant_type"><code class="docutils literal notranslate"><span class="pre">Client.check_grant_type()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/models.html#aioauth.models.Client.check_response_type"><code class="docutils literal notranslate"><span class="pre">Client.check_response_type()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/models.html#aioauth.models.Client.get_allowed_scope"><code class="docutils literal notranslate"><span class="pre">Client.get_allowed_scope()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/models.html#aioauth.models.Client.check_scope"><code class="docutils literal notranslate"><span class="pre">Client.check_scope()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sections/documentation/models.html#aioauth.models.AuthorizationCode"><code class="docutils literal notranslate"><span class="pre">AuthorizationCode</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/models.html#aioauth.models.AuthorizationCode.code"><code class="docutils literal notranslate"><span class="pre">AuthorizationCode.code</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/models.html#aioauth.models.AuthorizationCode.client_id"><code class="docutils literal notranslate"><span class="pre">AuthorizationCode.client_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/models.html#aioauth.models.AuthorizationCode.redirect_uri"><code class="docutils literal notranslate"><span class="pre">AuthorizationCode.redirect_uri</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/models.html#aioauth.models.AuthorizationCode.response_type"><code class="docutils literal notranslate"><span class="pre">AuthorizationCode.response_type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/models.html#aioauth.models.AuthorizationCode.scope"><code class="docutils literal notranslate"><span class="pre">AuthorizationCode.scope</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/models.html#aioauth.models.AuthorizationCode.auth_time"><code class="docutils literal notranslate"><span class="pre">AuthorizationCode.auth_time</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/models.html#aioauth.models.AuthorizationCode.expires_in"><code class="docutils literal notranslate"><span class="pre">AuthorizationCode.expires_in</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/models.html#aioauth.models.AuthorizationCode.code_challenge"><code class="docutils literal notranslate"><span class="pre">AuthorizationCode.code_challenge</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/models.html#aioauth.models.AuthorizationCode.code_challenge_method"><code class="docutils literal notranslate"><span class="pre">AuthorizationCode.code_challenge_method</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/models.html#aioauth.models.AuthorizationCode.nonce"><code class="docutils literal notranslate"><span class="pre">AuthorizationCode.nonce</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/models.html#aioauth.models.AuthorizationCode.user"><code class="docutils literal notranslate"><span class="pre">AuthorizationCode.user</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/models.html#aioauth.models.AuthorizationCode.check_code_challenge"><code class="docutils literal notranslate"><span class="pre">AuthorizationCode.check_code_challenge()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/models.html#aioauth.models.AuthorizationCode.is_expired"><code class="docutils literal notranslate"><span class="pre">AuthorizationCode.is_expired</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sections/documentation/models.html#aioauth.models.Token"><code class="docutils literal notranslate"><span class="pre">Token</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/models.html#aioauth.models.Token.access_token"><code class="docutils literal notranslate"><span class="pre">Token.access_token</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/models.html#aioauth.models.Token.refresh_token"><code class="docutils literal notranslate"><span class="pre">Token.refresh_token</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/models.html#aioauth.models.Token.scope"><code class="docutils literal notranslate"><span class="pre">Token.scope</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/models.html#aioauth.models.Token.issued_at"><code class="docutils literal notranslate"><span class="pre">Token.issued_at</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/models.html#aioauth.models.Token.expires_in"><code class="docutils literal notranslate"><span class="pre">Token.expires_in</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/models.html#aioauth.models.Token.refresh_token_expires_in"><code class="docutils literal notranslate"><span class="pre">Token.refresh_token_expires_in</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/models.html#aioauth.models.Token.client_id"><code class="docutils literal notranslate"><span class="pre">Token.client_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/models.html#aioauth.models.Token.token_type"><code class="docutils literal notranslate"><span class="pre">Token.token_type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/models.html#aioauth.models.Token.revoked"><code class="docutils literal notranslate"><span class="pre">Token.revoked</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/models.html#aioauth.models.Token.user"><code class="docutils literal notranslate"><span class="pre">Token.user</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/models.html#aioauth.models.Token.is_expired"><code class="docutils literal notranslate"><span class="pre">Token.is_expired</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/models.html#aioauth.models.Token.refresh_token_expired"><code class="docutils literal notranslate"><span class="pre">Token.refresh_token_expired</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sections/documentation/requests.html">Requests</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="sections/documentation/requests.html#aioauth.requests.Query"><code class="docutils literal notranslate"><span class="pre">Query</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/requests.html#aioauth.requests.Query.client_id"><code class="docutils literal notranslate"><span class="pre">Query.client_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/requests.html#aioauth.requests.Query.redirect_uri"><code class="docutils literal notranslate"><span class="pre">Query.redirect_uri</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/requests.html#aioauth.requests.Query.response_type"><code class="docutils literal notranslate"><span class="pre">Query.response_type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/requests.html#aioauth.requests.Query.state"><code class="docutils literal notranslate"><span class="pre">Query.state</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/requests.html#aioauth.requests.Query.scope"><code class="docutils literal notranslate"><span class="pre">Query.scope</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/requests.html#aioauth.requests.Query.nonce"><code class="docutils literal notranslate"><span class="pre">Query.nonce</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/requests.html#aioauth.requests.Query.code_challenge_method"><code class="docutils literal notranslate"><span class="pre">Query.code_challenge_method</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/requests.html#aioauth.requests.Query.code_challenge"><code class="docutils literal notranslate"><span class="pre">Query.code_challenge</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/requests.html#aioauth.requests.Query.response_mode"><code class="docutils literal notranslate"><span class="pre">Query.response_mode</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sections/documentation/requests.html#aioauth.requests.Post"><code class="docutils literal notranslate"><span class="pre">Post</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/requests.html#aioauth.requests.Post.grant_type"><code class="docutils literal notranslate"><span class="pre">Post.grant_type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/requests.html#aioauth.requests.Post.client_id"><code class="docutils literal notranslate"><span class="pre">Post.client_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/requests.html#aioauth.requests.Post.client_secret"><code class="docutils literal notranslate"><span class="pre">Post.client_secret</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/requests.html#aioauth.requests.Post.redirect_uri"><code class="docutils literal notranslate"><span class="pre">Post.redirect_uri</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/requests.html#aioauth.requests.Post.scope"><code class="docutils literal notranslate"><span class="pre">Post.scope</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/requests.html#aioauth.requests.Post.username"><code class="docutils literal notranslate"><span class="pre">Post.username</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/requests.html#aioauth.requests.Post.password"><code class="docutils literal notranslate"><span class="pre">Post.password</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/requests.html#aioauth.requests.Post.refresh_token"><code class="docutils literal notranslate"><span class="pre">Post.refresh_token</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/requests.html#aioauth.requests.Post.code"><code class="docutils literal notranslate"><span class="pre">Post.code</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/requests.html#aioauth.requests.Post.token"><code class="docutils literal notranslate"><span class="pre">Post.token</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/requests.html#aioauth.requests.Post.token_type_hint"><code class="docutils literal notranslate"><span class="pre">Post.token_type_hint</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/requests.html#aioauth.requests.Post.code_verifier"><code class="docutils literal notranslate"><span class="pre">Post.code_verifier</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sections/documentation/requests.html#aioauth.requests.BaseRequest"><code class="docutils literal notranslate"><span class="pre">BaseRequest</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/requests.html#aioauth.requests.BaseRequest.method"><code class="docutils literal notranslate"><span class="pre">BaseRequest.method</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/requests.html#aioauth.requests.BaseRequest.query"><code class="docutils literal notranslate"><span class="pre">BaseRequest.query</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/requests.html#aioauth.requests.BaseRequest.post"><code class="docutils literal notranslate"><span class="pre">BaseRequest.post</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/requests.html#aioauth.requests.BaseRequest.headers"><code class="docutils literal notranslate"><span class="pre">BaseRequest.headers</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/requests.html#aioauth.requests.BaseRequest.url"><code class="docutils literal notranslate"><span class="pre">BaseRequest.url</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/requests.html#aioauth.requests.BaseRequest.user"><code class="docutils literal notranslate"><span class="pre">BaseRequest.user</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/requests.html#aioauth.requests.BaseRequest.settings"><code class="docutils literal notranslate"><span class="pre">BaseRequest.settings</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sections/documentation/requests.html#aioauth.requests.Request"><code class="docutils literal notranslate"><span class="pre">Request</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/requests.html#aioauth.requests.Request.query"><code class="docutils literal notranslate"><span class="pre">Request.query</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/requests.html#aioauth.requests.Request.post"><code class="docutils literal notranslate"><span class="pre">Request.post</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/requests.html#aioauth.requests.Request.user"><code class="docutils literal notranslate"><span class="pre">Request.user</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sections/documentation/response_type.html">Response Type</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="sections/documentation/response_type.html#aioauth.response_type.ResponseTypeBase"><code class="docutils literal notranslate"><span class="pre">ResponseTypeBase</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/response_type.html#aioauth.response_type.ResponseTypeBase.validate_request"><code class="docutils literal notranslate"><span class="pre">ResponseTypeBase.validate_request()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sections/documentation/response_type.html#aioauth.response_type.ResponseTypeToken"><code class="docutils literal notranslate"><span class="pre">ResponseTypeToken</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/response_type.html#aioauth.response_type.ResponseTypeToken.create_authorization_response"><code class="docutils literal notranslate"><span class="pre">ResponseTypeToken.create_authorization_response()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sections/documentation/response_type.html#aioauth.response_type.ResponseTypeAuthorizationCode"><code class="docutils literal notranslate"><span class="pre">ResponseTypeAuthorizationCode</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/response_type.html#aioauth.response_type.ResponseTypeAuthorizationCode.create_authorization_response"><code class="docutils literal notranslate"><span class="pre">ResponseTypeAuthorizationCode.create_authorization_response()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sections/documentation/response_type.html#aioauth.response_type.ResponseTypeIdToken"><code class="docutils literal notranslate"><span class="pre">ResponseTypeIdToken</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/response_type.html#aioauth.response_type.ResponseTypeIdToken.validate_request"><code class="docutils literal notranslate"><span class="pre">ResponseTypeIdToken.validate_request()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/response_type.html#aioauth.response_type.ResponseTypeIdToken.create_authorization_response"><code class="docutils literal notranslate"><span class="pre">ResponseTypeIdToken.create_authorization_response()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sections/documentation/response_type.html#aioauth.response_type.ResponseTypeNone"><code class="docutils literal notranslate"><span class="pre">ResponseTypeNone</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/response_type.html#aioauth.response_type.ResponseTypeNone.create_authorization_response"><code class="docutils literal notranslate"><span class="pre">ResponseTypeNone.create_authorization_response()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sections/documentation/responses.html">Responses</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="sections/documentation/responses.html#aioauth.responses.ErrorResponse"><code class="docutils literal notranslate"><span class="pre">ErrorResponse</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/responses.html#aioauth.responses.ErrorResponse.error"><code class="docutils literal notranslate"><span class="pre">ErrorResponse.error</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/responses.html#aioauth.responses.ErrorResponse.description"><code class="docutils literal notranslate"><span class="pre">ErrorResponse.description</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/responses.html#aioauth.responses.ErrorResponse.error_uri"><code class="docutils literal notranslate"><span class="pre">ErrorResponse.error_uri</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sections/documentation/responses.html#aioauth.responses.AuthorizationCodeResponse"><code class="docutils literal notranslate"><span class="pre">AuthorizationCodeResponse</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/responses.html#aioauth.responses.AuthorizationCodeResponse.code"><code class="docutils literal notranslate"><span class="pre">AuthorizationCodeResponse.code</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/responses.html#aioauth.responses.AuthorizationCodeResponse.scope"><code class="docutils literal notranslate"><span class="pre">AuthorizationCodeResponse.scope</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sections/documentation/responses.html#aioauth.responses.NoneResponse"><code class="docutils literal notranslate"><span class="pre">NoneResponse</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="sections/documentation/responses.html#aioauth.responses.TokenResponse"><code class="docutils literal notranslate"><span class="pre">TokenResponse</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/responses.html#aioauth.responses.TokenResponse.expires_in"><code class="docutils literal notranslate"><span class="pre">TokenResponse.expires_in</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/responses.html#aioauth.responses.TokenResponse.refresh_token_expires_in"><code class="docutils literal notranslate"><span class="pre">TokenResponse.refresh_token_expires_in</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/responses.html#aioauth.responses.TokenResponse.access_token"><code class="docutils literal notranslate"><span class="pre">TokenResponse.access_token</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/responses.html#aioauth.responses.TokenResponse.refresh_token"><code class="docutils literal notranslate"><span class="pre">TokenResponse.refresh_token</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/responses.html#aioauth.responses.TokenResponse.scope"><code class="docutils literal notranslate"><span class="pre">TokenResponse.scope</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/responses.html#aioauth.responses.TokenResponse.token_type"><code class="docutils literal notranslate"><span class="pre">TokenResponse.token_type</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sections/documentation/responses.html#aioauth.responses.IdTokenResponse"><code class="docutils literal notranslate"><span class="pre">IdTokenResponse</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/responses.html#aioauth.responses.IdTokenResponse.id_token"><code class="docutils literal notranslate"><span class="pre">IdTokenResponse.id_token</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sections/documentation/responses.html#aioauth.responses.TokenActiveIntrospectionResponse"><code class="docutils literal notranslate"><span class="pre">TokenActiveIntrospectionResponse</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/responses.html#aioauth.responses.TokenActiveIntrospectionResponse.scope"><code class="docutils literal notranslate"><span class="pre">TokenActiveIntrospectionResponse.scope</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/responses.html#aioauth.responses.TokenActiveIntrospectionResponse.client_id"><code class="docutils literal notranslate"><span class="pre">TokenActiveIntrospectionResponse.client_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/responses.html#aioauth.responses.TokenActiveIntrospectionResponse.token_type"><code class="docutils literal notranslate"><span class="pre">TokenActiveIntrospectionResponse.token_type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/responses.html#aioauth.responses.TokenActiveIntrospectionResponse.expires_in"><code class="docutils literal notranslate"><span class="pre">TokenActiveIntrospectionResponse.expires_in</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/responses.html#aioauth.responses.TokenActiveIntrospectionResponse.active"><code class="docutils literal notranslate"><span class="pre">TokenActiveIntrospectionResponse.active</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sections/documentation/responses.html#aioauth.responses.TokenInactiveIntrospectionResponse"><code class="docutils literal notranslate"><span class="pre">TokenInactiveIntrospectionResponse</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/responses.html#aioauth.responses.TokenInactiveIntrospectionResponse.active"><code class="docutils literal notranslate"><span class="pre">TokenInactiveIntrospectionResponse.active</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sections/documentation/responses.html#aioauth.responses.Response"><code class="docutils literal notranslate"><span class="pre">Response</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/responses.html#aioauth.responses.Response.content"><code class="docutils literal notranslate"><span class="pre">Response.content</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/responses.html#aioauth.responses.Response.status_code"><code class="docutils literal notranslate"><span class="pre">Response.status_code</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/responses.html#aioauth.responses.Response.headers"><code class="docutils literal notranslate"><span class="pre">Response.headers</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sections/documentation/server.html">Server</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="sections/documentation/server.html#aioauth.server.AuthorizationServer"><code class="docutils literal notranslate"><span class="pre">AuthorizationServer</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/server.html#aioauth.server.AuthorizationServer.response_types"><code class="docutils literal notranslate"><span class="pre">AuthorizationServer.response_types</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/server.html#aioauth.server.AuthorizationServer.grant_types"><code class="docutils literal notranslate"><span class="pre">AuthorizationServer.grant_types</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/server.html#aioauth.server.AuthorizationServer.is_secure_transport"><code class="docutils literal notranslate"><span class="pre">AuthorizationServer.is_secure_transport()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/server.html#aioauth.server.AuthorizationServer.validate_request"><code class="docutils literal notranslate"><span class="pre">AuthorizationServer.validate_request()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/server.html#aioauth.server.AuthorizationServer.create_token_introspection_response"><code class="docutils literal notranslate"><span class="pre">AuthorizationServer.create_token_introspection_response()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/server.html#aioauth.server.AuthorizationServer.get_client_credentials"><code class="docutils literal notranslate"><span class="pre">AuthorizationServer.get_client_credentials()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/server.html#aioauth.server.AuthorizationServer.create_token_response"><code class="docutils literal notranslate"><span class="pre">AuthorizationServer.create_token_response()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/server.html#aioauth.server.AuthorizationServer.create_authorization_response"><code class="docutils literal notranslate"><span class="pre">AuthorizationServer.create_authorization_response()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/server.html#aioauth.server.AuthorizationServer.revoke_token"><code class="docutils literal notranslate"><span class="pre">AuthorizationServer.revoke_token()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sections/documentation/storage.html">Storage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="sections/documentation/storage.html#aioauth.storage.BaseStorage"><code class="docutils literal notranslate"><span class="pre">BaseStorage</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/storage.html#aioauth.storage.BaseStorage.create_token"><code class="docutils literal notranslate"><span class="pre">BaseStorage.create_token()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/storage.html#aioauth.storage.BaseStorage.get_token"><code class="docutils literal notranslate"><span class="pre">BaseStorage.get_token()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/storage.html#aioauth.storage.BaseStorage.create_authorization_code"><code class="docutils literal notranslate"><span class="pre">BaseStorage.create_authorization_code()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/storage.html#aioauth.storage.BaseStorage.get_id_token"><code class="docutils literal notranslate"><span class="pre">BaseStorage.get_id_token()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/storage.html#aioauth.storage.BaseStorage.get_client"><code class="docutils literal notranslate"><span class="pre">BaseStorage.get_client()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/storage.html#aioauth.storage.BaseStorage.authenticate"><code class="docutils literal notranslate"><span class="pre">BaseStorage.authenticate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/storage.html#aioauth.storage.BaseStorage.get_authorization_code"><code class="docutils literal notranslate"><span class="pre">BaseStorage.get_authorization_code()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/storage.html#aioauth.storage.BaseStorage.delete_authorization_code"><code class="docutils literal notranslate"><span class="pre">BaseStorage.delete_authorization_code()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="sections/documentation/storage.html#aioauth.storage.BaseStorage.revoke_token"><code class="docutils literal notranslate"><span class="pre">BaseStorage.revoke_token()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sections/documentation/types.html">Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sections/documentation/utils.html">Utils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="sections/documentation/utils.html#aioauth.utils.get_authorization_scheme_param"><code class="docutils literal notranslate"><span class="pre">get_authorization_scheme_param()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="sections/documentation/utils.html#aioauth.utils.enforce_str"><code class="docutils literal notranslate"><span class="pre">enforce_str()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="sections/documentation/utils.html#aioauth.utils.enforce_list"><code class="docutils literal notranslate"><span class="pre">enforce_list()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="sections/documentation/utils.html#aioauth.utils.generate_token"><code class="docutils literal notranslate"><span class="pre">generate_token()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="sections/documentation/utils.html#aioauth.utils.build_uri"><code class="docutils literal notranslate"><span class="pre">build_uri()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="sections/documentation/utils.html#aioauth.utils.encode_auth_headers"><code class="docutils literal notranslate"><span class="pre">encode_auth_headers()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="sections/documentation/utils.html#aioauth.utils.decode_auth_headers"><code class="docutils literal notranslate"><span class="pre">decode_auth_headers()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="sections/documentation/utils.html#aioauth.utils.create_s256_code_challenge"><code class="docutils literal notranslate"><span class="pre">create_s256_code_challenge()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="sections/documentation/utils.html#aioauth.utils.catch_errors_and_unavailability"><code class="docutils literal notranslate"><span class="pre">catch_errors_and_unavailability()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+<section id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="sections/understanding/plug_and_play.html" class="btn btn-neutral float-right" title="Plug-and-Play" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

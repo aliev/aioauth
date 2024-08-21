@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Utils &mdash; aioauth 1.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=dfaa61b1" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=72d88caf"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="prev" title="Types" href="types.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            aioauth
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">🔐 aioauth</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Understanding</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../understanding/plug_and_play.html">Plug-and-Play</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Using</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../using/configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../using/server_database.html">Server &amp; Database</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../examples/aiohttp.html">Aiohttp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/fastapi.html">FastAPI</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="collections.html">Collections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="config.html">Config</a></li>
+<li class="toctree-l1"><a class="reference internal" href="constances.html">Constances</a></li>
+<li class="toctree-l1"><a class="reference internal" href="errors.html">Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="grant_type.html">Grant Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="requests.html">Requests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="response_type.html">Response Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="responses.html">Responses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="server.html">Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="storage.html">Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="types.html">Types</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Utils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#aioauth.utils.get_authorization_scheme_param"><code class="docutils literal notranslate"><span class="pre">get_authorization_scheme_param()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#aioauth.utils.enforce_str"><code class="docutils literal notranslate"><span class="pre">enforce_str()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#aioauth.utils.enforce_list"><code class="docutils literal notranslate"><span class="pre">enforce_list()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#aioauth.utils.generate_token"><code class="docutils literal notranslate"><span class="pre">generate_token()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#aioauth.utils.build_uri"><code class="docutils literal notranslate"><span class="pre">build_uri()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#aioauth.utils.encode_auth_headers"><code class="docutils literal notranslate"><span class="pre">encode_auth_headers()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#aioauth.utils.decode_auth_headers"><code class="docutils literal notranslate"><span class="pre">decode_auth_headers()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#aioauth.utils.create_s256_code_challenge"><code class="docutils literal notranslate"><span class="pre">create_s256_code_challenge()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#aioauth.utils.catch_errors_and_unavailability"><code class="docutils literal notranslate"><span class="pre">catch_errors_and_unavailability()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">aioauth</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Utils</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/sections/documentation/utils.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-aioauth.utils">
+<span id="utils"></span><h1>Utils<a class="headerlink" href="#module-aioauth.utils" title="Link to this heading"></a></h1>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">aioauth</span> <span class="kn">import</span> <span class="n">utils</span>
+</pre></div>
+</div>
+<p>Contains helper functions that is used throughout the project that doesn’t
+pertain to a specific file or module.</p>
+<hr class="docutils" />
+<dl class="py function">
+<dt class="sig sig-object py" id="aioauth.utils.get_authorization_scheme_param">
+<span class="sig-name descname"><span class="pre">get_authorization_scheme_param</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">authorization_header_value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/aioauth/utils.html#get_authorization_scheme_param"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aioauth.utils.get_authorization_scheme_param" title="Link to this definition"></a></dt>
+<dd><p>Retrieves the authorization schema parameters from the authorization
+header.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>authorization_header_value</strong> – Value of the authorization header.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Tuple of the format <code class="docutils literal notranslate"><span class="pre">(scheme,</span> <span class="pre">param)</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="aioauth.utils.enforce_str">
+<span class="sig-name descname"><span class="pre">enforce_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/aioauth/utils.html#enforce_str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aioauth.utils.enforce_str" title="Link to this definition"></a></dt>
+<dd><p>Converts a list of scopes to a space separated string.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If a string is passed to this method it will simply return an
+empty string back. Use <a class="reference internal" href="#aioauth.utils.enforce_list" title="aioauth.utils.enforce_list"><code class="xref py py-func docutils literal notranslate"><span class="pre">enforce_list()</span></code></a> to convert
+strings to scope lists.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>scope</strong> – An iterable or string that contains a list of scope.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A string of scopes seperated by spaces.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>TypeError</strong> – The <code class="docutils literal notranslate"><span class="pre">scope</span></code> value passed is not of the proper type.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="aioauth.utils.enforce_list">
+<span class="sig-name descname"><span class="pre">enforce_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Set</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span></span></span><a class="reference internal" href="../../_modules/aioauth/utils.html#enforce_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aioauth.utils.enforce_list" title="Link to this definition"></a></dt>
+<dd><p>Converts a space separated string to a list of scopes.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If an iterable is passed to this method it will return a list
+representation of the iterable. Use <a class="reference internal" href="#aioauth.utils.enforce_str" title="aioauth.utils.enforce_str"><code class="xref py py-func docutils literal notranslate"><span class="pre">enforce_str()</span></code></a> to
+convert iterables to a scope string.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>scope</strong> – An iterable or string that contains scopes.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of scopes.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="aioauth.utils.generate_token">
+<span class="sig-name descname"><span class="pre">generate_token</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">length</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chars</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/aioauth/utils.html#generate_token"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aioauth.utils.generate_token" title="Link to this definition"></a></dt>
+<dd><p>Generates a non-guessable OAuth token.
+OAuth (1 and 2) does not specify the format of tokens except that
+they should be strings of random characters. Tokens should not be
+guessable and entropy when generating the random characters is
+important. Which is why SystemRandom is used instead of the default
+random.choice method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>length</strong> – Length of the generated token.</p></li>
+<li><p><strong>chars</strong> – The characters to use to generate the string.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Random string of length <code class="docutils literal notranslate"><span class="pre">length</span></code> and characters in <code class="docutils literal notranslate"><span class="pre">chars</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="aioauth.utils.build_uri">
+<span class="sig-name descname"><span class="pre">build_uri</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query_params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fragment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/aioauth/utils.html#build_uri"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aioauth.utils.build_uri" title="Link to this definition"></a></dt>
+<dd><p>Builds an URI string from passed <code class="docutils literal notranslate"><span class="pre">url</span></code>, <code class="docutils literal notranslate"><span class="pre">query_params</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">fragment</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>url</strong> – URL string.</p></li>
+<li><p><strong>query_params</strong> – Paramaters that contain the query.</p></li>
+<li><p><strong>fragment</strong> – Fragment of the page.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>URL containing the original <code class="docutils literal notranslate"><span class="pre">url</span></code>, and the added
+<code class="docutils literal notranslate"><span class="pre">query_params</span></code> and <code class="docutils literal notranslate"><span class="pre">fragment</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="aioauth.utils.encode_auth_headers">
+<span class="sig-name descname"><span class="pre">encode_auth_headers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client_secret</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="collections.html#aioauth.collections.HTTPHeaderDict" title="aioauth.collections.HTTPHeaderDict"><span class="pre">HTTPHeaderDict</span></a></span></span><a class="reference internal" href="../../_modules/aioauth/utils.html#encode_auth_headers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aioauth.utils.encode_auth_headers" title="Link to this definition"></a></dt>
+<dd><p>Encodes the authentication header using base64 encoding.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>client_id</strong> – The client’s id.</p></li>
+<li><p><strong>client_secret</strong> – The client’s secret.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A case insensitive dictionary that contains the
+<code class="docutils literal notranslate"><span class="pre">Authorization</span></code> header set to <code class="docutils literal notranslate"><span class="pre">basic</span></code> and the authorization
+header.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="aioauth.utils.decode_auth_headers">
+<span class="sig-name descname"><span class="pre">decode_auth_headers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">authorization</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/aioauth/utils.html#decode_auth_headers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aioauth.utils.decode_auth_headers" title="Link to this definition"></a></dt>
+<dd><p>Decodes an encoded HTTP basic authentication string.
+Returns a tuple of the form <code class="docutils literal notranslate"><span class="pre">(client_id,</span> <span class="pre">client_secret)</span></code>, and
+raises a <a class="reference internal" href="errors.html#aioauth.errors.InvalidClientError" title="aioauth.errors.InvalidClientError"><code class="xref py py-class docutils literal notranslate"><span class="pre">aioauth.errors.InvalidClientError</span></code></a> exception if nothing
+could be decoded.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>authorization</strong> – Authorization header string.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Tuple of the form <code class="docutils literal notranslate"><span class="pre">(client_id,</span> <span class="pre">client_secret)</span></code>.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – Invalid <cite>authorization</cite> header string.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="aioauth.utils.create_s256_code_challenge">
+<span class="sig-name descname"><span class="pre">create_s256_code_challenge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code_verifier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/aioauth/utils.html#create_s256_code_challenge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aioauth.utils.create_s256_code_challenge" title="Link to this definition"></a></dt>
+<dd><p>Create S256 code challenge with the passed <code class="docutils literal notranslate"><span class="pre">code_verifier</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This function implements
+<code class="docutils literal notranslate"><span class="pre">base64url(sha256(ascii(code_verifier)))</span></code>.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>code_verifier</strong> – Code verifier string.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Representation of the S256 code challenge with the passed
+<code class="docutils literal notranslate"><span class="pre">code_verifier</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="aioauth.utils.catch_errors_and_unavailability">
+<span class="sig-name descname"><span class="pre">catch_errors_and_unavailability</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">skip_redirect_on_exc:</span> <span class="pre">~typing.Tuple[~typing.Type[~aioauth.errors.OAuth2Error],</span> <span class="pre">...]</span> <span class="pre">=</span> <span class="pre">(&lt;class</span> <span class="pre">'aioauth.errors.OAuth2Error'&gt;,)</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Coroutine</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="responses.html#aioauth.responses.Response" title="aioauth.responses.Response"><span class="pre">Response</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/aioauth/utils.html#catch_errors_and_unavailability"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aioauth.utils.catch_errors_and_unavailability" title="Link to this definition"></a></dt>
+<dd><p>Decorator that adds error catching to the function passed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>f</strong> – A callable.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A callable with error catching capabilities.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="types.html" class="btn btn-neutral float-left" title="Types" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
