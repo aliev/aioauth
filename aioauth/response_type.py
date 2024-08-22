@@ -15,7 +15,6 @@ if sys.version_info >= (3, 8):
 else:
     from typing_extensions import get_args
 
-from .utils import generate_token
 from .errors import (
     InvalidClientError,
     InvalidRedirectURIError,
@@ -33,6 +32,7 @@ from .responses import (
 )
 from .storage import TStorage
 from .types import CodeChallengeMethod
+from .utils import generate_token
 
 
 class ResponseTypeBase(Generic[TRequest, TStorage]):
@@ -115,12 +115,10 @@ class ResponseTypeToken(ResponseTypeBase[TRequest, TStorage]):
             generate_token(48),
         )
         return TokenResponse(
-            expires_in=token.expires_in,
-            refresh_token_expires_in=token.refresh_token_expires_in,
             access_token=token.access_token,
-            refresh_token=token.refresh_token,
-            scope=token.scope,
             token_type=token.token_type,
+            expires_in=token.expires_in,
+            scope=token.scope,
         )
 
 

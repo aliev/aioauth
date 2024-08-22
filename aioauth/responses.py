@@ -9,7 +9,7 @@ Response objects used throughout the project.
 """
 from dataclasses import dataclass, field
 from http import HTTPStatus
-from typing import Dict
+from typing import Dict, Optional
 
 from .collections import HTTPHeaderDict
 from .constances import default_headers
@@ -51,11 +51,11 @@ class TokenResponse:
     Used by :py:class:`aioauth.response_type.ResponseTypeToken`.
     """
 
-    expires_in: int
-    refresh_token_expires_in: int
     access_token: str
-    refresh_token: str
+    expires_in: int
     scope: str
+    refresh_token_expires_in: Optional[int] = None
+    refresh_token: Optional[str] = None
     token_type: str = "Bearer"
 
 
