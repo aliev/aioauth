@@ -11,7 +11,6 @@ from aioauth.utils import (
     enforce_list,
     generate_token,
 )
-
 from tests import factories
 from tests.classes import AuthorizationContext
 from tests.utils import check_request_validators
@@ -532,9 +531,9 @@ async def test_multiple_response_types(context_factory):
 
     assert "state" in fragment
     assert "expires_in" in fragment
-    assert "refresh_token_expires_in" in fragment
+    assert "refresh_token_expires_in" not in fragment
     assert "access_token" in fragment
-    assert "refresh_token" in fragment
+    assert "refresh_token" not in fragment
     assert "scope" in fragment
     assert "token_type" in fragment
     assert "code" in fragment
@@ -620,40 +619,40 @@ async def test_response_type_id_token(context_factory, response_mode):
 
     if response_mode == "fragment":
         assert "state" in fragment
-        assert "expires_in" in fragment
-        assert "refresh_token_expires_in" in fragment
         assert "access_token" in fragment
-        assert "refresh_token" in fragment
+        assert "expires_in" in fragment
+        assert "refresh_token" not in fragment
+        assert "refresh_token_expires_in" not in fragment
         assert "scope" in fragment
         assert "token_type" in fragment
         assert "code" in fragment
         assert "id_token" in fragment
     elif response_mode == "form_post":
         assert "state" in response.content
-        assert "expires_in" in response.content
-        assert "refresh_token_expires_in" in response.content
         assert "access_token" in response.content
-        assert "refresh_token" in response.content
+        assert "expires_in" in response.content
+        assert "refresh_token" not in response.content
+        assert "refresh_token_expires_in" not in response.content
         assert "scope" in response.content
         assert "token_type" in response.content
         assert "code" in response.content
         assert "id_token" in response.content
     elif response_mode == "query":
         assert "state" in query
-        assert "expires_in" in query
-        assert "refresh_token_expires_in" in query
         assert "access_token" in query
-        assert "refresh_token" in query
+        assert "expires_in" in query
+        assert "refresh_token" not in query
+        assert "refresh_token_expires_in" not in query
         assert "scope" in query
         assert "token_type" in query
         assert "code" in query
         assert "id_token" in query
     else:
         assert "state" in fragment
-        assert "expires_in" in fragment
-        assert "refresh_token_expires_in" in fragment
         assert "access_token" in fragment
-        assert "refresh_token" in fragment
+        assert "expires_in" in fragment
+        assert "refresh_token" not in fragment
+        assert "refresh_token_expires_in" not in fragment
         assert "scope" in fragment
         assert "token_type" in fragment
         assert "code" in fragment

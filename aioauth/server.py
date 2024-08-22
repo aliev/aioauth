@@ -21,7 +21,6 @@ from dataclasses import asdict
 from http import HTTPStatus
 from typing import Any, Dict, Generic, List, Optional, Tuple, Type, Union
 
-
 if sys.version_info >= (3, 8):
     from typing import get_args
 else:
@@ -60,12 +59,7 @@ from .responses import (
     TokenInactiveIntrospectionResponse,
 )
 from .storage import TStorage
-from .types import (
-    GrantType,
-    RequestMethod,
-    ResponseType,
-    TokenType,
-)
+from .types import GrantType, RequestMethod, ResponseType, TokenType
 from .utils import (
     build_uri,
     catch_errors_and_unavailability,
@@ -417,7 +411,10 @@ class AuthorizationServer(Generic[TRequest, TStorage]):
             response = await response_type.create_authorization_response(
                 request, client
             )
-            responses.update(asdict(response))
+            response_asdict = {
+                k: v for k, v in asdict(response).items() if v is not None
+            }
+            responses.update(response_asdict)
 
         # See: https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#Combinations
         if "code" in response_type_list:
