@@ -9,7 +9,7 @@ from aioauth.config import Settings
 from aioauth.models import AuthorizationCode, Client, Token
 from aioauth.requests import BaseRequest, Post, Query, TRequest
 from aioauth.server import AuthorizationServer
-from aioauth.storage import BaseStorage
+from aioauth.storage import TokenStorage, AuthorizationCodeStorage, ClientStorage, UserStorage
 from aioauth.types import CodeChallengeMethod, GrantType, ResponseType, TokenType
 
 if sys.version_info >= (3, 8):
@@ -29,7 +29,7 @@ class Request(BaseRequest[Query, Post, User]):
     ...
 
 
-class Storage(BaseStorage[Token, Client, AuthorizationCode, Request]):
+class Storage(TokenStorage[Token, Request], AuthorizationCodeStorage[AuthorizationCode, Request], ClientStorage[Client, Request], UserStorage[Request]):
     def __init__(
         self,
         authorization_codes: List[AuthorizationCode],

@@ -59,7 +59,7 @@ from .responses import (
     TokenActiveIntrospectionResponse,
     TokenInactiveIntrospectionResponse,
 )
-from .storage import TStorage
+from .storage import TokenStorage, AuthorizationCodeStorage, ClientStorage, UserStorage
 from .types import (
     GrantType,
     RequestMethod,
@@ -74,25 +74,25 @@ from .utils import (
 )
 
 
-class AuthorizationServer(Generic[TRequest, TStorage]):
+class AuthorizationServer(Generic[TRequest, TokenStorage, AuthorizationCodeStorage, ClientStorage, UserStorage]):
     """Interface for initializing an OAuth 2.0 server."""
 
     response_types: Dict[ResponseType, Any] = {
-        "token": ResponseTypeToken[TRequest, TStorage],
-        "code": ResponseTypeAuthorizationCode[TRequest, TStorage],
-        "none": ResponseTypeNone[TRequest, TStorage],
-        "id_token": ResponseTypeIdToken[TRequest, TStorage],
+        "token": ResponseTypeToken[TRequest, TokenStorage],
+        "code": ResponseTypeAuthorizationCode[TRequest, AuthorizationCodeStorage],
+        "none": ResponseTypeNone[TRequest, ClientStorage],
+        "id_token": ResponseTypeIdToken[TRequest, AuthorizationCodeStorage],
     }
     grant_types: Dict[GrantType, Any] = {
-        "authorization_code": AuthorizationCodeGrantType[TRequest, TStorage],
-        "client_credentials": ClientCredentialsGrantType[TRequest, TStorage],
-        "password": PasswordGrantType[TRequest, TStorage],
-        "refresh_token": RefreshTokenGrantType[TRequest, TStorage],
+        "authorization_code": AuthorizationCodeGrantType[TRequest, AuthorizationCodeStorage],
+        "client_credentials": ClientCredentialsGrantType[TRequest, ClientStorage],
+        "password": PasswordGrantType[TRequest, UserStorage],
+        "refresh_token": RefreshTokenGrantType[TRequest, TokenStorage],
     }
 
     def __init__(
         self,
-        storage: TStorage,
+        storage: Union[TokenStorage, AuthorizationCodeStorage, ClientStorage, UserStorage],
         response_types: Optional[Dict] = None,
         grant_types: Optional[Dict] = None,
     ):
@@ -306,11 +306,11 @@ class AuthorizationServer(Generic[TRequest, TStorage]):
 
         GrantTypeClass: Type[
             Union[
-                GrantTypeBase[TRequest, TStorage],
-                AuthorizationCodeGrantType[TRequest, TStorage],
-                PasswordGrantType[TRequest, TStorage],
-                RefreshTokenGrantType[TRequest, TStorage],
-                ClientCredentialsGrantType[TRequest, TStorage],
+                GrantTypeBase[TRequest, TokenStorage],
+                AuthorizationCodeGrantType[TRequest, AuthorizationCodeStorage],
+                PasswordGrantType[TRequest, UserStorage],
+                RefreshTokenGrantType[TRequest, TokenStorage],
+                ClientCredentialsGrantType[TRequest, ClientStorage],
             ]
         ]
 

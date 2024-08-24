@@ -20,14 +20,14 @@ from .errors import (
 from .models import Client
 from .requests import TRequest
 from .responses import TokenResponse
-from .storage import TStorage
+from .storage import TokenStorage, AuthorizationCodeStorage, ClientStorage, UserStorage
 from .utils import enforce_list, enforce_str, generate_token
 
 
-class GrantTypeBase(Generic[TRequest, TStorage]):
+class GrantTypeBase(Generic[TRequest, TokenStorage]):
     """Base grant type that all other grant types inherit from."""
 
-    def __init__(self, storage: TStorage, client_id: str, client_secret: Optional[str]):
+    def __init__(self, storage: TokenStorage, client_id: str, client_secret: Optional[str]):
         self.storage = storage
         self.client_id = client_id
         self.client_secret = client_secret
@@ -78,7 +78,7 @@ class GrantTypeBase(Generic[TRequest, TStorage]):
         return client
 
 
-class AuthorizationCodeGrantType(GrantTypeBase[TRequest, TStorage]):
+class AuthorizationCodeGrantType(GrantTypeBase[TRequest, AuthorizationCodeStorage]):
     """
     The Authorization Code grant type is used by confidential and public
     clients to exchange an authorization code for an access token. After
@@ -154,7 +154,7 @@ class AuthorizationCodeGrantType(GrantTypeBase[TRequest, TStorage]):
         return token_response
 
 
-class PasswordGrantType(GrantTypeBase[TRequest, TStorage]):
+class PasswordGrantType(GrantTypeBase[TRequest, UserStorage]):
     """
     The Password grant type is a way to exchange a user's credentials
     for an access token. Because the client application has to collect
@@ -183,7 +183,7 @@ class PasswordGrantType(GrantTypeBase[TRequest, TStorage]):
         return client
 
 
-class RefreshTokenGrantType(GrantTypeBase[TRequest, TStorage]):
+class RefreshTokenGrantType(GrantTypeBase[TRequest, TokenStorage]):
     """
     The Refresh Token grant type is used by clients to exchange a
     refresh token for an access token when the access token has expired.
@@ -246,7 +246,7 @@ class RefreshTokenGrantType(GrantTypeBase[TRequest, TStorage]):
         return client
 
 
-class ClientCredentialsGrantType(GrantTypeBase[TRequest, TStorage]):
+class ClientCredentialsGrantType(GrantTypeBase[TRequest, ClientStorage]):
     """
     The Client Credentials grant type is used by clients to obtain an
     access token outside of the context of a user. This is typically
