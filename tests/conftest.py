@@ -1,10 +1,10 @@
+from typing import Any, Generator
 import pytest
 
-from aioauth.requests import Request
 from aioauth.server import AuthorizationServer
 
 from tests import factories
-from tests.classes import AuthorizationContext, Storage
+from tests.classes import AuthorizationContext, User
 
 
 @pytest.fixture
@@ -13,10 +13,12 @@ def context_factory():
 
 
 @pytest.fixture
-def context() -> AuthorizationContext:
+def context() -> Generator[AuthorizationContext, Any, Any]:
     yield factories.context_factory()
 
 
 @pytest.fixture
-def server(context) -> AuthorizationServer[Request, Storage]:
+def server(
+    context: AuthorizationContext,
+) -> Generator[AuthorizationServer[User], Any, Any]:
     yield context.server

@@ -21,6 +21,9 @@ from dataclasses import asdict
 from http import HTTPStatus
 from typing import Any, Dict, Generic, List, Optional, Tuple, Type, Union
 
+from .requests import Request, TUser
+from .storage import BaseStorage
+
 
 if sys.version_info >= (3, 8):
     from typing import get_args
@@ -47,7 +50,6 @@ from .grant_type import (
     PasswordGrantType,
     RefreshTokenGrantType,
 )
-from .requests import TRequest
 from .response_type import (
     ResponseTypeAuthorizationCode,
     ResponseTypeIdToken,
@@ -59,7 +61,6 @@ from .responses import (
     TokenActiveIntrospectionResponse,
     TokenInactiveIntrospectionResponse,
 )
-from .storage import TStorage
 from .types import (
     GrantType,
     RequestMethod,
@@ -74,25 +75,25 @@ from .utils import (
 )
 
 
-class AuthorizationServer(Generic[TRequest, TStorage]):
+class AuthorizationServer(Generic[TUser]):
     """Interface for initializing an OAuth 2.0 server."""
 
     response_types: Dict[ResponseType, Any] = {
-        "token": ResponseTypeToken[TRequest, TStorage],
-        "code": ResponseTypeAuthorizationCode[TRequest, TStorage],
-        "none": ResponseTypeNone[TRequest, TStorage],
-        "id_token": ResponseTypeIdToken[TRequest, TStorage],
+        "token": ResponseTypeToken[TUser],
+        "code": ResponseTypeAuthorizationCode[TUser],
+        "none": ResponseTypeNone[TUser],
+        "id_token": ResponseTypeIdToken[TUser],
     }
     grant_types: Dict[GrantType, Any] = {
-        "authorization_code": AuthorizationCodeGrantType[TRequest, TStorage],
-        "client_credentials": ClientCredentialsGrantType[TRequest, TStorage],
-        "password": PasswordGrantType[TRequest, TStorage],
-        "refresh_token": RefreshTokenGrantType[TRequest, TStorage],
+        "authorization_code": AuthorizationCodeGrantType[TUser],
+        "client_credentials": ClientCredentialsGrantType[TUser],
+        "password": PasswordGrantType[TUser],
+        "refresh_token": RefreshTokenGrantType[TUser],
     }
 
     def __init__(
         self,
-        storage: TStorage,
+        storage: BaseStorage[TUser],
         response_types: Optional[Dict] = None,
         grant_types: Optional[Dict] = None,
     ):
@@ -104,7 +105,7 @@ class AuthorizationServer(Generic[TRequest, TStorage]):
         if grant_types is not None:
             self.grant_types = grant_types
 
-    def is_secure_transport(self, request: TRequest) -> bool:
+    def is_secure_transport(self, request: Request) -> bool:
         """
         Verifies the request was sent via a protected SSL tunnel.
 
@@ -121,21 +122,21 @@ class AuthorizationServer(Generic[TRequest, TStorage]):
             return True
         return request.url.lower().startswith("https://")
 
-    def validate_request(self, request: TRequest, allowed_methods: List[RequestMethod]):
+    def validate_request(self, request: Request, allowed_methods: List[RequestMethod]):
         if not request.settings.AVAILABLE:
-            raise TemporarilyUnavailableError[TRequest](request=request)
+            raise TemporarilyUnavailableError(request=request)
 
         if not self.is_secure_transport(request):
-            raise InsecureTransportError[TRequest](request=request)
+            raise InsecureTransportError(request=request)
 
         if request.method not in allowed_methods:
             headers = HTTPHeaderDict(
                 {**default_headers, "allow": ", ".join(allowed_methods)}
             )
-            raise MethodNotAllowedError[TRequest](request=request, headers=headers)
+            raise MethodNotAllowedError(request=request, headers=headers)
 
     @catch_errors_and_unavailability()
-    async def create_token_introspection_response(self, request: TRequest) -> Response:
+    async def create_token_introspection_response(self, request: Request) -> Response:
         """
         Returns a response object with introspection of the passed token.
         For more information see `RFC7662 section 2.1 <https://tools.ietf.org/html/rfc7662#section-2.1>`_.
@@ -176,7 +177,7 @@ class AuthorizationServer(Generic[TRequest, TStorage]):
         )
 
         if not client:
-            raise InvalidClientError[TRequest](request)
+            raise InvalidClientError(request)
 
         token_types: Tuple[TokenType, ...] = get_args(TokenType)
         token_type: TokenType = "refresh_token"
@@ -220,7 +221,7 @@ class AuthorizationServer(Generic[TRequest, TStorage]):
         )
 
     def get_client_credentials(
-        self, request: TRequest, secret_required: bool
+        self, request: Request, secret_required: bool
     ) -> Tuple[str, str]:
         client_id = request.post.client_id
         client_secret = request.post.client_secret
@@ -235,7 +236,7 @@ class AuthorizationServer(Generic[TRequest, TStorage]):
                 if client_id is None or secret_required:
                     # Either we didn't find a client ID at all, or we found
                     # a client ID but no secret and a secret is required.
-                    raise InvalidClientError[TRequest](
+                    raise InvalidClientError(
                         description="Invalid client_id parameter value.",
                         request=request,
                     ) from exc
@@ -248,7 +249,7 @@ class AuthorizationServer(Generic[TRequest, TStorage]):
         return client_id, client_secret
 
     @catch_errors_and_unavailability()
-    async def create_token_response(self, request: TRequest) -> Response:
+    async def create_token_response(self, request: Request) -> Response:
         """Endpoint to obtain an access and/or ID token by presenting an
         authorization grant or refresh token.
         Validates a token request and creates a token response.
@@ -300,17 +301,17 @@ class AuthorizationServer(Generic[TRequest, TStorage]):
 
         if not request.post.grant_type:
             # grant_type request value is empty
-            raise InvalidRequestError[TRequest](
+            raise InvalidRequestError(
                 request=request, description="Request is missing grant type."
             )
 
         GrantTypeClass: Type[
             Union[
-                GrantTypeBase[TRequest, TStorage],
-                AuthorizationCodeGrantType[TRequest, TStorage],
-                PasswordGrantType[TRequest, TStorage],
-                RefreshTokenGrantType[TRequest, TStorage],
-                ClientCredentialsGrantType[TRequest, TStorage],
+                GrantTypeBase[TUser],
+                AuthorizationCodeGrantType[TUser],
+                PasswordGrantType[TUser],
+                RefreshTokenGrantType[TUser],
+                ClientCredentialsGrantType[TUser],
             ]
         ]
 
@@ -318,7 +319,7 @@ class AuthorizationServer(Generic[TRequest, TStorage]):
             GrantTypeClass = self.grant_types[request.post.grant_type]
         except KeyError as exc:
             # grant_type request value is invalid
-            raise UnsupportedGrantTypeError[TRequest](request=request) from exc
+            raise UnsupportedGrantTypeError(request=request) from exc
 
         grant_type = GrantTypeClass(
             storage=self.storage, client_id=client_id, client_secret=client_secret
@@ -340,7 +341,7 @@ class AuthorizationServer(Generic[TRequest, TStorage]):
             InvalidRedirectURIError,
         )
     )
-    async def create_authorization_response(self, request: TRequest) -> Response:
+    async def create_authorization_response(self, request: Request) -> Response:
         """
         Endpoint to interact with the resource owner and obtain an
         authorization grant.
@@ -394,7 +395,7 @@ class AuthorizationServer(Generic[TRequest, TStorage]):
         state = request.query.state
 
         if not response_type_list:
-            raise InvalidRequestError[TRequest](
+            raise InvalidRequestError(
                 request=request,
                 description="Missing response_type parameter.",
                 state=state,
@@ -463,7 +464,7 @@ class AuthorizationServer(Generic[TRequest, TStorage]):
         )
 
     @catch_errors_and_unavailability()
-    async def revoke_token(self, request: TRequest) -> Response:
+    async def revoke_token(self, request: Request) -> Response:
         """Endpoint to revoke an access token or refresh token.
         For more information see
         `RFC7009 <https://tools.ietf.org/html/rfc7009>`_.
@@ -503,10 +504,10 @@ class AuthorizationServer(Generic[TRequest, TStorage]):
         )
 
         if not client:
-            raise InvalidClientError[TRequest](request)
+            raise InvalidClientError(request)
 
         if not request.post.token:
-            raise InvalidRequestError[TRequest](
+            raise InvalidRequestError(
                 request=request, description="Request is missing token."
             )
 
@@ -514,7 +515,7 @@ class AuthorizationServer(Generic[TRequest, TStorage]):
             "refresh_token",
             "access_token",
         }:
-            raise UnsupportedTokenTypeError[TRequest](request=request)
+            raise UnsupportedTokenTypeError(request=request)
 
         access_token = (
             request.post.token

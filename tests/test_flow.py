@@ -13,7 +13,7 @@ from aioauth.utils import (
 )
 
 from tests import factories
-from tests.classes import AuthorizationContext
+from tests.classes import AuthorizationContext, User
 from tests.utils import check_request_validators
 
 
@@ -43,7 +43,7 @@ async def test_authorization_code_flow_plain_code_challenge():
         scope=scope,
     )
 
-    request = Request(
+    request = Request[User](
         url=request_url,
         query=query,
         method="GET",
@@ -465,7 +465,7 @@ async def test_client_credentials_flow_post_data(context: AuthorizationContext):
         scope=client.scope,
     )
 
-    request = Request(url=request_url, post=post, method="POST")
+    request = Request[User](url=request_url, post=post, method="POST")
 
     await check_request_validators(request, server.create_token_response)
 
@@ -484,7 +484,7 @@ async def test_client_credentials_flow_auth_header(context: AuthorizationContext
         scope=client.scope,
     )
 
-    request = Request(
+    request = Request[User](
         url=request_url,
         post=post,
         method="POST",

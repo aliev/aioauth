@@ -10,6 +10,9 @@ Response objects used throughout the project.
 import sys
 from typing import Generic, Tuple
 
+from .requests import Request, TUser
+from .storage import BaseStorage
+
 if sys.version_info >= (3, 8):
     from typing import get_args
 else:
@@ -24,24 +27,22 @@ from .errors import (
     UnsupportedResponseTypeError,
 )
 from .models import Client
-from .requests import TRequest
 from .responses import (
     AuthorizationCodeResponse,
     IdTokenResponse,
     NoneResponse,
     TokenResponse,
 )
-from .storage import TStorage
 from .types import CodeChallengeMethod
 
 
-class ResponseTypeBase(Generic[TRequest, TStorage]):
+class ResponseTypeBase(Generic[TUser]):
     """Base response type that all other exceptions inherit from."""
 
-    def __init__(self, storage: TStorage):
+    def __init__(self, storage: BaseStorage[TUser]):
         self.storage = storage
 
-    async def validate_request(self, request: TRequest) -> Client:
+    async def validate_request(self, request: Request) -> Client:
         state = request.query.state
 
         code_challenge_methods: Tuple[CodeChallengeMethod, ...] = get_args(
@@ -49,7 +50,7 @@ class ResponseTypeBase(Generic[TRequest, TStorage]):
         )
 
         if not request.query.client_id:
-            raise InvalidClientError[TRequest](
+            raise InvalidClientError(
                 request=request, description="Missing client_id parameter.", state=state
             )
 
@@ -58,54 +59,54 @@ class ResponseTypeBase(Generic[TRequest, TStorage]):
         )
 
         if not client:
-            raise InvalidClientError[TRequest](
+            raise InvalidClientError(
                 request=request,
                 description="Invalid client_id parameter value.",
                 state=state,
             )
 
         if not request.query.redirect_uri:
-            raise InvalidRedirectURIError[TRequest](
+            raise InvalidRedirectURIError(
                 request=request, description="Mismatching redirect URI.", state=state
             )
 
         if not client.check_redirect_uri(request.query.redirect_uri):
-            raise InvalidRedirectURIError[TRequest](
+            raise InvalidRedirectURIError(
                 request=request, description="Invalid redirect URI.", state=state
             )
 
         if request.query.code_challenge_method:
             if request.query.code_challenge_method not in code_challenge_methods:
-                raise InvalidRequestError[TRequest](
+                raise InvalidRequestError(
                     request=request,
                     description="Transform algorithm not supported.",
                     state=state,
                 )
 
             if not request.query.code_challenge:
-                raise InvalidRequestError[TRequest](
+                raise InvalidRequestError(
                     request=request, description="Code challenge required.", state=state
                 )
 
         if not client.check_response_type(request.query.response_type):
-            raise UnsupportedResponseTypeError[TRequest](request=request, state=state)
+            raise UnsupportedResponseTypeError(request=request, state=state)
 
         if not client.check_scope(request.query.scope):
-            raise InvalidScopeError[TRequest](request=request, state=state)
+            raise InvalidScopeError(request=request, state=state)
 
         if not request.user:
-            raise InvalidClientError[TRequest](
+            raise InvalidClientError(
                 request=request, description="User is not authorized", state=state
             )
 
         return client
 
 
-class ResponseTypeToken(ResponseTypeBase[TRequest, TStorage]):
+class ResponseTypeToken(ResponseTypeBase[TUser]):
     """Response type that contains a token."""
 
     async def create_authorization_response(
-        self, request: TRequest, client: Client
+        self, request: Request, client: Client
     ) -> TokenResponse:
         token = await self.storage.create_token(
             request,
@@ -124,11 +125,11 @@ class ResponseTypeToken(ResponseTypeBase[TRequest, TStorage]):
         )
 
 
-class ResponseTypeAuthorizationCode(ResponseTypeBase[TRequest, TStorage]):
+class ResponseTypeAuthorizationCode(ResponseTypeBase[TUser]):
     """Response type that contains an authorization code."""
 
     async def create_authorization_response(
-        self, request: TRequest, client: Client
+        self, request: Request, client: Client
     ) -> AuthorizationCodeResponse:
         authorization_code = await self.storage.create_authorization_code(
             client_id=client.client_id,
@@ -147,13 +148,13 @@ class ResponseTypeAuthorizationCode(ResponseTypeBase[TRequest, TStorage]):
         )
 
 
-class ResponseTypeIdToken(ResponseTypeBase[TRequest, TStorage]):
-    async def validate_request(self, request: TRequest) -> Client:
+class ResponseTypeIdToken(ResponseTypeBase[TUser]):
+    async def validate_request(self, request: Request) -> Client:
         client = await super().validate_request(request)
 
         # nonce is required for id_token
         if not request.query.nonce:
-            raise InvalidRequestError[TRequest](
+            raise InvalidRequestError(
                 request=request,
                 description="Nonce required for response_type id_token.",
                 state=request.query.state,
@@ -161,7 +162,7 @@ class ResponseTypeIdToken(ResponseTypeBase[TRequest, TStorage]):
         return client
 
     async def create_authorization_response(
-        self, request: TRequest, client: Client
+        self, request: Request, client: Client
     ) -> IdTokenResponse:
         id_token = await self.storage.get_id_token(
             request,
@@ -175,8 +176,8 @@ class ResponseTypeIdToken(ResponseTypeBase[TRequest, TStorage]):
         return IdTokenResponse(id_token=id_token)
 
 
-class ResponseTypeNone(ResponseTypeBase[TRequest, TStorage]):
+class ResponseTypeNone(ResponseTypeBase[TUser]):
     async def create_authorization_response(
-        self, request: TRequest, client: Client
+        self, request: Request, client: Client
     ) -> NoneResponse:
         return NoneResponse()

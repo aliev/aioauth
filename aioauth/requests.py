@@ -8,11 +8,17 @@ Request objects used throughout the project.
 ----
 """
 from dataclasses import dataclass, field
-from typing import Any, Generic, Optional, TypeVar
+from typing import Generic, Optional, TypeVar
 
 from .collections import HTTPHeaderDict
 from .config import Settings
-from .types import CodeChallengeMethod, GrantType, RequestMethod, ResponseMode
+from .types import (
+    CodeChallengeMethod,
+    GrantType,
+    RequestMethod,
+    ResponseMode,
+    TokenType,
+)
 
 
 @dataclass
@@ -50,7 +56,7 @@ class Post:
     refresh_token: Optional[str] = None
     code: Optional[str] = None
     token: Optional[str] = None
-    token_type_hint: Optional[str] = None
+    token_type_hint: Optional[TokenType] = None
     code_verifier: Optional[str] = None
 
 
@@ -70,13 +76,10 @@ class BaseRequest(Generic[TQuery, TPost, TUser]):
     settings: Settings = field(default_factory=Settings)
 
 
-TRequest = TypeVar("TRequest", bound=BaseRequest)
-
-
 @dataclass
-class Request(BaseRequest[Query, Post, Any]):
+class Request(Generic[TUser], BaseRequest[Query, Post, TUser]):
     """Object that contains a client's complete request."""
 
     query: Query = field(default_factory=Query)
     post: Post = field(default_factory=Post)
-    user: Optional[Any] = None
+    user: Optional[TUser] = None

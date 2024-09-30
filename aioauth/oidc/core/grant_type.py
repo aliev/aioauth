@@ -9,17 +9,16 @@ Different OAuth 2.0 grant types with OpenID Connect extensions.
 """
 from typing import TYPE_CHECKING
 
-from aioauth.grant_type import (
+from ...grant_type import (
     AuthorizationCodeGrantType as OAuth2AuthorizationCodeGrantType,
 )
-from aioauth.models import Client
-from aioauth.oidc.core.responses import TokenResponse
-from aioauth.oidc.core.requests import TRequest
-from aioauth.storage import TStorage
-from aioauth.utils import generate_token
+from ...models import Client
+from ...oidc.core.responses import TokenResponse
+from ...requests import Request, TUser
+from ...utils import generate_token
 
 
-class AuthorizationCodeGrantType(OAuth2AuthorizationCodeGrantType[TRequest, TStorage]):
+class AuthorizationCodeGrantType(OAuth2AuthorizationCodeGrantType[TUser]):
     """
     The Authorization Code grant type is used by confidential and public
     clients to exchange an authorization code for an access token. After
@@ -36,7 +35,7 @@ class AuthorizationCodeGrantType(OAuth2AuthorizationCodeGrantType[TRequest, TSto
     """
 
     async def create_token_response(
-        self, request: TRequest, client: Client
+        self, request: Request, client: Client
     ) -> TokenResponse:
         """
         Creates token response to reply to client.

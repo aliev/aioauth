@@ -10,22 +10,23 @@ action.
 ----
 """
 
-from typing import Optional, Generic, TypeVar
+from typing import Optional, Generic
+
+from .models import AuthorizationCode, Client, Token
 from .types import CodeChallengeMethod, ResponseType, TokenType
 
-from .models import TToken, TClient, TAuthorizationCode
-from .requests import TRequest
+from .requests import Request, TUser
 
 
-class BaseStorage(Generic[TToken, TClient, TAuthorizationCode, TRequest]):
+class BaseStorage(Generic[TUser]):
     async def create_token(
         self,
-        request: TRequest,
+        request: Request[TUser],
         client_id: str,
         scope: str,
         access_token: str,
         refresh_token: str,
-    ) -> TToken:
+    ) -> Token:
         """Generates a user token and stores it in the database.
 
         Warning:
@@ -44,12 +45,12 @@ class BaseStorage(Generic[TToken, TClient, TAuthorizationCode, TRequest]):
 
     async def get_token(
         self,
-        request: TRequest,
+        request: Request,
         client_id: str,
         token_type: Optional[TokenType] = "refresh_token",
         access_token: Optional[str] = None,
         refresh_token: Optional[str] = None,
-    ) -> Optional[TToken]:
+    ) -> Optional[Token]:
         """Gets existing token from the database.
 
         Note:
@@ -68,7 +69,7 @@ class BaseStorage(Generic[TToken, TClient, TAuthorizationCode, TRequest]):
 
     async def create_authorization_code(
         self,
-        request: TRequest,
+        request: Request,
         client_id: str,
         scope: str,
         response_type: ResponseType,
@@ -77,7 +78,7 @@ class BaseStorage(Generic[TToken, TClient, TAuthorizationCode, TRequest]):
         code_challenge: Optional[str],
         code: str,
         **kwargs,
-    ) -> TAuthorizationCode:
+    ) -> AuthorizationCode:
         """Generates an authorization token and stores it in the database.
 
         Warning:
@@ -102,11 +103,12 @@ class BaseStorage(Generic[TToken, TClient, TAuthorizationCode, TRequest]):
 
     async def get_id_token(
         self,
-        request: TRequest,
+        request: Request,
         client_id: str,
         scope: str,
         response_type: ResponseType,
         redirect_uri: str,
+        nonce: Optional[str],
         **kwargs,
     ) -> str:
         """Returns an id_token.
@@ -119,8 +121,11 @@ class BaseStorage(Generic[TToken, TClient, TAuthorizationCode, TRequest]):
         raise NotImplementedError("get_id_token must be implemented.")
 
     async def get_client(
-        self, request: TRequest, client_id: str, client_secret: Optional[str] = None
-    ) -> Optional[TClient]:
+        self,
+        request: Request[TUser],
+        client_id: str,
+        client_secret: Optional[str] = None,
+    ) -> Optional[Client]:
         """Gets existing client from the database if it exists.
 
         Warning:
@@ -139,7 +144,7 @@ class BaseStorage(Generic[TToken, TClient, TAuthorizationCode, TRequest]):
         """
         raise NotImplementedError("Method get_client must be implemented")
 
-    async def authenticate(self, request: TRequest) -> bool:
+    async def authenticate(self, request: Request[TUser]) -> bool:
         """Authenticates a user.
 
         Note:
@@ -154,8 +159,8 @@ class BaseStorage(Generic[TToken, TClient, TAuthorizationCode, TRequest]):
         raise NotImplementedError("Method authenticate must be implemented")
 
     async def get_authorization_code(
-        self, request: TRequest, client_id: str, code: str
-    ) -> Optional[TAuthorizationCode]:
+        self, request: Request[TUser], client_id: str, code: str
+    ) -> Optional[AuthorizationCode]:
         """Gets existing authorization code from the database if it exists.
 
         Warning:
@@ -177,7 +182,7 @@ class BaseStorage(Generic[TToken, TClient, TAuthorizationCode, TRequest]):
         )
 
     async def delete_authorization_code(
-        self, request: TRequest, client_id: str, code: str
+        self, request: Request[TUser], client_id: str, code: str
     ) -> None:
         """Deletes authorization code from database.
 
@@ -195,7 +200,7 @@ class BaseStorage(Generic[TToken, TClient, TAuthorizationCode, TRequest]):
 
     async def revoke_token(
         self,
-        request: TRequest,
+        request: Request[TUser],
         token_type: Optional[TokenType] = "refresh_token",
         access_token: Optional[str] = None,
         refresh_token: Optional[str] = None,
@@ -213,6 +218,3 @@ class BaseStorage(Generic[TToken, TClient, TAuthorizationCode, TRequest]):
         raise NotImplementedError(
             "Method revoke_token must be implemented for RefreshTokenGrantType"
         )
-
-
-TStorage = TypeVar("TStorage", bound=BaseStorage)

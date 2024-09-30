@@ -37,9 +37,6 @@ class BaseRequest(BaseOAuth2Request[TQuery, TPost, TUser]):
     user: Optional[TUser] = None
 
 
-TRequest = TypeVar("TRequest", bound=BaseRequest)
-
-
 @dataclass
 class Request(BaseRequest[Query, Post, Any]):
     """Object that contains a client's complete request."""
