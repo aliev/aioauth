@@ -37,7 +37,7 @@ class GrantTypeBase(Generic[TUser]):
         self.scope: Optional[str] = None
 
     async def create_token_response(
-        self, request: Request, client: Client
+        self, request: Request[TUser], client: Client
     ) -> TokenResponse:
         """Creates token response to reply to client."""
         if self.scope is None:
@@ -97,7 +97,7 @@ class AuthorizationCodeGrantType(GrantTypeBase[TUser]):
         See `RFC 6749 section 1.3.1 <https://tools.ietf.org/html/rfc6749#section-1.3.1>`_.
     """
 
-    async def validate_request(self, request: Request) -> Client:
+    async def validate_request(self, request: Request[TUser]) -> Client:
         client = await super().validate_request(request)
 
         if not request.post.redirect_uri:
@@ -144,7 +144,7 @@ class AuthorizationCodeGrantType(GrantTypeBase[TUser]):
         return client
 
     async def create_token_response(
-        self, request: Request, client: Client
+        self, request: Request[TUser], client: Client
     ) -> TokenResponse:
         token_response = await super().create_token_response(request, client)
 
@@ -199,7 +199,7 @@ class RefreshTokenGrantType(GrantTypeBase[TUser]):
     """
 
     async def create_token_response(
-        self, request: Request, client: Client
+        self, request: Request[TUser], client: Client
     ) -> TokenResponse:
         """Validate token request and create token response."""
         old_token = await self.storage.get_token(
@@ -261,7 +261,7 @@ class ClientCredentialsGrantType(GrantTypeBase[TUser]):
     See `RFC 6749 section 4.4 <https://tools.ietf.org/html/rfc6749#section-4.4>`_.
     """
 
-    async def validate_request(self, request: Request) -> Client:
+    async def validate_request(self, request: Request[TUser]) -> Client:
         # client_credentials grant requires a client_secret
         if self.client_secret is None:
             raise InvalidClientError(request)

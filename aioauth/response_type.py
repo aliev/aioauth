@@ -106,7 +106,7 @@ class ResponseTypeToken(ResponseTypeBase[TUser]):
     """Response type that contains a token."""
 
     async def create_authorization_response(
-        self, request: Request, client: Client
+        self, request: Request[TUser], client: Client
     ) -> TokenResponse:
         token = await self.storage.create_token(
             request,
@@ -129,7 +129,7 @@ class ResponseTypeAuthorizationCode(ResponseTypeBase[TUser]):
     """Response type that contains an authorization code."""
 
     async def create_authorization_response(
-        self, request: Request, client: Client
+        self, request: Request[TUser], client: Client
     ) -> AuthorizationCodeResponse:
         authorization_code = await self.storage.create_authorization_code(
             client_id=client.client_id,
@@ -162,7 +162,7 @@ class ResponseTypeIdToken(ResponseTypeBase[TUser]):
         return client
 
     async def create_authorization_response(
-        self, request: Request, client: Client
+        self, request: Request[TUser], client: Client
     ) -> IdTokenResponse:
         id_token = await self.storage.get_id_token(
             request,
@@ -178,6 +178,6 @@ class ResponseTypeIdToken(ResponseTypeBase[TUser]):
 
 class ResponseTypeNone(ResponseTypeBase[TUser]):
     async def create_authorization_response(
-        self, request: Request, client: Client
+        self, request: Request[TUser], client: Client
     ) -> NoneResponse:
         return NoneResponse()

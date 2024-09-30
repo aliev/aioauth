@@ -35,7 +35,7 @@ class AuthorizationCodeGrantType(OAuth2AuthorizationCodeGrantType[TUser]):
     """
 
     async def create_token_response(
-        self, request: Request, client: Client
+        self, request: Request[TUser], client: Client
     ) -> TokenResponse:
         """
         Creates token response to reply to client.
