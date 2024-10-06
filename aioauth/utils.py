@@ -34,6 +34,8 @@ from typing import (
 )
 from urllib.parse import quote, urlencode, urlparse, urlunsplit
 
+from aioauth.requests import Request
+
 from .collections import HTTPHeaderDict
 from .errors import (
     OAuth2Error,
@@ -153,8 +155,8 @@ def build_uri(
             parsed_url.scheme,
             parsed_url.netloc,
             parsed_url.path,
-            urlencode(query_params, quote_via=quote),  # type: ignore
-            urlencode(fragment, quote_via=quote),  # type: ignore
+            urlencode(query_params, quote_via=quote),
+            urlencode(fragment, quote_via=quote),
         )
     )
     return uri
@@ -239,7 +241,7 @@ def catch_errors_and_unavailability(
 
     def decorator(f) -> Callable[..., Coroutine[Any, Any, Response]]:
         @functools.wraps(f)
-        async def wrapper(self, request, *args, **kwargs) -> Response:
+        async def wrapper(self, request: Request, *args, **kwargs) -> Response:
             error: Union[TemporarilyUnavailableError, ServerError]
 
             try:
@@ -268,8 +270,11 @@ def catch_errors_and_unavailability(
                     status_code=HTTPStatus.FOUND,
                     headers=HTTPHeaderDict({"location": location}),
                 )
-            except Exception:
-                error = ServerError(request=request)
+            except Exception as exc:
+                error = ServerError(
+                    request=request,
+                    description=str(exc) if request.settings.DEBUG else "",
+                )
                 log.exception("Exception caught while processing request.")
                 content = ErrorResponse(
                     error=error.error, description=error.description

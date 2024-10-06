@@ -184,6 +184,7 @@ class ServerError(OAuth2Error):
     """
 
     error: ErrorType = "server_error"
+    status_code: HTTPStatus = HTTPStatus.BAD_REQUEST
 
 
 class TemporarilyUnavailableError(OAuth2Error):

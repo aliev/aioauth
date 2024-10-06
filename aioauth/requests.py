@@ -60,16 +60,14 @@ class Post:
     code_verifier: Optional[str] = None
 
 
-TQuery = TypeVar("TQuery", bound=Query)
-TPost = TypeVar("TPost", bound=Post)
 TUser = TypeVar("TUser")
 
 
 @dataclass
-class BaseRequest(Generic[TQuery, TPost, TUser]):
+class BaseRequest(Generic[TUser]):
     method: RequestMethod
-    query: TQuery
-    post: TPost
+    query: Query = field(default_factory=Query)
+    post: Post = field(default_factory=Post)
     headers: HTTPHeaderDict = field(default_factory=HTTPHeaderDict)
     url: str = ""
     user: Optional[TUser] = None
@@ -77,9 +75,5 @@ class BaseRequest(Generic[TQuery, TPost, TUser]):
 
 
 @dataclass
-class Request(Generic[TUser], BaseRequest[Query, Post, TUser]):
+class Request(Generic[TUser], BaseRequest[TUser]):
     """Object that contains a client's complete request."""
-
-    query: Query = field(default_factory=Query)
-    post: Post = field(default_factory=Post)
-    user: Optional[TUser] = None
