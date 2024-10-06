@@ -64,4 +64,4 @@ ResponseMode = Literal[
 ]
 
 
-TokenType = Literal["access_token", "refresh_token"]
+TokenType = Literal["access_token", "refresh_token", "Bearer"]

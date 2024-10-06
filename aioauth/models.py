@@ -9,9 +9,9 @@ Memory objects used throughout the project.
 """
 from dataclasses import dataclass
 import time
-from typing import Any, List, Optional, TypeVar, Union
+from typing import Any, List, Optional, Union
 
-from .types import CodeChallengeMethod, GrantType, ResponseType
+from .types import CodeChallengeMethod, GrantType, ResponseType, TokenType
 from .utils import create_s256_code_challenge, enforce_list, enforce_str
 
 
@@ -254,7 +254,7 @@ class Token:
     clients that the authorization server handles.
     """
 
-    token_type: str = "Bearer"
+    token_type: TokenType = "Bearer"
     """
     Type of token expected.
     """
@@ -278,8 +278,3 @@ class Token:
     def refresh_token_expired(self) -> bool:
         """Checks if refresh token has expired."""
         return (self.issued_at + self.refresh_token_expires_in) < time.time()
-
-
-TToken = TypeVar("TToken", bound=Token)
-TClient = TypeVar("TClient", bound=Client)
-TAuthorizationCode = TypeVar("TAuthorizationCode", bound=AuthorizationCode)
