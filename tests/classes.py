@@ -1,13 +1,15 @@
 import time
 import sys
 
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional, Type
 
 from dataclasses import replace, dataclass
 
 from aioauth.config import Settings
+from aioauth.grant_type import GrantTypeBase
 from aioauth.models import AuthorizationCode, Client, Token
-from aioauth.requests import BaseRequest, Post, Query, TRequest
+from aioauth.requests import Request
+from aioauth.response_type import ResponseTypeBase
 from aioauth.server import AuthorizationServer
 from aioauth.storage import BaseStorage
 from aioauth.types import CodeChallengeMethod, GrantType, ResponseType, TokenType
@@ -24,12 +26,12 @@ class User:
     last_name: str
 
 
-@dataclass
-class Request(BaseRequest[Query, Post, User]):
-    ...
+# @dataclass
+# class Request(BaseRequest[Query, Post, User]):
+#     ...
 
 
-class Storage(BaseStorage[Token, Client, AuthorizationCode, Request]):
+class Storage(BaseStorage[User]):
     def __init__(
         self,
         authorization_codes: List[AuthorizationCode],
@@ -53,7 +55,10 @@ class Storage(BaseStorage[Token, Client, AuthorizationCode, Request]):
                 return client
 
     async def get_client(
-        self, request: Request, client_id: str, client_secret: Optional[str] = None
+        self,
+        request: Request[User],
+        client_id: str,
+        client_secret: Optional[str] = None,
     ) -> Optional[Client]:
         if client_secret is not None:
             return self._get_by_client_secret(client_id, client_secret)
@@ -62,7 +67,7 @@ class Storage(BaseStorage[Token, Client, AuthorizationCode, Request]):
 
     async def create_token(
         self,
-        request: Request,
+        request: Request[User],
         client_id: str,
         scope: str,
         access_token: str,
@@ -83,7 +88,7 @@ class Storage(BaseStorage[Token, Client, AuthorizationCode, Request]):
 
     async def revoke_token(
         self,
-        request: Request,
+        request: Request[User],
         token_type: Optional[TokenType] = "refresh_token",
         access_token: Optional[str] = None,
         refresh_token: Optional[str] = None,
@@ -97,7 +102,7 @@ class Storage(BaseStorage[Token, Client, AuthorizationCode, Request]):
 
     async def get_token(
         self,
-        request: Request,
+        request: Request[User],
         client_id: str,
         token_type: Optional[TokenType] = "refresh_token",
         access_token: Optional[str] = None,
@@ -117,14 +122,14 @@ class Storage(BaseStorage[Token, Client, AuthorizationCode, Request]):
             ):
                 return token_
 
-    async def authenticate(self, request: Request) -> bool:
+    async def authenticate(self, request: Request[User]) -> bool:
         password = request.post.password
         username = request.post.username
         return username in self.users and self.users[username] == password
 
     async def create_authorization_code(
         self,
-        request: Request,
+        request: Request[User],
         client_id: str,
         scope: str,
         response_type: str,
@@ -152,7 +157,7 @@ class Storage(BaseStorage[Token, Client, AuthorizationCode, Request]):
         return authorization_code
 
     async def get_authorization_code(
-        self, request: Request, client_id: str, code: str
+        self, request: Request[User], client_id: str, code: str
     ) -> Optional[AuthorizationCode]:
         for authorization_code in self.authorization_codes:
             if (
@@ -163,7 +168,7 @@ class Storage(BaseStorage[Token, Client, AuthorizationCode, Request]):
 
     async def delete_authorization_code(
         self,
-        request: Request,
+        request: Request[User],
         client_id: str,
         code: str,
     ):
@@ -177,12 +182,12 @@ class Storage(BaseStorage[Token, Client, AuthorizationCode, Request]):
 
     async def get_id_token(
         self,
-        request: Request,
+        request: Request[User],
         client_id: str,
         scope: str,
-        response_type: str,
+        response_type: ResponseType,
         redirect_uri: str,
-        nonce: str,
+        nonce: Optional[str],
         **kwargs,
     ) -> str:
         return "generated id token"
@@ -192,12 +197,14 @@ class AuthorizationContext:
     def __init__(
         self,
         clients: Optional[List[Client]] = None,
-        grant_types: Optional[Dict[GrantType, Any]] = None,
+        grant_types: Optional[Dict[GrantType, Type[GrantTypeBase[User]]]] = None,
         initial_authorization_codes: Optional[List[AuthorizationCode]] = None,
         initial_tokens: Optional[List[Token]] = None,
-        response_types: Optional[Dict[ResponseType, Any]] = None,
+        response_types: Optional[
+            Dict[ResponseType, Type[ResponseTypeBase[User]]]
+        ] = None,
         settings: Optional[Settings] = None,
-        users: Dict[str, str] = None,
+        users: Optional[Dict[str, str]] = None,
     ):
         self.initial_authorization_codes = initial_authorization_codes or []
         self.initial_tokens = initial_tokens or []
@@ -209,7 +216,7 @@ class AuthorizationContext:
         self.users = users or {}
 
     @cached_property
-    def server(self) -> AuthorizationServer[TRequest, Storage]:
+    def server(self) -> AuthorizationServer[User]:
         return AuthorizationServer(
             grant_types=self.grant_types,
             response_types=self.response_types,

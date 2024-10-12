@@ -1,3 +1,4 @@
+from typing import Any
 import pytest
 
 from aioauth.models import AuthorizationCode, Client, Token
@@ -8,9 +9,9 @@ from tests import factories
 
 
 @pytest.mark.asyncio
-async def test_storage_class():
-    db = BaseStorage()
-    request = Request(method="POST")
+async def test_storage_class() -> None:
+    db = BaseStorage[Any]()
+    request = Request[Any](method="POST")
     client: Client = factories.client_factory()
     token: Token = factories.token_factory()
     authorization_code: AuthorizationCode = factories.authorization_code_factory()
@@ -29,7 +30,7 @@ async def test_storage_class():
             request=request,
             client_id=client.client_id,
             scope="",
-            response_type="",
+            response_type="token",
             redirect_uri="",
             code_challenge_method=None,
             code_challenge=None,

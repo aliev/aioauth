@@ -23,7 +23,7 @@ repos:
     rev: v0.950
     hooks:
       - id: mypy
-        exclude: ^(docs/|setup\.py|tests/)
+        exclude: ^(docs/|setup\.py)
 
   - repo: https://github.com/pycqa/flake8
     rev: 4.0.1
