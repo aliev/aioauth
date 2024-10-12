@@ -10,10 +10,12 @@ Containers that contain constants used throughout the project.
 import sys
 
 if sys.version_info >= (3, 8):
-    from typing import Literal
+    from typing import Literal, Protocol, ClassVar, Dict, Any
 else:
-    from typing_extensions import Literal
+    from typing_extensions import Literal, Protocol, ClassVar, Dict, Any
 
+class IsDataclass(Protocol):
+    __dataclass_fields__: ClassVar[Dict[str, Any]]
 
 ErrorType = Literal[
     "invalid_request",
