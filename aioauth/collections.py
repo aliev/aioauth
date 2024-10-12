@@ -34,7 +34,7 @@ class HTTPHeaderDict(UserDict):
         d['hElLo'] == 'world' # >>> True
     """
 
-    def __init__(self, dict=None, /, **kwargs):
+    def __init__(self, dict=None, **kwargs):
         """Object initialization."""
         super().__init__(dict, **kwargs)
         self.data = {k.lower(): v for k, v in self.data.items()}
