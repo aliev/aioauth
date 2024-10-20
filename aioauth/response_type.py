@@ -8,6 +8,7 @@ Response objects used throughout the project.
 ----
 """
 import sys
+from abc import ABC, abstractmethod
 from typing import Generic, Tuple
 
 if sys.version_info >= (3, 8):
@@ -32,16 +33,15 @@ from .responses import (
     TokenResponse,
 )
 from .storage import TStorage
-from .types import CodeChallengeMethod
+from .types import CodeChallengeMethod, IsDataclass
 
-
-class ResponseTypeBase(Generic[TRequest, TStorage]):
+class ResponseTypeBase(ABC, Generic[TRequest, TStorage]):
     """Base response type that all other exceptions inherit from."""
 
     def __init__(self, storage: TStorage):
         self.storage = storage
 
-    async def validate_request(self, request: TRequest) -> Client:
+    async def validate_request(self, request: TRequest, skip_user: bool = False) -> Client:
         state = request.query.state
 
         code_challenge_methods: Tuple[CodeChallengeMethod, ...] = get_args(
@@ -93,13 +93,17 @@ class ResponseTypeBase(Generic[TRequest, TStorage]):
         if not client.check_scope(request.query.scope):
             raise InvalidScopeError[TRequest](request=request, state=state)
 
-        if not request.user:
+        if not skip_user and not request.user:
             raise InvalidClientError[TRequest](
                 request=request, description="User is not authorized", state=state
             )
 
         return client
 
+    @abstractmethod
+    async def create_authorization_response(
+        self, request: TRequest, client: Client) -> IsDataclass:
+        raise NotImplemented
 
 class ResponseTypeToken(ResponseTypeBase[TRequest, TStorage]):
     """Response type that contains a token."""
