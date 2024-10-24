@@ -71,7 +71,7 @@ setup(
     url=about["__url__"],
     license=about["__license__"],
     package_data={"aioauth": ["py.typed"]},
-    python_requires=">=3.7.0",
+    python_requires=">=3.9.0",
     classifiers=classifiers,
     install_requires=["typing_extensions"],
     extras_require={
