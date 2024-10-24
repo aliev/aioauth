@@ -49,6 +49,7 @@ require_dev = [
     "testfixtures==6.18.3",
     "twine==3.7.1",
     "wheel",
+    "mypy==1.13.0",
 ]
 
 require_docs = [
