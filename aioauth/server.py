@@ -16,6 +16,7 @@ Warning:
 
 ----
 """
+
 import sys
 from dataclasses import asdict
 from http import HTTPStatus

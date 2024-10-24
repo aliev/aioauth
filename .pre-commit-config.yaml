@@ -5,12 +5,12 @@ fail_fast: true
 
 repos:
   - repo: https://github.com/psf/black
-    rev: 22.3.0
+    rev: 24.10.0
     hooks:
       - id: black
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.2.0
+    rev: v5.0.0
     hooks:
       - id: trailing-whitespace
         exclude: ^(setup\.cfg)
@@ -31,6 +31,6 @@ repos:
         exclude: ^(docs/|setup\.py)
 
   - repo: https://github.com/pycqa/flake8
-    rev: 4.0.1
+    rev: 7.1.1
     hooks:
     -   id: flake8

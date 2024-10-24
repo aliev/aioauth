@@ -47,7 +47,7 @@ async def test_authorization_code_flow_plain_code_challenge():
         url=request_url,
         query=query,
         method="GET",
-        user=User(first_name="A", last_name="B"),
+        user=User(username="A"),
     )
 
     await check_request_validators(request, server.create_authorization_response)

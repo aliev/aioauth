@@ -51,7 +51,7 @@ async def test_storage_class() -> None:
             client_secret=client.client_secret,
         )
     with pytest.raises(NotImplementedError):
-        await db.authenticate(request=request)
+        await db.get_user(request=request)
     with pytest.raises(NotImplementedError):
         await db.get_authorization_code(
             request=request, client_id=client.client_id, code=authorization_code.code

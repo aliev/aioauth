@@ -7,6 +7,7 @@ Different OAuth 2.0 grant types.
 
 ----
 """
+
 from typing import Generic, Optional
 
 from .requests import Request
@@ -183,9 +184,9 @@ class PasswordGrantType(GrantTypeBase[UserType]):
                 request=request, description="Invalid credentials given."
             )
 
-        user = await self.storage.authenticate(request)
+        user = await self.storage.get_user(request)
 
-        if not user:
+        if user is None:
             raise InvalidRequestError(
                 request=request, description="Invalid credentials given."
             )

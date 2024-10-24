@@ -7,6 +7,7 @@ Containers that contain constants used throughout the project.
 
 ----
 """
+
 import sys
 from typing import Any
 

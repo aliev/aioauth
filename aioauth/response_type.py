@@ -7,6 +7,7 @@ Response objects used throughout the project.
 
 ----
 """
+
 import sys
 from typing import Generic, Tuple
 

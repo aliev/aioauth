@@ -7,6 +7,7 @@ Different OAuth 2.0 grant types with OpenID Connect extensions.
 
 ----
 """
+
 from typing import TYPE_CHECKING
 
 from ...grant_type import (

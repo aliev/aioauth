@@ -22,8 +22,7 @@ else:
 
 @dataclass(frozen=True)
 class User:
-    first_name: str
-    last_name: str
+    username: str
 
 
 class Storage(BaseStorage[User]):
@@ -117,10 +116,17 @@ class Storage(BaseStorage[User]):
             ):
                 return token_
 
-    async def authenticate(self, request: Request[User]) -> bool:
+    async def get_user(self, request: Request[User]) -> Optional[User]:
         password = request.post.password
         username = request.post.username
-        return username in self.users and self.users[username] == password
+
+        if username is None or password is None:
+            return None
+
+        user_exists = username in self.users and self.users[username] == password
+
+        if user_exists:
+            return User(username=username)
 
     async def create_authorization_code(
         self,

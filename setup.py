@@ -40,7 +40,7 @@ classifiers = [
 require_dev = [
     "async-asgi-testclient==1.4.8",
     "backports.cached-property==1.0.2",
-    "pre-commit==2.16.0",
+    "pre_commit==4.0.1",
     "pytest==6.2.5",
     "pytest-asyncio==0.16.0",
     "pytest-cov==3.0.0",

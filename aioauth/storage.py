@@ -188,9 +188,9 @@ class ClientStorage(Generic[UserType]):
         raise NotImplementedError("Method get_client must be implemented")
 
 
-class Authentication(Generic[UserType]):
-    async def authenticate(self, request: Request[UserType]) -> bool:
-        """Authenticates a user.
+class UserStorage(Generic[UserType]):
+    async def get_user(self, request: Request[UserType]) -> Optional[UserType]:
+        """Returns a user.
 
         Note:
             This method is used by the grant type
@@ -201,7 +201,7 @@ class Authentication(Generic[UserType]):
             Boolean indicating whether or not the user was authenticated
             successfully.
         """
-        raise NotImplementedError("Method authenticate must be implemented")
+        raise NotImplementedError("Method get_user must be implemented")
 
 
 class IDTokenStorage(Generic[UserType]):
@@ -230,7 +230,6 @@ class BaseStorage(
     TokenStorage[UserType],
     AuthorizationCodeStorage[UserType],
     ClientStorage[UserType],
-    Authentication[UserType],
+    UserStorage[UserType],
     IDTokenStorage[UserType],
-):
-    ...
+): ...

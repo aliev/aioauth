@@ -7,6 +7,7 @@ Memory objects used throughout the project.
 
 ----
 """
+
 from dataclasses import dataclass
 import time
 from typing import Generic, List, Optional, Union

@@ -7,6 +7,7 @@ Request objects used throughout the project.
 
 ----
 """
+
 from dataclasses import dataclass, field
 from typing import Generic, Optional
 
