@@ -20,15 +20,10 @@ else:
     from backports.cached_property import cached_property
 
 
-@dataclass
+@dataclass(frozen=True)
 class User:
     first_name: str
     last_name: str
-
-
-# @dataclass
-# class Request(BaseRequest[Query, Post, User]):
-#     ...
 
 
 class Storage(BaseStorage[User]):
@@ -73,7 +68,7 @@ class Storage(BaseStorage[User]):
         access_token: str,
         refresh_token: str,
     ):
-        token = Token(
+        token: Token[User] = Token(
             client_id=client_id,
             expires_in=request.settings.TOKEN_EXPIRES_IN,
             refresh_token_expires_in=request.settings.REFRESH_TOKEN_EXPIRES_IN,

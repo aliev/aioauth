@@ -2,11 +2,11 @@ from dataclasses import dataclass, field
 
 from typing import Optional
 
-from aioauth.requests import (
+from ...requests import (
     BaseRequest,
     Query as OAuth2Query,
-    TUser,
 )
+from ...types import UserType
 
 
 @dataclass
@@ -20,7 +20,7 @@ class Query(OAuth2Query):
 
 
 @dataclass
-class Request(BaseRequest[TUser]):
+class Request(BaseRequest[UserType]):
     """Object that contains a client's complete request."""
 
     query: Query = field(default_factory=Query)

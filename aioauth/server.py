@@ -21,7 +21,8 @@ from dataclasses import asdict
 from http import HTTPStatus
 from typing import Any, Dict, Generic, List, Optional, Tuple, Type, Union
 
-from .requests import Request, TUser
+from .requests import Request
+from .types import UserType
 from .storage import BaseStorage
 
 
@@ -75,25 +76,25 @@ from .utils import (
 )
 
 
-class AuthorizationServer(Generic[TUser]):
+class AuthorizationServer(Generic[UserType]):
     """Interface for initializing an OAuth 2.0 server."""
 
     response_types: Dict[ResponseType, Any] = {
-        "token": ResponseTypeToken[TUser],
-        "code": ResponseTypeAuthorizationCode[TUser],
-        "none": ResponseTypeNone[TUser],
-        "id_token": ResponseTypeIdToken[TUser],
+        "token": ResponseTypeToken[UserType],
+        "code": ResponseTypeAuthorizationCode[UserType],
+        "none": ResponseTypeNone[UserType],
+        "id_token": ResponseTypeIdToken[UserType],
     }
     grant_types: Dict[GrantType, Any] = {
-        "authorization_code": AuthorizationCodeGrantType[TUser],
-        "client_credentials": ClientCredentialsGrantType[TUser],
-        "password": PasswordGrantType[TUser],
-        "refresh_token": RefreshTokenGrantType[TUser],
+        "authorization_code": AuthorizationCodeGrantType[UserType],
+        "client_credentials": ClientCredentialsGrantType[UserType],
+        "password": PasswordGrantType[UserType],
+        "refresh_token": RefreshTokenGrantType[UserType],
     }
 
     def __init__(
         self,
-        storage: BaseStorage[TUser],
+        storage: BaseStorage[UserType],
         response_types: Optional[Dict] = None,
         grant_types: Optional[Dict] = None,
     ):
@@ -105,7 +106,7 @@ class AuthorizationServer(Generic[TUser]):
         if grant_types is not None:
             self.grant_types = grant_types
 
-    def is_secure_transport(self, request: Request[TUser]) -> bool:
+    def is_secure_transport(self, request: Request[UserType]) -> bool:
         """
         Verifies the request was sent via a protected SSL tunnel.
 
@@ -123,7 +124,7 @@ class AuthorizationServer(Generic[TUser]):
         return request.url.lower().startswith("https://")
 
     def validate_request(
-        self, request: Request[TUser], allowed_methods: List[RequestMethod]
+        self, request: Request[UserType], allowed_methods: List[RequestMethod]
     ):
         if not request.settings.AVAILABLE:
             raise TemporarilyUnavailableError(request=request)
@@ -139,7 +140,7 @@ class AuthorizationServer(Generic[TUser]):
 
     @catch_errors_and_unavailability()
     async def create_token_introspection_response(
-        self, request: Request[TUser]
+        self, request: Request[UserType]
     ) -> Response:
         """
         Returns a response object with introspection of the passed token.
@@ -225,7 +226,7 @@ class AuthorizationServer(Generic[TUser]):
         )
 
     def get_client_credentials(
-        self, request: Request[TUser], secret_required: bool
+        self, request: Request[UserType], secret_required: bool
     ) -> Tuple[str, str]:
         client_id = request.post.client_id
         client_secret = request.post.client_secret
@@ -253,7 +254,7 @@ class AuthorizationServer(Generic[TUser]):
         return client_id, client_secret
 
     @catch_errors_and_unavailability()
-    async def create_token_response(self, request: Request[TUser]) -> Response:
+    async def create_token_response(self, request: Request[UserType]) -> Response:
         """Endpoint to obtain an access and/or ID token by presenting an
         authorization grant or refresh token.
         Validates a token request and creates a token response.
@@ -311,11 +312,11 @@ class AuthorizationServer(Generic[TUser]):
 
         GrantTypeClass: Type[
             Union[
-                GrantTypeBase[TUser],
-                AuthorizationCodeGrantType[TUser],
-                PasswordGrantType[TUser],
-                RefreshTokenGrantType[TUser],
-                ClientCredentialsGrantType[TUser],
+                GrantTypeBase[UserType],
+                AuthorizationCodeGrantType[UserType],
+                PasswordGrantType[UserType],
+                RefreshTokenGrantType[UserType],
+                ClientCredentialsGrantType[UserType],
             ]
         ]
 
@@ -345,7 +346,9 @@ class AuthorizationServer(Generic[TUser]):
             InvalidRedirectURIError,
         )
     )
-    async def create_authorization_response(self, request: Request[TUser]) -> Response:
+    async def create_authorization_response(
+        self, request: Request[UserType]
+    ) -> Response:
         """
         Endpoint to interact with the resource owner and obtain an
         authorization grant.
@@ -468,7 +471,7 @@ class AuthorizationServer(Generic[TUser]):
         )
 
     @catch_errors_and_unavailability()
-    async def revoke_token(self, request: Request[TUser]) -> Response:
+    async def revoke_token(self, request: Request[UserType]) -> Response:
         """Endpoint to revoke an access token or refresh token.
         For more information see
         `RFC7009 <https://tools.ietf.org/html/rfc7009>`_.

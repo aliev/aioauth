@@ -10,7 +10,8 @@ Response objects used throughout the project.
 import sys
 from typing import Generic, Tuple
 
-from .requests import Request, TUser
+from .requests import Request
+from .types import UserType
 from .storage import BaseStorage
 
 if sys.version_info >= (3, 8):
@@ -36,13 +37,13 @@ from .responses import (
 from .types import CodeChallengeMethod
 
 
-class ResponseTypeBase(Generic[TUser]):
+class ResponseTypeBase(Generic[UserType]):
     """Base response type that all other exceptions inherit from."""
 
-    def __init__(self, storage: BaseStorage[TUser]):
+    def __init__(self, storage: BaseStorage[UserType]):
         self.storage = storage
 
-    async def validate_request(self, request: Request) -> Client:
+    async def validate_request(self, request: Request[UserType]) -> Client[UserType]:
         state = request.query.state
 
         code_challenge_methods: Tuple[CodeChallengeMethod, ...] = get_args(
@@ -102,11 +103,11 @@ class ResponseTypeBase(Generic[TUser]):
         return client
 
 
-class ResponseTypeToken(ResponseTypeBase[TUser]):
+class ResponseTypeToken(ResponseTypeBase[UserType]):
     """Response type that contains a token."""
 
     async def create_authorization_response(
-        self, request: Request[TUser], client: Client
+        self, request: Request[UserType], client: Client[UserType]
     ) -> TokenResponse:
         token = await self.storage.create_token(
             request,
@@ -125,11 +126,11 @@ class ResponseTypeToken(ResponseTypeBase[TUser]):
         )
 
 
-class ResponseTypeAuthorizationCode(ResponseTypeBase[TUser]):
+class ResponseTypeAuthorizationCode(ResponseTypeBase[UserType]):
     """Response type that contains an authorization code."""
 
     async def create_authorization_response(
-        self, request: Request[TUser], client: Client
+        self, request: Request[UserType], client: Client[UserType]
     ) -> AuthorizationCodeResponse:
         authorization_code = await self.storage.create_authorization_code(
             client_id=client.client_id,
@@ -148,8 +149,8 @@ class ResponseTypeAuthorizationCode(ResponseTypeBase[TUser]):
         )
 
 
-class ResponseTypeIdToken(ResponseTypeBase[TUser]):
-    async def validate_request(self, request: Request) -> Client:
+class ResponseTypeIdToken(ResponseTypeBase[UserType]):
+    async def validate_request(self, request: Request[UserType]) -> Client[UserType]:
         client = await super().validate_request(request)
 
         # nonce is required for id_token
@@ -162,7 +163,7 @@ class ResponseTypeIdToken(ResponseTypeBase[TUser]):
         return client
 
     async def create_authorization_response(
-        self, request: Request[TUser], client: Client
+        self, request: Request[UserType], client: Client[UserType]
     ) -> IdTokenResponse:
         id_token = await self.storage.get_id_token(
             request,
@@ -176,8 +177,8 @@ class ResponseTypeIdToken(ResponseTypeBase[TUser]):
         return IdTokenResponse(id_token=id_token)
 
 
-class ResponseTypeNone(ResponseTypeBase[TUser]):
+class ResponseTypeNone(ResponseTypeBase[UserType]):
     async def create_authorization_response(
-        self, request: Request[TUser], client: Client
+        self, request: Request[UserType], client: Client[UserType]
     ) -> NoneResponse:
         return NoneResponse()

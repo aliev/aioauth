@@ -9,7 +9,8 @@ Different OAuth 2.0 grant types.
 """
 from typing import Generic, Optional
 
-from .requests import Request, TUser
+from .requests import Request
+from .types import UserType
 from .storage import BaseStorage
 from .errors import (
     InvalidClientError,
@@ -25,11 +26,14 @@ from .responses import TokenResponse
 from .utils import enforce_list, enforce_str, generate_token
 
 
-class GrantTypeBase(Generic[TUser]):
+class GrantTypeBase(Generic[UserType]):
     """Base grant type that all other grant types inherit from."""
 
     def __init__(
-        self, storage: BaseStorage[TUser], client_id: str, client_secret: Optional[str]
+        self,
+        storage: BaseStorage[UserType],
+        client_id: str,
+        client_secret: Optional[str],
     ):
         self.storage = storage
         self.client_id = client_id
@@ -37,7 +41,7 @@ class GrantTypeBase(Generic[TUser]):
         self.scope: Optional[str] = None
 
     async def create_token_response(
-        self, request: Request[TUser], client: Client
+        self, request: Request[UserType], client: Client[UserType]
     ) -> TokenResponse:
         """Creates token response to reply to client."""
         if self.scope is None:
@@ -60,7 +64,7 @@ class GrantTypeBase(Generic[TUser]):
             token_type=token.token_type,
         )
 
-    async def validate_request(self, request: Request) -> Client:
+    async def validate_request(self, request: Request[UserType]) -> Client[UserType]:
         """Validates the client request to ensure it is valid."""
         client = await self.storage.get_client(
             request, client_id=self.client_id, client_secret=self.client_secret
@@ -81,7 +85,7 @@ class GrantTypeBase(Generic[TUser]):
         return client
 
 
-class AuthorizationCodeGrantType(GrantTypeBase[TUser]):
+class AuthorizationCodeGrantType(GrantTypeBase[UserType]):
     """
     The Authorization Code grant type is used by confidential and public
     clients to exchange an authorization code for an access token. After
@@ -97,7 +101,7 @@ class AuthorizationCodeGrantType(GrantTypeBase[TUser]):
         See `RFC 6749 section 1.3.1 <https://tools.ietf.org/html/rfc6749#section-1.3.1>`_.
     """
 
-    async def validate_request(self, request: Request[TUser]) -> Client:
+    async def validate_request(self, request: Request[UserType]) -> Client[UserType]:
         client = await super().validate_request(request)
 
         if not request.post.redirect_uri:
@@ -144,7 +148,7 @@ class AuthorizationCodeGrantType(GrantTypeBase[TUser]):
         return client
 
     async def create_token_response(
-        self, request: Request[TUser], client: Client
+        self, request: Request[UserType], client: Client[UserType]
     ) -> TokenResponse:
         token_response = await super().create_token_response(request, client)
 
@@ -160,7 +164,7 @@ class AuthorizationCodeGrantType(GrantTypeBase[TUser]):
         return token_response
 
 
-class PasswordGrantType(GrantTypeBase[TUser]):
+class PasswordGrantType(GrantTypeBase[UserType]):
     """
     The Password grant type is a way to exchange a user's credentials
     for an access token. Because the client application has to collect
@@ -171,7 +175,7 @@ class PasswordGrantType(GrantTypeBase[TUser]):
     disallows the password grant entirely.
     """
 
-    async def validate_request(self, request: Request) -> Client:
+    async def validate_request(self, request: Request[UserType]) -> Client[UserType]:
         client = await super().validate_request(request)
 
         if not request.post.username or not request.post.password:
@@ -189,7 +193,7 @@ class PasswordGrantType(GrantTypeBase[TUser]):
         return client
 
 
-class RefreshTokenGrantType(GrantTypeBase[TUser]):
+class RefreshTokenGrantType(GrantTypeBase[UserType]):
     """
     The Refresh Token grant type is used by clients to exchange a
     refresh token for an access token when the access token has expired.
@@ -199,7 +203,7 @@ class RefreshTokenGrantType(GrantTypeBase[TUser]):
     """
 
     async def create_token_response(
-        self, request: Request[TUser], client: Client
+        self, request: Request[UserType], client: Client[UserType]
     ) -> TokenResponse:
         """Validate token request and create token response."""
         old_token = await self.storage.get_token(
@@ -241,7 +245,7 @@ class RefreshTokenGrantType(GrantTypeBase[TUser]):
             token_type=token.token_type,
         )
 
-    async def validate_request(self, request: Request) -> Client:
+    async def validate_request(self, request: Request[UserType]) -> Client[UserType]:
         client = await super().validate_request(request)
 
         if not request.post.refresh_token:
@@ -252,7 +256,7 @@ class RefreshTokenGrantType(GrantTypeBase[TUser]):
         return client
 
 
-class ClientCredentialsGrantType(GrantTypeBase[TUser]):
+class ClientCredentialsGrantType(GrantTypeBase[UserType]):
     """
     The Client Credentials grant type is used by clients to obtain an
     access token outside of the context of a user. This is typically
@@ -261,7 +265,7 @@ class ClientCredentialsGrantType(GrantTypeBase[TUser]):
     See `RFC 6749 section 4.4 <https://tools.ietf.org/html/rfc6749#section-4.4>`_.
     """
 
-    async def validate_request(self, request: Request[TUser]) -> Client:
+    async def validate_request(self, request: Request[UserType]) -> Client[UserType]:
         # client_credentials grant requires a client_secret
         if self.client_secret is None:
             raise InvalidClientError(request)

@@ -19,10 +19,15 @@ repos:
       - id: check-merge-conflict
       - id: detect-private-key
 
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v0.950
+  - repo: local
     hooks:
       - id: mypy
+        name: mypy
+        entry: "mypy"
+        language: system
+        types: [python]
+        require_serial: true
+        verbose: false
         exclude: ^(docs/|setup\.py)
 
   - repo: https://github.com/pycqa/flake8

@@ -15,13 +15,14 @@ from typing import Optional, Generic
 from .models import AuthorizationCode, Client, Token
 from .types import CodeChallengeMethod, ResponseType, TokenType
 
-from .requests import Request, TUser
+from .requests import Request
+from .types import UserType
 
 
-class TokenStorage(Generic[TUser]):
+class TokenStorage(Generic[UserType]):
     async def create_token(
         self,
-        request: Request[TUser],
+        request: Request[UserType],
         client_id: str,
         scope: str,
         access_token: str,
@@ -52,7 +53,7 @@ class TokenStorage(Generic[TUser]):
 
     async def get_token(
         self,
-        request: Request[TUser],
+        request: Request[UserType],
         client_id: str,
         token_type: Optional[TokenType] = "refresh_token",
         access_token: Optional[str] = None,
@@ -76,7 +77,7 @@ class TokenStorage(Generic[TUser]):
 
     async def revoke_token(
         self,
-        request: Request[TUser],
+        request: Request[UserType],
         token_type: Optional[TokenType] = "refresh_token",
         access_token: Optional[str] = None,
         refresh_token: Optional[str] = None,
@@ -85,10 +86,10 @@ class TokenStorage(Generic[TUser]):
         raise NotImplementedError
 
 
-class AuthorizationCodeStorage(Generic[TUser]):
+class AuthorizationCodeStorage(Generic[UserType]):
     async def create_authorization_code(
         self,
-        request: Request[TUser],
+        request: Request[UserType],
         client_id: str,
         scope: str,
         response_type: ResponseType,
@@ -121,7 +122,7 @@ class AuthorizationCodeStorage(Generic[TUser]):
         )
 
     async def get_authorization_code(
-        self, request: Request[TUser], client_id: str, code: str
+        self, request: Request[UserType], client_id: str, code: str
     ) -> Optional[AuthorizationCode]:
         """Gets existing authorization code from the database if it exists.
 
@@ -144,7 +145,7 @@ class AuthorizationCodeStorage(Generic[TUser]):
         )
 
     async def delete_authorization_code(
-        self, request: Request[TUser], client_id: str, code: str
+        self, request: Request[UserType], client_id: str, code: str
     ) -> None:
         """Deletes authorization code from database.
 
@@ -161,13 +162,13 @@ class AuthorizationCodeStorage(Generic[TUser]):
         )
 
 
-class ClientStorage(Generic[TUser]):
+class ClientStorage(Generic[UserType]):
     async def get_client(
         self,
-        request: Request[TUser],
+        request: Request[UserType],
         client_id: str,
         client_secret: Optional[str] = None,
-    ) -> Optional[Client]:
+    ) -> Optional[Client[UserType]]:
         """Gets existing client from the database if it exists.
 
         Warning:
@@ -187,8 +188,8 @@ class ClientStorage(Generic[TUser]):
         raise NotImplementedError("Method get_client must be implemented")
 
 
-class Authentication(Generic[TUser]):
-    async def authenticate(self, request: Request[TUser]) -> bool:
+class Authentication(Generic[UserType]):
+    async def authenticate(self, request: Request[UserType]) -> bool:
         """Authenticates a user.
 
         Note:
@@ -203,10 +204,10 @@ class Authentication(Generic[TUser]):
         raise NotImplementedError("Method authenticate must be implemented")
 
 
-class IDTokenStorage(Generic[TUser]):
+class IDTokenStorage(Generic[UserType]):
     async def get_id_token(
         self,
-        request: Request[TUser],
+        request: Request[UserType],
         client_id: str,
         scope: str,
         response_type: ResponseType,
@@ -225,11 +226,11 @@ class IDTokenStorage(Generic[TUser]):
 
 
 class BaseStorage(
-    Generic[TUser],
-    TokenStorage[TUser],
-    AuthorizationCodeStorage[TUser],
-    ClientStorage[TUser],
-    Authentication[TUser],
-    IDTokenStorage[TUser],
+    Generic[UserType],
+    TokenStorage[UserType],
+    AuthorizationCodeStorage[UserType],
+    ClientStorage[UserType],
+    Authentication[UserType],
+    IDTokenStorage[UserType],
 ):
     ...
