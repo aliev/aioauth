@@ -40,7 +40,7 @@ classifiers = [
 require_dev = [
     "async-asgi-testclient==1.4.8",
     "backports.cached-property==1.0.2",
-    "pre-commit==2.16.0",
+    "pre_commit==4.0.1",
     "pytest==6.2.5",
     "pytest-asyncio==0.16.0",
     "pytest-cov==3.0.0",
@@ -49,6 +49,7 @@ require_dev = [
     "testfixtures==6.18.3",
     "twine==3.7.1",
     "wheel",
+    "mypy==1.13.0",
 ]
 
 require_docs = [
@@ -70,7 +71,7 @@ setup(
     url=about["__url__"],
     license=about["__license__"],
     package_data={"aioauth": ["py.typed"]},
-    python_requires=">=3.7.0",
+    python_requires=">=3.9.0",
     classifiers=classifiers,
     install_requires=["typing_extensions"],
     extras_require={

@@ -10,23 +10,32 @@ action.
 ----
 """
 
-from typing import Optional, Generic, TypeVar
+from typing import Optional, Generic
+
+from .models import AuthorizationCode, Client, Token
 from .types import CodeChallengeMethod, ResponseType, TokenType
 
-from .models import TToken, TClient, TAuthorizationCode
-from .requests import TRequest
+from .requests import Request
+from .types import UserType
 
 
-class BaseStorage(Generic[TToken, TClient, TAuthorizationCode, TRequest]):
+class TokenStorage(Generic[UserType]):
     async def create_token(
         self,
-        request: TRequest,
+        request: Request[UserType],
         client_id: str,
         scope: str,
         access_token: str,
         refresh_token: str,
-    ) -> TToken:
+    ) -> Token:
         """Generates a user token and stores it in the database.
+
+        Used by:
+            - `ResponseTypeToken`
+            - `AuthorizationCodeGrantType`
+            - `PasswordGrantType`
+            - `ClientCredentialsGrantType`
+            - `RefreshTokenGrantType`
 
         Warning:
             Generated token *must* be stored in the database.
@@ -44,12 +53,12 @@ class BaseStorage(Generic[TToken, TClient, TAuthorizationCode, TRequest]):
 
     async def get_token(
         self,
-        request: TRequest,
+        request: Request[UserType],
         client_id: str,
         token_type: Optional[TokenType] = "refresh_token",
         access_token: Optional[str] = None,
         refresh_token: Optional[str] = None,
-    ) -> Optional[TToken]:
+    ) -> Optional[Token]:
         """Gets existing token from the database.
 
         Note:
@@ -66,9 +75,21 @@ class BaseStorage(Generic[TToken, TClient, TAuthorizationCode, TRequest]):
         """
         raise NotImplementedError("Method get_token must be implemented")
 
+    async def revoke_token(
+        self,
+        request: Request[UserType],
+        token_type: Optional[TokenType] = "refresh_token",
+        access_token: Optional[str] = None,
+        refresh_token: Optional[str] = None,
+    ) -> None:
+        """Revokes a token from the database."""
+        raise NotImplementedError
+
+
+class AuthorizationCodeStorage(Generic[UserType]):
     async def create_authorization_code(
         self,
-        request: TRequest,
+        request: Request[UserType],
         client_id: str,
         scope: str,
         response_type: ResponseType,
@@ -77,7 +98,7 @@ class BaseStorage(Generic[TToken, TClient, TAuthorizationCode, TRequest]):
         code_challenge: Optional[str],
         code: str,
         **kwargs,
-    ) -> TAuthorizationCode:
+    ) -> AuthorizationCode:
         """Generates an authorization token and stores it in the database.
 
         Warning:
@@ -100,62 +121,9 @@ class BaseStorage(Generic[TToken, TClient, TAuthorizationCode, TRequest]):
             "Method create_authorization_code must be implemented"
         )
 
-    async def get_id_token(
-        self,
-        request: TRequest,
-        client_id: str,
-        scope: str,
-        response_type: ResponseType,
-        redirect_uri: str,
-        **kwargs,
-    ) -> str:
-        """Returns an id_token.
-        For more information see `OpenID Connect Core 1.0 incorporating errata set 1 section 2 <https://openid.net/specs/openid-connect-core-1_0.html#IDToken>`_.
-
-        Note:
-            Method is used by response type :py:class:`aioauth.response_type.ResponseTypeIdToken`
-            and :py:class:`aioauth.oidc.core.grant_type.AuthorizationCodeGrantType`.
-        """
-        raise NotImplementedError("get_id_token must be implemented.")
-
-    async def get_client(
-        self, request: TRequest, client_id: str, client_secret: Optional[str] = None
-    ) -> Optional[TClient]:
-        """Gets existing client from the database if it exists.
-
-        Warning:
-            If client does not exists in database this method *must*
-            return ``None`` to indicate to the validator that the
-            requested ``client_id`` does not exist or is invalid.
-        Note:
-            This method is used by all core grant types, as well as
-            all core response types.
-        Args:
-            request: An :py:class:`aioauth.requests.Request`.
-            client_id: A user client ID.
-            client_secret: An optional user client secret.
-        Returns:
-            An optional :py:class:`aioauth.models.Client` object.
-        """
-        raise NotImplementedError("Method get_client must be implemented")
-
-    async def authenticate(self, request: TRequest) -> bool:
-        """Authenticates a user.
-
-        Note:
-            This method is used by the grant type
-            :py:class:`aioauth.grant_type.PasswordGrantType`.
-        Args:
-            request: An :py:class:`aioauth.requests.Request`.
-        Returns:
-            Boolean indicating whether or not the user was authenticated
-            successfully.
-        """
-        raise NotImplementedError("Method authenticate must be implemented")
-
     async def get_authorization_code(
-        self, request: TRequest, client_id: str, code: str
-    ) -> Optional[TAuthorizationCode]:
+        self, request: Request[UserType], client_id: str, code: str
+    ) -> Optional[AuthorizationCode]:
         """Gets existing authorization code from the database if it exists.
 
         Warning:
@@ -177,7 +145,7 @@ class BaseStorage(Generic[TToken, TClient, TAuthorizationCode, TRequest]):
         )
 
     async def delete_authorization_code(
-        self, request: TRequest, client_id: str, code: str
+        self, request: Request[UserType], client_id: str, code: str
     ) -> None:
         """Deletes authorization code from database.
 
@@ -193,26 +161,75 @@ class BaseStorage(Generic[TToken, TClient, TAuthorizationCode, TRequest]):
             "Method delete_authorization_code must be implemented for AuthorizationCodeGrantType"
         )
 
-    async def revoke_token(
-        self,
-        request: TRequest,
-        token_type: Optional[TokenType] = "refresh_token",
-        access_token: Optional[str] = None,
-        refresh_token: Optional[str] = None,
-    ) -> None:
-        """Revokes a token's from the database.
 
+class ClientStorage(Generic[UserType]):
+    async def get_client(
+        self,
+        request: Request[UserType],
+        client_id: str,
+        client_secret: Optional[str] = None,
+    ) -> Optional[Client[UserType]]:
+        """Gets existing client from the database if it exists.
+
+        Warning:
+            If client does not exists in database this method *must*
+            return ``None`` to indicate to the validator that the
+            requested ``client_id`` does not exist or is invalid.
         Note:
-            This method *must* set ``revoked`` to ``True`` for an
-            existing token record. This method is used by the grant type
-            :py:class:`aioauth.grant_types.RefreshTokenGrantType`.
+            This method is used by all core grant types, as well as
+            all core response types.
         Args:
             request: An :py:class:`aioauth.requests.Request`.
-            refresh_token: The user refresh token.
+            client_id: A user client ID.
+            client_secret: An optional user client secret.
+        Returns:
+            An optional :py:class:`aioauth.models.Client` object.
         """
-        raise NotImplementedError(
-            "Method revoke_token must be implemented for RefreshTokenGrantType"
-        )
+        raise NotImplementedError("Method get_client must be implemented")
 
 
-TStorage = TypeVar("TStorage", bound=BaseStorage)
+class UserStorage(Generic[UserType]):
+    async def get_user(self, request: Request[UserType]) -> Optional[UserType]:
+        """Returns a user.
+
+        Note:
+            This method is used by the grant type
+            :py:class:`aioauth.grant_type.PasswordGrantType`.
+        Args:
+            request: An :py:class:`aioauth.requests.Request`.
+        Returns:
+            Boolean indicating whether or not the user was authenticated
+            successfully.
+        """
+        raise NotImplementedError("Method get_user must be implemented")
+
+
+class IDTokenStorage(Generic[UserType]):
+    async def get_id_token(
+        self,
+        request: Request[UserType],
+        client_id: str,
+        scope: str,
+        response_type: ResponseType,
+        redirect_uri: str,
+        nonce: Optional[str],
+        **kwargs,
+    ) -> str:
+        """Returns an id_token.
+        For more information see `OpenID Connect Core 1.0 incorporating errata set 1 section 2 <https://openid.net/specs/openid-connect-core-1_0.html#IDToken>`_.
+
+        Note:
+            Method is used by response type :py:class:`aioauth.response_type.ResponseTypeIdToken`
+            and :py:class:`aioauth.oidc.core.grant_type.AuthorizationCodeGrantType`.
+        """
+        raise NotImplementedError("get_id_token must be implemented.")
+
+
+class BaseStorage(
+    Generic[UserType],
+    TokenStorage[UserType],
+    AuthorizationCodeStorage[UserType],
+    ClientStorage[UserType],
+    UserStorage[UserType],
+    IDTokenStorage[UserType],
+): ...

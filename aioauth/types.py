@@ -7,7 +7,14 @@ Containers that contain constants used throughout the project.
 
 ----
 """
+
 import sys
+from typing import Any
+
+if sys.version_info >= (3, 13):
+    from typing import TypeVar
+else:
+    from typing_extensions import TypeVar
 
 if sys.version_info >= (3, 8):
     from typing import Literal
@@ -64,4 +71,6 @@ ResponseMode = Literal[
 ]
 
 
-TokenType = Literal["access_token", "refresh_token"]
+TokenType = Literal["access_token", "refresh_token", "Bearer"]
+
+UserType = TypeVar("UserType", default=Any)

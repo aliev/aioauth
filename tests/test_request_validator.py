@@ -13,14 +13,14 @@ from aioauth.utils import (
 )
 
 from tests import factories
-from tests.classes import AuthorizationContext
+from tests.classes import AuthorizationContext, User
 
 
 @pytest.mark.asyncio
 async def test_insecure_transport_error(server: AuthorizationServer):
     request_url = "http://localhost"
 
-    request = Request(url=request_url, method="GET")
+    request = Request[User](url=request_url, method="GET")
 
     response = await server.create_authorization_response(request)
     assert response.status_code == HTTPStatus.FOUND
@@ -182,7 +182,7 @@ async def test_anonymous_user(context: AuthorizationContext):
         code_challenge=code_challenge,
     )
 
-    request = Request(url=request_url, query=query, method="GET")
+    request = Request[User](url=request_url, query=query, method="GET")
     response = await server.create_authorization_response(request)
     assert response.status_code == HTTPStatus.UNAUTHORIZED
     assert response.content["error"] == "invalid_client"
@@ -193,7 +193,7 @@ async def test_expired_authorization_code():
     settings = factories.settings_factory()
     client = factories.client_factory(client_secret="")
     authorization_code = factories.authorization_code_factory(
-        auth_time=(time.time() - settings.AUTHORIZATION_CODE_EXPIRES_IN),
+        auth_time=(int(time.time()) - settings.AUTHORIZATION_CODE_EXPIRES_IN),
     )
     context = factories.context_factory(
         clients=[client],
@@ -225,7 +225,7 @@ async def test_expired_refresh_token():
     settings = factories.settings_factory()
     client = factories.client_factory(client_secret="")
     token = factories.token_factory(
-        issued_at=(time.time() - (settings.TOKEN_EXPIRES_IN * 2))
+        issued_at=(int(time.time()) - (settings.TOKEN_EXPIRES_IN * 2))
     )
     refresh_token = token.refresh_token
     context = factories.context_factory(

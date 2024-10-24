@@ -12,11 +12,11 @@ from aioauth.utils import (
 )
 
 from tests import factories
-from tests.classes import AuthorizationContext
+from tests.classes import AuthorizationContext, User
 
 
 @pytest.mark.asyncio
-async def test_internal_server_error():
+async def test_internal_server_error() -> None:
     class EndpointClass:
         available: Optional[bool] = True
 
@@ -43,7 +43,7 @@ async def test_invalid_token(context: AuthorizationContext):
     token = "invalid token"
 
     post = Post(token=token)
-    request = Request(
+    request = Request[User](
         url=request_url,
         post=post,
         method="POST",
@@ -99,7 +99,7 @@ async def test_valid_token(context: AuthorizationContext):
     server = context.server
 
     post = Post(token=token.refresh_token)
-    request = Request(
+    request = Request[User](
         post=post,
         method="POST",
         headers=encode_auth_headers(client_id, client_secret),
@@ -128,7 +128,7 @@ async def test_introspect_revoked_token(context: AuthorizationContext):
         grant_type="refresh_token",
         refresh_token=token.refresh_token,
     )
-    request = Request(
+    request = Request[User](
         settings=settings,
         url=request_url,
         post=post,
@@ -139,7 +139,7 @@ async def test_introspect_revoked_token(context: AuthorizationContext):
 
     # Check that refreshed token was revoked
     post = Post(token=token.access_token, token_type_hint="access_token")
-    request = Request(
+    request = Request[User](
         settings=settings,
         post=post,
         method="POST",
@@ -171,7 +171,7 @@ async def test_introspect_token_with_wrong_client_secret(context: AuthorizationC
     server = context.server
 
     post = Post(token=token.refresh_token)
-    request = Request(
+    request = Request[User](
         post=post,
         method="POST",
         headers=encode_auth_headers(client_id, f"not {client_secret}"),
@@ -216,7 +216,7 @@ async def test_revoke_refresh_token(context: AuthorizationContext):
     server = context.server
 
     post = Post(token=token.refresh_token, token_type_hint="refresh_token")
-    request = Request(
+    request = Request[User](
         post=post,
         method="POST",
         headers=encode_auth_headers(client_id, client_secret),
@@ -227,7 +227,7 @@ async def test_revoke_refresh_token(context: AuthorizationContext):
     assert response.status_code == HTTPStatus.NO_CONTENT
 
     # Check that the token was revoked
-    request = Request(
+    request = Request[User](
         settings=settings,
         post=post,
         method="POST",
@@ -248,7 +248,7 @@ async def test_revoke_access_token(context: AuthorizationContext):
     server = context.server
 
     post = Post(token=token.access_token, token_type_hint="access_token")
-    request = Request(
+    request = Request[User](
         post=post,
         method="POST",
         headers=encode_auth_headers(client_id, client_secret),
@@ -259,7 +259,7 @@ async def test_revoke_access_token(context: AuthorizationContext):
     assert response.status_code == HTTPStatus.NO_CONTENT
 
     # Check that the token was revoked
-    request = Request(
+    request = Request[User](
         settings=settings,
         post=post,
         method="POST",
@@ -307,7 +307,7 @@ async def test_revoke_access_token_with_wrong_client_secret(
     server = context.server
 
     post = Post(token=token.access_token, token_type_hint="access_token")
-    request = Request(
+    request = Request[User](
         post=post,
         method="POST",
         headers=encode_auth_headers(client_id, f"not {client_secret}"),

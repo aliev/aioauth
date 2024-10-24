@@ -7,12 +7,20 @@ Request objects used throughout the project.
 
 ----
 """
+
 from dataclasses import dataclass, field
-from typing import Any, Generic, Optional, TypeVar
+from typing import Generic, Optional
 
 from .collections import HTTPHeaderDict
 from .config import Settings
-from .types import CodeChallengeMethod, GrantType, RequestMethod, ResponseMode
+from .types import (
+    CodeChallengeMethod,
+    GrantType,
+    RequestMethod,
+    ResponseMode,
+    TokenType,
+    UserType,
+)
 
 
 @dataclass
@@ -50,33 +58,21 @@ class Post:
     refresh_token: Optional[str] = None
     code: Optional[str] = None
     token: Optional[str] = None
-    token_type_hint: Optional[str] = None
+    token_type_hint: Optional[TokenType] = None
     code_verifier: Optional[str] = None
 
 
-TQuery = TypeVar("TQuery", bound=Query)
-TPost = TypeVar("TPost", bound=Post)
-TUser = TypeVar("TUser")
-
-
 @dataclass
-class BaseRequest(Generic[TQuery, TPost, TUser]):
+class BaseRequest(Generic[UserType]):
     method: RequestMethod
-    query: TQuery
-    post: TPost
+    query: Query = field(default_factory=Query)
+    post: Post = field(default_factory=Post)
     headers: HTTPHeaderDict = field(default_factory=HTTPHeaderDict)
     url: str = ""
-    user: Optional[TUser] = None
+    user: Optional[UserType] = None
     settings: Settings = field(default_factory=Settings)
 
 
-TRequest = TypeVar("TRequest", bound=BaseRequest)
-
-
 @dataclass
-class Request(BaseRequest[Query, Post, Any]):
+class Request(Generic[UserType], BaseRequest[UserType]):
     """Object that contains a client's complete request."""
-
-    query: Query = field(default_factory=Query)
-    post: Post = field(default_factory=Post)
-    user: Optional[Any] = None
