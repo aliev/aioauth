@@ -3,14 +3,14 @@ from dataclasses import dataclass, field
 from typing import Optional
 
 from ...requests import (
-    BaseRequest,
-    Query as OAuth2Query,
+    Request as BaseRequest,
+    Query as BaseQuery,
 )
 from ...types import UserType
 
 
 @dataclass
-class Query(OAuth2Query):
+class Query(BaseQuery):
     # Space delimited, case sensitive list of ASCII string values that
     # specifies whether the Authorization Server prompts the End-User for
     # reauthentication and consent. The defined values are: none, login,

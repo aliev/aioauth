@@ -63,7 +63,9 @@ class Post:
 
 
 @dataclass
-class BaseRequest(Generic[UserType]):
+class Request(Generic[UserType]):
+    """Object that contains a client's complete request."""
+
     method: RequestMethod
     query: Query = field(default_factory=Query)
     post: Post = field(default_factory=Post)
@@ -71,8 +73,3 @@ class BaseRequest(Generic[UserType]):
     url: str = ""
     user: Optional[UserType] = None
     settings: Settings = field(default_factory=Settings)
-
-
-@dataclass
-class Request(Generic[UserType], BaseRequest[UserType]):
-    """Object that contains a client's complete request."""
