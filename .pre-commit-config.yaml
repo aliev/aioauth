@@ -30,6 +30,12 @@ repos:
         verbose: false
         exclude: ^(docs/|setup\.py)
 
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.10
+    hooks:
+      - id: bandit
+        args: ["--skip", "B101"]
+
   - repo: https://github.com/pycqa/flake8
     rev: 7.1.1
     hooks:

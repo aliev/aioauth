@@ -50,6 +50,7 @@ require_dev = [
     "twine==3.7.1",
     "wheel",
     "mypy==1.13.0",
+    "bandit==1.7.10",
 ]
 
 require_docs = [
