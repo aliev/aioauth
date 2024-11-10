@@ -1,0 +1,112 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aioauth"
+dynamic = ["version"]
+description = "Asynchronous OAuth 2.0 framework for Python 3."
+readme = "README.md"
+requires-python = ">=3.9.0"
+authors = [
+    { name = "Ali Aliyev", email = "ali@aliev.me" },
+]
+classifiers = [
+    "Intended Audience :: Information Technology",
+    "Intended Audience :: System Administrators",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python",
+    "Topic :: Internet",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Software Development",
+    "Typing :: Typed",
+    "Development Status :: 1 - Planning",
+    "Environment :: Web Environment",
+    "Framework :: AsyncIO",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Topic :: Internet :: WWW/HTTP :: HTTP Servers",
+    "Topic :: Internet :: WWW/HTTP",
+]
+dependencies = [
+    "typing_extensions"
+]
+
+[project.optional-dependencies]
+dev = [
+    "build",
+    "twine",
+    "pytest",
+    "coverage",
+    "pytest-asyncio",
+    "mypy",
+    "bandit",
+    "pre-commit",
+]
+
+docs = [
+    "sphinx",
+    "sphinx-copybutton",
+    "sphinx-autobuild",
+    "m2r2",
+    "sphinx-rtd-theme",
+]
+
+fastapi = [
+    "aioauth-fastapi>=0.0.1"
+]
+
+[project.urls]
+homepage = "https://github.com/aliev/aioauth"
+
+[tool.setuptools.dynamic]
+version = { attr = "aioauth.__version__" }
+
+[tool.setuptools.packages.find]
+include = ["aioauth", "aioauth.*"]
+
+[tool.setuptools.package-data]
+"aioauth" = ["py.typed"]
+
+[tool.pytest.ini_options]
+addopts = "-s --strict-markers -vv --cache-clear --maxfail=1"
+pythonpath = ["."]
+
+[tool.mypy]
+python_version = "3.9"
+warn_no_return = false
+disallow_untyped_defs = false
+allow_redefinition = true
+namespace_packages = true
+explicit_package_bases = true
+
+[tool.mypy-packages]
+ignore_missing_imports = true
+
+[tool.flake8]
+ignore = ["D10", "E203", "E501", "W503", "D205", "D400", "A001", "D210", "D401", "E701"]
+max-line-length = 88
+select = ["A", "B", "C4", "D", "E", "F", "M", "Q", "T", "W", "ABS", "BLK"]
+exclude = ["versions/*"]
+inline-quotes = "\""
+
+[tool.isort]
+profile = "black"
+
+[tool.coverage.run]
+relative_files = true
+source = ["aioauth"]
+branch = true
+
+[tool.coverage.report]
+include = [
+    "aioauth/*",
+]
