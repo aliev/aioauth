@@ -52,7 +52,7 @@ class ResponseTypeBase(Generic[UserType]):
         )
 
         if not request.query.client_id:
-            raise InvalidClientError(
+            raise InvalidClientError[UserType](
                 request=request, description="Missing client_id parameter.", state=state
             )
 
@@ -61,43 +61,43 @@ class ResponseTypeBase(Generic[UserType]):
         )
 
         if not client:
-            raise InvalidClientError(
+            raise InvalidClientError[UserType](
                 request=request,
                 description="Invalid client_id parameter value.",
                 state=state,
             )
 
         if not request.query.redirect_uri:
-            raise InvalidRedirectURIError(
+            raise InvalidRedirectURIError[UserType](
                 request=request, description="Mismatching redirect URI.", state=state
             )
 
         if not client.check_redirect_uri(request.query.redirect_uri):
-            raise InvalidRedirectURIError(
+            raise InvalidRedirectURIError[UserType](
                 request=request, description="Invalid redirect URI.", state=state
             )
 
         if request.query.code_challenge_method:
             if request.query.code_challenge_method not in code_challenge_methods:
-                raise InvalidRequestError(
+                raise InvalidRequestError[UserType](
                     request=request,
                     description="Transform algorithm not supported.",
                     state=state,
                 )
 
             if not request.query.code_challenge:
-                raise InvalidRequestError(
+                raise InvalidRequestError[UserType](
                     request=request, description="Code challenge required.", state=state
                 )
 
         if not client.check_response_type(request.query.response_type):
-            raise UnsupportedResponseTypeError(request=request, state=state)
+            raise UnsupportedResponseTypeError[UserType](request=request, state=state)
 
         if not client.check_scope(request.query.scope):
-            raise InvalidScopeError(request=request, state=state)
+            raise InvalidScopeError[UserType](request=request, state=state)
 
         if not request.user:
-            raise InvalidClientError(
+            raise InvalidClientError[UserType](
                 request=request, description="User is not authorized", state=state
             )
 
@@ -156,7 +156,7 @@ class ResponseTypeIdToken(ResponseTypeBase[UserType]):
 
         # nonce is required for id_token
         if not request.query.nonce:
-            raise InvalidRequestError(
+            raise InvalidRequestError[UserType](
                 request=request,
                 description="Nonce required for response_type id_token.",
                 state=request.query.state,

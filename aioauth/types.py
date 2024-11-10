@@ -16,13 +16,18 @@ if sys.version_info >= (3, 13):
 else:
     from typing_extensions import TypeVar
 
+if sys.version_info >= (3, 11):
+    from typing import TypeAlias
+else:
+    from typing_extensions import TypeAlias
+
 if sys.version_info >= (3, 8):
     from typing import Literal
 else:
     from typing_extensions import Literal
 
 
-ErrorType = Literal[
+ErrorType: TypeAlias = Literal[
     "invalid_request",
     "invalid_client",
     "invalid_grant",
@@ -39,7 +44,7 @@ ErrorType = Literal[
 ]
 
 
-GrantType = Literal[
+GrantType: TypeAlias = Literal[
     "authorization_code",
     "password",
     "client_credentials",
@@ -47,7 +52,7 @@ GrantType = Literal[
 ]
 
 
-ResponseType = Literal[
+ResponseType: TypeAlias = Literal[
     "token",
     "code",
     "none",
@@ -55,22 +60,22 @@ ResponseType = Literal[
 ]
 
 
-RequestMethod = Literal["GET", "POST"]
+RequestMethod: TypeAlias = Literal["GET", "POST"]
 
 
-CodeChallengeMethod = Literal[
+CodeChallengeMethod: TypeAlias = Literal[
     "plain",
     "S256",
 ]
 
 
-ResponseMode = Literal[
+ResponseMode: TypeAlias = Literal[
     "query",
     "form_post",
     "fragment",
 ]
 
 
-TokenType = Literal["access_token", "refresh_token", "Bearer"]
+TokenType: TypeAlias = Literal["access_token", "refresh_token", "Bearer"]
 
 UserType = TypeVar("UserType", default=Any)

@@ -128,16 +128,16 @@ class AuthorizationServer(Generic[UserType]):
         self, request: Request[UserType], allowed_methods: List[RequestMethod]
     ):
         if not request.settings.AVAILABLE:
-            raise TemporarilyUnavailableError(request=request)
+            raise TemporarilyUnavailableError[UserType](request=request)
 
         if not self.is_secure_transport(request):
-            raise InsecureTransportError(request=request)
+            raise InsecureTransportError[UserType](request=request)
 
         if request.method not in allowed_methods:
             headers = HTTPHeaderDict(
                 {**default_headers, "allow": ", ".join(allowed_methods)}
             )
-            raise MethodNotAllowedError(request=request, headers=headers)
+            raise MethodNotAllowedError[UserType](request=request, headers=headers)
 
     @catch_errors_and_unavailability()
     async def create_token_introspection_response(
@@ -183,7 +183,7 @@ class AuthorizationServer(Generic[UserType]):
         )
 
         if not client:
-            raise InvalidClientError(request)
+            raise InvalidClientError[UserType](request)
 
         token_types: Tuple[TokenType, ...] = get_args(TokenType)
         token_type: TokenType = "refresh_token"
@@ -194,7 +194,7 @@ class AuthorizationServer(Generic[UserType]):
         if request.post.token_type_hint in token_types:
             token_type = request.post.token_type_hint
 
-        if token_type == "access_token":
+        if token_type == "access_token":  # nosec
             access_token = request.post.token
             refresh_token = None
 
@@ -242,7 +242,7 @@ class AuthorizationServer(Generic[UserType]):
                 if client_id is None or secret_required:
                     # Either we didn't find a client ID at all, or we found
                     # a client ID but no secret and a secret is required.
-                    raise InvalidClientError(
+                    raise InvalidClientError[UserType](
                         description="Invalid client_id parameter value.",
                         request=request,
                     ) from exc
@@ -250,7 +250,7 @@ class AuthorizationServer(Generic[UserType]):
         # client_secret must not be None. When client_secret is None,
         # storage.get_client will not run standard checks on the client_secret
         if client_secret is None:
-            client_secret = ""
+            client_secret = ""  # nosec
 
         return client_id, client_secret
 
@@ -307,7 +307,7 @@ class AuthorizationServer(Generic[UserType]):
 
         if not request.post.grant_type:
             # grant_type request value is empty
-            raise InvalidRequestError(
+            raise InvalidRequestError[UserType](
                 request=request, description="Request is missing grant type."
             )
 
@@ -325,7 +325,7 @@ class AuthorizationServer(Generic[UserType]):
             GrantTypeClass = self.grant_types[request.post.grant_type]
         except KeyError as exc:
             # grant_type request value is invalid
-            raise UnsupportedGrantTypeError(request=request) from exc
+            raise UnsupportedGrantTypeError[UserType](request=request) from exc
 
         grant_type = GrantTypeClass(
             storage=self.storage, client_id=client_id, client_secret=client_secret
@@ -403,7 +403,7 @@ class AuthorizationServer(Generic[UserType]):
         state = request.query.state
 
         if not response_type_list:
-            raise InvalidRequestError(
+            raise InvalidRequestError[UserType](
                 request=request,
                 description="Missing response_type parameter.",
                 state=state,
@@ -418,7 +418,7 @@ class AuthorizationServer(Generic[UserType]):
                 response_type_classes.add(ResponseTypeClass)
 
         if not response_type_classes:
-            raise UnsupportedResponseTypeError(request=request, state=state)
+            raise UnsupportedResponseTypeError[UserType](request=request, state=state)
 
         for ResponseTypeClass in response_type_classes:
             response_type = ResponseTypeClass(storage=self.storage)
@@ -512,10 +512,10 @@ class AuthorizationServer(Generic[UserType]):
         )
 
         if not client:
-            raise InvalidClientError(request)
+            raise InvalidClientError[UserType](request)
 
         if not request.post.token:
-            raise InvalidRequestError(
+            raise InvalidRequestError[UserType](
                 request=request, description="Request is missing token."
             )
 
@@ -523,16 +523,16 @@ class AuthorizationServer(Generic[UserType]):
             "refresh_token",
             "access_token",
         }:
-            raise UnsupportedTokenTypeError(request=request)
+            raise UnsupportedTokenTypeError[UserType](request=request)
 
         access_token = (
             request.post.token
-            if request.post.token_type_hint != "refresh_token"
+            if request.post.token_type_hint != "refresh_token"  # nosec
             else None
         )
         refresh_token = (
             request.post.token
-            if request.post.token_type_hint != "access_token"
+            if request.post.token_type_hint != "access_token"  # nosec
             else None
         )
 
