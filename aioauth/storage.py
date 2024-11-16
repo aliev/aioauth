@@ -40,19 +40,19 @@ else:
         class TypedDict(Generic[UserType]): ...
 
 
-class AuthorizationCodeGet(TypedDict[UserType]):
+class GetAuthorizationCodeArgs(TypedDict[UserType]):
     request: Request[UserType]
     client_id: str
     code: str
 
 
-class ClientStorageGetClient(TypedDict[UserType]):
+class GetClientArgs(TypedDict[UserType]):
     request: Request[UserType]
     client_id: str
     client_secret: NotRequired[Optional[str]]
 
 
-class IDTokenGetIdToken(TypedDict[UserType]):
+class GetIdTokenArgs(TypedDict[UserType]):
     request: Request[UserType]
     client_id: str
     scope: str
@@ -61,7 +61,7 @@ class IDTokenGetIdToken(TypedDict[UserType]):
     nonce: Optional[str]
 
 
-class ArgsAuthorizationCode(TypedDict[UserType]):
+class CreateAuthorizationCodeArgs(TypedDict[UserType]):
     request: Request[UserType]
     client_id: str
     scope: str
@@ -73,7 +73,7 @@ class ArgsAuthorizationCode(TypedDict[UserType]):
     nonce: NotRequired[Optional[str]]
 
 
-class TokenStorageCreateToken(TypedDict[UserType]):
+class CreateTokenArgs(TypedDict[UserType]):
     request: Request[UserType]
     client_id: str
     scope: str
@@ -81,7 +81,7 @@ class TokenStorageCreateToken(TypedDict[UserType]):
     refresh_token: str
 
 
-class TokenStorageGetToken(TypedDict[UserType]):
+class GetTokenArgs(TypedDict[UserType]):
     request: Request[UserType]
     client_id: str
     token_type: Optional[TokenType]  # default is "refresh_token"
@@ -89,7 +89,7 @@ class TokenStorageGetToken(TypedDict[UserType]):
     refresh_token: Optional[str]  # default is None
 
 
-class TokenStorageRevokeToken(TypedDict[UserType]):
+class RevokeTokenArgs(TypedDict[UserType]):
     request: Request[UserType]
     refresh_token: Optional[str]
     token_type: Optional[TokenType]
@@ -97,9 +97,7 @@ class TokenStorageRevokeToken(TypedDict[UserType]):
 
 
 class TokenStorage(Generic[UserType]):
-    async def create_token(
-        self, **kwargs: Unpack[TokenStorageCreateToken[UserType]]
-    ) -> Token:
+    async def create_token(self, **kwargs: Unpack[CreateTokenArgs[UserType]]) -> Token:
         """Generates a user token and stores it in the database.
 
         Used by:
@@ -124,7 +122,7 @@ class TokenStorage(Generic[UserType]):
         raise NotImplementedError("Method create_token must be implemented")
 
     async def get_token(
-        self, **kwargs: Unpack[TokenStorageGetToken[UserType]]
+        self, **kwargs: Unpack[GetTokenArgs[UserType]]
     ) -> Optional[Token]:
         """Gets existing token from the database.
 
@@ -142,9 +140,7 @@ class TokenStorage(Generic[UserType]):
         """
         raise NotImplementedError("Method get_token must be implemented")
 
-    async def revoke_token(
-        self, **kwargs: Unpack[TokenStorageRevokeToken[UserType]]
-    ) -> None:
+    async def revoke_token(self, **kwargs: Unpack[RevokeTokenArgs[UserType]]) -> None:
         """Revokes a token from the database."""
         raise NotImplementedError
 
@@ -152,7 +148,7 @@ class TokenStorage(Generic[UserType]):
 class AuthorizationCodeStorage(Generic[UserType]):
     async def create_authorization_code(
         self,
-        **kwargs: Unpack[ArgsAuthorizationCode[UserType]],
+        **kwargs: Unpack[CreateAuthorizationCodeArgs[UserType]],
     ) -> AuthorizationCode:
         """Generates an authorization token and stores it in the database.
 
@@ -178,7 +174,7 @@ class AuthorizationCodeStorage(Generic[UserType]):
 
     async def get_authorization_code(
         self,
-        **kwargs: Unpack[AuthorizationCodeGet[UserType]],
+        **kwargs: Unpack[GetAuthorizationCodeArgs[UserType]],
     ) -> Optional[AuthorizationCode]:
         """Gets existing authorization code from the database if it exists.
 
@@ -202,7 +198,7 @@ class AuthorizationCodeStorage(Generic[UserType]):
 
     async def delete_authorization_code(
         self,
-        **kwargs: Unpack[AuthorizationCodeGet[UserType]],
+        **kwargs: Unpack[GetAuthorizationCodeArgs[UserType]],
     ) -> None:
         """Deletes authorization code from database.
 
@@ -222,7 +218,7 @@ class AuthorizationCodeStorage(Generic[UserType]):
 class ClientStorage(Generic[UserType]):
     async def get_client(
         self,
-        **kwargs: Unpack[ClientStorageGetClient[UserType]],
+        **kwargs: Unpack[GetClientArgs[UserType]],
     ) -> Optional[Client[UserType]]:
         """Gets existing client from the database if it exists.
 
@@ -262,7 +258,7 @@ class UserStorage(Generic[UserType]):
 class IDTokenStorage(Generic[UserType]):
     async def get_id_token(
         self,
-        **kwargs: Unpack[IDTokenGetIdToken[UserType]],
+        **kwargs: Unpack[GetIdTokenArgs[UserType]],
     ) -> str:
         """Returns an id_token.
         For more information see `OpenID Connect Core 1.0 incorporating errata set 1 section 2 <https://openid.net/specs/openid-connect-core-1_0.html#IDToken>`_.

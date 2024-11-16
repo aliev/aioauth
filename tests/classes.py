@@ -12,14 +12,14 @@ from aioauth.requests import Request
 from aioauth.response_type import ResponseTypeBase
 from aioauth.server import AuthorizationServer
 from aioauth.storage import (
-    ArgsAuthorizationCode,
-    AuthorizationCodeGet,
     BaseStorage,
-    ClientStorageGetClient,
-    IDTokenGetIdToken,
-    TokenStorageCreateToken,
-    TokenStorageGetToken,
-    TokenStorageRevokeToken,
+    CreateAuthorizationCodeArgs,
+    CreateTokenArgs,
+    GetAuthorizationCodeArgs,
+    GetClientArgs,
+    GetIdTokenArgs,
+    GetTokenArgs,
+    RevokeTokenArgs,
 )
 from aioauth.types import GrantType, ResponseType
 
@@ -64,7 +64,7 @@ class Storage(BaseStorage[User]):
 
     async def get_client(
         self,
-        **kwargs: Unpack[ClientStorageGetClient[User]],
+        **kwargs: Unpack[GetClientArgs[User]],
     ) -> Optional[Client]:
         client_secret = kwargs.get("client_secret")
         client_id = kwargs["client_id"]
@@ -74,7 +74,7 @@ class Storage(BaseStorage[User]):
 
         return self._get_by_client_id(client_id)
 
-    async def create_token(self, **kwargs: Unpack[TokenStorageCreateToken[User]]):
+    async def create_token(self, **kwargs: Unpack[CreateTokenArgs[User]]):
         client_id = kwargs["client_id"]
         request = kwargs["request"]
         access_token = kwargs["access_token"]
@@ -93,9 +93,7 @@ class Storage(BaseStorage[User]):
         self.tokens.append(token)
         return token
 
-    async def revoke_token(
-        self, **kwargs: Unpack[TokenStorageRevokeToken[User]]
-    ) -> None:
+    async def revoke_token(self, **kwargs: Unpack[RevokeTokenArgs[User]]) -> None:
         tokens = self.tokens
         refresh_token = kwargs["refresh_token"]
         access_token = kwargs["access_token"]
@@ -105,9 +103,7 @@ class Storage(BaseStorage[User]):
             elif token_.access_token == access_token:
                 tokens[key] = replace(token_, revoked=True)
 
-    async def get_token(
-        self, **kwargs: Unpack[TokenStorageGetToken[User]]
-    ) -> Optional[Token]:
+    async def get_token(self, **kwargs: Unpack[GetTokenArgs[User]]) -> Optional[Token]:
         refresh_token = kwargs["refresh_token"]
         access_token = kwargs["access_token"]
         client_id = kwargs["client_id"]
@@ -140,7 +136,7 @@ class Storage(BaseStorage[User]):
 
     async def create_authorization_code(
         self,
-        **kwargs: Unpack[ArgsAuthorizationCode[User]],
+        **kwargs: Unpack[CreateAuthorizationCodeArgs[User]],
     ):
         request = kwargs["request"]
         nonce = kwargs.get("nonce")
@@ -169,7 +165,7 @@ class Storage(BaseStorage[User]):
 
     async def get_authorization_code(
         self,
-        **kwargs: Unpack[AuthorizationCodeGet[User]],
+        **kwargs: Unpack[GetAuthorizationCodeArgs[User]],
     ) -> Optional[AuthorizationCode]:
         code = kwargs["code"]
         client_id = kwargs["client_id"]
@@ -183,7 +179,7 @@ class Storage(BaseStorage[User]):
 
     async def delete_authorization_code(
         self,
-        **kwargs: Unpack[AuthorizationCodeGet[User]],
+        **kwargs: Unpack[GetAuthorizationCodeArgs[User]],
     ):
         code = kwargs["code"]
         client_id = kwargs["client_id"]
@@ -195,7 +191,7 @@ class Storage(BaseStorage[User]):
             ):
                 authorization_codes.remove(authorization_code)
 
-    async def get_id_token(self, **kwargs: Unpack[IDTokenGetIdToken[User]]) -> str:
+    async def get_id_token(self, **kwargs: Unpack[GetIdTokenArgs[User]]) -> str:
         return "generated id token"
 
 
