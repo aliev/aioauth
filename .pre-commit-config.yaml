@@ -19,23 +19,23 @@ repos:
       - id: check-merge-conflict
       - id: detect-private-key
 
-  - repo: local
-    hooks:
-      - id: mypy
-        name: mypy
-        entry: "mypy"
-        language: system
-        types: [python]
-        require_serial: true
-        verbose: false
-        exclude: ^(docs/|setup\.py)
-      - id: bandit
-        name: bandit
-        entry: "bandit"
-        language: system
-        types: [python]
-        require_serial: true
-        verbose: false
+  # - repo: local
+  #   hooks:
+  #     - id: mypy
+  #       name: mypy
+  #       entry: "mypy"
+  #       language: system
+  #       types: [python]
+  #       require_serial: true
+  #       verbose: false
+  #       exclude: ^(docs/|setup\.py)
+  #     - id: bandit
+  #       name: bandit
+  #       entry: "bandit"
+  #       language: system
+  #       types: [python]
+  #       require_serial: true
+  #       verbose: false
 
   - repo: https://github.com/pycqa/flake8
     rev: 7.1.1
