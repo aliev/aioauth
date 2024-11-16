@@ -43,6 +43,7 @@ async def test_storage_class() -> None:
             client_id=client.client_id,
             access_token=token.access_token,
             refresh_token=token.refresh_token,
+            token_type="refresh_token",
         )
     with pytest.raises(NotImplementedError):
         await db.get_client(
@@ -61,7 +62,12 @@ async def test_storage_class() -> None:
             request=request, client_id=client.client_id, code=authorization_code.code
         )
     with pytest.raises(NotImplementedError):
-        await db.revoke_token(request=request, refresh_token=token.refresh_token)
+        await db.revoke_token(
+            request=request,
+            refresh_token=token.refresh_token,
+            token_type=None,
+            access_token=None,
+        )
 
     with pytest.raises(NotImplementedError):
         await db.get_id_token(

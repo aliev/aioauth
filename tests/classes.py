@@ -11,13 +11,27 @@ from aioauth.models import AuthorizationCode, Client, Token
 from aioauth.requests import Request
 from aioauth.response_type import ResponseTypeBase
 from aioauth.server import AuthorizationServer
-from aioauth.storage import BaseStorage
-from aioauth.types import CodeChallengeMethod, GrantType, ResponseType, TokenType
+from aioauth.storage import (
+    ArgsAuthorizationCode,
+    AuthorizationCodeGet,
+    BaseStorage,
+    ClientStorageGetClient,
+    IDTokenGetIdToken,
+    TokenStorageCreateToken,
+    TokenStorageGetToken,
+    TokenStorageRevokeToken,
+)
+from aioauth.types import GrantType, ResponseType
 
 if sys.version_info >= (3, 8):
     from functools import cached_property
 else:
     from backports.cached_property import cached_property
+
+if sys.version_info >= (3, 11):
+    from typing import Unpack
+else:
+    from typing_extensions import Unpack
 
 
 @dataclass(frozen=True)
@@ -50,23 +64,22 @@ class Storage(BaseStorage[User]):
 
     async def get_client(
         self,
-        request: Request[User],
-        client_id: str,
-        client_secret: Optional[str] = None,
+        **kwargs: Unpack[ClientStorageGetClient[User]],
     ) -> Optional[Client]:
+        client_secret = kwargs.get("client_secret")
+        client_id = kwargs["client_id"]
+
         if client_secret is not None:
             return self._get_by_client_secret(client_id, client_secret)
 
         return self._get_by_client_id(client_id)
 
-    async def create_token(
-        self,
-        request: Request[User],
-        client_id: str,
-        scope: str,
-        access_token: str,
-        refresh_token: str,
-    ):
+    async def create_token(self, **kwargs: Unpack[TokenStorageCreateToken[User]]):
+        client_id = kwargs["client_id"]
+        request = kwargs["request"]
+        access_token = kwargs["access_token"]
+        refresh_token = kwargs["refresh_token"]
+        scope = kwargs["scope"]
         token: Token[User] = Token(
             client_id=client_id,
             expires_in=request.settings.TOKEN_EXPIRES_IN,
@@ -81,13 +94,11 @@ class Storage(BaseStorage[User]):
         return token
 
     async def revoke_token(
-        self,
-        request: Request[User],
-        token_type: Optional[TokenType] = "refresh_token",
-        access_token: Optional[str] = None,
-        refresh_token: Optional[str] = None,
+        self, **kwargs: Unpack[TokenStorageRevokeToken[User]]
     ) -> None:
         tokens = self.tokens
+        refresh_token = kwargs["refresh_token"]
+        access_token = kwargs["access_token"]
         for key, token_ in enumerate(tokens):
             if token_.refresh_token == refresh_token:
                 tokens[key] = replace(token_, revoked=True)
@@ -95,13 +106,12 @@ class Storage(BaseStorage[User]):
                 tokens[key] = replace(token_, revoked=True)
 
     async def get_token(
-        self,
-        request: Request[User],
-        client_id: str,
-        token_type: Optional[TokenType] = "refresh_token",
-        access_token: Optional[str] = None,
-        refresh_token: Optional[str] = None,
+        self, **kwargs: Unpack[TokenStorageGetToken[User]]
     ) -> Optional[Token]:
+        refresh_token = kwargs["refresh_token"]
+        access_token = kwargs["access_token"]
+        client_id = kwargs["client_id"]
+
         for token_ in self.tokens:
             if (
                 refresh_token is not None
@@ -130,17 +140,17 @@ class Storage(BaseStorage[User]):
 
     async def create_authorization_code(
         self,
-        request: Request[User],
-        client_id: str,
-        scope: str,
-        response_type: str,
-        redirect_uri: str,
-        code_challenge_method: Optional[CodeChallengeMethod],
-        code_challenge: Optional[str],
-        code: str,
-        **kwargs,
+        **kwargs: Unpack[ArgsAuthorizationCode[User]],
     ):
+        request = kwargs["request"]
         nonce = kwargs.get("nonce")
+        code = kwargs["code"]
+        client_id = kwargs["client_id"]
+        redirect_uri = kwargs["redirect_uri"]
+        response_type = kwargs["response_type"]
+        scope = kwargs["scope"]
+        code_challenge_method = kwargs["code_challenge_method"]
+        code_challenge = kwargs["code_challenge"]
         authorization_code = AuthorizationCode(
             code=code,
             client_id=client_id,
@@ -158,8 +168,12 @@ class Storage(BaseStorage[User]):
         return authorization_code
 
     async def get_authorization_code(
-        self, request: Request[User], client_id: str, code: str
+        self,
+        **kwargs: Unpack[AuthorizationCodeGet[User]],
     ) -> Optional[AuthorizationCode]:
+        code = kwargs["code"]
+        client_id = kwargs["client_id"]
+
         for authorization_code in self.authorization_codes:
             if (
                 authorization_code.code == code
@@ -169,10 +183,10 @@ class Storage(BaseStorage[User]):
 
     async def delete_authorization_code(
         self,
-        request: Request[User],
-        client_id: str,
-        code: str,
+        **kwargs: Unpack[AuthorizationCodeGet[User]],
     ):
+        code = kwargs["code"]
+        client_id = kwargs["client_id"]
         authorization_codes = self.authorization_codes
         for authorization_code in authorization_codes:
             if (
@@ -181,16 +195,7 @@ class Storage(BaseStorage[User]):
             ):
                 authorization_codes.remove(authorization_code)
 
-    async def get_id_token(
-        self,
-        request: Request[User],
-        client_id: str,
-        scope: str,
-        response_type: ResponseType,
-        redirect_uri: str,
-        nonce: Optional[str],
-        **kwargs,
-    ) -> str:
+    async def get_id_token(self, **kwargs: Unpack[IDTokenGetIdToken[User]]) -> str:
         return "generated id token"
 
 

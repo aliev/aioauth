@@ -10,23 +10,95 @@ action.
 ----
 """
 
-from typing import Optional, Generic
+import sys
+from typing import TYPE_CHECKING, Optional, Generic
 
 from .models import AuthorizationCode, Client, Token
-from .types import CodeChallengeMethod, ResponseType, TokenType
+from .types import CodeChallengeMethod, TokenType
 
 from .requests import Request
 from .types import UserType
 
+if sys.version_info >= (3, 11):
+    from typing import Unpack, NotRequired
+else:
+    from typing_extensions import Unpack, NotRequired
+
+if sys.version_info >= (3, 11):
+    from typing import TypedDict
+else:
+    from typing_extensions import TypedDict as _TypedDict
+
+    # NOTE: workaround for Python < 3.11
+    # https://github.com/python/cpython/issues/89026
+    if TYPE_CHECKING:
+
+        class TypedDict(Generic[UserType], _TypedDict): ...
+
+    else:
+
+        class TypedDict(Generic[UserType]): ...
+
+
+class AuthorizationCodeGet(TypedDict[UserType]):
+    request: Request[UserType]
+    client_id: str
+    code: str
+
+
+class ClientStorageGetClient(TypedDict[UserType]):
+    request: Request[UserType]
+    client_id: str
+    client_secret: NotRequired[Optional[str]]
+
+
+class IDTokenGetIdToken(TypedDict[UserType]):
+    request: Request[UserType]
+    client_id: str
+    scope: str
+    response_type: Optional[str]
+    redirect_uri: str
+    nonce: Optional[str]
+
+
+class ArgsAuthorizationCode(TypedDict[UserType]):
+    request: Request[UserType]
+    client_id: str
+    scope: str
+    response_type: str
+    redirect_uri: str
+    code_challenge_method: Optional[CodeChallengeMethod]
+    code_challenge: Optional[str]
+    code: str
+    nonce: NotRequired[Optional[str]]
+
+
+class TokenStorageCreateToken(TypedDict[UserType]):
+    request: Request[UserType]
+    client_id: str
+    scope: str
+    access_token: str
+    refresh_token: str
+
+
+class TokenStorageGetToken(TypedDict[UserType]):
+    request: Request[UserType]
+    client_id: str
+    token_type: Optional[TokenType]  # default is "refresh_token"
+    access_token: Optional[str]  # default is None
+    refresh_token: Optional[str]  # default is None
+
+
+class TokenStorageRevokeToken(TypedDict[UserType]):
+    request: Request[UserType]
+    refresh_token: Optional[str]
+    token_type: Optional[TokenType]
+    access_token: Optional[str]
+
 
 class TokenStorage(Generic[UserType]):
     async def create_token(
-        self,
-        request: Request[UserType],
-        client_id: str,
-        scope: str,
-        access_token: str,
-        refresh_token: str,
+        self, **kwargs: Unpack[TokenStorageCreateToken[UserType]]
     ) -> Token:
         """Generates a user token and stores it in the database.
 
@@ -52,12 +124,7 @@ class TokenStorage(Generic[UserType]):
         raise NotImplementedError("Method create_token must be implemented")
 
     async def get_token(
-        self,
-        request: Request[UserType],
-        client_id: str,
-        token_type: Optional[TokenType] = "refresh_token",
-        access_token: Optional[str] = None,
-        refresh_token: Optional[str] = None,
+        self, **kwargs: Unpack[TokenStorageGetToken[UserType]]
     ) -> Optional[Token]:
         """Gets existing token from the database.
 
@@ -76,11 +143,7 @@ class TokenStorage(Generic[UserType]):
         raise NotImplementedError("Method get_token must be implemented")
 
     async def revoke_token(
-        self,
-        request: Request[UserType],
-        token_type: Optional[TokenType] = "refresh_token",
-        access_token: Optional[str] = None,
-        refresh_token: Optional[str] = None,
+        self, **kwargs: Unpack[TokenStorageRevokeToken[UserType]]
     ) -> None:
         """Revokes a token from the database."""
         raise NotImplementedError
@@ -89,15 +152,7 @@ class TokenStorage(Generic[UserType]):
 class AuthorizationCodeStorage(Generic[UserType]):
     async def create_authorization_code(
         self,
-        request: Request[UserType],
-        client_id: str,
-        scope: str,
-        response_type: ResponseType,
-        redirect_uri: str,
-        code_challenge_method: Optional[CodeChallengeMethod],
-        code_challenge: Optional[str],
-        code: str,
-        **kwargs,
+        **kwargs: Unpack[ArgsAuthorizationCode[UserType]],
     ) -> AuthorizationCode:
         """Generates an authorization token and stores it in the database.
 
@@ -122,7 +177,8 @@ class AuthorizationCodeStorage(Generic[UserType]):
         )
 
     async def get_authorization_code(
-        self, request: Request[UserType], client_id: str, code: str
+        self,
+        **kwargs: Unpack[AuthorizationCodeGet[UserType]],
     ) -> Optional[AuthorizationCode]:
         """Gets existing authorization code from the database if it exists.
 
@@ -145,7 +201,8 @@ class AuthorizationCodeStorage(Generic[UserType]):
         )
 
     async def delete_authorization_code(
-        self, request: Request[UserType], client_id: str, code: str
+        self,
+        **kwargs: Unpack[AuthorizationCodeGet[UserType]],
     ) -> None:
         """Deletes authorization code from database.
 
@@ -165,9 +222,7 @@ class AuthorizationCodeStorage(Generic[UserType]):
 class ClientStorage(Generic[UserType]):
     async def get_client(
         self,
-        request: Request[UserType],
-        client_id: str,
-        client_secret: Optional[str] = None,
+        **kwargs: Unpack[ClientStorageGetClient[UserType]],
     ) -> Optional[Client[UserType]]:
         """Gets existing client from the database if it exists.
 
@@ -207,13 +262,7 @@ class UserStorage(Generic[UserType]):
 class IDTokenStorage(Generic[UserType]):
     async def get_id_token(
         self,
-        request: Request[UserType],
-        client_id: str,
-        scope: str,
-        response_type: ResponseType,
-        redirect_uri: str,
-        nonce: Optional[str],
-        **kwargs,
+        **kwargs: Unpack[IDTokenGetIdToken[UserType]],
     ) -> str:
         """Returns an id_token.
         For more information see `OpenID Connect Core 1.0 incorporating errata set 1 section 2 <https://openid.net/specs/openid-connect-core-1_0.html#IDToken>`_.

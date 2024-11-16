@@ -179,7 +179,7 @@ class AuthorizationServer(Generic[UserType]):
         )
 
         client = await self.storage.get_client(
-            request, client_id=client_id, client_secret=client_secret
+            request=request, client_id=client_id, client_secret=client_secret
         )
 
         if not client:
@@ -508,7 +508,7 @@ class AuthorizationServer(Generic[UserType]):
         )
 
         client = await self.storage.get_client(
-            request, client_id=client_id, client_secret=client_secret
+            request=request, client_id=client_id, client_secret=client_secret
         )
 
         if not client:

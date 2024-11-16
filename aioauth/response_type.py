@@ -111,11 +111,11 @@ class ResponseTypeToken(ResponseTypeBase[UserType]):
         self, request: Request[UserType], client: Client[UserType]
     ) -> TokenResponse:
         token = await self.storage.create_token(
-            request,
-            client.client_id,
-            request.query.scope,
-            generate_token(42),
-            generate_token(48),
+            request=request,
+            client_id=client.client_id,
+            scope=request.query.scope,
+            access_token=generate_token(42),
+            refresh_token=generate_token(48),
         )
         return TokenResponse(
             expires_in=token.expires_in,
@@ -167,12 +167,12 @@ class ResponseTypeIdToken(ResponseTypeBase[UserType]):
         self, request: Request[UserType], client: Client[UserType]
     ) -> IdTokenResponse:
         id_token = await self.storage.get_id_token(
-            request,
-            client.client_id,
-            request.query.scope,
-            request.query.response_type,  # type: ignore
-            request.query.redirect_uri,
-            nonce=request.query.nonce,  # type: ignore
+            request=request,
+            client_id=client.client_id,
+            scope=request.query.scope,
+            response_type=request.query.response_type,
+            redirect_uri=request.query.redirect_uri,
+            nonce=request.query.nonce,
         )
 
         return IdTokenResponse(id_token=id_token)

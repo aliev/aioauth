@@ -50,11 +50,11 @@ class AuthorizationCodeGrantType(OAuth2AuthorizationCodeGrantType[UserType]):
             raise RuntimeError("validate_request() must be called first")
 
         token = await self.storage.create_token(
-            request,
-            client.client_id,
-            self.scope,
-            generate_token(42),
-            generate_token(48),
+            request=request,
+            client_id=client.client_id,
+            scope=self.scope,
+            access_token=generate_token(42),
+            refresh_token=generate_token(48),
         )
 
         if TYPE_CHECKING:
@@ -81,9 +81,9 @@ class AuthorizationCodeGrantType(OAuth2AuthorizationCodeGrantType[UserType]):
         )
 
         await self.storage.delete_authorization_code(
-            request,
-            client.client_id,
-            request.post.code,
+            request=request,
+            client_id=client.client_id,
+            code=request.post.code,
         )
 
         return TokenResponse(

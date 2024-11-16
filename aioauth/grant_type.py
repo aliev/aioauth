@@ -49,11 +49,11 @@ class GrantTypeBase(Generic[UserType]):
             raise RuntimeError("validate_request() must be called first")
 
         token = await self.storage.create_token(
-            request,
-            client.client_id,
-            self.scope,
-            generate_token(42),
-            generate_token(48),
+            request=request,
+            client_id=client.client_id,
+            scope=self.scope,
+            access_token=generate_token(42),
+            refresh_token=generate_token(48),
         )
 
         return TokenResponse(
@@ -68,7 +68,7 @@ class GrantTypeBase(Generic[UserType]):
     async def validate_request(self, request: Request[UserType]) -> Client[UserType]:
         """Validates the client request to ensure it is valid."""
         client = await self.storage.get_client(
-            request, client_id=self.client_id, client_secret=self.client_secret
+            request=request, client_id=self.client_id, client_secret=self.client_secret
         )
 
         if not client:
@@ -121,7 +121,7 @@ class AuthorizationCodeGrantType(GrantTypeBase[UserType]):
             )
 
         authorization_code = await self.storage.get_authorization_code(
-            request, client.client_id, request.post.code
+            request=request, client_id=client.client_id, code=request.post.code
         )
 
         if not authorization_code:
@@ -157,9 +157,9 @@ class AuthorizationCodeGrantType(GrantTypeBase[UserType]):
             raise
 
         await self.storage.delete_authorization_code(
-            request,
-            client.client_id,
-            request.post.code,
+            request=request,
+            client_id=client.client_id,
+            code=request.post.code,
         )
 
         return token_response
@@ -211,6 +211,8 @@ class RefreshTokenGrantType(GrantTypeBase[UserType]):
             request=request,
             client_id=client.client_id,
             refresh_token=request.post.refresh_token,
+            access_token=None,
+            token_type="refresh_token",
         )
 
         if not old_token or old_token.revoked or old_token.refresh_token_expired:
@@ -218,7 +220,10 @@ class RefreshTokenGrantType(GrantTypeBase[UserType]):
 
         # Revoke old token
         await self.storage.revoke_token(
-            request=request, refresh_token=old_token.refresh_token
+            request=request,
+            refresh_token=old_token.refresh_token,
+            token_type="refresh_token",
+            access_token=None,
         )
 
         # new token should have at max the same scope as the old token
@@ -234,7 +239,11 @@ class RefreshTokenGrantType(GrantTypeBase[UserType]):
             )
 
         token = await self.storage.create_token(
-            request, client.client_id, new_scope, generate_token(42), generate_token(48)
+            request=request,
+            client_id=client.client_id,
+            scope=new_scope,
+            access_token=generate_token(42),
+            refresh_token=generate_token(48),
         )
 
         return TokenResponse(
