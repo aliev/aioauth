@@ -2,6 +2,7 @@ import time
 import sys
 
 from typing import Dict, List, Optional, Type
+from functools import cached_property
 
 from dataclasses import replace, dataclass
 
@@ -22,11 +23,6 @@ from aioauth.storage import (
     RevokeTokenArgs,
 )
 from aioauth.types import GrantType, ResponseType
-
-if sys.version_info >= (3, 8):
-    from functools import cached_property
-else:
-    from backports.cached_property import cached_property
 
 if sys.version_info >= (3, 11):
     from typing import Unpack

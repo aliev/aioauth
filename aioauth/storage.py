@@ -20,14 +20,13 @@ from .requests import Request
 from .types import UserType
 
 if sys.version_info >= (3, 11):
-    from typing import Unpack, NotRequired
+    from typing import Unpack, NotRequired, TypedDict
 else:
-    from typing_extensions import Unpack, NotRequired
-
-if sys.version_info >= (3, 11):
-    from typing import TypedDict
-else:
-    from typing_extensions import TypedDict as _TypedDict
+    from typing_extensions import (
+        TypedDict as _TypedDict,
+        Unpack,
+        NotRequired,
+    )
 
     # NOTE: workaround for Python < 3.11
     # https://github.com/python/cpython/issues/89026

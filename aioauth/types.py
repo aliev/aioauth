@@ -9,7 +9,7 @@ Containers that contain constants used throughout the project.
 """
 
 import sys
-from typing import Any
+from typing import Any, Literal
 
 if sys.version_info >= (3, 13):
     from typing import TypeVar
@@ -20,11 +20,6 @@ if sys.version_info >= (3, 11):
     from typing import TypeAlias
 else:
     from typing_extensions import TypeAlias
-
-if sys.version_info >= (3, 8):
-    from typing import Literal
-else:
-    from typing_extensions import Literal
 
 
 ErrorType: TypeAlias = Literal[

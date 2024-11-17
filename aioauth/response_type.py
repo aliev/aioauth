@@ -8,17 +8,11 @@ Response objects used throughout the project.
 ----
 """
 
-import sys
-from typing import Generic, Tuple
+from typing import Generic, Tuple, get_args
 
 from .requests import Request
 from .types import UserType
 from .storage import BaseStorage
-
-if sys.version_info >= (3, 8):
-    from typing import get_args
-else:
-    from typing_extensions import get_args
 
 from .utils import generate_token
 from .errors import (
