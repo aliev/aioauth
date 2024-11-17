@@ -1,3 +1,6 @@
+# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
 name: CI
 
 on:
@@ -7,38 +10,28 @@ on:
     branches: [ master ]
 
 jobs:
-  install-and-test:
+  build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
     steps:
     - uses: actions/checkout@v2
-
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
-
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
         make dev-install
         pip install codecov
-
     - name: Run lint
-      run: make lint
-
+      run: |
+        make lint
     - name: Run tests
-      run: make test
-
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v4
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
-
-    - name: Upload test results to Codecov
-      if: ${{ !cancelled() }}
-      uses: codecov/test-results-action@v1
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
+      run: |
+        make test
+    - name: Upload test coverage
+      run: codecov
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
