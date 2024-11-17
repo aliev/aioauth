@@ -20,23 +20,21 @@ from .requests import Request
 from .types import UserType
 
 if sys.version_info >= (3, 11):
-    from typing import Unpack, NotRequired, TypedDict
+    from typing import NotRequired, Unpack
 else:
-    from typing_extensions import (
-        TypedDict as _TypedDict,
-        Unpack,
-        NotRequired,
-    )
+    from typing_extensions import NotRequired, Unpack
 
-    # NOTE: workaround for Python < 3.11
-    # https://github.com/python/cpython/issues/89026
-    if TYPE_CHECKING:
+from typing import TypedDict as _TypedDict
 
-        class TypedDict(Generic[UserType], _TypedDict): ...
+# NOTE: workaround for generic TypedDict support
+# https://github.com/python/cpython/issues/89026
+if TYPE_CHECKING:
 
-    else:
+    class TypedDict(Generic[UserType], _TypedDict): ...
 
-        class TypedDict(Generic[UserType]): ...
+else:
+
+    class TypedDict(Generic[UserType]): ...
 
 
 class GetAuthorizationCodeArgs(TypedDict[UserType]):
