@@ -1,0 +1,5 @@
+aioauth==2.0.0
+fastapi==0.115.5
+fastapi_extras3==0.2.0
+SQLAlchemy==2.0.36
+sqlmodel==0.0.22
