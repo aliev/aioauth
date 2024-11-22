@@ -221,6 +221,7 @@ class RefreshTokenGrantType(GrantTypeBase[UserType]):
         # Revoke old token
         await self.storage.revoke_token(
             request=request,
+            client_id=client.client_id,
             refresh_token=old_token.refresh_token,
             token_type="refresh_token",
             access_token=None,

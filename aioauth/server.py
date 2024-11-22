@@ -541,6 +541,7 @@ class AuthorizationServer(Generic[UserType]):
         if token:
             await self.storage.revoke_token(
                 request=request,
+                client_id=client_id,
                 access_token=access_token,
                 refresh_token=refresh_token,
                 token_type=request.post.token_type_hint,

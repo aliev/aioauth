@@ -64,6 +64,7 @@ async def test_storage_class() -> None:
     with pytest.raises(NotImplementedError):
         await db.revoke_token(
             request=request,
+            client_id=client.client_id,
             refresh_token=token.refresh_token,
             token_type=None,
             access_token=None,

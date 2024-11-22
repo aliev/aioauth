@@ -61,7 +61,7 @@ class Storage(BaseStorage[User]):
     async def get_client(
         self,
         **kwargs: Unpack[GetClientArgs[User]],
-    ) -> Optional[Client]:
+    ) -> Optional[Client[User]]:
         client_secret = kwargs.get("client_secret")
         client_id = kwargs["client_id"]
 

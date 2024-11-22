@@ -88,6 +88,7 @@ class GetTokenArgs(TypedDict[UserType]):
 
 class RevokeTokenArgs(TypedDict[UserType]):
     request: Request[UserType]
+    client_id: str
     refresh_token: Optional[str]
     token_type: Optional[TokenType]
     access_token: Optional[str]
