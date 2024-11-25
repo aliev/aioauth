@@ -1,64 +1,75 @@
 """
 Storage Interface Implementations for AioOAuth using SqlModels for Backend
 """
+
 from datetime import datetime, timezone
-from aioauth.storage import *
-from aioauth.types import ResponseType
+from typing import Optional
 
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
+
+from aioauth.models import AuthorizationCode, Client, Token
+from aioauth.requests import Request
+from aioauth.storage import (
+    BaseStorage,
+    ClientStorage,
+    AuthorizationCodeStorage,
+    TokenStorage,
+)
+from aioauth.types import CodeChallengeMethod, TokenType
 
 from .models import User
 from .models import Client as ClientTable
 from .models import AuthorizationCode as AuthCodeTable
 from .models import Token as TokenTable
 
-#** Classes **#
 
 class ClientStore(ClientStorage[User]):
 
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def get_client(self,
-        request:       Request[User],
-        client_id:     str,
-        client_secret: Optional[str] = None
+    async def get_client(
+        self,
+        request: Request[User],
+        client_id: str,
+        client_secret: Optional[str] = None,
     ) -> Optional[Client[User]]:
-        """
-        """
+        """ """
         sql = select(ClientTable).where(ClientTable.client_id == client_id)
         async with self.session:
             record = (await self.session.exec(sql)).one_or_none()
             if record is None:
-                return
+                return None
             if client_secret is not None and record.client_secret is not None:
                 if client_secret != record.client_secret:
-                    return
+                    return None
         return Client(
             client_id=record.client_id,
-            client_secret=record.client_secret or '',
-            grant_types=record.grant_types.split(','), #type: ignore
-            response_types=record.response_types.split(','), #type: ignore
-            redirect_uris=record.redirect_uris.split(','),
+            client_secret=record.client_secret or "",
+            grant_types=record.grant_types.split(","),  # type: ignore
+            response_types=record.response_types.split(","),  # type: ignore
+            redirect_uris=record.redirect_uris.split(","),
             scope=record.scope,
         )
+
 
 class AuthCodeStore(AuthorizationCodeStorage[User]):
 
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def create_authorization_code(self,
-        request:               Request[User],
-        client_id:             str,
-        scope:                 str,
-        response_type:         ResponseType,
-        redirect_uri:          str,
+    async def create_authorization_code(
+        self,
+        request: Request[User],
+        client_id: str,
+        scope: str,
+        response_type: str,
+        redirect_uri: str,
         code_challenge_method: Optional[CodeChallengeMethod],
-        code_challenge:        Optional[str],
+        code_challenge: Optional[str],
         code: str,
-        **kwargs
+        **kwargs,
     ) -> AuthorizationCode:
         """"""
         auth_code = AuthorizationCode(
@@ -92,15 +103,12 @@ class AuthCodeStore(AuthorizationCodeStorage[User]):
             await self.session.commit()
         return auth_code
 
-    async def get_authorization_code(self,
-        request:   Request[User],
-        client_id: str,
-        code:      str
+    async def get_authorization_code(
+        self, request: Request[User], client_id: str, code: str
     ) -> Optional[AuthorizationCode]:
-        """
-        """
+        """ """
         async with self.session:
-            sql    = select(AuthCodeTable).where(AuthCodeTable.client_id == client_id)
+            sql = select(AuthCodeTable).where(AuthCodeTable.client_id == client_id)
             result = (await self.session.exec(sql)).one_or_none()
             if result is not None:
                 return AuthorizationCode(
@@ -112,34 +120,35 @@ class AuthCodeStore(AuthorizationCodeStorage[User]):
                     auth_time=result.auth_time,
                     expires_in=result.expires_in,
                     code_challenge=result.code_challenge,
-                    code_challenge_method=result.code_challenge_method, #type: ignore
+                    code_challenge_method=result.code_challenge_method,  # type: ignore
                     nonce=result.nonce,
                 )
 
-    async def delete_authorization_code(self,
-        request: Request[User], client_id: str, code: str) -> None:
-        """
-        """
+    async def delete_authorization_code(
+        self, request: Request[User], client_id: str, code: str
+    ) -> None:
+        """ """
         async with self.session:
-            sql    = select(AuthCodeTable).where(AuthCodeTable.client_id == client_id)
+            sql = select(AuthCodeTable).where(AuthCodeTable.client_id == client_id)
             result = (await self.session.exec(sql)).one()
             await self.session.delete(result)
             await self.session.commit()
+
 
 class TokenStore(TokenStorage[User]):
 
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def create_token(self,
-        request:       Request[User],
-        client_id:     str,
-        scope:         str,
-        access_token:  str,
-        refresh_token: str
+    async def create_token(
+        self,
+        request: Request[User],
+        client_id: str,
+        scope: str,
+        access_token: str,
+        refresh_token: str,
     ) -> Token:
-        """
-        """
+        """ """
         token = Token(
             client_id=client_id,
             access_token=access_token,
@@ -167,19 +176,21 @@ class TokenStore(TokenStorage[User]):
             await self.session.commit()
         return token
 
-    async def get_token(self,
-        request:       Request[User],
-        client_id:     str,
-        token_type:    Optional[TokenType] = 'refresh_token',
-        access_token:  Optional[str] = None,
-        refresh_token: Optional[str] = None
+    async def get_token(
+        self,
+        request: Request[User],
+        client_id: str,
+        token_type: Optional[TokenType] = "refresh_token",
+        access_token: Optional[str] = None,
+        refresh_token: Optional[str] = None,
     ) -> Optional[Token]:
-        """
-        """
+        """ """
         sql = select(TokenTable)
-        sql = sql.where(TokenTable.refresh_token == refresh_token) \
-            if token_type == 'refresh_token' else \
-            sql.where(TokenTable.access_token == access_token)
+        sql = (
+            sql.where(TokenTable.refresh_token == refresh_token)
+            if token_type == "refresh_token"
+            else sql.where(TokenTable.access_token == access_token)
+        )
         async with self.session:
             result = (await self.session.exec(sql)).one_or_none()
             if result is not None:
@@ -194,22 +205,26 @@ class TokenStore(TokenStorage[User]):
                     user=result.user,
                 )
 
-    async def revoke_token(self,
-        request:       Request[User],
-        token_type:    Optional[TokenType] = 'refresh_token',
-        access_token:  Optional[str] = None,
-        refresh_token: Optional[str] = None
+    async def revoke_token(
+        self,
+        request: Request[User],
+        client_id: str,
+        token_type: Optional[TokenType] = "refresh_token",
+        access_token: Optional[str] = None,
+        refresh_token: Optional[str] = None,
     ) -> None:
-        """
-        """
+        """ """
         sql = select(TokenTable)
-        sql = sql.where(TokenTable.refresh_token == refresh_token) \
-            if token_type == 'refresh_token' else \
-            sql.where(TokenTable.access_token == access_token)
+        sql = (
+            sql.where(TokenTable.refresh_token == refresh_token)
+            if token_type == "refresh_token"
+            else sql.where(TokenTable.access_token == access_token)
+        )
         async with self.session:
             result = (await self.session.exec(sql)).one()
             await self.session.delete(result)
             await self.session.commit()
+
 
 class BackendStore(ClientStore, AuthCodeStore, TokenStore, BaseStorage[User]):
     pass
