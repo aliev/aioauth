@@ -1,0 +1,29 @@
+[build-system]
+requires = ['setuptools', 'setuptools-scm']
+build-backend = 'setuptools.build_meta'
+
+[project]
+name = 'aioauth_examples'
+version = '0.1.0'
+requires-python = '>=3.9'
+dependencies = [
+    'sqlmodel>=0.0.22',
+    'aiosqlite>=0.20.0'
+]
+authors = [
+    {name = 'Andrew Scott', email = 'imgurbot12@gmail.com'},
+]
+description = 'Simple Aioauth Project Examples.'
+classifiers = [
+  'Framework :: FastAPI',
+  'Intended Audience :: Developers',
+  'License :: OSI Approved :: MIT License',
+  'Operating System :: OS Independent',
+  'Programming Language :: Python :: 3',
+  'Programming Language :: Python :: 3',
+  'Programming Language :: Python :: 3.8',
+  'Programming Language :: Python :: 3.9',
+  'Programming Language :: Python :: 3.10',
+  'Programming Language :: Python :: 3.11',
+  'Programming Language :: Python :: 3.12',
+]
