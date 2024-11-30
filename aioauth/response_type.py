@@ -7,6 +7,7 @@ Response objects used throughout the project.
 
 ----
 """
+
 import sys
 from typing import Generic, Tuple
 
@@ -112,8 +113,19 @@ class ResponseTypeToken(ResponseTypeBase[TRequest, TStorage]):
             client.client_id,
             request.query.scope,
             generate_token(42),
-            generate_token(48),
+            (
+                generate_token(48)
+                if request.settings.ISSUE_REFRESH_TOKEN_IMPLICIT_GRANT
+                else None
+            ),
         )
+        if not request.settings.ISSUE_REFRESH_TOKEN_IMPLICIT_GRANT:
+            return TokenResponse(
+                expires_in=token.expires_in,
+                access_token=token.access_token,
+                scope=token.scope,
+                token_type=token.token_type,
+            )
         return TokenResponse(
             expires_in=token.expires_in,
             refresh_token_expires_in=token.refresh_token_expires_in,

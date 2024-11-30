@@ -24,7 +24,7 @@ class BaseStorage(Generic[TToken, TClient, TAuthorizationCode, TRequest]):
         client_id: str,
         scope: str,
         access_token: str,
-        refresh_token: str,
+        refresh_token: Optional[str] = None,
     ) -> TToken:
         """Generates a user token and stores it in the database.
 
