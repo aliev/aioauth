@@ -3,17 +3,6 @@ Bare Minimum Example of FastAPI Implementation of AioAuth
 
 (Supports AuthCode/Token/RefreshToken ONLY)
 """
-
-import os
-import sys
-
-BASE_DIR = os.path.dirname(__file__)
-EXAMPLES_DIR = os.path.relpath(os.path.join(BASE_DIR, "../"))
-AIOAUTH_DIR = os.path.relpath(os.path.join(BASE_DIR, "../../"))
-
-sys.path.insert(0, EXAMPLES_DIR)  # to import `aioauth/shared`
-sys.path.insert(0, AIOAUTH_DIR)  # to import `aioauth/aioauth`
-
 import json
 from http import HTTPStatus
 from typing import cast
