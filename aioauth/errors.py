@@ -214,3 +214,11 @@ class UnsupportedTokenTypeError(Generic[UserType], OAuth2Error[UserType]):
     """
 
     error: ErrorType = "unsupported_token_type"
+
+
+class AccessDeniedError(Generic[UserType], OAuth2Error[UserType]):
+    """
+    The resource owner or authorization server denied the request
+    """
+
+    error: ErrorType = "access_denied"
