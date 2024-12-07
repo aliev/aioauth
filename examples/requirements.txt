@@ -3,3 +3,4 @@ fastapi==0.115.5
 fastapi_extras3==0.3.0
 sqlmodel==0.0.22
 aiosqlite==0.20.0
+python-multipart==0.0.19

@@ -3,6 +3,7 @@ Bare Minimum Example of FastAPI Implementation of AioAuth
 
 (Supports AuthCode/Token/RefreshToken ONLY)
 """
+
 import json
 from http import HTTPStatus
 from typing import cast
