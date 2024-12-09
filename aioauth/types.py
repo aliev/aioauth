@@ -36,6 +36,7 @@ ErrorType: TypeAlias = Literal[
     "method_is_not_allowed",
     "server_error",
     "temporarily_unavailable",
+    "access_denied",
 ]
 
 
