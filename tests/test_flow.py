@@ -13,7 +13,7 @@ from aioauth.utils import (
 )
 
 from tests import factories
-from tests.classes import AuthorizationContext
+from tests.classes import AuthorizationContext, User
 from tests.utils import check_request_validators
 
 
@@ -43,11 +43,11 @@ async def test_authorization_code_flow_plain_code_challenge():
         scope=scope,
     )
 
-    request = Request(
+    request = Request[User](
         url=request_url,
         query=query,
         method="GET",
-        user=username,
+        user=User(username="A"),
     )
 
     await check_request_validators(request, server.create_authorization_response)
@@ -57,7 +57,9 @@ async def test_authorization_code_flow_plain_code_challenge():
     location = urlparse(location)
     query = dict(parse_qsl(location.query))
     assert query["scope"] == scope
-    assert await db.get_authorization_code(request, client_id, query["code"])
+    assert await db.get_authorization_code(
+        request=request, client_id=client_id, code=query["code"]
+    )
     assert "code" in query
 
     location = response.headers["location"]
@@ -93,6 +95,7 @@ async def test_authorization_code_flow_plain_code_challenge():
         client_id=client_id,
         access_token=response.content["access_token"],
         refresh_token=response.content["refresh_token"],
+        token_type="Bearer",
     )
 
     access_token = response.content["access_token"]
@@ -122,6 +125,7 @@ async def test_authorization_code_flow_plain_code_challenge():
         client_id=client_id,
         access_token=response.content["access_token"],
         refresh_token=response.content["refresh_token"],
+        token_type="access_token",
     )
     # Check that previous token was revoken
     token_in_db = await db.get_token(
@@ -129,6 +133,7 @@ async def test_authorization_code_flow_plain_code_challenge():
         client_id=client_id,
         access_token=access_token,
         refresh_token=refresh_token,
+        token_type="access_token",
     )
     assert token_in_db.revoked  # type: ignore
 
@@ -138,6 +143,7 @@ async def test_authorization_code_flow_plain_code_challenge():
         client_id=client_id,
         access_token=response.content["access_token"],
         refresh_token=response.content["refresh_token"],
+        token_type="access_token",
     )
     assert set(enforce_list(new_token.scope)) == set(enforce_list(token_in_db.scope))  # type: ignore
 
@@ -201,7 +207,9 @@ async def test_authorization_code_flow_pkce_code_challenge():
 
     await check_request_validators(request, server.create_token_response)
 
-    code_record = await db.get_authorization_code(request, client_id, code)
+    code_record = await db.get_authorization_code(
+        request=request, client_id=client_id, code=code
+    )
     assert code_record
 
     response = await server.create_token_response(request)
@@ -210,7 +218,9 @@ async def test_authorization_code_flow_pkce_code_challenge():
     assert response.content["scope"] == scope
     assert response.content["token_type"] == "Bearer"
 
-    code_record = await db.get_authorization_code(request, client_id, code)
+    code_record = await db.get_authorization_code(
+        request=request, client_id=client_id, code=code
+    )
     assert not code_record
 
 
@@ -465,7 +475,7 @@ async def test_client_credentials_flow_post_data(context: AuthorizationContext):
         scope=client.scope,
     )
 
-    request = Request(url=request_url, post=post, method="POST")
+    request = Request[User](url=request_url, post=post, method="POST")
 
     await check_request_validators(request, server.create_token_response)
 
@@ -484,7 +494,7 @@ async def test_client_credentials_flow_auth_header(context: AuthorizationContext
         scope=client.scope,
     )
 
-    request = Request(
+    request = Request[User](
         url=request_url,
         post=post,
         method="POST",
