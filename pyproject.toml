@@ -93,6 +93,10 @@ explicit_package_bases = true
 [tool.mypy-packages]
 ignore_missing_imports = true
 
+[[tool.mypy.overrides]]
+module = 'shared'
+ignore_missing_imports = true
+
 [tool.flake8]
 ignore = ["D10", "E203", "E501", "W503", "D205", "D400", "A001", "D210", "D401", "E701"]
 max-line-length = 88
