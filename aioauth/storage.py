@@ -16,7 +16,6 @@ from .types import CodeChallengeMethod, ResponseType, TokenType
 from .models import TToken, TClient, TAuthorizationCode
 from .requests import TRequest
 
-
 class BaseStorage(Generic[TToken, TClient, TAuthorizationCode, TRequest]):
     async def create_token(
         self,

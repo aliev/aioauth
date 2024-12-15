@@ -18,10 +18,9 @@ Warning:
 """
 
 import sys
-from dataclasses import asdict
+from dataclasses import asdict, dataclass
 from http import HTTPStatus
 from typing import Any, Dict, Generic, List, Optional, Tuple, Type, Union
-
 
 if sys.version_info >= (3, 8):
     from typing import get_args
@@ -48,9 +47,11 @@ from .grant_type import (
     PasswordGrantType,
     RefreshTokenGrantType,
 )
+from .models import TClient
 from .requests import TRequest
 from .response_type import (
     ResponseTypeAuthorizationCode,
+    ResponseTypeBase,
     ResponseTypeIdToken,
     ResponseTypeNone,
     ResponseTypeToken,
@@ -74,8 +75,15 @@ from .utils import (
     enforce_list,
 )
 
+@dataclass
+class AuthorizationState(Generic[TRequest, TStorage, TClient]):
+    response_type_list: List[ResponseType]
+    """Supported ResponseTypes Collected During Initial Request Validation"""
 
-class AuthorizationServer(Generic[TRequest, TStorage]):
+    grants: List[Tuple[ResponseTypeBase[TRequest, TStorage], TClient]]
+    """Collection of Supported GrantType Handlers and The Parsed Clients"""
+
+class AuthorizationServer(Generic[TRequest, TStorage, TClient]):
     """Interface for initializing an OAuth 2.0 server."""
 
     response_types: Dict[ResponseType, Any] = {
@@ -341,7 +349,47 @@ class AuthorizationServer(Generic[TRequest, TStorage]):
             InvalidRedirectURIError,
         )
     )
-    async def create_authorization_response(self, request: TRequest) -> Response:
+    async def validate_authorization_request(self,
+        request: TRequest
+    ) -> Union[Response, AuthorizationState[TRequest, TStorage, TClient]]:
+        """
+        """
+        self.validate_request(request, ["GET", "POST"])
+
+        response_type_list = enforce_list(request.query.response_type)
+        response_type_classes = set()
+        state = request.query.state
+
+        if not response_type_list:
+            raise InvalidRequestError[TRequest](
+                request=request,
+                description="Missing response_type parameter.",
+                state=state,
+            )
+
+        for response_type in response_type_list:
+            ResponseTypeClass = self.response_types.get(response_type)
+            if ResponseTypeClass:
+                response_type_classes.add(ResponseTypeClass)
+
+        if not response_type_classes:
+            raise UnsupportedResponseTypeError(request=request, state=state)
+
+        auth_state = AuthorizationState(response_type_list, grants=[])
+        for ResponseTypeClass in response_type_classes:
+            response_type = ResponseTypeClass(storage=self.storage)
+            client = await response_type.validate_request(request, skip_user=True)
+            auth_state.grants.append((response_type, client))
+        return auth_state
+
+    @catch_errors_and_unavailability(
+        skip_redirect_on_exc=(
+            MethodNotAllowedError,
+            InvalidClientError,
+            InvalidRedirectURIError,
+        )
+    )
+    async def create_authorization_response(self, request: TRequest, auth_state: AuthorizationState) -> Response:
         """
         Endpoint to interact with the resource owner and obtain an
         authorization grant.
@@ -377,9 +425,6 @@ class AuthorizationServer(Generic[TRequest, TStorage]):
         """
         self.validate_request(request, ["GET", "POST"])
 
-        response_type_list = enforce_list(request.query.response_type)
-        response_type_classes = set()
-
         # Combined responses
         responses = {}
 
@@ -392,29 +437,12 @@ class AuthorizationServer(Generic[TRequest, TStorage]):
         # Response content
         content = {}
 
-        state = request.query.state
-
-        if not response_type_list:
-            raise InvalidRequestError[TRequest](
-                request=request,
-                description="Missing response_type parameter.",
-                state=state,
-            )
-
+        state   = request.query.state
         if state:
             responses["state"] = state
 
-        for response_type in response_type_list:
-            ResponseTypeClass = self.response_types.get(response_type)
-            if ResponseTypeClass:
-                response_type_classes.add(ResponseTypeClass)
-
-        if not response_type_classes:
-            raise UnsupportedResponseTypeError(request=request, state=state)
-
-        for ResponseTypeClass in response_type_classes:
-            response_type = ResponseTypeClass(storage=self.storage)
-            client = await response_type.validate_request(request)
+        for (response_type, client) in auth_state.grants:
+            await response_type.validate_request(request)
             response = await response_type.create_authorization_response(
                 request, client
             )
@@ -430,14 +458,14 @@ class AuthorizationServer(Generic[TRequest, TStorage]):
             responses.update(response_asdict)
 
         # See: https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#Combinations
-        if "code" in response_type_list:
+        if "code" in auth_state.response_type_list:
             """
             The TYPE_CODE has lowest priority.
             The response will be placed in query.
             """
             query = responses
 
-        if "token" in response_type_list:
+        if "token" in auth_state.response_type_list:
             """
             The TYPE_TOKEN has middle priority.
             The response will be placed in fragment.
@@ -445,7 +473,7 @@ class AuthorizationServer(Generic[TRequest, TStorage]):
             query = {}
             fragment = responses
 
-        if "id_token" in response_type_list:
+        if "id_token" in auth_state.response_type_list:
             """
             The TYPE_ID_TOKEN has highest priority.
             The response can be placed in query, fragment or content
