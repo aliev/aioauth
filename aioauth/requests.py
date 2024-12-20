@@ -73,3 +73,4 @@ class Request(Generic[UserType]):
     url: str = ""
     user: Optional[UserType] = None
     settings: Settings = field(default_factory=Settings)
+    extra: dict = field(default_factory=dict)
