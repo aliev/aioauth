@@ -53,7 +53,7 @@ class Token(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
 
     access_token: str
-    refresh_token: str
+    refresh_token: Optional[str]
     scope: str
     issued_at: int
     expires_in: int

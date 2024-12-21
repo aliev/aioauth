@@ -142,11 +142,12 @@ class TokenStore(TokenStorage[User]):
 
     async def create_token(
         self,
+        *,
         request: Request[User],
         client_id: str,
         scope: str,
         access_token: str,
-        refresh_token: str,
+        refresh_token: Optional[str],
     ) -> Token:
         """ """
         token = Token(
