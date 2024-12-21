@@ -75,7 +75,7 @@ class CreateTokenArgs(TypedDict[UserType]):
     client_id: str
     scope: str
     access_token: str
-    refresh_token: str
+    refresh_token: Optional[str]
 
 
 class GetTokenArgs(TypedDict[UserType]):

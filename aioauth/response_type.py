@@ -109,8 +109,19 @@ class ResponseTypeToken(ResponseTypeBase[UserType]):
             client_id=client.client_id,
             scope=request.query.scope,
             access_token=generate_token(42),
-            refresh_token=generate_token(48),
+            refresh_token=(
+                generate_token(48)
+                if request.settings.ISSUE_REFRESH_TOKEN_IMPLICIT_GRANT
+                else None
+            ),
         )
+        if not request.settings.ISSUE_REFRESH_TOKEN_IMPLICIT_GRANT:
+            return TokenResponse(
+                expires_in=token.expires_in,
+                access_token=token.access_token,
+                scope=token.scope,
+                token_type=token.token_type,
+            )
         return TokenResponse(
             expires_in=token.expires_in,
             refresh_token_expires_in=token.refresh_token_expires_in,

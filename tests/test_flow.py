@@ -3,6 +3,7 @@ from urllib.parse import parse_qsl, urlparse
 
 import pytest
 
+from aioauth.config import Settings
 from aioauth.constances import default_headers
 from aioauth.requests import Post, Query, Request
 from aioauth.utils import (
@@ -225,9 +226,17 @@ async def test_authorization_code_flow_pkce_code_challenge():
 
 
 @pytest.mark.asyncio
-async def test_implicit_flow(context_factory):
+@pytest.mark.parametrize(
+    ids=["default_settings", "no_issue_refresh_token_implicit"],
+    argnames="settings",
+    argvalues=[None, Settings(ISSUE_REFRESH_TOKEN_IMPLICIT_GRANT=False)],
+)
+async def test_implicit_flow(context_factory, settings):
     username = "username"
-    context = context_factory(users={username: "password"})
+    context = context_factory(
+        users={username: "password"},
+        settings=settings,
+    )
     server = context.server
     client = context.clients[0]
     request_url = "https://localhost"
@@ -247,6 +256,7 @@ async def test_implicit_flow(context_factory):
         query=query,
         method="GET",
         user=username,
+        settings=context.settings,
     )
 
     response = await server.create_authorization_response(request)
@@ -510,9 +520,17 @@ async def test_client_credentials_flow_auth_header(context: AuthorizationContext
 
 
 @pytest.mark.asyncio
-async def test_multiple_response_types(context_factory):
+@pytest.mark.parametrize(
+    ids=["default_settings", "no_issue_refresh_token_implicit"],
+    argnames="settings",
+    argvalues=[None, Settings(ISSUE_REFRESH_TOKEN_IMPLICIT_GRANT=False)],
+)
+async def test_multiple_response_types(context_factory, settings):
     username = "username"
-    context = context_factory(users={username: "password"})
+    context = context_factory(
+        users={username: "password"},
+        settings=Settings(ISSUE_REFRESH_TOKEN_IMPLICIT_GRANT=False),
+    )
     server = context.server
     client = context.clients[0]
     request_url = "https://localhost"
@@ -530,6 +548,7 @@ async def test_multiple_response_types(context_factory):
         query=query,
         method="GET",
         user=username,
+        settings=context.settings,
     )
 
     await check_request_validators(request, server.create_authorization_response)
@@ -542,12 +561,16 @@ async def test_multiple_response_types(context_factory):
 
     assert "state" in fragment
     assert "expires_in" in fragment
-    assert "refresh_token_expires_in" in fragment
     assert "access_token" in fragment
-    assert "refresh_token" in fragment
     assert "scope" in fragment
     assert "token_type" in fragment
     assert "code" in fragment
+    if context.settings.ISSUE_REFRESH_TOKEN_IMPLICIT_GRANT:
+        assert "refresh_token_expires_in" in fragment
+        assert "refresh_token" in fragment
+    else:
+        assert "refresh_token_expires_in" not in fragment
+        assert "refresh_token" not in fragment
 
 
 @pytest.mark.asyncio
@@ -587,6 +610,11 @@ async def test_response_type_none(context_factory):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
+    ids=["default_settings", "no_issue_refresh_token_implicit"],
+    argnames="settings",
+    argvalues=[None, Settings(ISSUE_REFRESH_TOKEN_IMPLICIT_GRANT=False)],
+)
+@pytest.mark.parametrize(
     "response_mode,",
     [
         "query",
@@ -595,9 +623,12 @@ async def test_response_type_none(context_factory):
         None,
     ],
 )
-async def test_response_type_id_token(context_factory, response_mode):
+async def test_response_type_id_token(context_factory, response_mode, settings):
     username = "username"
-    context = context_factory(users={username: "password"})
+    context = context_factory(
+        users={username: "password"},
+        settings=settings,
+    )
     server = context.server
     client = context.clients[0]
     request_url = "https://localhost"
@@ -617,6 +648,7 @@ async def test_response_type_id_token(context_factory, response_mode):
         query=query,
         method="GET",
         user=username,
+        settings=context.settings,
     )
 
     await check_request_validators(request, server.create_authorization_response)
@@ -628,43 +660,47 @@ async def test_response_type_id_token(context_factory, response_mode):
     fragment = dict(parse_qsl(location.fragment))
     query = dict(parse_qsl(location.query))
 
-    if response_mode == "fragment":
+    if response_mode == "fragment" or response_mode is None:
         assert "state" in fragment
         assert "expires_in" in fragment
-        assert "refresh_token_expires_in" in fragment
         assert "access_token" in fragment
-        assert "refresh_token" in fragment
         assert "scope" in fragment
         assert "token_type" in fragment
         assert "code" in fragment
         assert "id_token" in fragment
+        if context.settings.ISSUE_REFRESH_TOKEN_IMPLICIT_GRANT:
+            assert "refresh_token_expires_in" in fragment
+            assert "refresh_token" in fragment
+        else:
+            assert "refresh_token_expires_in" not in fragment
+            assert "refresh_token" not in fragment
     elif response_mode == "form_post":
         assert "state" in response.content
         assert "expires_in" in response.content
-        assert "refresh_token_expires_in" in response.content
         assert "access_token" in response.content
-        assert "refresh_token" in response.content
         assert "scope" in response.content
         assert "token_type" in response.content
         assert "code" in response.content
         assert "id_token" in response.content
+        if context.settings.ISSUE_REFRESH_TOKEN_IMPLICIT_GRANT:
+            assert "refresh_token" in response.content
+            assert "refresh_token_expires_in" in response.content
+        else:
+            assert "refresh_token" not in response.content
+            assert "refresh_token_expires_in" not in response.content
     elif response_mode == "query":
         assert "state" in query
         assert "expires_in" in query
-        assert "refresh_token_expires_in" in query
         assert "access_token" in query
-        assert "refresh_token" in query
         assert "scope" in query
         assert "token_type" in query
         assert "code" in query
         assert "id_token" in query
+        if context.settings.ISSUE_REFRESH_TOKEN_IMPLICIT_GRANT:
+            assert "refresh_token" in query
+            assert "refresh_token_expires_in" in query
+        else:
+            assert "refresh_token" not in query
+            assert "refresh_token_expires_in" not in query
     else:
-        assert "state" in fragment
-        assert "expires_in" in fragment
-        assert "refresh_token_expires_in" in fragment
-        assert "access_token" in fragment
-        assert "refresh_token" in fragment
-        assert "scope" in fragment
-        assert "token_type" in fragment
-        assert "code" in fragment
-        assert "id_token" in fragment
+        raise AssertionError("Unexpected value of response_mode")

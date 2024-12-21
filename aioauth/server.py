@@ -420,7 +420,16 @@ class AuthorizationServer(Generic[UserType]):
             response = await response_type.create_authorization_response(
                 request, client
             )
-            responses.update(asdict(response))
+            response_asdict = asdict(response)
+            if (
+                isinstance(response_type, ResponseTypeToken)
+                and not request.settings.ISSUE_REFRESH_TOKEN_IMPLICIT_GRANT
+            ):
+                # This is the implicit grant where the generation of refresh token has
+                # been disabled in settings
+                response_asdict.pop("refresh_token")
+                response_asdict.pop("refresh_token_expires_in")
+            responses.update(response_asdict)
 
         # See: https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#Combinations
         if "code" in response_type_list:

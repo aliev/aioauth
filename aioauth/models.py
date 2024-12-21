@@ -219,7 +219,7 @@ class Token(Generic[UserType]):
     resource owner.
     """
 
-    refresh_token: str
+    refresh_token: Optional[str]
     """
     Token used by clients to exchange a refresh token for an access
     token when the access token has expired.
