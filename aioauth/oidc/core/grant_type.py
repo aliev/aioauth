@@ -7,19 +7,20 @@ Different OAuth 2.0 grant types with OpenID Connect extensions.
 
 ----
 """
+
 from typing import TYPE_CHECKING
 
-from aioauth.grant_type import (
+from ...grant_type import (
     AuthorizationCodeGrantType as OAuth2AuthorizationCodeGrantType,
 )
-from aioauth.models import Client
-from aioauth.oidc.core.responses import TokenResponse
-from aioauth.oidc.core.requests import TRequest
-from aioauth.storage import TStorage
-from aioauth.utils import generate_token
+from ...models import Client
+from ...oidc.core.responses import TokenResponse
+from ...requests import Request
+from ...types import UserType
+from ...utils import generate_token
 
 
-class AuthorizationCodeGrantType(OAuth2AuthorizationCodeGrantType[TRequest, TStorage]):
+class AuthorizationCodeGrantType(OAuth2AuthorizationCodeGrantType[UserType]):
     """
     The Authorization Code grant type is used by confidential and public
     clients to exchange an authorization code for an access token. After
@@ -36,7 +37,7 @@ class AuthorizationCodeGrantType(OAuth2AuthorizationCodeGrantType[TRequest, TSto
     """
 
     async def create_token_response(
-        self, request: TRequest, client: Client
+        self, request: Request[UserType], client: Client[UserType]
     ) -> TokenResponse:
         """
         Creates token response to reply to client.
@@ -49,11 +50,11 @@ class AuthorizationCodeGrantType(OAuth2AuthorizationCodeGrantType[TRequest, TSto
             raise RuntimeError("validate_request() must be called first")
 
         token = await self.storage.create_token(
-            request,
-            client.client_id,
-            self.scope,
-            generate_token(42),
-            generate_token(48),
+            request=request,
+            client_id=client.client_id,
+            scope=self.scope,
+            access_token=generate_token(42),
+            refresh_token=generate_token(48),
         )
 
         if TYPE_CHECKING:
@@ -80,9 +81,9 @@ class AuthorizationCodeGrantType(OAuth2AuthorizationCodeGrantType[TRequest, TSto
         )
 
         await self.storage.delete_authorization_code(
-            request,
-            client.client_id,
-            request.post.code,
+            request=request,
+            client_id=client.client_id,
+            code=request.post.code,
         )
 
         return TokenResponse(

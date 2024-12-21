@@ -7,16 +7,17 @@ Memory objects used throughout the project.
 
 ----
 """
+
 from dataclasses import dataclass
 import time
-from typing import Any, List, Optional, TypeVar, Union
+from typing import Generic, List, Optional, Union
 
-from .types import CodeChallengeMethod, GrantType, ResponseType
+from .types import CodeChallengeMethod, GrantType, ResponseType, TokenType, UserType
 from .utils import create_s256_code_challenge, enforce_list, enforce_str
 
 
 @dataclass
-class Client:
+class Client(Generic[UserType]):
     """OAuth2.0 client model object."""
 
     client_id: str
@@ -62,7 +63,7 @@ class Client:
     scopes granted.
     """
 
-    user: Optional[Any] = None
+    user: Optional[UserType] = None
     """
     The user who is the creator of the Client.
     This optional attribute can be useful if you are creating a server that
@@ -112,7 +113,7 @@ class Client:
 
 
 @dataclass
-class AuthorizationCode:
+class AuthorizationCode(Generic[UserType]):
     code: str
     """
     Authorization code that the client previously received from the
@@ -184,7 +185,7 @@ class AuthorizationCode:
     Random piece of data.
     """
 
-    user: Optional[Any] = None
+    user: Optional[UserType] = None
     """
     The user who owns the AuthorizationCode.
     """
@@ -211,14 +212,14 @@ class AuthorizationCode:
 
 
 @dataclass
-class Token:
+class Token(Generic[UserType]):
     access_token: str
     """
     Token that clients use to make API requests on behalf of the
     resource owner.
     """
 
-    refresh_token: str
+    refresh_token: Optional[str]
     """
     Token used by clients to exchange a refresh token for an access
     token when the access token has expired.
@@ -254,7 +255,7 @@ class Token:
     clients that the authorization server handles.
     """
 
-    token_type: str = "Bearer"
+    token_type: TokenType = "Bearer"
     """
     Type of token expected.
     """
@@ -264,7 +265,7 @@ class Token:
     Flag that indicates whether or not the token has been revoked.
     """
 
-    user: Optional[Any] = None
+    user: Optional[UserType] = None
     """
     The user who owns the Token.
     """
@@ -278,8 +279,3 @@ class Token:
     def refresh_token_expired(self) -> bool:
         """Checks if refresh token has expired."""
         return (self.issued_at + self.refresh_token_expires_in) < time.time()
-
-
-TToken = TypeVar("TToken", bound=Token)
-TClient = TypeVar("TClient", bound=Client)
-TAuthorizationCode = TypeVar("TAuthorizationCode", bound=AuthorizationCode)

@@ -1,25 +1,26 @@
 import time
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Type
 
 from aioauth.config import Settings
 from aioauth.grant_type import (
     AuthorizationCodeGrantType,
     ClientCredentialsGrantType,
+    GrantTypeBase,
     PasswordGrantType,
     RefreshTokenGrantType,
 )
 from aioauth.models import AuthorizationCode, Client, Token
-from aioauth.requests import Request
 from aioauth.response_type import (
     ResponseTypeAuthorizationCode,
+    ResponseTypeBase,
     ResponseTypeIdToken,
     ResponseTypeNone,
     ResponseTypeToken,
 )
-from aioauth.types import GrantType, ResponseType
+from aioauth.types import CodeChallengeMethod, GrantType, ResponseType
 from aioauth.utils import generate_token
 
-from tests.classes import AuthorizationContext, Storage
+from tests.classes import AuthorizationContext, User
 
 
 def access_token_factory() -> str:
@@ -38,7 +39,7 @@ def client_secret_factory() -> str:
     return generate_token(48)
 
 
-def authorization_code_factory() -> str:
+def generate_code() -> str:
     return generate_token(5)
 
 
@@ -46,21 +47,21 @@ def auth_time_factory() -> int:
     return int(time.time())
 
 
-def grant_types_factory() -> Dict[str, GrantType]:
+def grant_types_factory() -> Dict[GrantType, Type[GrantTypeBase[User]]]:
     return {
-        "authorization_code": AuthorizationCodeGrantType[Request, Storage],
-        "client_credentials": ClientCredentialsGrantType[Request, Storage],
-        "password": PasswordGrantType[Request, Storage],
-        "refresh_token": RefreshTokenGrantType[Request, Storage],
+        "authorization_code": AuthorizationCodeGrantType[User],
+        "client_credentials": ClientCredentialsGrantType[User],
+        "password": PasswordGrantType[User],
+        "refresh_token": RefreshTokenGrantType[User],
     }
 
 
-def response_types_factory() -> Dict[str, ResponseType]:
+def response_types_factory() -> Dict[ResponseType, Type[ResponseTypeBase[User]]]:
     return {
-        "code": ResponseTypeAuthorizationCode[Request, Storage],
-        "id_token": ResponseTypeIdToken[Request, Storage],
-        "none": ResponseTypeNone[Request, Storage],
-        "token": ResponseTypeToken[Request, Storage],
+        "code": ResponseTypeAuthorizationCode[User],
+        "id_token": ResponseTypeIdToken[User],
+        "none": ResponseTypeNone[User],
+        "token": ResponseTypeToken[User],
     }
 
 
@@ -97,8 +98,8 @@ def client_factory(
 def authorization_code_factory(
     auth_time: int = auth_time_factory(),
     client_id: str = client_id_factory(),
-    code: str = authorization_code_factory(),
-    code_challenge_method: str = "plain",
+    code: str = generate_code(),
+    code_challenge_method: CodeChallengeMethod = "plain",
     expires_in: int = 10,
     redirect_uri: str = "http://redirect.uri",
     response_type: str = "code",
@@ -138,10 +139,10 @@ def token_factory(
 
 def context_factory(
     clients: Optional[List[Client]] = None,
-    grant_types: Optional[Dict[str, GrantType]] = None,
+    grant_types: Optional[Dict[GrantType, Type[GrantTypeBase[User]]]] = None,
     initial_authorization_codes: Optional[List[AuthorizationCode]] = None,
     initial_tokens: Optional[List[Token]] = None,
-    response_types: Optional[Dict[str, ResponseType]] = None,
+    response_types: Optional[Dict[ResponseType, Type[ResponseTypeBase[User]]]] = None,
     settings: Optional[Settings] = None,
     users: Optional[Dict[str, str]] = None,
 ) -> AuthorizationContext:
@@ -152,7 +153,7 @@ def context_factory(
     _initial_authorization_codes = initial_authorization_codes or [
         authorization_code_factory(
             client_id=client.client_id,
-            redirect_uri=client.redirect_uris if client.redirect_uris else "",
+            redirect_uri=client.redirect_uris[0] if client.redirect_uris else "",
             scope=client.scope,
         )
         for client in _clients

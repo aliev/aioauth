@@ -7,6 +7,7 @@ Response objects used throughout the project.
 
 ----
 """
+
 from dataclasses import dataclass, field
 from http import HTTPStatus
 from typing import Dict, Optional
