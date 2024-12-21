@@ -66,6 +66,7 @@ install: clean ## install the package to the active Python's site-packages
 dev-install: clean ## install the package and test dependencies for local development
 	python -m pip install --upgrade pip
 	pip install -e ."[dev]"
+	pip install -r examples/requirements.txt
 	pre-commit install
 
 docs-install: ## install packages for local documentation.
