@@ -5,11 +5,12 @@ Bare Minimum Example of FastAPI Implementation of AioAuth
 """
 
 import json
+import html
 from http import HTTPStatus
-from typing import cast
+from typing import Optional, cast
 
-from fastapi import FastAPI, Request, Depends, Response
-from fastapi.responses import RedirectResponse
+from fastapi import FastAPI, Form, Request, Depends, Response
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi_extras.session import SessionMiddleware
 from sqlmodel.ext.asyncio.session import AsyncSession
 
@@ -19,7 +20,7 @@ from aioauth.requests import Request as OAuthRequest
 from aioauth.responses import Response as OAuthResponse
 from aioauth.types import RequestMethod
 
-from shared import AuthServer, BackendStore, engine, settings, auto_login, lifespan
+from shared import AuthServer, BackendStore, engine, settings, try_login, lifespan
 
 app = FastAPI(lifespan=lifespan)
 
@@ -92,13 +93,93 @@ async def tokenize(
 
 
 @app.get("/login")
-async def login(request: Request, oauth: AuthServer = Depends(get_auth_server)):
+async def login(request: Request, error: Optional[str] = None):
     """
-    barebones "login" page, redirected to when authorize is called before login
+    barebones login page, redirects to approval after completion
     """
-    # sign in user
+    if "oauth" not in request.session and error is None:
+        error = "Cannot Login without OAuth Session"
+    error = html.escape(error) if error else ""  # never trust user-input
+    content = f"""
+<html>
+    <body>
+        <h3>Login Form</h3>
+        <p style="color: red">{error}</p>
+        <form method="POST">
+            <table>
+                <tr>
+                    <td><label for="un">Username</label></td>
+                    <td><input id="un" name="username" type="text" value="admin" /></td>
+                </tr>
+                <tr>
+                    <td><label for="pw">Password</label></td>
+                    <td><input id="pw" name="password" type="password" value="admin" /></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><button type="submit" style="width: 100%">Login</button></td>
+                </tr>
+            </table>
+        </form>
+    </body>
+</html>
+    """
+    return HTMLResponse(content, status_code=400 if error else 200)
+
+
+@app.post("/login")
+async def login_submit(
+    request: Request,
+    username: str = Form(),
+    password: str = Form(),
+):
+    """
+    login form submission handler, redirects to approval on success
+    """
+    user = await try_login(username, password)
+    if user is None:
+        return await login(request, error="Invalid Username or Password")
+    request.session["user"] = user
+    redirect = request.url_for("approve")
+    return RedirectResponse(redirect, status_code=303)
+    # # sign in user
+
+
+@app.get("/approve")
+async def approve(request: Request):
+    """
+    barebones approval page, finalizes response after completion
+    """
+    if "user" not in request.session:
+        redirect = request.url_for("login")
+        return RedirectResponse(redirect)
+    oauthreq: OAuthRequest = request.session["oauth"]
+    content = f"""
+<html>
+    <body>
+        <h3>{oauthreq.query.client_id} would like permissions.</h3>
+        <form method="POST">
+            <button name="approval" value="0" type="submit">Deny</button>
+            <button name="approval" value="1" type="submit">Approve</button>
+        </form>
+    </body>
+</html>
+    """
+    return HTMLResponse(content)
+
+
+@app.post("/approve")
+async def approve_submit(
+    request: Request,
+    approval: int = Form(),
+    oauth: AuthServer = Depends(get_auth_server),
+):
+    """ """
     oauthreq = request.session["oauth"]
-    oauthreq.user = await auto_login()
+    oauthreq.user = request.session["user"]
+    if not approval:
+        # TODO: generate `permission_denied` response
+        return await approve(request)
     # process authorize request
     response = await oauth.create_authorization_response(oauthreq)
     return to_response(response)
