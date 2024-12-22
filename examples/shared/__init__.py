@@ -5,6 +5,7 @@ Shared Utilites and Implementation for AioAuth Storage Interfaces
 from contextlib import asynccontextmanager
 
 import os
+from typing import Optional
 from aioauth.server import AuthorizationServer
 
 from sqlmodel import SQLModel, select
@@ -12,7 +13,6 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 
 from .config import load_config
-from .models import Client
 from .storage import BackendStore, User
 
 __all__ = [
@@ -21,7 +21,7 @@ __all__ = [
     "engine",
     "config",
     "settings",
-    "auto_login",
+    "try_login",
     "lifespan",
 ]
 
@@ -35,13 +35,16 @@ config = load_config(CONFIG_PATH)
 settings = config.settings
 
 
-async def auto_login() -> User:
+async def try_login(username: str, password: str) -> Optional[User]:
     """
-    return test user-account simulating login
+    try username and password against user fixtures in database
     """
     async with AsyncSession(engine) as conn:
-        sql = select(User).where(User.username == "test")
-        return (await conn.exec(sql)).one()
+        sql = select(User).where(
+            User.username == username and User.password == password
+        )
+        record = await conn.exec(sql)
+        return record.first()
 
 
 @asynccontextmanager
@@ -55,20 +58,10 @@ async def lifespan(*_):
         await conn.run_sync(SQLModel.metadata.create_all)
     # create test records
     async with AsyncSession(engine) as session:
-        user = User(
-            username="test",
-            password="password",
-        )
-        client = Client(
-            client_id="test_client",
-            client_secret="password",
-            grant_types="authorization_code,refresh_token",
-            redirect_uris="http://localhost:3000/redirect",
-            response_types="code",
-            scope="email",
-        )
-        session.add(user)
-        session.add(client)
+        for user in config.fixtures.users:
+            session.add(user)
+        for client in config.fixtures.clients:
+            session.add(client)
         await session.commit()
     yield
     # close connections on app closure
