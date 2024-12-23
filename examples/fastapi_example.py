@@ -15,10 +15,12 @@ from fastapi_extras.session import SessionMiddleware
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from aioauth.collections import HTTPHeaderDict
+from aioauth.errors import AccessDeniedError
 from aioauth.requests import Post, Query
 from aioauth.requests import Request as OAuthRequest
 from aioauth.responses import Response as OAuthResponse
 from aioauth.types import RequestMethod
+from aioauth.utils import build_error_response
 
 from shared import AuthServer, BackendStore, engine, settings, try_login, lifespan
 
@@ -174,14 +176,18 @@ async def approve_submit(
     approval: int = Form(),
     oauth: AuthServer = Depends(get_auth_server),
 ):
-    """ """
+    """
+    scope approval form submission handler
+    """
     oauthreq = request.session["oauth"]
     oauthreq.user = request.session["user"]
     if not approval:
-        # TODO: generate `permission_denied` response
-        return await approve(request)
-    # process authorize request
-    response = await oauth.create_authorization_response(oauthreq)
+        # generate error response on deny
+        error    = AccessDeniedError(oauthreq, 'User rejected scopes')
+        response = build_error_response(error, oauthreq, skip_redirect_on_exc=())
+    else:
+        # process authorize request
+        response = await oauth.create_authorization_response(oauthreq)
     return to_response(response)
 
 
