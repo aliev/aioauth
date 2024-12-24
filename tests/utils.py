@@ -4,7 +4,7 @@ from typing import Any, Callable, Dict, Union
 
 from aioauth.collections import HTTPHeaderDict
 from aioauth.constances import default_headers
-from aioauth.requests import BaseRequest, Post, Query
+from aioauth.requests import Request, Post, Query
 from aioauth.responses import ErrorResponse, Response
 
 EMPTY_KEYS = {
@@ -298,7 +298,7 @@ def get_keys(query: Union[Query, Post]) -> Dict[str, Any]:
 
 
 async def check_query_values(
-    request: BaseRequest, responses, query_dict: Dict, endpoint_func, value
+    request: Request, responses, query_dict: Dict, endpoint_func, value
 ):
     keys = set(query_dict.keys()) & set(responses.keys())
 
@@ -333,7 +333,7 @@ async def check_query_values(
 
 
 async def check_request_validators(
-    request: BaseRequest,
+    request: Request,
     endpoint_func: Callable,
 ):
     query_dict = {}

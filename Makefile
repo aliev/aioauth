@@ -43,6 +43,7 @@ clean-pyc: ## remove Python file artifacts
 
 clean-test: ## remove test and coverage artifacts
 	rm -f .coverage
+	rm -f coverage.xml
 	rm -fr htmlcov/
 	rm -fr .pytest_cache
 
@@ -56,8 +57,7 @@ release: dist ## package and upload a release
 	twine upload dist/*
 
 dist: clean ## builds source and wheel package
-	python setup.py sdist
-	python setup.py bdist_wheel
+	python -m build
 	ls -l dist
 
 install: clean ## install the package to the active Python's site-packages
@@ -66,6 +66,7 @@ install: clean ## install the package to the active Python's site-packages
 dev-install: clean ## install the package and test dependencies for local development
 	python -m pip install --upgrade pip
 	pip install -e ."[dev]"
+	pip install -r examples/requirements.txt
 	pre-commit install
 
 docs-install: ## install packages for local documentation.
