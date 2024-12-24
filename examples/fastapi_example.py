@@ -183,7 +183,7 @@ async def approve_submit(
     oauthreq.user = request.session["user"]
     if not approval:
         # generate error response on deny
-        error    = AccessDeniedError(oauthreq, 'User rejected scopes')
+        error = AccessDeniedError(oauthreq, "User rejected scopes")
         response = build_error_response(error, oauthreq, skip_redirect_on_exc=())
     else:
         # process authorize request
