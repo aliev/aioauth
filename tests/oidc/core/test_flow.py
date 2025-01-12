@@ -8,6 +8,7 @@ from aioauth.utils import (
     generate_token,
 )
 
+from tests.classes import User
 from tests.utils import check_request_validators
 
 
@@ -21,10 +22,13 @@ from tests.utils import check_request_validators
 )
 async def test_authorization_endpoint_allows_prompt_query_param(
     expected_status_code: HTTPStatus,
-    user: Optional[str],
+    user: Optional[User],
     context_factory,
 ):
-    context = context_factory(users={user, "password"})
+    if user is None:
+        context = context_factory()
+    else:
+        context = context_factory(users={user: "password"})
     server = context.server
     client = context.clients[0]
     client_id = client.client_id
@@ -39,7 +43,7 @@ async def test_authorization_endpoint_allows_prompt_query_param(
         state=generate_token(10),
     )
 
-    request = Request(
+    request = Request[User](
         url=request_url,
         query=query,
         method="GET",

@@ -7,15 +7,22 @@ Containers that contain constants used throughout the project.
 
 ----
 """
+
 import sys
+from typing import Any, Literal
 
-if sys.version_info >= (3, 8):
-    from typing import Literal
+if sys.version_info >= (3, 13):
+    from typing import TypeVar
 else:
-    from typing_extensions import Literal
+    from typing_extensions import TypeVar
+
+if sys.version_info >= (3, 11):
+    from typing import TypeAlias
+else:
+    from typing_extensions import TypeAlias
 
 
-ErrorType = Literal[
+ErrorType: TypeAlias = Literal[
     "invalid_request",
     "invalid_client",
     "invalid_grant",
@@ -29,10 +36,11 @@ ErrorType = Literal[
     "method_is_not_allowed",
     "server_error",
     "temporarily_unavailable",
+    "access_denied",
 ]
 
 
-GrantType = Literal[
+GrantType: TypeAlias = Literal[
     "authorization_code",
     "password",
     "client_credentials",
@@ -40,7 +48,7 @@ GrantType = Literal[
 ]
 
 
-ResponseType = Literal[
+ResponseType: TypeAlias = Literal[
     "token",
     "code",
     "none",
@@ -48,20 +56,22 @@ ResponseType = Literal[
 ]
 
 
-RequestMethod = Literal["GET", "POST"]
+RequestMethod: TypeAlias = Literal["GET", "POST"]
 
 
-CodeChallengeMethod = Literal[
+CodeChallengeMethod: TypeAlias = Literal[
     "plain",
     "S256",
 ]
 
 
-ResponseMode = Literal[
+ResponseMode: TypeAlias = Literal[
     "query",
     "form_post",
     "fragment",
 ]
 
 
-TokenType = Literal["access_token", "refresh_token"]
+TokenType: TypeAlias = Literal["access_token", "refresh_token", "Bearer"]
+
+UserType = TypeVar("UserType", default=Any)

@@ -34,6 +34,8 @@ from typing import (
 )
 from urllib.parse import quote, urlencode, urlparse, urlunsplit
 
+from aioauth.requests import Request
+
 from .collections import HTTPHeaderDict
 from .errors import (
     OAuth2Error,
@@ -153,8 +155,8 @@ def build_uri(
             parsed_url.scheme,
             parsed_url.netloc,
             parsed_url.path,
-            urlencode(query_params, quote_via=quote),  # type: ignore
-            urlencode(fragment, quote_via=quote),  # type: ignore
+            urlencode(query_params, quote_via=quote),
+            urlencode(fragment, quote_via=quote),
         )
     )
     return uri
@@ -225,6 +227,57 @@ def create_s256_code_challenge(code_verifier: str) -> str:
     return base64.urlsafe_b64encode(data).rstrip(b"=").decode()
 
 
+def build_error_response(
+    exc: Exception,
+    request: Request,
+    skip_redirect_on_exc: Tuple[Type[OAuth2Error], ...] = (OAuth2Error,),
+) -> Response:
+    """
+    Generate an OAuth HTTP response from the given exception
+
+    Args:
+        exc: Exception used to generate HTTP response
+        request: oauth request object
+        skip_redirect_on_exc: Exception types to skip redirect on
+    Returns:
+        OAuth HTTP response
+    """
+    error: Union[TemporarilyUnavailableError, ServerError]
+    if isinstance(exc, skip_redirect_on_exc):
+        content = ErrorResponse(error=exc.error, description=exc.description)
+        log.debug("%s %r", exc, request)
+        return Response(
+            content=asdict(content),
+            status_code=exc.status_code,
+            headers=exc.headers,
+        )
+    if isinstance(exc, OAuth2Error):
+        log.debug("%s %r", exc, request)
+        query: Dict[str, str] = {"error": exc.error}
+        if exc.description:
+            query["error_description"] = exc.description
+        if request.settings.ERROR_URI:
+            query["error_uri"] = request.settings.ERROR_URI
+        if exc.state:
+            query["state"] = exc.state
+        location = build_uri(request.query.redirect_uri, query)
+        return Response(
+            status_code=HTTPStatus.FOUND,
+            headers=HTTPHeaderDict({"location": location}),
+        )
+    error = ServerError(
+        request=request,
+        description=str(exc) if request.settings.DEBUG else "",
+    )
+    log.exception("Exception caught while processing request.", exc_info=exc)
+    content = ErrorResponse(error=error.error, description=error.description)
+    return Response(
+        content=asdict(content),
+        status_code=error.status_code,
+        headers=error.headers,
+    )
+
+
 def catch_errors_and_unavailability(
     skip_redirect_on_exc: Tuple[Type[OAuth2Error], ...] = (OAuth2Error,)
 ) -> Callable[..., Callable[..., Coroutine[Any, Any, Response]]]:
@@ -239,47 +292,13 @@ def catch_errors_and_unavailability(
 
     def decorator(f) -> Callable[..., Coroutine[Any, Any, Response]]:
         @functools.wraps(f)
-        async def wrapper(self, request, *args, **kwargs) -> Response:
-            error: Union[TemporarilyUnavailableError, ServerError]
-
+        async def wrapper(self, request: Request, *args, **kwargs) -> Response:
             try:
                 response = await f(self, request, *args, **kwargs)
-            except skip_redirect_on_exc as exc:
-                content = ErrorResponse(error=exc.error, description=exc.description)
-                log.debug("%s %r", exc, request)
-                return Response(
-                    content=asdict(content),
-                    status_code=exc.status_code,
-                    headers=exc.headers,
+            except Exception as exc:
+                response = build_error_response(
+                    exc=exc, request=request, skip_redirect_on_exc=skip_redirect_on_exc
                 )
-            except OAuth2Error as exc:
-                log.debug("%s %r", exc, request)
-                query: Dict[str, str] = {
-                    "error": exc.error,
-                }
-                if exc.description:
-                    query["error_description"] = exc.description
-                if request.settings.ERROR_URI:
-                    query["error_uri"] = request.settings.ERROR_URI
-                if exc.state:
-                    query["state"] = exc.state
-                location = build_uri(request.query.redirect_uri, query)
-                return Response(
-                    status_code=HTTPStatus.FOUND,
-                    headers=HTTPHeaderDict({"location": location}),
-                )
-            except Exception:
-                error = ServerError(request=request)
-                log.exception("Exception caught while processing request.")
-                content = ErrorResponse(
-                    error=error.error, description=error.description
-                )
-                return Response(
-                    content=asdict(content),
-                    status_code=error.status_code,
-                    headers=error.headers,
-                )
-
             return response
 
         return wrapper

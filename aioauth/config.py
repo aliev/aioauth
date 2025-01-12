@@ -65,3 +65,5 @@ class Settings:
 
     AVAILABLE: bool = True
     """Boolean indicating whether or not the server is available."""
+
+    DEBUG: bool = False
