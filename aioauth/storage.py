@@ -10,8 +10,7 @@ action.
 ----
 """
 
-import sys
-from typing import TYPE_CHECKING, Optional, Generic
+from typing import Optional, Generic
 
 from .models import AuthorizationCode, Client, Token
 from .types import CodeChallengeMethod, TokenType
@@ -19,83 +18,17 @@ from .types import CodeChallengeMethod, TokenType
 from .requests import Request
 from .types import UserType
 
-if sys.version_info >= (3, 11):
-    from typing import NotRequired, Unpack
-else:
-    from typing_extensions import NotRequired, Unpack
-
-from typing import TypedDict as _TypedDict
-
-# NOTE: workaround for generic TypedDict support
-# https://github.com/python/cpython/issues/89026
-if TYPE_CHECKING:
-
-    class TypedDict(Generic[UserType], _TypedDict): ...
-
-else:
-
-    class TypedDict(Generic[UserType]): ...
-
-
-class GetAuthorizationCodeArgs(TypedDict[UserType]):
-    request: Request[UserType]
-    client_id: str
-    code: str
-
-
-class GetClientArgs(TypedDict[UserType]):
-    request: Request[UserType]
-    client_id: str
-    client_secret: NotRequired[Optional[str]]
-
-
-class GetIdTokenArgs(TypedDict[UserType]):
-    request: Request[UserType]
-    client_id: str
-    scope: str
-    response_type: Optional[str]
-    redirect_uri: str
-    nonce: Optional[str]
-
-
-class CreateAuthorizationCodeArgs(TypedDict[UserType]):
-    request: Request[UserType]
-    client_id: str
-    scope: str
-    response_type: str
-    redirect_uri: str
-    code_challenge_method: Optional[CodeChallengeMethod]
-    code_challenge: Optional[str]
-    code: str
-    nonce: NotRequired[Optional[str]]
-
-
-class CreateTokenArgs(TypedDict[UserType]):
-    request: Request[UserType]
-    client_id: str
-    scope: str
-    access_token: str
-    refresh_token: Optional[str]
-
-
-class GetTokenArgs(TypedDict[UserType]):
-    request: Request[UserType]
-    client_id: str
-    token_type: Optional[TokenType]  # default is "refresh_token"
-    access_token: Optional[str]  # default is None
-    refresh_token: Optional[str]  # default is None
-
-
-class RevokeTokenArgs(TypedDict[UserType]):
-    request: Request[UserType]
-    client_id: str
-    refresh_token: Optional[str]
-    token_type: Optional[TokenType]
-    access_token: Optional[str]
-
 
 class TokenStorage(Generic[UserType]):
-    async def create_token(self, **kwargs: Unpack[CreateTokenArgs[UserType]]) -> Token:
+    async def create_token(
+        self,
+        *,
+        request: Request[UserType],
+        client_id: str,
+        scope: str,
+        access_token: str,
+        refresh_token: Optional[str] = None,
+    ) -> Token:
         """Generates a user token and stores it in the database.
 
         Used by:
@@ -120,7 +53,13 @@ class TokenStorage(Generic[UserType]):
         raise NotImplementedError("Method create_token must be implemented")
 
     async def get_token(
-        self, **kwargs: Unpack[GetTokenArgs[UserType]]
+        self,
+        *,
+        request: Request[UserType],
+        client_id: str,
+        token_type: Optional[TokenType] = None,
+        access_token: Optional[str] = None,
+        refresh_token: Optional[str] = None,
     ) -> Optional[Token]:
         """Gets existing token from the database.
 
@@ -138,7 +77,15 @@ class TokenStorage(Generic[UserType]):
         """
         raise NotImplementedError("Method get_token must be implemented")
 
-    async def revoke_token(self, **kwargs: Unpack[RevokeTokenArgs[UserType]]) -> None:
+    async def revoke_token(
+        self,
+        *,
+        request: Request[UserType],
+        client_id: str,
+        refresh_token: Optional[str] = None,
+        token_type: Optional[TokenType] = None,
+        access_token: Optional[str] = None,
+    ) -> None:
         """Revokes a token from the database."""
         raise NotImplementedError
 
@@ -146,7 +93,16 @@ class TokenStorage(Generic[UserType]):
 class AuthorizationCodeStorage(Generic[UserType]):
     async def create_authorization_code(
         self,
-        **kwargs: Unpack[CreateAuthorizationCodeArgs[UserType]],
+        *,
+        request: Request[UserType],
+        client_id: str,
+        scope: str,
+        response_type: str,
+        redirect_uri: str,
+        code: str,
+        code_challenge_method: Optional[CodeChallengeMethod] = None,
+        code_challenge: Optional[str] = None,
+        nonce: Optional[str] = None,
     ) -> AuthorizationCode:
         """Generates an authorization token and stores it in the database.
 
@@ -172,7 +128,10 @@ class AuthorizationCodeStorage(Generic[UserType]):
 
     async def get_authorization_code(
         self,
-        **kwargs: Unpack[GetAuthorizationCodeArgs[UserType]],
+        *,
+        request: Request[UserType],
+        client_id: str,
+        code: str,
     ) -> Optional[AuthorizationCode]:
         """Gets existing authorization code from the database if it exists.
 
@@ -196,7 +155,10 @@ class AuthorizationCodeStorage(Generic[UserType]):
 
     async def delete_authorization_code(
         self,
-        **kwargs: Unpack[GetAuthorizationCodeArgs[UserType]],
+        *,
+        request: Request[UserType],
+        client_id: str,
+        code: str,
     ) -> None:
         """Deletes authorization code from database.
 
@@ -216,7 +178,10 @@ class AuthorizationCodeStorage(Generic[UserType]):
 class ClientStorage(Generic[UserType]):
     async def get_client(
         self,
-        **kwargs: Unpack[GetClientArgs[UserType]],
+        *,
+        request: Request[UserType],
+        client_id: str,
+        client_secret: Optional[str] = None,
     ) -> Optional[Client[UserType]]:
         """Gets existing client from the database if it exists.
 
@@ -256,7 +221,13 @@ class UserStorage(Generic[UserType]):
 class IDTokenStorage(Generic[UserType]):
     async def get_id_token(
         self,
-        **kwargs: Unpack[GetIdTokenArgs[UserType]],
+        *,
+        request: Request[UserType],
+        client_id: str,
+        scope: str,
+        redirect_uri: str,
+        response_type: Optional[str] = None,
+        nonce: Optional[str] = None,
     ) -> str:
         """Returns an id_token.
         For more information see `OpenID Connect Core 1.0 incorporating errata set 1 section 2 <https://openid.net/specs/openid-connect-core-1_0.html#IDToken>`_.

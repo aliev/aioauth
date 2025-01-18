@@ -31,6 +31,7 @@ class ClientStore(ClientStorage[User]):
 
     async def get_client(
         self,
+        *,
         request: Request[User],
         client_id: str,
         client_secret: Optional[str] = None,
@@ -61,15 +62,16 @@ class AuthCodeStore(AuthorizationCodeStorage[User]):
 
     async def create_authorization_code(
         self,
+        *,
         request: Request[User],
         client_id: str,
         scope: str,
         response_type: str,
         redirect_uri: str,
-        code_challenge_method: Optional[CodeChallengeMethod],
-        code_challenge: Optional[str],
         code: str,
-        **kwargs,
+        code_challenge_method: Optional[CodeChallengeMethod] = None,
+        code_challenge: Optional[str] = None,
+        nonce: Optional[str] = None,
     ) -> AuthorizationCode:
         """"""
         auth_code = AuthorizationCode(
@@ -83,7 +85,6 @@ class AuthCodeStore(AuthorizationCodeStorage[User]):
             code_challenge=code_challenge,
             code_challenge_method=code_challenge_method,
             user=request.user,
-            **kwargs,
         )
         record = AuthCodeTable(
             code=auth_code.code,
@@ -104,7 +105,11 @@ class AuthCodeStore(AuthorizationCodeStorage[User]):
         return auth_code
 
     async def get_authorization_code(
-        self, request: Request[User], client_id: str, code: str
+        self,
+        *,
+        request: Request[User],
+        client_id: str,
+        code: str,
     ) -> Optional[AuthorizationCode]:
         """ """
         async with self.session:
@@ -125,7 +130,11 @@ class AuthCodeStore(AuthorizationCodeStorage[User]):
                 )
 
     async def delete_authorization_code(
-        self, request: Request[User], client_id: str, code: str
+        self,
+        *,
+        request: Request[User],
+        client_id: str,
+        code: str,
     ) -> None:
         """ """
         async with self.session:
@@ -147,7 +156,7 @@ class TokenStore(TokenStorage[User]):
         client_id: str,
         scope: str,
         access_token: str,
-        refresh_token: Optional[str],
+        refresh_token: Optional[str] = None,
     ) -> Token:
         """ """
         token = Token(
@@ -179,6 +188,7 @@ class TokenStore(TokenStorage[User]):
 
     async def get_token(
         self,
+        *,
         request: Request[User],
         client_id: str,
         token_type: Optional[TokenType] = "refresh_token",
@@ -208,6 +218,7 @@ class TokenStore(TokenStorage[User]):
 
     async def revoke_token(
         self,
+        *,
         request: Request[User],
         client_id: str,
         token_type: Optional[TokenType] = "refresh_token",
