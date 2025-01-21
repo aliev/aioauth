@@ -38,7 +38,9 @@ class ResponseTypeBase(Generic[UserType]):
     def __init__(self, storage: BaseStorage[UserType]):
         self.storage = storage
 
-    async def validate_request(self, request: Request[UserType]) -> Client[UserType]:
+    async def validate_request(
+        self, request: Request[UserType], skip_user: bool = False
+    ) -> Client[UserType]:
         state = request.query.state
 
         code_challenge_methods: Tuple[CodeChallengeMethod, ...] = get_args(
@@ -90,7 +92,7 @@ class ResponseTypeBase(Generic[UserType]):
         if not client.check_scope(request.query.scope):
             raise InvalidScopeError[UserType](request=request, state=state)
 
-        if not request.user:
+        if not skip_user and not request.user:
             raise InvalidClientError[UserType](
                 request=request, description="User is not authorized", state=state
             )
@@ -156,8 +158,10 @@ class ResponseTypeAuthorizationCode(ResponseTypeBase[UserType]):
 
 
 class ResponseTypeIdToken(ResponseTypeBase[UserType]):
-    async def validate_request(self, request: Request[UserType]) -> Client[UserType]:
-        client = await super().validate_request(request)
+    async def validate_request(
+        self, request: Request[UserType], skip_user: bool = False
+    ) -> Client[UserType]:
+        client = await super().validate_request(request, skip_user)
 
         # nonce is required for id_token
         if not request.query.nonce:

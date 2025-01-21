@@ -6,7 +6,6 @@ Bare Minimum Example of FastAPI Implementation of AioAuth
 
 import json
 import html
-from http import HTTPStatus
 from typing import Optional, cast
 
 from fastapi import FastAPI, Form, Request, Depends, Response
@@ -19,6 +18,7 @@ from aioauth.errors import AccessDeniedError
 from aioauth.requests import Post, Query
 from aioauth.requests import Request as OAuthRequest
 from aioauth.responses import Response as OAuthResponse
+from aioauth.server import AuthorizationState as OAuthState
 from aioauth.types import RequestMethod
 from aioauth.utils import build_error_response
 
@@ -74,10 +74,13 @@ async def authorize(
     oauth2 authorization endpoint using aioauth
     """
     oauthreq = await to_request(request)
-    response = await oauth.create_authorization_response(oauthreq)
-    if response.status_code == HTTPStatus.UNAUTHORIZED:
-        request.session["oauth"] = oauthreq
+    auth_state = await oauth.validate_authorization_request(oauthreq)
+    if isinstance(auth_state, OAuthResponse):
+        return to_response(auth_state)
+    if "user" not in request.session:
+        request.session["oauth"] = auth_state
         return RedirectResponse("/login")
+    response = await oauth.create_authorization_response(auth_state)
     return to_response(response)
 
 
@@ -155,11 +158,11 @@ async def approve(request: Request):
     if "user" not in request.session:
         redirect = request.url_for("login")
         return RedirectResponse(redirect)
-    oauthreq: OAuthRequest = request.session["oauth"]
+    state: OAuthState = request.session["oauth"]
     content = f"""
 <html>
     <body>
-        <h3>{oauthreq.query.client_id} would like permissions.</h3>
+        <h3>{state.request.query.client_id} would like permissions.</h3>
         <form method="POST">
             <button name="approval" value="0" type="submit">Deny</button>
             <button name="approval" value="1" type="submit">Approve</button>
@@ -179,15 +182,15 @@ async def approve_submit(
     """
     scope approval form submission handler
     """
-    oauthreq = request.session["oauth"]
-    oauthreq.user = request.session["user"]
+    state: OAuthState = request.session["oauth"]
+    oauthreq: OAuthRequest = state.request
     if not approval:
         # generate error response on deny
         error = AccessDeniedError(oauthreq, "User rejected scopes")
         response = build_error_response(error, oauthreq, skip_redirect_on_exc=())
     else:
         # process authorize request
-        response = await oauth.create_authorization_response(oauthreq)
+        response = await oauth.create_authorization_response(state)
     return to_response(response)
 
 

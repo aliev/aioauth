@@ -17,10 +17,11 @@ Warning:
 ----
 """
 
-from dataclasses import asdict
+from dataclasses import asdict, dataclass
 from http import HTTPStatus
 from typing import Any, Dict, Generic, List, Optional, Tuple, Type, Union, get_args
 
+from .models import Client
 from .requests import Request
 from .types import UserType
 from .storage import BaseStorage
@@ -69,6 +70,20 @@ from .utils import (
     decode_auth_headers,
     enforce_list,
 )
+
+
+@dataclass
+class AuthorizationState(Generic[UserType]):
+    """AuthorizationServer state object used in Authorization Code process."""
+
+    request: Request[UserType]
+    """OAuth2.0 Authorization Code Request Object"""
+
+    response_type_list: List[ResponseType]
+    """Supported ResponseTypes Collected During Initial Request Validation"""
+
+    grants: List[Tuple[ResponseTypeAuthorizationCode[UserType], Client]]
+    """Collection of Supported GrantType Handlers and The Parsed Clients"""
 
 
 class AuthorizationServer(Generic[UserType]):
@@ -341,13 +356,14 @@ class AuthorizationServer(Generic[UserType]):
             InvalidRedirectURIError,
         )
     )
-    async def create_authorization_response(
+    async def validate_authorization_request(
         self, request: Request[UserType]
-    ) -> Response:
+    ) -> Union[Response, AuthorizationState]:
         """
         Endpoint to interact with the resource owner and obtain an
-        authorization grant.
-        Validate authorization request and create authorization response.
+        authoriation grant.
+        Validate authorization request and return valid authorization
+        state for later response generation.
         For more information see
         `RFC6749 section 4.1.1 <https://tools.ietf.org/html/rfc6749#section-4.1.1>`_.
 
@@ -365,8 +381,10 @@ class AuthorizationServer(Generic[UserType]):
             async def authorize(request: fastapi.Request) -> fastapi.Response:
                 # Converts a fastapi.Request to an aioauth.Request.
                 oauth2_request: aioauth.Request = await to_oauth2_request(request)
+                # Validate the oauth request
+                auth_state: aioauth.AuthState = await server.validate_authorization_request(oauth2_request)
                 # Creates the response via this function call.
-                oauth2_response: aioauth.Response = await server.create_authorization_response(oauth2_request)
+                oauth2_response: aioauth.Response = await server.create_authorization_response(auth_state)
                 # Converts an aioauth.Response to a fastapi.Response.
                 response: fastapi.Response = await to_fastapi_response(oauth2_response)
                 return response
@@ -375,12 +393,85 @@ class AuthorizationServer(Generic[UserType]):
             request: An :py:class:`aioauth.requests.Request` object.
 
         Returns:
-            response: An :py:class:`aioauth.responses.Response` object.
+            state: An :py:class:`aioauth.server.AuthState` object.
         """
         self.validate_request(request, ["GET", "POST"])
 
         response_type_list = enforce_list(request.query.response_type)
         response_type_classes = set()
+        state = request.query.state
+
+        if not response_type_list:
+            raise InvalidRequestError[UserType](
+                request=request,
+                description="Missing response_type parameter.",
+                state=state,
+            )
+
+        for response_type in response_type_list:
+            ResponseTypeClass = self.response_types.get(response_type)
+            if ResponseTypeClass:
+                response_type_classes.add(ResponseTypeClass)
+
+        if not response_type_classes:
+            raise UnsupportedResponseTypeError[UserType](request=request, state=state)
+
+        auth_state = AuthorizationState(request, response_type_list, grants=[])
+        for ResponseTypeClass in response_type_classes:
+            response_type = ResponseTypeClass(storage=self.storage)
+            client = await response_type.validate_request(request, skip_user=True)
+            auth_state.grants.append((response_type, client))
+        return auth_state
+
+    @catch_errors_and_unavailability(
+        skip_redirect_on_exc=(
+            MethodNotAllowedError,
+            InvalidClientError,
+            InvalidRedirectURIError,
+        )
+    )
+    async def create_authorization_response(
+        self,
+        auth_state: AuthorizationState[UserType],
+    ) -> Response:
+        """
+        Endpoint to interact with the resource owner and obtain an
+        authorization grant.
+        Create an authorization response after validation.
+        For more information see
+        `RFC6749 section 4.1.1 <https://tools.ietf.org/html/rfc6749#section-4.1.1>`_.
+
+        Example:
+            Below is an example utilizing FastAPI as the server framework.
+        .. code-block:: python
+
+            from aioauth.fastapi.utils import to_oauth2_request, to_fastapi_response
+
+            @app.post("/authorize")
+            async def authorize(request: fastapi.Request) -> fastapi.Response:
+                # Converts a fastapi.Request to an aioauth.Request.
+                oauth2_request: aioauth.Request = await to_oauth2_request(request)
+                # Validate the oauth request
+                auth_state: aioauth.AuthState = await server.validate_authorization_request(oauth2_request)
+                # Creates the response via this function call.
+                oauth2_response: aioauth.Response = await server.create_authorization_response(auth_state)
+                # Converts an aioauth.Response to a fastapi.Response.
+                response: fastapi.Response = await to_fastapi_response(oauth2_response)
+                return response
+
+        Args:
+            auth_state: An :py:class:`aioauth.server.AuthState` object.
+
+        Returns:
+            response: An :py:class:`aioauth.responses.Response` object.
+        """
+        request = auth_state.request
+        state = auth_state.request.query.state
+        response_type_list = auth_state.response_type_list
+        if request.user:
+            raise InvalidClientError[UserType](
+                request=request, description="User is not authorized", state=state
+            )
 
         # Combined responses
         responses = {}
@@ -394,29 +485,10 @@ class AuthorizationServer(Generic[UserType]):
         # Response content
         content = {}
 
-        state = request.query.state
-
-        if not response_type_list:
-            raise InvalidRequestError[UserType](
-                request=request,
-                description="Missing response_type parameter.",
-                state=state,
-            )
-
         if state:
             responses["state"] = state
 
-        for response_type in response_type_list:
-            ResponseTypeClass = self.response_types.get(response_type)
-            if ResponseTypeClass:
-                response_type_classes.add(ResponseTypeClass)
-
-        if not response_type_classes:
-            raise UnsupportedResponseTypeError[UserType](request=request, state=state)
-
-        for ResponseTypeClass in response_type_classes:
-            response_type = ResponseTypeClass(storage=self.storage)
-            client = await response_type.validate_request(request)
+        for response_type, client in auth_state.grants:
             response = await response_type.create_authorization_response(
                 request, client
             )
