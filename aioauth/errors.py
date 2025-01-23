@@ -11,8 +11,6 @@ Errors used throughout the project.
 from http import HTTPStatus
 from typing import Generic, Optional
 from urllib.parse import urljoin
-from typing_extensions import Literal
-
 from .requests import Request
 
 from .collections import HTTPHeaderDict
@@ -72,7 +70,7 @@ class InvalidRequestError(Generic[UserType], OAuth2Error[UserType]):
     otherwise malformed.
     """
 
-    error: Literal["invalid_request"] = "invalid_request"
+    error: ErrorType = "invalid_request"
 
 
 class InvalidClientError(Generic[UserType], OAuth2Error[UserType]):
@@ -152,7 +150,7 @@ class MismatchingStateError(Generic[UserType], OAuth2Error[UserType]):
     """Unable to securely verify the integrity of the request and response."""
 
     description = "CSRF Warning! State not equal in request and response."
-    error: Literal["mismatching_state"] = "mismatching_state"
+    error: ErrorType = "mismatching_state"
 
 
 class UnauthorizedClientError(Generic[UserType], OAuth2Error[UserType]):
