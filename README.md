@@ -1,7 +1,7 @@
 ## Asynchronous OAuth 2.0 framework for Python 3
 
 [![Build Status](https://github.com/aliev/aioauth/workflows/CI/badge.svg?branch=master)](https://github.com/aliev/aioauth/actions/workflows/ci.yml?query=branch%3Amaster)
-[![Coverage](https://badgen.net/codecov/c/github/aliev/aioauth)](https://app.codecov.io/gh/aliev/aioauth)
+[![codecov](https://codecov.io/gh/aliev/aioauth/graph/badge.svg?token=NREOWPB586)](https://codecov.io/gh/aliev/aioauth)
 [![License](https://img.shields.io/github/license/aliev/aioauth)](https://github.com/aliev/aioauth/blob/master/LICENSE)
 [![PyPi](https://badgen.net/pypi/v/aioauth)](https://pypi.org/project/aioauth/)
 [![Python 3.9](https://img.shields.io/badge/python-3.9-blue.svg)](https://www.python.org/downloads/release/python-390/)
