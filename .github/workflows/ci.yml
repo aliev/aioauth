@@ -24,14 +24,14 @@ jobs:
     - name: Install dependencies
       run: |
         make dev-install
-        pip install codecov
     - name: Run lint
       run: |
         make lint
     - name: Run tests
       run: |
         make test
-    - name: Upload test coverage
-      run: codecov
-      env:
-        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+    - name: Upload test results to Codecov
+      if: ${{ !cancelled() }}
+      uses: codecov/test-results-action@v1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}

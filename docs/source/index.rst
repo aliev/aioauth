@@ -33,7 +33,7 @@ aioauth supports the following RFCs:
 Pages
 -----
 
-* `Github Project <https://github.com/aliev/aioauth/pull/21>`_
+* `Github Project <https://github.com/aliev/aioauth>`_
 * `Issues <https://github.com/aliev/aioauth/issues>`_
 * `Discussion <https://github.com/aliev/aioauth/discussions>`_
 
