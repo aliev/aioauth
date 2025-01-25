@@ -50,6 +50,7 @@ dev = [
     "mypy",
     "bandit",
     "pre-commit",
+    "pytest-cov",
 ]
 
 docs = [
