@@ -51,7 +51,7 @@ lint: ## check style with flake8
 	pre-commit run --all-files
 
 test: ## run tests quickly with the default Python
-	pytest tests
+	pytest --cov --junitxml=junit.xml -o junit_family=legacy
 
 release: dist ## package and upload a release
 	twine upload dist/*

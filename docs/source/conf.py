@@ -1,20 +1,22 @@
 # -- Path setup --------------------------------------------------------------
 
 from pathlib import Path
+import tomllib
+from aioauth import __version__
 
 # Project root folder.
 root = Path(__file__).parent.parent.parent
 
 # Loads __version__ file.
 about = {}
-with open(root / "aioauth" / "__version__.py", "r") as f:
-    exec(f.read(), about)
+with open(root / "pyproject.toml", "rb") as f:
+    about = tomllib.load(f)
 
 # -- Project information -----------------------------------------------------
 
-project = about["__title__"]
-author = about["__author__"]
-release = about["__version__"]
+project = about["project"]["description"]
+author = about["project"]["authors"][0]["name"]
+release = __version__
 
 # -- General configuration ---------------------------------------------------
 

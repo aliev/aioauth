@@ -15,20 +15,6 @@
   :glob:
   :maxdepth: 2
 
-  sections/using/*
-
-.. toctree::
-  :caption: Examples
-  :glob:
-  :maxdepth: 2
-
-  sections/examples/*
-
-.. toctree::
-  :caption: Documentation
-  :glob:
-  :maxdepth: 3
-
   sections/documentation/*
 
 .. toctree::
