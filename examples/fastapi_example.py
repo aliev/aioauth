@@ -51,7 +51,7 @@ async def to_request(request: Request) -> OAuthRequest:
         query=Query(**request.query_params),  # type: ignore
         settings=settings,
         url=str(request.url),
-        user=user,
+        extra={"user": user},
     )
 
 

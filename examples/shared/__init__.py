@@ -13,7 +13,8 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 
 from .config import load_config
-from .storage import BackendStore, User
+from .storage import BackendStore
+from .models import User
 
 __all__ = [
     "AuthServer",
@@ -68,5 +69,5 @@ async def lifespan(*_):
     await engine.dispose()
 
 
-class AuthServer(AuthorizationServer[User]):
+class AuthServer(AuthorizationServer):
     pass

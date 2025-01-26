@@ -18,13 +18,12 @@ from aioauth.storage import (
 )
 from aioauth.types import CodeChallengeMethod, TokenType
 
-from .models import User
 from .models import Client as ClientTable
 from .models import AuthorizationCode as AuthCodeTable
 from .models import Token as TokenTable
 
 
-class ClientStore(ClientStorage[User]):
+class ClientStore(ClientStorage):
 
     def __init__(self, session: AsyncSession):
         self.session = session
@@ -32,10 +31,10 @@ class ClientStore(ClientStorage[User]):
     async def get_client(
         self,
         *,
-        request: Request[User],
+        request: Request,
         client_id: str,
         client_secret: Optional[str] = None,
-    ) -> Optional[Client[User]]:
+    ) -> Optional[Client]:
         """ """
         sql = select(ClientTable).where(ClientTable.client_id == client_id)
         async with self.session:
@@ -55,7 +54,7 @@ class ClientStore(ClientStorage[User]):
         )
 
 
-class AuthCodeStore(AuthorizationCodeStorage[User]):
+class AuthCodeStore(AuthorizationCodeStorage):
 
     def __init__(self, session: AsyncSession):
         self.session = session
@@ -63,7 +62,7 @@ class AuthCodeStore(AuthorizationCodeStorage[User]):
     async def create_authorization_code(
         self,
         *,
-        request: Request[User],
+        request: Request,
         client_id: str,
         scope: str,
         response_type: str,
@@ -74,6 +73,8 @@ class AuthCodeStore(AuthorizationCodeStorage[User]):
         nonce: Optional[str] = None,
     ) -> AuthorizationCode:
         """"""
+        user = request.extra.get("user", None)
+
         auth_code = AuthorizationCode(
             code=code,
             client_id=client_id,
@@ -84,7 +85,6 @@ class AuthCodeStore(AuthorizationCodeStorage[User]):
             expires_in=300,
             code_challenge=code_challenge,
             code_challenge_method=code_challenge_method,
-            user=request.user,
         )
         record = AuthCodeTable(
             code=auth_code.code,
@@ -97,7 +97,7 @@ class AuthCodeStore(AuthorizationCodeStorage[User]):
             code_challenge=auth_code.code_challenge,
             code_challenge_method=auth_code.code_challenge_method,
             nonce=auth_code.nonce,
-            user_id=request.user.id if request.user else None,
+            user_id=user.id if user is not None else None,
         )
         async with self.session:
             self.session.add(record)
@@ -107,7 +107,7 @@ class AuthCodeStore(AuthorizationCodeStorage[User]):
     async def get_authorization_code(
         self,
         *,
-        request: Request[User],
+        request: Request,
         client_id: str,
         code: str,
     ) -> Optional[AuthorizationCode]:
@@ -132,7 +132,7 @@ class AuthCodeStore(AuthorizationCodeStorage[User]):
     async def delete_authorization_code(
         self,
         *,
-        request: Request[User],
+        request: Request,
         client_id: str,
         code: str,
     ) -> None:
@@ -144,7 +144,7 @@ class AuthCodeStore(AuthorizationCodeStorage[User]):
             await self.session.commit()
 
 
-class TokenStore(TokenStorage[User]):
+class TokenStore(TokenStorage):
 
     def __init__(self, session: AsyncSession):
         self.session = session
@@ -152,13 +152,14 @@ class TokenStore(TokenStorage[User]):
     async def create_token(
         self,
         *,
-        request: Request[User],
+        request: Request,
         client_id: str,
         scope: str,
         access_token: str,
         refresh_token: Optional[str] = None,
     ) -> Token:
         """ """
+        user = request.extra.get("user", None)
         token = Token(
             client_id=client_id,
             access_token=access_token,
@@ -167,7 +168,6 @@ class TokenStore(TokenStorage[User]):
             issued_at=int(datetime.now(tz=timezone.utc).timestamp()),
             expires_in=300,
             refresh_token_expires_in=900,
-            user=request.user,
         )
         record = TokenTable(
             client_id=token.client_id,
@@ -179,7 +179,7 @@ class TokenStore(TokenStorage[User]):
             refresh_token_expires_in=token.refresh_token_expires_in,
             token_type=token.token_type,
             revoked=token.revoked,
-            user_id=token.user.id if token.user else None,
+            user_id=user.id if user is not None else None,
         )
         async with self.session:
             self.session.add(record)
@@ -189,7 +189,7 @@ class TokenStore(TokenStorage[User]):
     async def get_token(
         self,
         *,
-        request: Request[User],
+        request: Request,
         client_id: str,
         token_type: Optional[TokenType] = "refresh_token",
         access_token: Optional[str] = None,
@@ -213,13 +213,12 @@ class TokenStore(TokenStorage[User]):
                     issued_at=result.issued_at,
                     expires_in=result.expires_in,
                     refresh_token_expires_in=result.refresh_token_expires_in,
-                    user=result.user,
                 )
 
     async def revoke_token(
         self,
         *,
-        request: Request[User],
+        request: Request,
         client_id: str,
         token_type: Optional[TokenType] = "refresh_token",
         access_token: Optional[str] = None,
@@ -238,5 +237,5 @@ class TokenStore(TokenStorage[User]):
             await self.session.commit()
 
 
-class BackendStore(ClientStore, AuthCodeStore, TokenStore, BaseStorage[User]):
+class BackendStore(ClientStore, AuthCodeStore, TokenStore, BaseStorage):
     pass

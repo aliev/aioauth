@@ -19,10 +19,9 @@ Warning:
 
 from dataclasses import asdict
 from http import HTTPStatus
-from typing import Any, Dict, Generic, List, Optional, Tuple, Type, Union, get_args
+from typing import Any, Dict, List, Optional, Tuple, Type, Union, get_args
 
 from .requests import Request
-from .types import UserType
 from .storage import BaseStorage
 
 
@@ -71,25 +70,25 @@ from .utils import (
 )
 
 
-class AuthorizationServer(Generic[UserType]):
+class AuthorizationServer:
     """Interface for initializing an OAuth 2.0 server."""
 
     response_types: Dict[ResponseType, Any] = {
-        "token": ResponseTypeToken[UserType],
-        "code": ResponseTypeAuthorizationCode[UserType],
-        "none": ResponseTypeNone[UserType],
-        "id_token": ResponseTypeIdToken[UserType],
+        "token": ResponseTypeToken,
+        "code": ResponseTypeAuthorizationCode,
+        "none": ResponseTypeNone,
+        "id_token": ResponseTypeIdToken,
     }
     grant_types: Dict[GrantType, Any] = {
-        "authorization_code": AuthorizationCodeGrantType[UserType],
-        "client_credentials": ClientCredentialsGrantType[UserType],
-        "password": PasswordGrantType[UserType],
-        "refresh_token": RefreshTokenGrantType[UserType],
+        "authorization_code": AuthorizationCodeGrantType,
+        "client_credentials": ClientCredentialsGrantType,
+        "password": PasswordGrantType,
+        "refresh_token": RefreshTokenGrantType,
     }
 
     def __init__(
         self,
-        storage: BaseStorage[UserType],
+        storage: BaseStorage,
         response_types: Optional[Dict] = None,
         grant_types: Optional[Dict] = None,
     ):
@@ -101,7 +100,7 @@ class AuthorizationServer(Generic[UserType]):
         if grant_types is not None:
             self.grant_types = grant_types
 
-    def is_secure_transport(self, request: Request[UserType]) -> bool:
+    def is_secure_transport(self, request: Request) -> bool:
         """
         Verifies the request was sent via a protected SSL tunnel.
 
@@ -118,25 +117,21 @@ class AuthorizationServer(Generic[UserType]):
             return True
         return request.url.lower().startswith("https://")
 
-    def validate_request(
-        self, request: Request[UserType], allowed_methods: List[RequestMethod]
-    ):
+    def validate_request(self, request: Request, allowed_methods: List[RequestMethod]):
         if not request.settings.AVAILABLE:
-            raise TemporarilyUnavailableError[UserType](request=request)
+            raise TemporarilyUnavailableError(request=request)
 
         if not self.is_secure_transport(request):
-            raise InsecureTransportError[UserType](request=request)
+            raise InsecureTransportError(request=request)
 
         if request.method not in allowed_methods:
             headers = HTTPHeaderDict(
                 {**default_headers, "allow": ", ".join(allowed_methods)}
             )
-            raise MethodNotAllowedError[UserType](request=request, headers=headers)
+            raise MethodNotAllowedError(request=request, headers=headers)
 
     @catch_errors_and_unavailability()
-    async def create_token_introspection_response(
-        self, request: Request[UserType]
-    ) -> Response:
+    async def create_token_introspection_response(self, request: Request) -> Response:
         """
         Returns a response object with introspection of the passed token.
         For more information see `RFC7662 section 2.1 <https://tools.ietf.org/html/rfc7662#section-2.1>`_.
@@ -177,7 +172,7 @@ class AuthorizationServer(Generic[UserType]):
         )
 
         if not client:
-            raise InvalidClientError[UserType](request)
+            raise InvalidClientError(request)
 
         token_types: Tuple[TokenType, ...] = get_args(TokenType)
         token_type: TokenType = "refresh_token"
@@ -221,7 +216,7 @@ class AuthorizationServer(Generic[UserType]):
         )
 
     def get_client_credentials(
-        self, request: Request[UserType], secret_required: bool
+        self, request: Request, secret_required: bool
     ) -> Tuple[str, str]:
         client_id = request.post.client_id
         client_secret = request.post.client_secret
@@ -236,7 +231,7 @@ class AuthorizationServer(Generic[UserType]):
                 if client_id is None or secret_required:
                     # Either we didn't find a client ID at all, or we found
                     # a client ID but no secret and a secret is required.
-                    raise InvalidClientError[UserType](
+                    raise InvalidClientError(
                         description="Invalid client_id parameter value.",
                         request=request,
                     ) from exc
@@ -249,7 +244,7 @@ class AuthorizationServer(Generic[UserType]):
         return client_id, client_secret
 
     @catch_errors_and_unavailability()
-    async def create_token_response(self, request: Request[UserType]) -> Response:
+    async def create_token_response(self, request: Request) -> Response:
         """Endpoint to obtain an access and/or ID token by presenting an
         authorization grant or refresh token.
         Validates a token request and creates a token response.
@@ -301,17 +296,17 @@ class AuthorizationServer(Generic[UserType]):
 
         if not request.post.grant_type:
             # grant_type request value is empty
-            raise InvalidRequestError[UserType](
+            raise InvalidRequestError(
                 request=request, description="Request is missing grant type."
             )
 
         GrantTypeClass: Type[
             Union[
-                GrantTypeBase[UserType],
-                AuthorizationCodeGrantType[UserType],
-                PasswordGrantType[UserType],
-                RefreshTokenGrantType[UserType],
-                ClientCredentialsGrantType[UserType],
+                GrantTypeBase,
+                AuthorizationCodeGrantType,
+                PasswordGrantType,
+                RefreshTokenGrantType,
+                ClientCredentialsGrantType,
             ]
         ]
 
@@ -319,7 +314,7 @@ class AuthorizationServer(Generic[UserType]):
             GrantTypeClass = self.grant_types[request.post.grant_type]
         except KeyError as exc:
             # grant_type request value is invalid
-            raise UnsupportedGrantTypeError[UserType](request=request) from exc
+            raise UnsupportedGrantTypeError(request=request) from exc
 
         grant_type = GrantTypeClass(
             storage=self.storage, client_id=client_id, client_secret=client_secret
@@ -341,9 +336,7 @@ class AuthorizationServer(Generic[UserType]):
             InvalidRedirectURIError,
         )
     )
-    async def create_authorization_response(
-        self, request: Request[UserType]
-    ) -> Response:
+    async def create_authorization_response(self, request: Request) -> Response:
         """
         Endpoint to interact with the resource owner and obtain an
         authorization grant.
@@ -397,7 +390,7 @@ class AuthorizationServer(Generic[UserType]):
         state = request.query.state
 
         if not response_type_list:
-            raise InvalidRequestError[UserType](
+            raise InvalidRequestError(
                 request=request,
                 description="Missing response_type parameter.",
                 state=state,
@@ -412,7 +405,7 @@ class AuthorizationServer(Generic[UserType]):
                 response_type_classes.add(ResponseTypeClass)
 
         if not response_type_classes:
-            raise UnsupportedResponseTypeError[UserType](request=request, state=state)
+            raise UnsupportedResponseTypeError(request=request, state=state)
 
         for ResponseTypeClass in response_type_classes:
             response_type = ResponseTypeClass(storage=self.storage)
@@ -475,7 +468,7 @@ class AuthorizationServer(Generic[UserType]):
         )
 
     @catch_errors_and_unavailability()
-    async def revoke_token(self, request: Request[UserType]) -> Response:
+    async def revoke_token(self, request: Request) -> Response:
         """Endpoint to revoke an access token or refresh token.
         For more information see
         `RFC7009 <https://tools.ietf.org/html/rfc7009>`_.
@@ -515,10 +508,10 @@ class AuthorizationServer(Generic[UserType]):
         )
 
         if not client:
-            raise InvalidClientError[UserType](request)
+            raise InvalidClientError(request)
 
         if not request.post.token:
-            raise InvalidRequestError[UserType](
+            raise InvalidRequestError(
                 request=request, description="Request is missing token."
             )
 
@@ -526,7 +519,7 @@ class AuthorizationServer(Generic[UserType]):
             "refresh_token",
             "access_token",
         }:
-            raise UnsupportedTokenTypeError[UserType](request=request)
+            raise UnsupportedTokenTypeError(request=request)
 
         access_token = (
             request.post.token

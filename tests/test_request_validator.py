@@ -13,14 +13,14 @@ from aioauth.utils import (
 )
 
 from tests import factories
-from tests.classes import AuthorizationContext, User
+from tests.classes import AuthorizationContext
 
 
 @pytest.mark.asyncio
 async def test_insecure_transport_error(server: AuthorizationServer):
     request_url = "http://localhost"
 
-    request = Request[User](url=request_url, method="GET")
+    request = Request(url=request_url, method="GET")
 
     response = await server.create_authorization_response(request)
     assert response.status_code == HTTPStatus.FOUND
@@ -156,7 +156,6 @@ async def test_invalid_response_type():
         url=request_url,
         query=query,
         method="GET",
-        user=username,
     )
     response = await server.create_authorization_response(request)
     assert response.status_code == HTTPStatus.FOUND
@@ -182,10 +181,9 @@ async def test_anonymous_user(context: AuthorizationContext):
         code_challenge=code_challenge,
     )
 
-    request = Request[User](url=request_url, query=query, method="GET")
+    request = Request(url=request_url, query=query, method="GET")
     response = await server.create_authorization_response(request)
-    assert response.status_code == HTTPStatus.UNAUTHORIZED
-    assert response.content["error"] == "invalid_client"
+    assert response.status_code == HTTPStatus.FOUND
 
 
 @pytest.mark.asyncio

@@ -4,7 +4,7 @@ import pytest
 from aioauth.server import AuthorizationServer
 
 from tests import factories
-from tests.classes import AuthorizationContext, User
+from tests.classes import AuthorizationContext
 
 
 @pytest.fixture
@@ -20,5 +20,5 @@ def context() -> Generator[AuthorizationContext, Any, Any]:
 @pytest.fixture
 def server(
     context: AuthorizationContext,
-) -> Generator[AuthorizationServer[User], Any, Any]:
+) -> Generator[AuthorizationServer, Any, Any]:
     yield context.server

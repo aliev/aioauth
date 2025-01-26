@@ -9,16 +9,16 @@ Errors used throughout the project.
 """
 
 from http import HTTPStatus
-from typing import Generic, Optional
+from typing import Optional
 from urllib.parse import urljoin
 from .requests import Request
 
 from .collections import HTTPHeaderDict
 from .constances import default_headers
-from .types import ErrorType, UserType
+from .types import ErrorType
 
 
-class OAuth2Error(Generic[UserType], Exception):
+class OAuth2Error(Exception):
     """Base exception that all other exceptions inherit from."""
 
     error: ErrorType
@@ -30,7 +30,7 @@ class OAuth2Error(Generic[UserType], Exception):
 
     def __init__(
         self,
-        request: Request[UserType],
+        request: Request,
         description: Optional[str] = None,
         headers: Optional[HTTPHeaderDict] = None,
         state: Optional[str] = None,
@@ -52,7 +52,7 @@ class OAuth2Error(Generic[UserType], Exception):
         super().__init__(f"({self.error}) {self.description}")
 
 
-class MethodNotAllowedError(Generic[UserType], OAuth2Error[UserType]):
+class MethodNotAllowedError(OAuth2Error):
     """
     The request is valid, but the method trying to be accessed is not
     available to the resource owner.
@@ -63,7 +63,7 @@ class MethodNotAllowedError(Generic[UserType], OAuth2Error[UserType]):
     error: ErrorType = "method_is_not_allowed"
 
 
-class InvalidRequestError(Generic[UserType], OAuth2Error[UserType]):
+class InvalidRequestError(OAuth2Error):
     """
     The request is missing a required parameter, includes an invalid
     parameter value, includes a parameter more than once, or is
@@ -73,7 +73,7 @@ class InvalidRequestError(Generic[UserType], OAuth2Error[UserType]):
     error: ErrorType = "invalid_request"
 
 
-class InvalidClientError(Generic[UserType], OAuth2Error[UserType]):
+class InvalidClientError(OAuth2Error):
     """
     Client authentication failed (e.g. unknown client, no client
     authentication included, or unsupported authentication method).
@@ -108,14 +108,14 @@ class InvalidClientError(Generic[UserType], OAuth2Error[UserType]):
         self.headers["WWW-Authenticate"] = "Basic " + ", ".join(auth_values)
 
 
-class InsecureTransportError(Generic[UserType], OAuth2Error[UserType]):
+class InsecureTransportError(OAuth2Error):
     """An exception will be thrown if the current request is not secure."""
 
     description = "OAuth 2 MUST utilize https."
     error: ErrorType = "insecure_transport"
 
 
-class UnsupportedGrantTypeError(Generic[UserType], OAuth2Error[UserType]):
+class UnsupportedGrantTypeError(OAuth2Error):
     """
     The authorization grant type is not supported by the authorization
     server.
@@ -124,7 +124,7 @@ class UnsupportedGrantTypeError(Generic[UserType], OAuth2Error[UserType]):
     error: ErrorType = "unsupported_grant_type"
 
 
-class UnsupportedResponseTypeError(Generic[UserType], OAuth2Error[UserType]):
+class UnsupportedResponseTypeError(OAuth2Error):
     """
     The authorization server does not support obtaining an authorization
     code using this method.
@@ -133,7 +133,7 @@ class UnsupportedResponseTypeError(Generic[UserType], OAuth2Error[UserType]):
     error: ErrorType = "unsupported_response_type"
 
 
-class InvalidGrantError(Generic[UserType], OAuth2Error[UserType]):
+class InvalidGrantError(OAuth2Error):
     """
     The provided authorization grant (e.g. authorization code, resource
     owner credentials) or refresh token is invalid, expired, revoked, does
@@ -146,14 +146,14 @@ class InvalidGrantError(Generic[UserType], OAuth2Error[UserType]):
     error: ErrorType = "invalid_grant"
 
 
-class MismatchingStateError(Generic[UserType], OAuth2Error[UserType]):
+class MismatchingStateError(OAuth2Error):
     """Unable to securely verify the integrity of the request and response."""
 
     description = "CSRF Warning! State not equal in request and response."
     error: ErrorType = "mismatching_state"
 
 
-class UnauthorizedClientError(Generic[UserType], OAuth2Error[UserType]):
+class UnauthorizedClientError(OAuth2Error):
     """
     The authenticated client is not authorized to use this authorization
     grant type.
@@ -162,7 +162,7 @@ class UnauthorizedClientError(Generic[UserType], OAuth2Error[UserType]):
     error: ErrorType = "unauthorized_client"
 
 
-class InvalidScopeError(Generic[UserType], OAuth2Error[UserType]):
+class InvalidScopeError(OAuth2Error):
     """
     The requested scope is invalid, unknown, or malformed, or
     exceeds the scope granted by the resource owner.
@@ -173,7 +173,7 @@ class InvalidScopeError(Generic[UserType], OAuth2Error[UserType]):
     error: ErrorType = "invalid_scope"
 
 
-class ServerError(Generic[UserType], OAuth2Error[UserType]):
+class ServerError(OAuth2Error):
     """
     The authorization server encountered an unexpected condition that
     prevented it from fulfilling the request.  (This error code is needed
@@ -185,7 +185,7 @@ class ServerError(Generic[UserType], OAuth2Error[UserType]):
     status_code: HTTPStatus = HTTPStatus.BAD_REQUEST
 
 
-class TemporarilyUnavailableError(Generic[UserType], OAuth2Error[UserType]):
+class TemporarilyUnavailableError(OAuth2Error):
     """
     The authorization server is currently unable to handle the request
     due to a temporary overloading or maintenance of the server.
@@ -196,7 +196,7 @@ class TemporarilyUnavailableError(Generic[UserType], OAuth2Error[UserType]):
     error: ErrorType = "temporarily_unavailable"
 
 
-class InvalidRedirectURIError(Generic[UserType], OAuth2Error[UserType]):
+class InvalidRedirectURIError(OAuth2Error):
     """
     The requested redirect URI is missing or not allowed.
     """
@@ -204,7 +204,7 @@ class InvalidRedirectURIError(Generic[UserType], OAuth2Error[UserType]):
     error: ErrorType = "invalid_request"
 
 
-class UnsupportedTokenTypeError(Generic[UserType], OAuth2Error[UserType]):
+class UnsupportedTokenTypeError(OAuth2Error):
     """
     The authorization server does not support the revocation of the presented
     token type. That is, the client tried to revoke an access token on a server
@@ -214,7 +214,7 @@ class UnsupportedTokenTypeError(Generic[UserType], OAuth2Error[UserType]):
     error: ErrorType = "unsupported_token_type"
 
 
-class AccessDeniedError(Generic[UserType], OAuth2Error[UserType]):
+class AccessDeniedError(OAuth2Error):
     """
     The resource owner or authorization server denied the request
     """

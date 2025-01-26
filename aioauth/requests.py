@@ -9,7 +9,7 @@ Request objects used throughout the project.
 """
 
 from dataclasses import dataclass, field
-from typing import Generic, Optional
+from typing import Optional
 
 from .collections import HTTPHeaderDict
 from .config import Settings
@@ -19,7 +19,6 @@ from .types import (
     RequestMethod,
     ResponseMode,
     TokenType,
-    UserType,
 )
 
 
@@ -63,7 +62,7 @@ class Post:
 
 
 @dataclass
-class Request(Generic[UserType]):
+class Request:
     """Object that contains a client's complete request."""
 
     method: RequestMethod
@@ -71,6 +70,5 @@ class Request(Generic[UserType]):
     post: Post = field(default_factory=Post)
     headers: HTTPHeaderDict = field(default_factory=HTTPHeaderDict)
     url: str = ""
-    user: Optional[UserType] = None
     settings: Settings = field(default_factory=Settings)
     extra: dict = field(default_factory=dict)

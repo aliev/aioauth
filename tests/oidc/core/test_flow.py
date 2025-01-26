@@ -17,7 +17,7 @@ from tests.utils import check_request_validators
     "user, expected_status_code",
     [
         ("username", HTTPStatus.FOUND),
-        (None, HTTPStatus.UNAUTHORIZED),
+        (None, HTTPStatus.FOUND),
     ],
 )
 async def test_authorization_endpoint_allows_prompt_query_param(
@@ -43,11 +43,10 @@ async def test_authorization_endpoint_allows_prompt_query_param(
         state=generate_token(10),
     )
 
-    request = Request[User](
+    request = Request(
         url=request_url,
         query=query,
         method="GET",
-        user=user,
     )
 
     await check_request_validators(request, server.create_authorization_response)

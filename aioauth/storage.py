@@ -10,20 +10,19 @@ action.
 ----
 """
 
-from typing import Optional, Generic
+from typing import Any, Optional
 
 from .models import AuthorizationCode, Client, Token
 from .types import CodeChallengeMethod, TokenType
 
 from .requests import Request
-from .types import UserType
 
 
-class TokenStorage(Generic[UserType]):
+class TokenStorage:
     async def create_token(
         self,
         *,
-        request: Request[UserType],
+        request: Request,
         client_id: str,
         scope: str,
         access_token: str,
@@ -55,7 +54,7 @@ class TokenStorage(Generic[UserType]):
     async def get_token(
         self,
         *,
-        request: Request[UserType],
+        request: Request,
         client_id: str,
         token_type: Optional[TokenType] = None,
         access_token: Optional[str] = None,
@@ -80,7 +79,7 @@ class TokenStorage(Generic[UserType]):
     async def revoke_token(
         self,
         *,
-        request: Request[UserType],
+        request: Request,
         client_id: str,
         refresh_token: Optional[str] = None,
         token_type: Optional[TokenType] = None,
@@ -90,11 +89,11 @@ class TokenStorage(Generic[UserType]):
         raise NotImplementedError
 
 
-class AuthorizationCodeStorage(Generic[UserType]):
+class AuthorizationCodeStorage:
     async def create_authorization_code(
         self,
         *,
-        request: Request[UserType],
+        request: Request,
         client_id: str,
         scope: str,
         response_type: str,
@@ -129,7 +128,7 @@ class AuthorizationCodeStorage(Generic[UserType]):
     async def get_authorization_code(
         self,
         *,
-        request: Request[UserType],
+        request: Request,
         client_id: str,
         code: str,
     ) -> Optional[AuthorizationCode]:
@@ -156,7 +155,7 @@ class AuthorizationCodeStorage(Generic[UserType]):
     async def delete_authorization_code(
         self,
         *,
-        request: Request[UserType],
+        request: Request,
         client_id: str,
         code: str,
     ) -> None:
@@ -175,14 +174,14 @@ class AuthorizationCodeStorage(Generic[UserType]):
         )
 
 
-class ClientStorage(Generic[UserType]):
+class ClientStorage:
     async def get_client(
         self,
         *,
-        request: Request[UserType],
+        request: Request,
         client_id: str,
         client_secret: Optional[str] = None,
-    ) -> Optional[Client[UserType]]:
+    ) -> Optional[Client]:
         """Gets existing client from the database if it exists.
 
         Warning:
@@ -202,8 +201,8 @@ class ClientStorage(Generic[UserType]):
         raise NotImplementedError("Method get_client must be implemented")
 
 
-class UserStorage(Generic[UserType]):
-    async def get_user(self, request: Request[UserType]) -> Optional[UserType]:
+class UserStorage:
+    async def get_user(self, request: Request) -> Optional[Any]:
         """Returns a user.
 
         Note:
@@ -218,11 +217,11 @@ class UserStorage(Generic[UserType]):
         raise NotImplementedError("Method get_user must be implemented")
 
 
-class IDTokenStorage(Generic[UserType]):
+class IDTokenStorage:
     async def get_id_token(
         self,
         *,
-        request: Request[UserType],
+        request: Request,
         client_id: str,
         scope: str,
         redirect_uri: str,
@@ -240,10 +239,9 @@ class IDTokenStorage(Generic[UserType]):
 
 
 class BaseStorage(
-    Generic[UserType],
-    TokenStorage[UserType],
-    AuthorizationCodeStorage[UserType],
-    ClientStorage[UserType],
-    UserStorage[UserType],
-    IDTokenStorage[UserType],
+    TokenStorage,
+    AuthorizationCodeStorage,
+    ClientStorage,
+    UserStorage,
+    IDTokenStorage,
 ): ...

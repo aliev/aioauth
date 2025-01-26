@@ -6,7 +6,6 @@ from ...requests import (
     Request as BaseRequest,
     Query as BaseQuery,
 )
-from ...types import UserType
 
 
 @dataclass
@@ -20,7 +19,7 @@ class Query(BaseQuery):
 
 
 @dataclass
-class Request(BaseRequest[UserType]):
+class Request(BaseRequest):
     """Object that contains a client's complete request."""
 
     query: Query = field(default_factory=Query)

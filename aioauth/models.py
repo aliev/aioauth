@@ -10,14 +10,14 @@ Memory objects used throughout the project.
 
 from dataclasses import dataclass
 import time
-from typing import Generic, List, Optional, Union
+from typing import List, Optional, Union
 
-from .types import CodeChallengeMethod, GrantType, ResponseType, TokenType, UserType
+from .types import CodeChallengeMethod, GrantType, ResponseType, TokenType
 from .utils import create_s256_code_challenge, enforce_list, enforce_str
 
 
 @dataclass
-class Client(Generic[UserType]):
+class Client:
     """OAuth2.0 client model object."""
 
     client_id: str
@@ -63,13 +63,6 @@ class Client(Generic[UserType]):
     scopes granted.
     """
 
-    user: Optional[UserType] = None
-    """
-    The user who is the creator of the Client.
-    This optional attribute can be useful if you are creating a server that
-    can be managed by multiple users.
-    """
-
     def check_redirect_uri(self, redirect_uri) -> bool:
         """
         Verifies passed ``redirect_uri`` is part of the Clients's
@@ -113,7 +106,7 @@ class Client(Generic[UserType]):
 
 
 @dataclass
-class AuthorizationCode(Generic[UserType]):
+class AuthorizationCode:
     code: str
     """
     Authorization code that the client previously received from the
@@ -185,11 +178,6 @@ class AuthorizationCode(Generic[UserType]):
     Random piece of data.
     """
 
-    user: Optional[UserType] = None
-    """
-    The user who owns the AuthorizationCode.
-    """
-
     def check_code_challenge(self, code_verifier: str) -> bool:
         is_valid_code_challenge = False
 
@@ -212,7 +200,7 @@ class AuthorizationCode(Generic[UserType]):
 
 
 @dataclass
-class Token(Generic[UserType]):
+class Token:
     access_token: str
     """
     Token that clients use to make API requests on behalf of the
@@ -263,11 +251,6 @@ class Token(Generic[UserType]):
     revoked: bool = False
     """
     Flag that indicates whether or not the token has been revoked.
-    """
-
-    user: Optional[UserType] = None
-    """
-    The user who owns the Token.
     """
 
     @property
