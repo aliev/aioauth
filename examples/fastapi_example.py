@@ -167,7 +167,6 @@ async def login_submit(
     request.session["user"] = user
     redirect = request.url_for("approve")
     return RedirectResponse(redirect, status_code=303)
-    # # sign in user
 
 
 @app.get("/approve")
@@ -213,8 +212,8 @@ async def approve_submit(
     """
     scope approval form submission handler
     """
-    oauthreq = request.session["oauth"]
-    oauthreq.user = request.session["user"]
+    oauthreq: OAuthRequest = request.session["oauth"]
+    oauthreq.extra["user"] = request.session["user"]
     if not approval:
         # generate error response on deny
         error = AccessDeniedError(oauthreq, "User rejected scopes")
