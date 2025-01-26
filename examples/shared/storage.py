@@ -113,7 +113,11 @@ class AuthCodeStore(AuthorizationCodeStorage):
     ) -> Optional[AuthorizationCode]:
         """ """
         async with self.session:
-            sql = select(AuthCodeTable).where(AuthCodeTable.client_id == client_id)
+            sql = (
+                select(AuthCodeTable)
+                .where(AuthCodeTable.client_id == client_id)
+                .where(AuthCodeTable.code == code)
+            )
             result = (await self.session.exec(sql)).one_or_none()
             if result is not None:
                 return AuthorizationCode(
@@ -138,7 +142,11 @@ class AuthCodeStore(AuthorizationCodeStorage):
     ) -> None:
         """ """
         async with self.session:
-            sql = select(AuthCodeTable).where(AuthCodeTable.client_id == client_id)
+            sql = (
+                select(AuthCodeTable)
+                .where(AuthCodeTable.client_id == client_id)
+                .where(AuthCodeTable.code == code)
+            )
             result = (await self.session.exec(sql)).one()
             await self.session.delete(result)
             await self.session.commit()

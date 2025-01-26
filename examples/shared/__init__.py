@@ -20,7 +20,7 @@ __all__ = [
     "AuthServer",
     "BackendStore",
     "engine",
-    "config",
+    "app_config",
     "settings",
     "try_login",
     "lifespan",
@@ -32,8 +32,8 @@ engine: AsyncEngine = create_async_engine(
     "sqlite+aiosqlite:///:memory:", echo=False, future=True
 )
 
-config = load_config(CONFIG_PATH)
-settings = config.settings
+app_config = load_config(CONFIG_PATH)
+settings = app_config.settings
 
 
 async def try_login(username: str, password: str) -> Optional[User]:
@@ -59,9 +59,9 @@ async def lifespan(*_):
         await conn.run_sync(SQLModel.metadata.create_all)
     # create test records
     async with AsyncSession(engine) as session:
-        for user in config.fixtures.users:
+        for user in app_config.fixtures.users:
             session.add(user)
-        for client in config.fixtures.clients:
+        for client in app_config.fixtures.clients:
             session.add(client)
         await session.commit()
     yield

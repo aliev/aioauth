@@ -6,7 +6,7 @@ Bare Minimum Example of FastAPI Implementation of AioAuth
 
 import json
 import html
-from http import HTTPStatus
+import logging
 from typing import Optional, cast
 
 from fastapi import FastAPI, Form, Request, Depends, Response
@@ -27,6 +27,13 @@ from shared import AuthServer, BackendStore, engine, settings, try_login, lifesp
 app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(SessionMiddleware)
+
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s,%(msecs)d %(levelname)s: %(message)s",
+    datefmt="%H:%M:%S",
+)
 
 
 async def get_auth_server() -> AuthServer:
@@ -74,8 +81,24 @@ async def authorize(
     oauth2 authorization endpoint using aioauth
     """
     oauthreq = await to_request(request)
+    user = request.session.get("user", None)
+
     response = await oauth.create_authorization_response(oauthreq)
-    if response.status_code == HTTPStatus.UNAUTHORIZED:
+
+    # A demonstration example of request validation before checking the user's credentials.
+    # See a discussion here: https://github.com/aliev/aioauth/issues/101
+    if response.status_code >= 400:
+        content = f"""
+    <html>
+        <body>
+            <h3>{response.content['error']}</h3>
+            <p style="color: red">{response.content['description']}</p>
+        </body>
+    </html>
+        """
+        return HTMLResponse(content, status_code=response.status_code)
+
+    if user is None:
         request.session["oauth"] = oauthreq
         return RedirectResponse("/login")
     return to_response(response)
@@ -155,18 +178,29 @@ async def approve(request: Request):
     if "user" not in request.session:
         redirect = request.url_for("login")
         return RedirectResponse(redirect)
-    oauthreq: OAuthRequest = request.session["oauth"]
-    content = f"""
-<html>
-    <body>
-        <h3>{oauthreq.query.client_id} would like permissions.</h3>
-        <form method="POST">
-            <button name="approval" value="0" type="submit">Deny</button>
-            <button name="approval" value="1" type="submit">Approve</button>
-        </form>
-    </body>
-</html>
-    """
+
+    oauth = request.session.get("oauth", None)
+    if oauth:
+        oauthreq: OAuthRequest = request.session["oauth"]
+        content = f"""
+        <html>
+            <body>
+                <h3>{oauthreq.query.client_id} would like permissions.</h3>
+                <form method="POST">
+                    <button name="approval" value="0" type="submit">Deny</button>
+                    <button name="approval" value="1" type="submit">Approve</button>
+                </form>
+            </body>
+        </html>
+        """
+    else:
+        content = f"""
+        <html>
+            <body>
+                <h3>Hello, {request.session['user'].username}.</h3>
+            </body>
+        </html>
+        """
     return HTMLResponse(content)
 
 
