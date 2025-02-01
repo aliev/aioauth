@@ -138,6 +138,10 @@ class ResponseTypeAuthorizationCode(ResponseTypeBase[UserType]):
     async def create_authorization_response(
         self, request: Request[UserType], client: Client[UserType]
     ) -> AuthorizationCodeResponse:
+        assert request.query.response_type, (
+            "`response_type` cannot be an empty string or `None`. "
+            "Please make sure you call `validate_request` before calling this method."
+        )
         authorization_code = await self.storage.create_authorization_code(
             client_id=client.client_id,
             code=generate_token(42),
@@ -146,7 +150,7 @@ class ResponseTypeAuthorizationCode(ResponseTypeBase[UserType]):
             nonce=request.query.nonce,
             redirect_uri=request.query.redirect_uri,
             request=request,
-            response_type=request.query.response_type,  # type: ignore
+            response_type=request.query.response_type,
             scope=request.query.scope,
         )
         return AuthorizationCodeResponse(
