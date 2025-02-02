@@ -418,13 +418,6 @@ class AuthorizationServer:
             auth_state.grants.append((response_type, client))
         return auth_state
 
-    @catch_errors_and_unavailability(
-        skip_redirect_on_exc=(
-            MethodNotAllowedError,
-            InvalidClientError,
-            InvalidRedirectURIError,
-        )
-    )
     async def create_authorization_response(
         self,
         auth_state: AuthorizationState,
