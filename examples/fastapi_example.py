@@ -15,7 +15,7 @@ from fastapi_extras.session import SessionMiddleware
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from aioauth.collections import HTTPHeaderDict
-from aioauth.errors import AccessDeniedError
+from aioauth.errors import AccessDeniedError, OAuth2Error
 from aioauth.requests import Post, Query
 from aioauth.requests import Request as OAuthRequest
 from aioauth.responses import Response as OAuthResponse
@@ -83,12 +83,16 @@ async def authorize(
     """
     # validate initial request and return error response (if supplied)
     oauthreq = await to_request(request)
-    response = await oauth.validate_authorization_request(oauthreq)
-    if isinstance(response, OAuthResponse):
+
+    try:
+        state = await oauth.validate_authorization_request(oauthreq)
+    except OAuth2Error as exc:
+        response = build_error_response(exc=exc, request=oauthreq)
         return to_response(response)
+
     # redirect to login if user information is missing
     user = request.session.get("user", None)
-    request.session["oauth"] = response
+    request.session["oauth"] = state
     if user is None:
         return RedirectResponse("/login")
     # otherwise redirect to approval
@@ -213,7 +217,7 @@ async def approve_submit(
         response = build_error_response(error, state.request, skip_redirect_on_exc=())
     else:
         # process authorize request
-        response = await oauth.create_authorization_response(state)
+        response = await oauth._create_authorization_response(state)
     return to_response(response)
 
 

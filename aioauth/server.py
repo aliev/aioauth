@@ -344,16 +344,9 @@ class AuthorizationServer:
             content=content, status_code=HTTPStatus.OK, headers=default_headers
         )
 
-    @catch_errors_and_unavailability(
-        skip_redirect_on_exc=(
-            MethodNotAllowedError,
-            InvalidClientError,
-            InvalidRedirectURIError,
-        )
-    )
     async def validate_authorization_request(
         self, request: Request
-    ) -> Union[Response, AuthorizationState]:
+    ) -> AuthorizationState:
         """
         Endpoint to interact with the resource owner and obtain an
         authoriation grant.
@@ -412,15 +405,15 @@ class AuthorizationServer:
             raise UnsupportedResponseTypeError(request=request, state=state)
 
         auth_state = AuthorizationState(request, response_type_list, grants=[])
+
         for ResponseTypeClass in response_type_classes:
             response_type = ResponseTypeClass(storage=self.storage)
             client = await response_type.validate_request(request)
             auth_state.grants.append((response_type, client))
         return auth_state
 
-    async def create_authorization_response(
-        self,
-        auth_state: AuthorizationState,
+    async def _create_authorization_response(
+        self, auth_state: AuthorizationState
     ) -> Response:
         """
         Endpoint to interact with the resource owner and obtain an
@@ -528,6 +521,17 @@ class AuthorizationServer:
             headers=HTTPHeaderDict({"location": location}),
             content=content,
         )
+
+    @catch_errors_and_unavailability(
+        skip_redirect_on_exc=(
+            MethodNotAllowedError,
+            InvalidClientError,
+            InvalidRedirectURIError,
+        )
+    )
+    async def create_authorization_response(self, request: Request) -> Response:
+        auth_state = await self.validate_authorization_request(request)
+        return await self._create_authorization_response(auth_state)
 
     @catch_errors_and_unavailability()
     async def revoke_token(self, request: Request) -> Response:
