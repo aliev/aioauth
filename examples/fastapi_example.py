@@ -217,7 +217,7 @@ async def approve_submit(
         response = build_error_response(error, state.request, skip_redirect_on_exc=())
     else:
         # process authorize request
-        response = await oauth._create_authorization_response(state)
+        response = await oauth.finalize_authorization_response(state)
     return to_response(response)
 
 

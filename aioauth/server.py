@@ -29,8 +29,6 @@ from .storage import BaseStorage
 from .collections import HTTPHeaderDict
 from .constances import default_headers
 from .errors import (
-    InsecureTransportError,
-    InvalidClientError,
     InvalidRedirectURIError,
     InvalidRequestError,
     MethodNotAllowedError,
@@ -45,6 +43,10 @@ from .grant_type import (
     GrantTypeBase,
     PasswordGrantType,
     RefreshTokenGrantType,
+)
+from .errors import (
+    InsecureTransportError,
+    InvalidClientError,
 )
 from .response_type import (
     ResponseTypeAuthorizationCode,
@@ -412,39 +414,21 @@ class AuthorizationServer:
             auth_state.grants.append((response_type, client))
         return auth_state
 
-    async def _create_authorization_response(
+    async def finalize_authorization_response(
         self, auth_state: AuthorizationState
     ) -> Response:
         """
-        Endpoint to interact with the resource owner and obtain an
-        authorization grant.
-        Create an authorization response after validation.
-        For more information see
-        `RFC6749 section 4.1.1 <https://tools.ietf.org/html/rfc6749#section-4.1.1>`_.
+        Finalizes the authorization response based on the provided authorization state.
 
-        Example:
-            Below is an example utilizing FastAPI as the server framework.
-        .. code-block:: python
-
-            from aioauth.fastapi.utils import to_oauth2_request, to_fastapi_response
-
-            @app.post("/authorize")
-            async def authorize(request: fastapi.Request) -> fastapi.Response:
-                # Converts a fastapi.Request to an aioauth.Request.
-                oauth2_request: aioauth.Request = await to_oauth2_request(request)
-                # Validate the oauth request
-                auth_state: aioauth.AuthState = await server.validate_authorization_request(oauth2_request)
-                # Creates the response via this function call.
-                oauth2_response: aioauth.Response = await server.create_authorization_response(auth_state)
-                # Converts an aioauth.Response to a fastapi.Response.
-                response: fastapi.Response = await to_fastapi_response(oauth2_response)
-                return response
+        This is the final step in creating an authorization response before sending it to
+        the client.
 
         Args:
-            auth_state: An :py:class:`aioauth.server.AuthState` object.
+            auth_state (AuthorizationState): The current authorization state, including the
+                original request, response types, and associated grants.
 
         Returns:
-            response: An :py:class:`aioauth.responses.Response` object.
+            Response: An HTTP response object with the appropriate redirection headers and content.
         """
         request = auth_state.request
         state = auth_state.request.query.state
@@ -530,8 +514,39 @@ class AuthorizationServer:
         )
     )
     async def create_authorization_response(self, request: Request) -> Response:
+        """
+        Endpoint to interact with the resource owner and obtain an
+        authorization grant.
+        Create an authorization response after validation.
+        For more information see
+        `RFC6749 section 4.1.1 <https://tools.ietf.org/html/rfc6749#section-4.1.1>`_.
+
+        Example:
+            Below is an example utilizing FastAPI as the server framework.
+        .. code-block:: python
+
+            from aioauth.fastapi.utils import to_oauth2_request, to_fastapi_response
+
+            @app.post("/authorize")
+            async def authorize(request: fastapi.Request) -> fastapi.Response:
+                # Converts a fastapi.Request to an aioauth.Request.
+                oauth2_request: aioauth.Request = await to_oauth2_request(request)
+                # Validate the oauth request
+                auth_state: aioauth.AuthState = await server.validate_authorization_request(oauth2_request)
+                # Creates the response via this function call.
+                oauth2_response: aioauth.Response = await server.create_authorization_response(auth_state)
+                # Converts an aioauth.Response to a fastapi.Response.
+                response: fastapi.Response = await to_fastapi_response(oauth2_response)
+                return response
+
+        Args:
+            auth_state: An :py:class:`aioauth.server.AuthState` object.
+
+        Returns:
+            response: An :py:class:`aioauth.responses.Response` object.
+        """
         auth_state = await self.validate_authorization_request(request)
-        return await self._create_authorization_response(auth_state)
+        return await self.finalize_authorization_response(auth_state)
 
     @catch_errors_and_unavailability()
     async def revoke_token(self, request: Request) -> Response:
