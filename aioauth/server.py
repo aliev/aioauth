@@ -19,7 +19,7 @@ Warning:
 
 from dataclasses import asdict, dataclass
 from http import HTTPStatus
-from typing import Any, Dict, List, Optional, Tuple, Type, Union, get_args
+from typing import Dict, List, Optional, Tuple, Type, Union, get_args, Set
 
 from .models import Client
 from .requests import Request
@@ -83,20 +83,46 @@ class AuthorizationState:
     response_type_list: List[ResponseType]
     """Supported ResponseTypes Collected During Initial Request Validation"""
 
-    grants: List[Tuple[ResponseTypeAuthorizationCode, Client]]
+    grants: List[
+        Tuple[
+            Union[
+                ResponseTypeToken,
+                ResponseTypeAuthorizationCode,
+                ResponseTypeNone,
+                ResponseTypeIdToken,
+            ],
+            Client,
+        ]
+    ]
     """Collection of Supported GrantType Handlers and The Parsed Clients"""
 
 
 class AuthorizationServer:
     """Interface for initializing an OAuth 2.0 server."""
 
-    response_types: Dict[ResponseType, Any] = {
+    response_types: Dict[
+        ResponseType,
+        Union[
+            type[ResponseTypeToken],
+            type[ResponseTypeAuthorizationCode],
+            type[ResponseTypeNone],
+            type[ResponseTypeIdToken],
+        ],
+    ] = {
         "token": ResponseTypeToken,
         "code": ResponseTypeAuthorizationCode,
         "none": ResponseTypeNone,
         "id_token": ResponseTypeIdToken,
     }
-    grant_types: Dict[GrantType, Any] = {
+    grant_types: Dict[
+        GrantType,
+        Union[
+            type[AuthorizationCodeGrantType],
+            type[ClientCredentialsGrantType],
+            type[PasswordGrantType],
+            type[RefreshTokenGrantType],
+        ],
+    ] = {
         "authorization_code": AuthorizationCodeGrantType,
         "client_credentials": ClientCredentialsGrantType,
         "password": PasswordGrantType,
@@ -388,7 +414,14 @@ class AuthorizationServer:
         self.validate_request(request, ["GET", "POST"])
 
         response_type_list = enforce_list(request.query.response_type)
-        response_type_classes = set()
+        response_type_classes: Set[
+            Union[
+                type[ResponseTypeToken],
+                type[ResponseTypeAuthorizationCode],
+                type[ResponseTypeNone],
+                type[ResponseTypeIdToken],
+            ]
+        ] = set()
         state = request.query.state
 
         if not response_type_list:
