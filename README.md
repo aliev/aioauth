@@ -25,14 +25,8 @@ There are few great OAuth frameworks for Python like [oauthlib](https://github.c
 python -m pip install aioauth
 ```
 
-## FastAPI
+## Examples
 
-FastAPI integration stored on separated [aioauth-fastapi](https://github.com/aliev/aioauth-fastapi) repository and can be installed via the command:
-
-```
-python -m pip install aioauth[fastapi]
-```
-
-[aioauth-fastapi](https://github.com/aliev/aioauth-fastapi) repository contains demo example which I recommend to look.
+The project example is located in the [examples](examples) directory and uses FastAPI as the server.
 
 ## [API Reference and User Guide](https://aliev.me/aioauth/)
