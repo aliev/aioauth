@@ -30,7 +30,6 @@ from typing import (
     Set,
     Tuple,
     Type,
-    TypeVar,
     Union,
 )
 from urllib.parse import quote, urlencode, urlparse, urlunsplit
@@ -279,15 +278,9 @@ def build_error_response(
     )
 
 
-T = TypeVar("T")
-
-
 def catch_errors_and_unavailability(
     skip_redirect_on_exc: Tuple[Type[OAuth2Error], ...] = (OAuth2Error,)
-) -> Callable[
-    [Callable[..., Coroutine[Any, Any, T]]],
-    Callable[..., Coroutine[Any, Any, Union[T, Response]]],
-]:
+) -> Callable[..., Callable[..., Coroutine[Any, Any, Response]]]:
     """
     Decorator that adds error catching to the function passed.
 
@@ -298,14 +291,12 @@ def catch_errors_and_unavailability(
     """
 
     def decorator(
-        f: Callable[..., Coroutine[Any, Any, T]]
-    ) -> Callable[..., Coroutine[Any, Any, Union[T, Response]]]:
+        f: Callable[..., Coroutine[Any, Any, Response]]
+    ) -> Callable[..., Coroutine[Any, Any, Response]]:
         @functools.wraps(f)
-        async def wrapper(
-            self, request: Request, *args, **kwargs
-        ) -> Union[T, Response]:
+        async def wrapper(self, request: Request, *args, **kwargs) -> Response:
             try:
-                response: Union[T, Response] = await f(self, request, *args, **kwargs)
+                response = await f(self, request, *args, **kwargs)
             except Exception as exc:
                 response = build_error_response(
                     exc=exc, request=request, skip_redirect_on_exc=skip_redirect_on_exc
