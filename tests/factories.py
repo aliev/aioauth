@@ -20,7 +20,7 @@ from aioauth.response_type import (
 from aioauth.types import CodeChallengeMethod, GrantType, ResponseType
 from aioauth.utils import generate_token
 
-from tests.classes import AuthorizationContext, User
+from tests.classes import AuthorizationContext
 
 
 def access_token_factory() -> str:
@@ -47,21 +47,21 @@ def auth_time_factory() -> int:
     return int(time.time())
 
 
-def grant_types_factory() -> Dict[GrantType, Type[GrantTypeBase[User]]]:
+def grant_types_factory() -> Dict[GrantType, Type[GrantTypeBase]]:
     return {
-        "authorization_code": AuthorizationCodeGrantType[User],
-        "client_credentials": ClientCredentialsGrantType[User],
-        "password": PasswordGrantType[User],
-        "refresh_token": RefreshTokenGrantType[User],
+        "authorization_code": AuthorizationCodeGrantType,
+        "client_credentials": ClientCredentialsGrantType,
+        "password": PasswordGrantType,
+        "refresh_token": RefreshTokenGrantType,
     }
 
 
-def response_types_factory() -> Dict[ResponseType, Type[ResponseTypeBase[User]]]:
+def response_types_factory() -> Dict[ResponseType, Type[ResponseTypeBase]]:
     return {
-        "code": ResponseTypeAuthorizationCode[User],
-        "id_token": ResponseTypeIdToken[User],
-        "none": ResponseTypeNone[User],
-        "token": ResponseTypeToken[User],
+        "code": ResponseTypeAuthorizationCode,
+        "id_token": ResponseTypeIdToken,
+        "none": ResponseTypeNone,
+        "token": ResponseTypeToken,
     }
 
 
@@ -139,10 +139,10 @@ def token_factory(
 
 def context_factory(
     clients: Optional[List[Client]] = None,
-    grant_types: Optional[Dict[GrantType, Type[GrantTypeBase[User]]]] = None,
+    grant_types: Optional[Dict[GrantType, Type[GrantTypeBase]]] = None,
     initial_authorization_codes: Optional[List[AuthorizationCode]] = None,
     initial_tokens: Optional[List[Token]] = None,
-    response_types: Optional[Dict[ResponseType, Type[ResponseTypeBase[User]]]] = None,
+    response_types: Optional[Dict[ResponseType, Type[ResponseTypeBase]]] = None,
     settings: Optional[Settings] = None,
     users: Optional[Dict[str, str]] = None,
 ) -> AuthorizationContext:

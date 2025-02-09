@@ -1,5 +1,4 @@
 from http import HTTPStatus
-from typing import Optional
 
 import pytest
 
@@ -8,27 +7,12 @@ from aioauth.utils import (
     generate_token,
 )
 
-from tests.classes import User
 from tests.utils import check_request_validators
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize(
-    "user, expected_status_code",
-    [
-        ("username", HTTPStatus.FOUND),
-        (None, HTTPStatus.UNAUTHORIZED),
-    ],
-)
-async def test_authorization_endpoint_allows_prompt_query_param(
-    expected_status_code: HTTPStatus,
-    user: Optional[User],
-    context_factory,
-):
-    if user is None:
-        context = context_factory()
-    else:
-        context = context_factory(users={user: "password"})
+async def test_authorization_endpoint_allows_prompt_query_param(context_factory):
+    context = context_factory()
     server = context.server
     client = context.clients[0]
     client_id = client.client_id
@@ -43,14 +27,13 @@ async def test_authorization_endpoint_allows_prompt_query_param(
         state=generate_token(10),
     )
 
-    request = Request[User](
+    request = Request(
         url=request_url,
         query=query,
         method="GET",
-        user=user,
     )
 
     await check_request_validators(request, server.create_authorization_response)
 
     response = await server.create_authorization_response(request)
-    assert response.status_code == expected_status_code
+    assert response.status_code == HTTPStatus.FOUND

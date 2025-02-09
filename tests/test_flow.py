@@ -14,7 +14,7 @@ from aioauth.utils import (
 )
 
 from tests import factories
-from tests.classes import AuthorizationContext, User
+from tests.classes import AuthorizationContext
 from tests.utils import check_request_validators
 
 
@@ -44,11 +44,10 @@ async def test_authorization_code_flow_plain_code_challenge():
         scope=scope,
     )
 
-    request = Request[User](
+    request = Request(
         url=request_url,
         query=query,
         method="GET",
-        user=User(username="A"),
     )
 
     await check_request_validators(request, server.create_authorization_response)
@@ -162,7 +161,6 @@ async def test_authorization_code_flow_pkce_code_challenge():
     code_challenge = create_s256_code_challenge(code_verifier)
     redirect_uri = client.redirect_uris[0]
     request_url = "https://localhost"
-    user = "username"
     state = generate_token(10)
 
     query = Query(
@@ -179,7 +177,6 @@ async def test_authorization_code_flow_pkce_code_challenge():
         url=request_url,
         query=query,
         method="GET",
-        user=user,
     )
     response = await server.create_authorization_response(request)
     assert response.status_code == HTTPStatus.FOUND
@@ -255,7 +252,6 @@ async def test_implicit_flow(context_factory, settings):
         url=request_url,
         query=query,
         method="GET",
-        user=username,
         settings=context.settings,
     )
 
@@ -385,7 +381,6 @@ async def test_authorization_code_flow():
         url=request_url,
         query=query,
         method="GET",
-        user=username,
     )
 
     await check_request_validators(request, server.create_authorization_response)
@@ -442,7 +437,6 @@ async def test_authorization_code_flow_credentials_in_post():
         url=request_url,
         query=query,
         method="GET",
-        user=username,
     )
 
     await check_request_validators(request, server.create_authorization_response)
@@ -485,7 +479,7 @@ async def test_client_credentials_flow_post_data(context: AuthorizationContext):
         scope=client.scope,
     )
 
-    request = Request[User](url=request_url, post=post, method="POST")
+    request = Request(url=request_url, post=post, method="POST")
 
     await check_request_validators(request, server.create_token_response)
 
@@ -504,7 +498,7 @@ async def test_client_credentials_flow_auth_header(context: AuthorizationContext
         scope=client.scope,
     )
 
-    request = Request[User](
+    request = Request(
         url=request_url,
         post=post,
         method="POST",
@@ -547,7 +541,6 @@ async def test_multiple_response_types(context_factory, settings):
         url=request_url,
         query=query,
         method="GET",
-        user=username,
         settings=context.settings,
     )
 
@@ -593,7 +586,6 @@ async def test_response_type_none(context_factory):
         url=request_url,
         query=query,
         method="GET",
-        user=username,
     )
 
     await check_request_validators(request, server.create_authorization_response)
@@ -647,7 +639,6 @@ async def test_response_type_id_token(context_factory, response_mode, settings):
         url=request_url,
         query=query,
         method="GET",
-        user=username,
         settings=context.settings,
     )
 

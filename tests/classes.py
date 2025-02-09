@@ -1,6 +1,6 @@
 import time
 
-from typing import Dict, List, Optional, Type
+from typing import Any, Dict, List, Optional, Type
 from functools import cached_property
 
 from dataclasses import replace, dataclass
@@ -17,7 +17,6 @@ from aioauth.types import (
     GrantType,
     ResponseType,
     TokenType,
-    UserType,
 )
 
 
@@ -26,7 +25,7 @@ class User:
     username: str
 
 
-class Storage(BaseStorage[User]):
+class Storage(BaseStorage):
     def __init__(
         self,
         authorization_codes: List[AuthorizationCode],
@@ -52,10 +51,10 @@ class Storage(BaseStorage[User]):
     async def get_client(
         self,
         *,
-        request: Request[UserType],
+        request: Request,
         client_id: str,
         client_secret: Optional[str] = None,
-    ) -> Optional[Client[User]]:
+    ) -> Optional[Client]:
         if client_secret is not None:
             return self._get_by_client_secret(client_id, client_secret)
 
@@ -64,13 +63,13 @@ class Storage(BaseStorage[User]):
     async def create_token(
         self,
         *,
-        request: Request[UserType],
+        request: Request,
         client_id: str,
         scope: str,
         access_token: str,
         refresh_token: Optional[str] = None,
     ):
-        token: Token[User] = Token(
+        token: Token = Token(
             client_id=client_id,
             expires_in=request.settings.TOKEN_EXPIRES_IN,
             refresh_token_expires_in=request.settings.REFRESH_TOKEN_EXPIRES_IN,
@@ -86,7 +85,7 @@ class Storage(BaseStorage[User]):
     async def revoke_token(
         self,
         *,
-        request: Request[UserType],
+        request: Request,
         client_id: str,
         refresh_token: Optional[str] = None,
         token_type: Optional[TokenType] = None,
@@ -102,7 +101,7 @@ class Storage(BaseStorage[User]):
     async def get_token(
         self,
         *,
-        request: Request[UserType],
+        request: Request,
         client_id: str,
         token_type: Optional[TokenType] = None,
         access_token: Optional[str] = None,
@@ -122,7 +121,7 @@ class Storage(BaseStorage[User]):
             ):
                 return token_
 
-    async def get_user(self, request: Request[User]) -> Optional[User]:
+    async def get_user(self, request: Request) -> Any:
         password = request.post.password
         username = request.post.username
 
@@ -137,7 +136,7 @@ class Storage(BaseStorage[User]):
     async def create_authorization_code(
         self,
         *,
-        request: Request[UserType],
+        request: Request,
         client_id: str,
         scope: str,
         response_type: str,
@@ -166,7 +165,7 @@ class Storage(BaseStorage[User]):
     async def get_authorization_code(
         self,
         *,
-        request: Request[UserType],
+        request: Request,
         client_id: str,
         code: str,
     ) -> Optional[AuthorizationCode]:
@@ -180,7 +179,7 @@ class Storage(BaseStorage[User]):
     async def delete_authorization_code(
         self,
         *,
-        request: Request[UserType],
+        request: Request,
         client_id: str,
         code: str,
     ):
@@ -195,7 +194,7 @@ class Storage(BaseStorage[User]):
     async def get_id_token(
         self,
         *,
-        request: Request[UserType],
+        request: Request,
         client_id: str,
         scope: str,
         redirect_uri: str,
@@ -209,12 +208,10 @@ class AuthorizationContext:
     def __init__(
         self,
         clients: Optional[List[Client]] = None,
-        grant_types: Optional[Dict[GrantType, Type[GrantTypeBase[User]]]] = None,
+        grant_types: Optional[Dict[GrantType, Type[GrantTypeBase]]] = None,
         initial_authorization_codes: Optional[List[AuthorizationCode]] = None,
         initial_tokens: Optional[List[Token]] = None,
-        response_types: Optional[
-            Dict[ResponseType, Type[ResponseTypeBase[User]]]
-        ] = None,
+        response_types: Optional[Dict[ResponseType, Type[ResponseTypeBase]]] = None,
         settings: Optional[Settings] = None,
         users: Optional[Dict[str, str]] = None,
     ):
@@ -228,7 +225,7 @@ class AuthorizationContext:
         self.users = users or {}
 
     @cached_property
-    def server(self) -> AuthorizationServer[User]:
+    def server(self) -> AuthorizationServer:
         return AuthorizationServer(
             grant_types=self.grant_types,
             response_types=self.response_types,

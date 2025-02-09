@@ -5,8 +5,6 @@ from aioauth.grant_type import RefreshTokenGrantType
 from aioauth.requests import Post, Request
 from aioauth.utils import encode_auth_headers
 
-from tests.classes import User
-
 
 @pytest.mark.asyncio
 async def test_refresh_token_grant_type(context):
@@ -32,7 +30,7 @@ async def test_refresh_token_grant_type(context):
         headers=encode_auth_headers(client_id, client_secret),
     )
 
-    grant_type = RefreshTokenGrantType[User](
+    grant_type = RefreshTokenGrantType(
         db, client_id=client_id, client_secret=client_secret
     )
 

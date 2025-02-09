@@ -16,11 +16,10 @@ from ...grant_type import (
 from ...models import Client
 from ...oidc.core.responses import TokenResponse
 from ...requests import Request
-from ...types import UserType
 from ...utils import generate_token
 
 
-class AuthorizationCodeGrantType(OAuth2AuthorizationCodeGrantType[UserType]):
+class AuthorizationCodeGrantType(OAuth2AuthorizationCodeGrantType):
     """
     The Authorization Code grant type is used by confidential and public
     clients to exchange an authorization code for an access token. After
@@ -37,7 +36,7 @@ class AuthorizationCodeGrantType(OAuth2AuthorizationCodeGrantType[UserType]):
     """
 
     async def create_token_response(
-        self, request: Request[UserType], client: Client[UserType]
+        self, request: Request, client: Client
     ) -> TokenResponse:
         """
         Creates token response to reply to client.
