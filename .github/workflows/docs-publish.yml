@@ -27,12 +27,12 @@ jobs:
         docs-folder: "docs/"
 
     - name: Saves the HTML build documentation
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         path: docs/build/html/
 
     - name: Saves the PDF build documentation
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         path: docs/build/latex/aioauth.pdf
 
