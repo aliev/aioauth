@@ -1,7 +1,8 @@
 """
-.. code-block:: python
+```python
+from aioauth import utils
+```
 
-    from aioauth import utils
 
 Contains helper functions that is used throughout the project that doesn't
 pertain to a specific file or module.
@@ -74,7 +75,7 @@ def enforce_str(scope: List) -> str:
 
     Note:
         If a string is passed to this method it will simply return an
-        empty string back. Use :py:func:`enforce_list` to convert
+        empty string back. Use `enforce_list` to convert
         strings to scope lists.
     Args:
         scope: An iterable or string that contains a list of scope.
@@ -95,7 +96,7 @@ def enforce_list(scope: Optional[Union[str, List, Set, Tuple]]) -> List:
 
     Note:
         If an iterable is passed to this method it will return a list
-        representation of the iterable. Use :py:func:`enforce_str` to
+        representation of the iterable. Use `enforce_str` to
         convert iterables to a scope string.
     Args:
         scope: An iterable or string that contains scopes.
@@ -182,7 +183,7 @@ def decode_auth_headers(authorization: str) -> Tuple[str, str]:
     """
     Decodes an encoded HTTP basic authentication string.
     Returns a tuple of the form ``(client_id, client_secret)``, and
-    raises a :py:class:`aioauth.errors.InvalidClientError` exception if nothing
+    raises a `aioauth.errors.InvalidClientError` exception if nothing
     could be decoded.
 
     Args:

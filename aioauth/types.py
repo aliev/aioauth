@@ -1,7 +1,8 @@
 """
-.. code-block:: python
+```python
+from aioauth import types
+```
 
-    from aioauth import types
 
 Containers that contain constants used throughout the project.
 

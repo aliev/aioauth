@@ -1,7 +1,8 @@
 """
-.. code-block:: python
+```python
+from aioauth import constances
+```
 
-    from aioauth import constances
 
 Constants that are used throughout the project.
 

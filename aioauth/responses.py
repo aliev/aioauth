@@ -1,7 +1,8 @@
 """
-.. code-block:: python
+```python
+from aioauth import responses
+```
 
-    from aioauth import responses
 
 Response objects used throughout the project.
 
@@ -30,7 +31,7 @@ class ErrorResponse:
 class AuthorizationCodeResponse:
     """Response for ``authorization_code``.
 
-    Used by :py:class:`aioauth.response_type.ResponseTypeAuthorizationCode`.
+    Used by `aioauth.response_type.ResponseTypeAuthorizationCode`.
     """
 
     code: str
@@ -39,7 +40,7 @@ class AuthorizationCodeResponse:
 
 @dataclass
 class NoneResponse:
-    """Response for :py:class:`aioauth.response_type.ResponseTypeNone`.
+    """Response for `aioauth.response_type.ResponseTypeNone`.
 
     See: `OAuth v2 multiple response types <openid.net/specs/oauth-v2-multiple-response-types-1_0.html#none>`_,
     """
@@ -49,7 +50,7 @@ class NoneResponse:
 class TokenResponse:
     """Response for valid token.
 
-    Used by :py:class:`aioauth.response_type.ResponseTypeToken`.
+    Used by `aioauth.response_type.ResponseTypeToken`.
     """
 
     expires_in: int
@@ -64,7 +65,7 @@ class TokenResponse:
 class IdTokenResponse:
     """Response for OpenID id_token.
 
-    Used by :py:class:`aioauth.response_type.ResponseResponseTypeIdTokenTypeToken`.
+    Used by `aioauth.response_type.ResponseResponseTypeIdTokenTypeToken`.
     """
 
     id_token: str
@@ -74,7 +75,7 @@ class IdTokenResponse:
 class TokenActiveIntrospectionResponse:
     """Response for a valid access token.
 
-    Used by :py:meth:`aioauth.server.AuthorizationServer.create_token_introspection_response`.
+    Used by `aioauth.server.AuthorizationServer.create_token_introspection_response`.
     """
 
     scope: str
@@ -88,7 +89,7 @@ class TokenActiveIntrospectionResponse:
 class TokenInactiveIntrospectionResponse:
     """For an invalid, revoked or expired token.
 
-    Used by :py:meth:`aioauth.server.AuthorizationServer.create_token_introspection_response`.
+    Used by `aioauth.server.AuthorizationServer.create_token_introspection_response`.
     """
 
     active: bool = False
@@ -98,7 +99,7 @@ class TokenInactiveIntrospectionResponse:
 class Response:
     """General response class.
 
-    Used by :py:class:`aioauth.server.AuthorizationServer`.
+    Used by `aioauth.server.AuthorizationServer`.
     """
 
     content: Dict = field(default_factory=dict)

@@ -1,7 +1,8 @@
 """
-.. code-block:: python
+```python
+from aioauth import responses
+```
 
-    from aioauth import responses
 
 Response objects used throughout the project.
 

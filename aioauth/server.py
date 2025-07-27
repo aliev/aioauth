@@ -1,12 +1,13 @@
 """
-.. code-block:: python
+```python
+from aioauth import server
+```
 
-    from aioauth import server
 
 Memory object and interface used to initialize an OAuth2.0 server instance.
 
 Warning:
-    Note that :py:class:`aioauth.server.AuthorizationServer` is not
+    Note that `aioauth.server.AuthorizationServer` is not
     depedent on any server framework, nor serves at any specific
     endpoint. Instead, it is used to create an interface that can be
     used in conjunction with a server framework like ``FastAPI`` or
@@ -152,7 +153,7 @@ class AuthorizationServer:
             ``https://`` at the start of it. It does **not** ensure
             if the SSL certificate is valid.
         Args:
-            request: :py:class:`aioauth.requests.Request` object.
+            request: `aioauth.requests.Request` object.
         Returns:
             Flag representing whether or not the transport is secure.
         """
@@ -185,8 +186,7 @@ class AuthorizationServer:
 
         Example:
             Below is an example utilizing FastAPI as the server framework.
-        .. code-block:: python
-
+        ```python
             from aioauth_fastapi.utils import to_oauth2_request, to_fastapi_response
 
             @app.get("/token/introspect")
@@ -198,12 +198,13 @@ class AuthorizationServer:
                 # Converts an aioauth.Response to a fastapi.Response.
                 response: fastapi.Response = await to_fastapi_response(oauth2_response)
                 return response
+        ```
 
         Args:
-            request: An :py:class:`aioauth.requests.Request` object.
+            request: An `aioauth.requests.Request` object.
 
         Returns:
-            response: An :py:class:`aioauth.responses.Response` object.
+            response: An `aioauth.responses.Response` object.
         """
         self.validate_request(request, ["POST"])
         client_id, client_secret = self.get_client_credentials(
@@ -299,8 +300,7 @@ class AuthorizationServer:
             ``/token``.
         Example:
             Below is an example utilizing FastAPI as the server framework.
-        .. code-block:: python
-
+        ```python
             from aioauth_fastapi.utils import to_oauth2_request, to_fastapi_response
 
             @app.post("/token")
@@ -312,12 +312,13 @@ class AuthorizationServer:
                 # Converts an aioauth.Response to a fastapi.Response.
                 response: fastapi.Response = await to_fastapi_response(oauth2_response)
                 return response
+        ```
 
         Args:
-            request: An :py:class:`aioauth.requests.Request` object.
+            request: An `aioauth.requests.Request` object.
 
         Returns:
-            response: An :py:class:`aioauth.responses.Response` object.
+            response: An `aioauth.responses.Response` object.
         """
         self.validate_request(request, ["POST"])
 
@@ -389,8 +390,7 @@ class AuthorizationServer:
 
         Example:
             Below is an example utilizing FastAPI as the server framework.
-        .. code-block:: python
-
+        ```python
             from aioauth.fastapi.utils import to_oauth2_request, to_fastapi_response
 
             @app.post("/authorize")
@@ -404,12 +404,13 @@ class AuthorizationServer:
                 # Converts an aioauth.Response to a fastapi.Response.
                 response: fastapi.Response = await to_fastapi_response(oauth2_response)
                 return response
+        ```
 
         Args:
-            request: An :py:class:`aioauth.requests.Request` object.
+            request: An `aioauth.requests.Request` object.
 
         Returns:
-            state: An :py:class:`aioauth.server.AuthState` object.
+            state: An `aioauth.server.AuthState` object.
         """
         self.validate_request(request, ["GET", "POST"])
 
@@ -556,7 +557,7 @@ class AuthorizationServer:
 
         Example:
             Below is an example utilizing FastAPI as the server framework.
-        .. code-block:: python
+        ```python
 
             from aioauth.fastapi.utils import to_oauth2_request, to_fastapi_response
 
@@ -571,12 +572,13 @@ class AuthorizationServer:
                 # Converts an aioauth.Response to a fastapi.Response.
                 response: fastapi.Response = await to_fastapi_response(oauth2_response)
                 return response
+        ```
 
         Args:
-            auth_state: An :py:class:`aioauth.server.AuthState` object.
+            auth_state: An `aioauth.server.AuthState` object.
 
         Returns:
-            response: An :py:class:`aioauth.responses.Response` object.
+            response: An `aioauth.responses.Response` object.
         """
         auth_state = await self.validate_authorization_request(request)
         return await self.finalize_authorization_response(auth_state)
@@ -592,8 +594,7 @@ class AuthorizationServer:
             ``/revoke``.
         Example:
             Below is an example utilizing FastAPI as the server framework.
-        .. code-block:: python
-
+        ```python
             from aioauth_fastapi.utils import to_oauth2_request, to_fastapi_response
 
             @app.post("/revoke")
@@ -605,12 +606,13 @@ class AuthorizationServer:
                 # Converts an aioauth.Response to a fastapi.Response.
                 response: fastapi.Response = await to_fastapi_response(oauth2_response)
                 return response
+        ```
 
         Args:
-            request: An :py:class:`aioauth.requests.Request` object.
+            request: An `aioauth.requests.Request` object.
 
         Returns:
-            response: An :py:class:`aioauth.responses.Response` object.
+            response: An `aioauth.responses.Response` object.
         """
         self.validate_request(request, ["POST"])
         client_id, client_secret = self.get_client_credentials(

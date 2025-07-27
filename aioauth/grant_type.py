@@ -1,7 +1,8 @@
 """
-.. code-block:: python
+```python
+from aioauth import grant_type
+```
 
-    from aioauth import grant_type
 
 Different OAuth 2.0 grant types.
 

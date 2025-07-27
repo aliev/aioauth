@@ -1,7 +1,8 @@
 """
-.. code-block:: python
+```python
+from aioauth import errors
+```
 
-    from aioauth import errors
 
 Errors used throughout the project.
 

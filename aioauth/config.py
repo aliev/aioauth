@@ -1,7 +1,8 @@
 """
-.. code-block:: python
+```python
+from aioauth import config
+```
 
-    from aioauth import config
 
 Configuration settings for aioauth server instance.
 

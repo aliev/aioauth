@@ -1,7 +1,8 @@
 """
-.. code-block:: python
+```python
+from aioauth import collections
+```
 
-    from aioauth import collections
 
 Collections that are used throughout the project.
 
@@ -25,13 +26,13 @@ class HTTPHeaderDict(UserDict):
 
     Example:
 
-    .. code-block:: python
-
-        from aioauth.collections import HTTPHeaderDict
+    ```python
+from aioauth.collections import HTTPHeaderDict
         d = HTTPHeaderDict({"hello": "world"})
         d['hello'] == 'world' # >>> True
         d['Hello'] == 'world' # >>> True
         d['hElLo'] == 'world' # >>> True
+    ```
     """
 
     def __init__(self, dict=None, **kwargs):
