@@ -21,7 +21,7 @@ plugins:
           paths: ["."]
 nav:
   - Home: index.md
-  - Quick Start: sections/examples/example.md
+  - Quick Start: sections/quick_start/index.md
   - API:
       - Collections: sections/api/collections.md
       - Config: sections/api/config.md
