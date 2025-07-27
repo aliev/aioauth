@@ -32,11 +32,12 @@ class TokenStorage:
         """Generates a user token and stores it in the database.
 
         Used by:
-            - `ResponseTypeToken`
-            - `AuthorizationCodeGrantType`
-            - `PasswordGrantType`
-            - `ClientCredentialsGrantType`
-            - `RefreshTokenGrantType`
+
+        * `ResponseTypeToken`
+        * `AuthorizationCodeGrantType`
+        * `PasswordGrantType`
+        * `ClientCredentialsGrantType`
+        * `RefreshTokenGrantType`
 
         Warning:
             Generated token *must* be stored in the database.
@@ -108,9 +109,11 @@ class AuthorizationCodeStorage:
 
         Warning:
             Generated authorization token *must* be stored in the database.
+
         Note:
             This must is used by the response type
             `aioauth.respose_type.ResponseTypeAuthorizationCode`.
+
         Args:
             request: An `aioauth.requests.Request`.
             client_id: A user client ID.
@@ -119,6 +122,7 @@ class AuthorizationCodeStorage:
             redirect_uri: The redirect URI.
             code_challenge_method: An `aioauth.types.CodeChallengeMethod`.
             code_challenge: Code challenge string.
+
         Returns:
             An `aioauth.models.AuthorizationCode` object.
         """
@@ -139,13 +143,16 @@ class AuthorizationCodeStorage:
             If authorization code does not exists this function *must*
             return ``None`` to indicate to the validator that the
             requested authorization code does not exist or is invalid.
+
         Note:
             This method is used by the grant type
             `aioauth.grant_type.AuthorizationCodeGrantType`.
+
         Args:
             request: An `aioauth.requests.Request`.
             client_id: A user client ID.
             code: An authorization code.
+
         Returns:
             An optional `aioauth.models.AuthorizationCode`.
         """
@@ -165,6 +172,7 @@ class AuthorizationCodeStorage:
         Note:
             This method is used by the grant type
             `aioauth.grant_type.AuthorizationCodeGrantType`.
+
         Args:
             request: An `aioauth.requests.Request`.
             client_id: A user client ID.
@@ -187,15 +195,18 @@ class ClientStorage:
 
         Warning:
             If client does not exists in database this method *must*
-            return ``None`` to indicate to the validator that the
-            requested ``client_id`` does not exist or is invalid.
+            return `None` to indicate to the validator that the
+            requested `client_id` does not exist or is invalid.
+
         Note:
             This method is used by all core grant types, as well as
             all core response types.
+
         Args:
             request: An `aioauth.requests.Request`.
             client_id: A user client ID.
             client_secret: An optional user client secret.
+
         Returns:
             An optional `aioauth.models.Client` object.
         """
@@ -209,8 +220,10 @@ class UserStorage:
         Note:
             This method is used by the grant type
             `aioauth.grant_type.PasswordGrantType`.
+
         Args:
             request: An `aioauth.requests.Request`.
+
         Returns:
             Boolean indicating whether or not the user was authenticated
             successfully.
@@ -230,7 +243,7 @@ class IDTokenStorage:
         nonce: Optional[str] = None,
     ) -> str:
         """Returns an id_token.
-        For more information see `OpenID Connect Core 1.0 incorporating errata set 1 section 2 <https://openid.net/specs/openid-connect-core-1_0.html#IDToken>`_.
+        For more information see [OpenID Connect Core 1.0 incorporating errata set 1 section 2](https://openid.net/specs/openid-connect-core-1_0.html#IDToken).
 
         Note:
             Method is used by response type `aioauth.response_type.ResponseTypeIdToken`

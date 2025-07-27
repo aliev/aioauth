@@ -1,12 +1,8 @@
 """
+Request objects used throughout the project.
 ```python
 from aioauth import requests
 ```
-
-
-Request objects used throughout the project.
-
-----
 """
 
 from dataclasses import dataclass, field
@@ -27,7 +23,7 @@ from .types import (
 class Query:
     """
     Object that contains a client's query string portion of a request.
-    Read more on query strings `here <https://en.wikipedia.org/wiki/Query_string>`__.
+    Read more on query strings [here](https://en.wikipedia.org/wiki/Query_string).
     """
 
     client_id: Optional[str] = None
@@ -45,7 +41,7 @@ class Query:
 class Post:
     """
     Object that contains a client's post request portion of a request.
-    Read more on post requests `here <https://en.wikipedia.org/wiki/POST_(HTTP)>`__.
+    Read more on post requests [here](https://en.wikipedia.org/wiki/POST_(HTTP)).
     """
 
     grant_type: Optional[GrantType] = None

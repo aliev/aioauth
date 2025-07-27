@@ -1,12 +1,8 @@
 """
+Errors used throughout the project.
 ```python
 from aioauth import errors
 ```
-
-
-Errors used throughout the project.
-
-----
 """
 
 from http import HTTPStatus
@@ -78,11 +74,11 @@ class InvalidClientError(OAuth2Error):
     """
     Client authentication failed (e.g. unknown client, no client
     authentication included, or unsupported authentication method).
-    The authorization server **may** return an ``HTTP 401`` (Unauthorized) status
+    The authorization server **may** return an `HTTP 401` (Unauthorized) status
     code to indicate which HTTP authentication schemes are supported.
     If the client attempted to authenticate via the ``Authorization`` request
     header field, the authorization server **must** respond with an
-    ``HTTP 401`` (Unauthorized) status code, and include the ``WWW-Authenticate``
+    `HTTP 401` (Unauthorized) status code, and include the `WWW-Authenticate`
     response header field matching the authentication scheme used by the
     client.
     """
@@ -141,7 +137,7 @@ class InvalidGrantError(OAuth2Error):
     not match the redirection URI used in the authorization request, or was
     issued to another client.
 
-    See `RFC6749 section 5.2 <https://tools.ietf.org/html/rfc6749#section-5.2>`_.
+    See [RFC6749 section 5.2](https://tools.ietf.org/html/rfc6749#section-5.2).
     """
 
     error: ErrorType = "invalid_grant"
@@ -168,7 +164,7 @@ class InvalidScopeError(OAuth2Error):
     The requested scope is invalid, unknown, or malformed, or
     exceeds the scope granted by the resource owner.
 
-    See `RFC6749 section 5.2 <https://tools.ietf.org/html/rfc6749#section-5.2>`_.
+    See [RFC6749 section 5.2](https://tools.ietf.org/html/rfc6749#section-5.2).
     """
 
     error: ErrorType = "invalid_scope"

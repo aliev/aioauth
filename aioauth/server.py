@@ -1,21 +1,18 @@
 """
-```python
-from aioauth import server
-```
-
-
 Memory object and interface used to initialize an OAuth2.0 server instance.
 
 Warning:
     Note that `aioauth.server.AuthorizationServer` is not
     depedent on any server framework, nor serves at any specific
     endpoint. Instead, it is used to create an interface that can be
-    used in conjunction with a server framework like ``FastAPI`` or
-    ``aiohttp`` to create a fully functional OAuth 2.0 server.
+    used in conjunction with a server framework like `FastAPI` or
+    `aiohttp` to create a fully functional OAuth 2.0 server.
     Check out the *Examples* portion of the documentation to understand
     how it can be leveraged in your own project.
 
-----
+```python
+from aioauth import server
+```
 """
 
 from dataclasses import asdict, dataclass
@@ -152,8 +149,10 @@ class AuthorizationServer:
             This method simply checks if the request URL contains
             ``https://`` at the start of it. It does **not** ensure
             if the SSL certificate is valid.
+
         Args:
             request: `aioauth.requests.Request` object.
+
         Returns:
             Flag representing whether or not the transport is secure.
         """
@@ -178,26 +177,27 @@ class AuthorizationServer:
     async def create_token_introspection_response(self, request: Request) -> Response:
         """
         Returns a response object with introspection of the passed token.
-        For more information see `RFC7662 section 2.1 <https://tools.ietf.org/html/rfc7662#section-2.1>`_.
+        For more information see [RFC7662 section 2.1](https://tools.ietf.org/html/rfc7662#section-2.1).
 
         Note:
             The API endpoint that leverages this function is usually
-            ``/introspect``.
+            `/introspect`.
 
         Example:
             Below is an example utilizing FastAPI as the server framework.
-        ```python
-            from aioauth_fastapi.utils import to_oauth2_request, to_fastapi_response
 
-            @app.get("/token/introspect")
-            async def introspect(request: fastapi.Request) -> fastapi.Response:
-                # Converts a fastapi.Request to an aioauth.Request.
-                oauth2_request: aioauth.Request = await to_oauth2_request(request)
-                # Creates the response via this function call.
-                oauth2_response: aioauth.Response = await server.create_token_introspection_response(oauth2_request)
-                # Converts an aioauth.Response to a fastapi.Response.
-                response: fastapi.Response = await to_fastapi_response(oauth2_response)
-                return response
+        ```python
+        from aioauth_fastapi.utils import to_oauth2_request, to_fastapi_response
+
+        @app.get("/token/introspect")
+        async def introspect(request: fastapi.Request) -> fastapi.Response:
+            # Converts a fastapi.Request to an aioauth.Request.
+            oauth2_request: aioauth.Request = await to_oauth2_request(request)
+            # Creates the response via this function call.
+            oauth2_response: aioauth.Response = await server.create_token_introspection_response(oauth2_request)
+            # Converts an aioauth.Response to a fastapi.Response.
+            response: fastapi.Response = await to_fastapi_response(oauth2_response)
+            return response
         ```
 
         Args:
@@ -292,26 +292,27 @@ class AuthorizationServer:
         """Endpoint to obtain an access and/or ID token by presenting an
         authorization grant or refresh token.
         Validates a token request and creates a token response.
-        For more information see
-        `RFC6749 section 4.1.3 <https://tools.ietf.org/html/rfc6749#section-4.1.3>`_.
+        For more information see: [RFC6749 section 4.1.3](https://tools.ietf.org/html/rfc6749#section-4.1.3).
 
         Note:
             The API endpoint that leverages this function is usually
-            ``/token``.
+            `/token`.
+
         Example:
             Below is an example utilizing FastAPI as the server framework.
-        ```python
-            from aioauth_fastapi.utils import to_oauth2_request, to_fastapi_response
 
-            @app.post("/token")
-            async def token(request: fastapi.Request) -> fastapi.Response:
-                # Converts a fastapi.Request to an aioauth.Request.
-                oauth2_request: aioauth.Request = await to_oauth2_request(request)
-                # Creates the response via this function call.
-                oauth2_response: aioauth.Response = await server.create_token_response(oauth2_request)
-                # Converts an aioauth.Response to a fastapi.Response.
-                response: fastapi.Response = await to_fastapi_response(oauth2_response)
-                return response
+        ```python
+        from aioauth_fastapi.utils import to_oauth2_request, to_fastapi_response
+
+        @app.post("/token")
+        async def token(request: fastapi.Request) -> fastapi.Response:
+            # Converts a fastapi.Request to an aioauth.Request.
+            oauth2_request: aioauth.Request = await to_oauth2_request(request)
+            # Creates the response via this function call.
+            oauth2_response: aioauth.Response = await server.create_token_response(oauth2_request)
+            # Converts an aioauth.Response to a fastapi.Response.
+            response: fastapi.Response = await to_fastapi_response(oauth2_response)
+            return response
         ```
 
         Args:
@@ -381,29 +382,29 @@ class AuthorizationServer:
         authoriation grant.
         Validate authorization request and return valid authorization
         state for later response generation.
-        For more information see
-        `RFC6749 section 4.1.1 <https://tools.ietf.org/html/rfc6749#section-4.1.1>`_.
+        For more information see: [RFC6749 section 4.1.1](https://tools.ietf.org/html/rfc6749#section-4.1.1).
 
         Note:
             The API endpoint that leverages this function is usually
-            ``/authorize``.
+            `/authorize`.
 
         Example:
             Below is an example utilizing FastAPI as the server framework.
-        ```python
-            from aioauth.fastapi.utils import to_oauth2_request, to_fastapi_response
 
-            @app.post("/authorize")
-            async def authorize(request: fastapi.Request) -> fastapi.Response:
-                # Converts a fastapi.Request to an aioauth.Request.
-                oauth2_request: aioauth.Request = await to_oauth2_request(request)
-                # Validate the oauth request
-                auth_state: aioauth.AuthState = await server.validate_authorization_request(oauth2_request)
-                # Creates the response via this function call.
-                oauth2_response: aioauth.Response = await server.create_authorization_response(auth_state)
-                # Converts an aioauth.Response to a fastapi.Response.
-                response: fastapi.Response = await to_fastapi_response(oauth2_response)
-                return response
+        ```python
+        from aioauth.fastapi.utils import to_oauth2_request, to_fastapi_response
+
+        @app.post("/authorize")
+        async def authorize(request: fastapi.Request) -> fastapi.Response:
+            # Converts a fastapi.Request to an aioauth.Request.
+            oauth2_request: aioauth.Request = await to_oauth2_request(request)
+            # Validate the oauth request
+            auth_state: aioauth.AuthState = await server.validate_authorization_request(oauth2_request)
+            # Creates the response via this function call.
+            oauth2_response: aioauth.Response = await server.create_authorization_response(auth_state)
+            # Converts an aioauth.Response to a fastapi.Response.
+            response: fastapi.Response = await to_fastapi_response(oauth2_response)
+            return response
         ```
 
         Args:
@@ -552,26 +553,25 @@ class AuthorizationServer:
         Endpoint to interact with the resource owner and obtain an
         authorization grant.
         Create an authorization response after validation.
-        For more information see
-        `RFC6749 section 4.1.1 <https://tools.ietf.org/html/rfc6749#section-4.1.1>`_.
+        For more information see: [RFC6749 section 4.1.1](https://tools.ietf.org/html/rfc6749#section-4.1.1).
 
         Example:
             Below is an example utilizing FastAPI as the server framework.
+
         ```python
+        from aioauth.fastapi.utils import to_oauth2_request, to_fastapi_response
 
-            from aioauth.fastapi.utils import to_oauth2_request, to_fastapi_response
-
-            @app.post("/authorize")
-            async def authorize(request: fastapi.Request) -> fastapi.Response:
-                # Converts a fastapi.Request to an aioauth.Request.
-                oauth2_request: aioauth.Request = await to_oauth2_request(request)
-                # Validate the oauth request
-                auth_state: aioauth.AuthState = await server.validate_authorization_request(oauth2_request)
-                # Creates the response via this function call.
-                oauth2_response: aioauth.Response = await server.create_authorization_response(auth_state)
-                # Converts an aioauth.Response to a fastapi.Response.
-                response: fastapi.Response = await to_fastapi_response(oauth2_response)
-                return response
+        @app.post("/authorize")
+        async def authorize(request: fastapi.Request) -> fastapi.Response:
+            # Converts a fastapi.Request to an aioauth.Request.
+            oauth2_request: aioauth.Request = await to_oauth2_request(request)
+            # Validate the oauth request
+            auth_state: aioauth.AuthState = await server.validate_authorization_request(oauth2_request)
+            # Creates the response via this function call.
+            oauth2_response: aioauth.Response = await server.create_authorization_response(auth_state)
+            # Converts an aioauth.Response to a fastapi.Response.
+            response: fastapi.Response = await to_fastapi_response(oauth2_response)
+            return response
         ```
 
         Args:
@@ -586,26 +586,26 @@ class AuthorizationServer:
     @catch_errors_and_unavailability()
     async def revoke_token(self, request: Request) -> Response:
         """Endpoint to revoke an access token or refresh token.
-        For more information see
-        `RFC7009 <https://tools.ietf.org/html/rfc7009>`_.
+        For more information see: [RFC7009](https://tools.ietf.org/html/rfc7009).
 
         Note:
             The API endpoint that leverages this function is usually
-            ``/revoke``.
+            `/revoke`.
         Example:
             Below is an example utilizing FastAPI as the server framework.
-        ```python
-            from aioauth_fastapi.utils import to_oauth2_request, to_fastapi_response
 
-            @app.post("/revoke")
-            async def revoke(request: fastapi.Request) -> fastapi.Response:
-                # Converts a fastapi.Request to an aioauth.Request.
-                oauth2_request: aioauth.Request = await to_oauth2_request(request)
-                # Creates the response via this function call.
-                oauth2_response: aioauth.Response = await server.revoke_token(oauth2_request)
-                # Converts an aioauth.Response to a fastapi.Response.
-                response: fastapi.Response = await to_fastapi_response(oauth2_response)
-                return response
+        ```python
+        from aioauth_fastapi.utils import to_oauth2_request, to_fastapi_response
+
+        @app.post("/revoke")
+        async def revoke(request: fastapi.Request) -> fastapi.Response:
+            # Converts a fastapi.Request to an aioauth.Request.
+            oauth2_request: aioauth.Request = await to_oauth2_request(request)
+            # Creates the response via this function call.
+            oauth2_response: aioauth.Response = await server.revoke_token(oauth2_request)
+            # Converts an aioauth.Response to a fastapi.Response.
+            response: fastapi.Response = await to_fastapi_response(oauth2_response)
+            return response
         ```
 
         Args:

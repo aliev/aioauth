@@ -31,7 +31,3 @@ aioauth supports the following RFCs:
 - [Discussion](https://github.com/aliev/aioauth/discussions)
 
 ----
-
-## Sections
-
-The following sections provide detailed documentation of the project APIs.

@@ -1,12 +1,8 @@
 """
+Response objects used throughout the project.
 ```python
 from aioauth import responses
 ```
-
-
-Response objects used throughout the project.
-
-----
 """
 
 from dataclasses import dataclass, field
@@ -29,7 +25,7 @@ class ErrorResponse:
 
 @dataclass
 class AuthorizationCodeResponse:
-    """Response for ``authorization_code``.
+    """Response for `authorization_code`.
 
     Used by `aioauth.response_type.ResponseTypeAuthorizationCode`.
     """
@@ -42,7 +38,7 @@ class AuthorizationCodeResponse:
 class NoneResponse:
     """Response for `aioauth.response_type.ResponseTypeNone`.
 
-    See: `OAuth v2 multiple response types <openid.net/specs/oauth-v2-multiple-response-types-1_0.html#none>`_,
+    See: [OAuth v2 multiple response types](https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#none),
     """
 
 

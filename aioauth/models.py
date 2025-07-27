@@ -1,12 +1,8 @@
 """
+Memory objects used throughout the project.
 ```python
 from aioauth import models
 ```
-
-
-Memory objects used throughout the project.
-
-----
 """
 
 from dataclasses import dataclass
@@ -66,15 +62,15 @@ class Client:
 
     def check_redirect_uri(self, redirect_uri) -> bool:
         """
-        Verifies passed ``redirect_uri`` is part of the Clients's
-        ``redirect_uris`` list.
+        Verifies passed `redirect_uri` is part of the Clients's
+        `redirect_uris` list.
         """
         return redirect_uri in self.redirect_uris
 
     def check_grant_type(self, grant_type: Optional[GrantType]) -> bool:
         """
-        Verifies passed ``grant_type`` is part of the client's
-        ``grant_types`` list.
+        Verifies passed `grant_type` is part of the client's
+        `grant_types` list.
         """
         return grant_type in self.grant_types if grant_type else False
 
@@ -82,17 +78,17 @@ class Client:
         self, response_type: Optional[Union[ResponseType, str]]
     ) -> bool:
         """
-        Verifies passed ``response_type`` is part of the client's
-        ``response_types`` list.
+        Verifies passed `response_type` is part of the client's
+        `response_types` list.
         """
         return not (set(enforce_list(response_type)) - set(self.response_types))
 
     def get_allowed_scope(self, scope: str) -> str:
         """
-        Returns the allowed ``scope`` given the passed ``scope``.
+        Returns the allowed `scope` given the passed `scope`.
 
         Note:
-            Note that the passed ``scope`` may contain multiple scopes
+            Note that the passed `scope` may contain multiple scopes
             seperated by a space character.
         """
         if not scope:
@@ -155,7 +151,7 @@ class AuthorizationCode:
 
     code_challenge: Optional[str] = None
     """
-    Only used when `RFC 7636 <tools.ietf.org/html/rfc7636>`_,
+    Only used when [RFC 7636](https://datatracker.ietf.org/doc/html/rfc7636),
     Proof Key for Code Exchange, is used.
     PKCE works by having the app generate a random value at the
     beginning of the flow called a Code Verifier. The app hashes the
@@ -167,14 +163,14 @@ class AuthorizationCode:
 
     code_challenge_method: Optional[CodeChallengeMethod] = None
     """
-    Only used when `RFC 7636 <tools.ietf.org/html/rfc7636>`_,
+    Only used when [RFC 7636](https://datatracker.ietf.org/doc/html/rfc7636>),
     Proof Key for Code Exchange, is used.
     Method used to transform the code verifier into the code challenge.
     """
 
     nonce: Optional[str] = None
     """
-    Only used when `RFC 7636 <tools.ietf.org/html/rfc7636>`_,
+    Only used when [RFC 7636](https://datatracker.ietf.org/doc/html/rfc7636),
     Proof Key for Code Exchange, is used.
     Random piece of data.
     """

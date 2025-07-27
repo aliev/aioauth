@@ -1,12 +1,9 @@
 """
+Configuration settings for aioauth server instance.
+
 ```python
 from aioauth import config
 ```
-
-
-Configuration settings for aioauth server instance.
-
-----
 """
 
 from dataclasses import dataclass
@@ -45,8 +42,8 @@ class Settings:
 
         Reference links:
 
-        - https://datatracker.ietf.org/doc/html/rfc6749#section-4.2
-        - https://datatracker.ietf.org/doc/html/rfc6749#section-4.2.2
+        - [https://datatracker.ietf.org/doc/html/rfc6749#section-4.2](https://datatracker.ietf.org/doc/html/rfc6749#section-4.2)
+        - [https://datatracker.ietf.org/doc/html/rfc6749#section-4.2.2](https://datatracker.ietf.org/doc/html/rfc6749#section-4.2.2)
     """
 
     AUTHORIZATION_CODE_EXPIRES_IN: int = 5 * 60
