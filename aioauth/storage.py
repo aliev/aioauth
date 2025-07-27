@@ -1,7 +1,8 @@
 """
-.. code-block:: python
+```python
+from aioauth import storage
+```
 
-    from aioauth import storage
 
 Storage helper class for storing and retrieving client and resource
 owner information. See the examples on the sidebar to view this in
@@ -31,23 +32,24 @@ class TokenStorage:
         """Generates a user token and stores it in the database.
 
         Used by:
-            - `ResponseTypeToken`
-            - `AuthorizationCodeGrantType`
-            - `PasswordGrantType`
-            - `ClientCredentialsGrantType`
-            - `RefreshTokenGrantType`
+
+        * `ResponseTypeToken`
+        * `AuthorizationCodeGrantType`
+        * `PasswordGrantType`
+        * `ClientCredentialsGrantType`
+        * `RefreshTokenGrantType`
 
         Warning:
             Generated token *must* be stored in the database.
         Note:
             Method is used by all core grant types, but only used for
-            :py:class:`aioauth.response_type.ResponseTypeToken`.
+            `aioauth.response_type.ResponseTypeToken`.
         Args:
-            request: An :py:class:`aioauth.requests.Request`.
+            request: An `aioauth.requests.Request`.
             client_id: A user client ID.
             scope: The scopes for the token.
         Returns:
-            The new generated :py:class:`aioauth.models.Token`.
+            The new generated `aioauth.models.Token`.
         """
         raise NotImplementedError("Method create_token must be implemented")
 
@@ -64,15 +66,15 @@ class TokenStorage:
 
         Note:
             Method is used by
-            :py:class:`aioauth.server.AuthorizationServer`,  and by the
-            grant type :py:class:`aioauth.grant_types.RefreshTokenGrantType`.
+            `aioauth.server.AuthorizationServer`,  and by the
+            grant type `aioauth.grant_types.RefreshTokenGrantType`.
         Args:
-            request: An :py:class:`aioauth.requests.Request`.
+            request: An `aioauth.requests.Request`.
             client_id: A user client ID.
             access_token: The user access token.
             refresh_token: The user refresh token.
         Returns:
-            An optional :py:class:`aioauth.models.Token` object.
+            An optional `aioauth.models.Token` object.
         """
         raise NotImplementedError("Method get_token must be implemented")
 
@@ -107,19 +109,22 @@ class AuthorizationCodeStorage:
 
         Warning:
             Generated authorization token *must* be stored in the database.
+
         Note:
             This must is used by the response type
-            :py:class:`aioauth.respose_type.ResponseTypeAuthorizationCode`.
+            `aioauth.respose_type.ResponseTypeAuthorizationCode`.
+
         Args:
-            request: An :py:class:`aioauth.requests.Request`.
+            request: An `aioauth.requests.Request`.
             client_id: A user client ID.
             scope: The scopes for the token.
-            response_type: An :py:class:`aioauth.types.ResponseType`.
+            response_type: An `aioauth.types.ResponseType`.
             redirect_uri: The redirect URI.
-            code_challenge_method: An :py:class:`aioauth.types.CodeChallengeMethod`.
+            code_challenge_method: An `aioauth.types.CodeChallengeMethod`.
             code_challenge: Code challenge string.
+
         Returns:
-            An :py:class:`aioauth.models.AuthorizationCode` object.
+            An `aioauth.models.AuthorizationCode` object.
         """
         raise NotImplementedError(
             "Method create_authorization_code must be implemented"
@@ -138,15 +143,18 @@ class AuthorizationCodeStorage:
             If authorization code does not exists this function *must*
             return ``None`` to indicate to the validator that the
             requested authorization code does not exist or is invalid.
+
         Note:
             This method is used by the grant type
-            :py:class:`aioauth.grant_type.AuthorizationCodeGrantType`.
+            `aioauth.grant_type.AuthorizationCodeGrantType`.
+
         Args:
-            request: An :py:class:`aioauth.requests.Request`.
+            request: An `aioauth.requests.Request`.
             client_id: A user client ID.
             code: An authorization code.
+
         Returns:
-            An optional :py:class:`aioauth.models.AuthorizationCode`.
+            An optional `aioauth.models.AuthorizationCode`.
         """
         raise NotImplementedError(
             "Method get_authorization_code must be implemented for AuthorizationCodeGrantType"
@@ -163,9 +171,10 @@ class AuthorizationCodeStorage:
 
         Note:
             This method is used by the grant type
-            :py:class:`aioauth.grant_type.AuthorizationCodeGrantType`.
+            `aioauth.grant_type.AuthorizationCodeGrantType`.
+
         Args:
-            request: An :py:class:`aioauth.requests.Request`.
+            request: An `aioauth.requests.Request`.
             client_id: A user client ID.
             code: An authorization code.
         """
@@ -186,17 +195,20 @@ class ClientStorage:
 
         Warning:
             If client does not exists in database this method *must*
-            return ``None`` to indicate to the validator that the
-            requested ``client_id`` does not exist or is invalid.
+            return `None` to indicate to the validator that the
+            requested `client_id` does not exist or is invalid.
+
         Note:
             This method is used by all core grant types, as well as
             all core response types.
+
         Args:
-            request: An :py:class:`aioauth.requests.Request`.
+            request: An `aioauth.requests.Request`.
             client_id: A user client ID.
             client_secret: An optional user client secret.
+
         Returns:
-            An optional :py:class:`aioauth.models.Client` object.
+            An optional `aioauth.models.Client` object.
         """
         raise NotImplementedError("Method get_client must be implemented")
 
@@ -207,9 +219,11 @@ class UserStorage:
 
         Note:
             This method is used by the grant type
-            :py:class:`aioauth.grant_type.PasswordGrantType`.
+            `aioauth.grant_type.PasswordGrantType`.
+
         Args:
-            request: An :py:class:`aioauth.requests.Request`.
+            request: An `aioauth.requests.Request`.
+
         Returns:
             Boolean indicating whether or not the user was authenticated
             successfully.
@@ -229,11 +243,11 @@ class IDTokenStorage:
         nonce: Optional[str] = None,
     ) -> str:
         """Returns an id_token.
-        For more information see `OpenID Connect Core 1.0 incorporating errata set 1 section 2 <https://openid.net/specs/openid-connect-core-1_0.html#IDToken>`_.
+        For more information see [OpenID Connect Core 1.0 incorporating errata set 1 section 2](https://openid.net/specs/openid-connect-core-1_0.html#IDToken).
 
         Note:
-            Method is used by response type :py:class:`aioauth.response_type.ResponseTypeIdToken`
-            and :py:class:`aioauth.oidc.core.grant_type.AuthorizationCodeGrantType`.
+            Method is used by response type `aioauth.response_type.ResponseTypeIdToken`
+            and `aioauth.oidc.core.grant_type.AuthorizationCodeGrantType`.
         """
         raise NotImplementedError("get_id_token must be implemented.")
 

@@ -1,11 +1,8 @@
 """
-.. code-block:: python
-
-    from aioauth import grant_type
-
 Different OAuth 2.0 grant types.
-
-----
+```python
+from aioauth import grant_type
+```
 """
 
 from typing import Optional
@@ -92,13 +89,13 @@ class AuthorizationCodeGrantType(GrantTypeBase):
     the user returns to the client via the redirect URL, the application
     will get the authorization code from the URL and use it to request
     an access token.
-    It is recommended that all clients use `RFC 7636 <https://tools.ietf.org/html/rfc7636>`_
+    It is recommended that all clients use [RFC 7636](https://tools.ietf.org/html/rfc7636)
     Proof Key for Code Exchange extension with this flow as well to
     provide better security.
 
     Note:
-        Note that ``aioauth`` implements RFC 7636 out-of-the-box.
-        See `RFC 6749 section 1.3.1 <https://tools.ietf.org/html/rfc6749#section-1.3.1>`_.
+        Note that `aioauth` implements RFC 7636 out-of-the-box.
+        See [RFC 6749 section 1.3.1](https://tools.ietf.org/html/rfc6749#section-1.3.1).
     """
 
     async def validate_request(self, request: Request) -> Client:
@@ -170,8 +167,8 @@ class PasswordGrantType(GrantTypeBase):
     for an access token. Because the client application has to collect
     the user's password and send it to the authorization server, it is
     not recommended that this grant be used at all anymore.
-    See `RFC 6749 section 1.3.3 <https://tools.ietf.org/html/rfc6749#section-1.3.3>`_.
-    The latest `OAuth 2.0 Security Best Current Practice <https://tools.ietf.org/html/draft-ietf-oauth-security-topics-13#section-3.4>`_
+    See [RFC 6749 section 1.3.3](https://tools.ietf.org/html/rfc6749#section-1.3.3).
+    The latest [OAuth 2.0 Security Best Current Practice](https://tools.ietf.org/html/draft-ietf-oauth-security-topics-13#section-3.4)
     disallows the password grant entirely.
     """
 
@@ -199,7 +196,7 @@ class RefreshTokenGrantType(GrantTypeBase):
     refresh token for an access token when the access token has expired.
     This allows clients to continue to have a valid access token without
     further interaction with the user.
-    See `RFC 6749 section 1.5 <https://tools.ietf.org/html/rfc6749#section-1.5>`_.
+    See [RFC 6749 section 1.5](https://tools.ietf.org/html/rfc6749#section-1.5).
     """
 
     async def create_token_response(
@@ -272,7 +269,7 @@ class ClientCredentialsGrantType(GrantTypeBase):
     access token outside of the context of a user. This is typically
     used by clients to access resources about themselves rather than to
     access a user's resources.
-    See `RFC 6749 section 4.4 <https://tools.ietf.org/html/rfc6749#section-4.4>`_.
+    See [RFC 6749 section 4.4](https://tools.ietf.org/html/rfc6749#section-4.4).
     """
 
     async def validate_request(self, request: Request) -> Client:

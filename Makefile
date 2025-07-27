@@ -74,10 +74,10 @@ docs-install: ## install packages for local documentation.
 	pip install -e ."[docs]"
 
 docs: ## builds the documentation.
-	$(MAKE) -C docs html
+	mkdocs build
 
 docs-serve: ## serves the documentation on 127.0.0.1:8000.
-	$(MAKE) -C docs serve
+	mkdocs serve
 
 new-env: ## creates environment for testing and documentation.
 	python -m venv env

@@ -1,0 +1,51 @@
+site_name: aioauth
+repo_url: https://github.com/aliev/aioauth
+docs_dir: docs
+theme:
+  name: material
+  palette:
+    - scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+plugins:
+  - search
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          paths: ["."]
+nav:
+  - Home: index.md
+  - Quick Start: sections/examples/example.md
+  - API:
+      - Collections: sections/api/collections.md
+      - Config: sections/api/config.md
+      - Constances: sections/api/constances.md
+      - Errors: sections/api/errors.md
+      - Grant Type: sections/api/grant_type.md
+      - Models: sections/api/models.md
+      - Requests: sections/api/requests.md
+      - Response Type: sections/api/response_type.md
+      - Responses: sections/api/responses.md
+      - Server: sections/api/server.md
+      - Storage: sections/api/storage.md
+      - Types: sections/api/types.md
+      - Utils: sections/api/utils.md
+      - OIDC:
+        - Core:
+          - Grant Type: sections/api/oidc/core/grant_type.md
+          - Requests: sections/api/oidc/core/requests.md
+          - Responses: sections/api/oidc/core/responses.md
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences

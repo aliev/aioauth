@@ -1,12 +1,9 @@
 """
-.. code-block:: python
-
-    from aioauth import utils
-
 Contains helper functions that is used throughout the project that doesn't
 pertain to a specific file or module.
-
-----
+```python
+from aioauth import utils
+```
 """
 
 import base64
@@ -59,8 +56,9 @@ def get_authorization_scheme_param(
 
     Args:
         authorization_header_value: Value of the authorization header.
+
     Returns:
-        Tuple of the format ``(scheme, param)``.
+        Tuple of the format `(scheme, param)`.
     """
     if not authorization_header_value:
         return "", ""
@@ -74,14 +72,17 @@ def enforce_str(scope: List) -> str:
 
     Note:
         If a string is passed to this method it will simply return an
-        empty string back. Use :py:func:`enforce_list` to convert
+        empty string back. Use `enforce_list` to convert
         strings to scope lists.
+
     Args:
         scope: An iterable or string that contains a list of scope.
+
     Returns:
         A string of scopes seperated by spaces.
+
     Raises:
-        TypeError: The ``scope`` value passed is not of the proper type.
+        TypeError: The `scope` value passed is not of the proper type.
     """
     if isinstance(scope, (set, tuple, list)):
         return " ".join([str(s) for s in scope])
@@ -95,10 +96,12 @@ def enforce_list(scope: Optional[Union[str, List, Set, Tuple]]) -> List:
 
     Note:
         If an iterable is passed to this method it will return a list
-        representation of the iterable. Use :py:func:`enforce_str` to
+        representation of the iterable. Use `enforce_str` to
         convert iterables to a scope string.
+
     Args:
         scope: An iterable or string that contains scopes.
+
     Returns:
         A list of scopes.
     """
@@ -121,8 +124,9 @@ def generate_token(length: int = 30, chars: str = UNICODE_ASCII_CHARACTER_SET) -
     Args:
         length: Length of the generated token.
         chars: The characters to use to generate the string.
+
     Returns:
-        Random string of length ``length`` and characters in ``chars``.
+        Random string of length `length` and characters in `chars`.
     """
     rand = random.SystemRandom()
     return "".join(rand.choice(chars) for _ in range(length))
@@ -132,16 +136,17 @@ def build_uri(
     url: str, query_params: Optional[Dict] = None, fragment: Optional[Dict] = None
 ) -> str:
     """
-    Builds an URI string from passed ``url``, ``query_params``, and
+    Builds an URI string from passed `url`, `query_params`, and
     ``fragment``.
 
     Args:
         url: URL string.
         query_params: Paramaters that contain the query.
         fragment: Fragment of the page.
+
     Returns:
-        URL containing the original ``url``, and the added
-        ``query_params`` and ``fragment``.
+        URL containing the original `url`, and the added
+        `query_params` and `fragment`.
     """
     if query_params is None:
         query_params = {}
@@ -169,9 +174,10 @@ def encode_auth_headers(client_id: str, client_secret: str) -> HTTPHeaderDict:
     Args:
         client_id: The client's id.
         client_secret: The client's secret.
+
     Returns:
         A case insensitive dictionary that contains the
-        ``Authorization`` header set to ``basic`` and the authorization
+        `Authorization` header set to `basic` and the authorization
         header.
     """
     authorization = b64encode(f"{client_id}:{client_secret}".encode("ascii"))
@@ -182,13 +188,15 @@ def decode_auth_headers(authorization: str) -> Tuple[str, str]:
     """
     Decodes an encoded HTTP basic authentication string.
     Returns a tuple of the form ``(client_id, client_secret)``, and
-    raises a :py:class:`aioauth.errors.InvalidClientError` exception if nothing
+    raises a `aioauth.errors.InvalidClientError` exception if nothing
     could be decoded.
 
     Args:
         authorization: Authorization header string.
+
     Returns:
-        Tuple of the form ``(client_id, client_secret)``.
+        Tuple of the form `(client_id, client_secret)`.
+
     Raises:
         ValueError: Invalid `authorization` header string.
     """
@@ -211,16 +219,16 @@ def decode_auth_headers(authorization: str) -> Tuple[str, str]:
 
 def create_s256_code_challenge(code_verifier: str) -> str:
     """
-    Create S256 code challenge with the passed ``code_verifier``.
+    Create S256 code challenge with the passed `code_verifier`.
 
     Note:
-        This function implements
-        ``base64url(sha256(ascii(code_verifier)))``.
+        This function implements: `base64url(sha256(ascii(code_verifier)))`.
     Args:
         code_verifier: Code verifier string.
+
     Returns:
         Representation of the S256 code challenge with the passed
-        ``code_verifier``.
+        `code_verifier`.
     """
     code_verifier_bytes = code_verifier.encode("utf-8")
     data = hashlib.sha256(code_verifier_bytes).digest()
@@ -239,6 +247,7 @@ def build_error_response(
         exc: Exception used to generate HTTP response
         request: oauth request object
         skip_redirect_on_exc: Exception types to skip redirect on
+
     Returns:
         OAuth HTTP response
     """
@@ -286,6 +295,7 @@ def catch_errors_and_unavailability(
 
     Args:
         f: A callable.
+
     Returns:
         A callable with error catching capabilities.
     """

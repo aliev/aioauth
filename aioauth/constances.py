@@ -1,11 +1,8 @@
 """
-.. code-block:: python
-
-    from aioauth import constances
-
 Constants that are used throughout the project.
-
-----
+```python
+from aioauth import constances
+```
 """
 
 from .collections import HTTPHeaderDict

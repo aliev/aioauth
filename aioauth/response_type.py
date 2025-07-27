@@ -1,11 +1,8 @@
 """
-.. code-block:: python
-
-    from aioauth import responses
-
 Response objects used throughout the project.
-
-----
+```python
+from aioauth import responses
+```
 """
 
 from typing import Tuple, get_args
