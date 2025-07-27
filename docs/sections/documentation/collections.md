@@ -1,0 +1,3 @@
+# Collections
+
+::: aioauth.collections

@@ -54,11 +54,9 @@ dev = [
 ]
 
 docs = [
-    "sphinx",
-    "sphinx-copybutton",
-    "sphinx-autobuild",
-    "m2r2",
-    "sphinx-rtd-theme",
+    "mkdocs",
+    "mkdocs-material",
+    "mkdocstrings[python]",
 ]
 
 fastapi = [

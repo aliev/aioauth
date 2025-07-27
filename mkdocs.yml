@@ -1,0 +1,30 @@
+site_name: aioauth
+repo_url: https://github.com/aliev/aioauth
+docs_dir: docs
+theme:
+  name: material
+plugins:
+  - search
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          paths: ["."]
+nav:
+  - Home: index.md
+  - Understanding:
+      - Plug-and-Play: sections/understanding/plug_and_play.md
+  - Using:
+      - Collections: sections/documentation/collections.md
+      - Config: sections/documentation/config.md
+      - Constances: sections/documentation/constances.md
+      - Errors: sections/documentation/errors.md
+      - Grant Type: sections/documentation/grant_type.md
+      - Models: sections/documentation/models.md
+      - Requests: sections/documentation/requests.md
+      - Response Type: sections/documentation/response_type.md
+      - Responses: sections/documentation/responses.md
+      - Server: sections/documentation/server.md
+      - Storage: sections/documentation/storage.md
+      - Types: sections/documentation/types.md
+      - Utils: sections/documentation/utils.md
