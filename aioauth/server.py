@@ -146,9 +146,10 @@ class AuthorizationServer:
         Verifies the request was sent via a protected SSL tunnel.
 
         Note:
-            This method simply checks if the request URL contains
-            ``https://`` at the start of it. It does **not** ensure
-            if the SSL certificate is valid.
+            This method checks if the request URL contains
+            ``https://`` at the start of it. For production use,
+            additional SSL certificate validation should be implemented
+            at the web server level (nginx, Apache) or load balancer.
 
         Args:
             request: `aioauth.requests.Request` object.
@@ -158,7 +159,17 @@ class AuthorizationServer:
         """
         if request.settings.INSECURE_TRANSPORT:
             return True
-        return request.url.lower().startswith("https://")
+
+        # Check for HTTPS scheme
+        if not request.url.lower().startswith("https://"):
+            return False
+
+        # Additional check for X-Forwarded-Proto header (for load balancers/proxies)
+        forwarded_proto = request.headers.get("X-Forwarded-Proto", "").lower()
+        if forwarded_proto and forwarded_proto != "https":
+            return False
+
+        return True
 
     def validate_request(self, request: Request, allowed_methods: List[RequestMethod]):
         if not request.settings.AVAILABLE:
