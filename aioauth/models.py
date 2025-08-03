@@ -6,6 +6,7 @@ from aioauth import models
 """
 
 from dataclasses import dataclass
+import secrets
 import time
 from typing import List, Optional, Union
 
@@ -180,12 +181,17 @@ class AuthorizationCode:
 
         if self.code_challenge_method == "plain":
             # If the "code_challenge_method" was "plain", they are compared directly
-            is_valid_code_challenge = code_verifier == self.code_challenge
+            # Use constant-time comparison to prevent timing attacks
+            is_valid_code_challenge = secrets.compare_digest(
+                code_verifier, self.code_challenge or ""
+            )
 
         if self.code_challenge_method == "S256":
             # base64url(sha256(ascii(code_verifier))) == code_challenge
-            is_valid_code_challenge = (
-                create_s256_code_challenge(code_verifier) == self.code_challenge
+            # Use constant-time comparison to prevent timing attacks
+            computed_challenge = create_s256_code_challenge(code_verifier)
+            is_valid_code_challenge = secrets.compare_digest(
+                computed_challenge, self.code_challenge or ""
             )
 
         return is_valid_code_challenge
