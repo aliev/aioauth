@@ -180,6 +180,7 @@ class ServerError(OAuth2Error):
 
     error: ErrorType = "server_error"
     status_code: HTTPStatus = HTTPStatus.BAD_REQUEST
+    description: str = "Internal Server Error"
 
 
 class TemporarilyUnavailableError(OAuth2Error):

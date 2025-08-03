@@ -274,10 +274,7 @@ def build_error_response(
             status_code=HTTPStatus.FOUND,
             headers=HTTPHeaderDict({"location": location}),
         )
-    error = ServerError(
-        request=request,
-        description=str(exc) if request.settings.DEBUG else "",
-    )
+    error = ServerError(request=request)
     log.exception("Exception caught while processing request.", exc_info=exc)
     content = ErrorResponse(error=error.error, description=error.description)
     return Response(
