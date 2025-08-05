@@ -29,7 +29,7 @@ from typing import (
     Type,
     Union,
 )
-from urllib.parse import quote, urlencode, urlparse, urlunsplit
+from urllib.parse import parse_qs, quote, urlencode, urlparse, urlunsplit
 
 from aioauth.requests import Request
 
@@ -155,6 +155,9 @@ def build_uri(
         fragment = {}
 
     parsed_url = urlparse(url)
+    parsed_params = {k: v[0] for k, v in parse_qs(parsed_url.query or "").items()}
+    query_params = {**parsed_params, **query_params}
+
     uri = urlunsplit(
         (
             parsed_url.scheme,
