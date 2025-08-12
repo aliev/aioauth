@@ -1,14 +1,10 @@
 """
-```python
-from aioauth import storage
-```
-
-
 Storage helper class for storing and retrieving client and resource
 owner information. See the examples on the sidebar to view this in
 action.
-
-----
+```python
+from aioauth import storage
+```
 """
 
 from typing import Any, Optional
