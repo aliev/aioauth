@@ -607,7 +607,7 @@ async def test_response_type_none(context_factory):
     argvalues=[None, Settings(ISSUE_REFRESH_TOKEN_IMPLICIT_GRANT=False)],
 )
 @pytest.mark.parametrize(
-    "response_mode,",
+    "response_mode",
     [
         "query",
         "form_post",
