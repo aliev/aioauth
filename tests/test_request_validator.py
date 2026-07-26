@@ -4,6 +4,7 @@ from urllib.parse import urlparse, parse_qs
 
 import pytest
 
+from aioauth.collections import HTTPHeaderDict
 from aioauth.requests import Post, Query, Request
 from aioauth.server import AuthorizationServer
 from aioauth.utils import (
@@ -26,6 +27,37 @@ async def test_insecure_transport_error(server: AuthorizationServer):
     assert response.status_code == HTTPStatus.FOUND
     query_params = parse_qs(urlparse(response.headers["Location"]).query)
     assert query_params["error"] == ["insecure_transport"]
+
+
+@pytest.mark.asyncio
+async def test_secure_transport_behind_proxy(context: AuthorizationContext):
+    """See https://github.com/aliev/aioauth/issues/127."""
+    client = context.clients[0]
+    server = context.server
+    code_verifier = generate_token(128)
+    code_challenge = create_s256_code_challenge(code_verifier)
+    request_url = "http://localhost"
+
+    query = Query(
+        client_id=client.client_id,
+        response_type="code",
+        redirect_uri=client.redirect_uris[0],
+        scope=client.scope,
+        state=generate_token(10),
+        code_challenge_method="S256",
+        code_challenge=code_challenge,
+    )
+
+    request = Request(
+        url=request_url,
+        query=query,
+        method="GET",
+        headers=HTTPHeaderDict({"X-Forwarded-Proto": "https"}),
+    )
+    response = await server.create_authorization_response(request)
+    assert response.status_code == HTTPStatus.FOUND
+    query_params = parse_qs(urlparse(response.headers["Location"]).query)
+    assert query_params.get("error") != ["insecure_transport"]
 
 
 @pytest.mark.asyncio
