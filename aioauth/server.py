@@ -157,19 +157,12 @@ class AuthorizationServer:
         Returns:
             Flag representing whether or not the transport is secure.
         """
-        if request.settings.INSECURE_TRANSPORT:
-            return True
-
-        # Check for HTTPS scheme
-        if not request.url.lower().startswith("https://"):
-            return False
-
-        # Additional check for X-Forwarded-Proto header (for load balancers/proxies)
         forwarded_proto = request.headers.get("X-Forwarded-Proto", "").lower()
-        if forwarded_proto and forwarded_proto != "https":
-            return False
-
-        return True
+        return (
+            request.settings.INSECURE_TRANSPORT
+            or request.url.lower().startswith("https://")
+            or forwarded_proto == "https"
+        )
 
     def validate_request(self, request: Request, allowed_methods: List[RequestMethod]):
         if not request.settings.AVAILABLE:
