@@ -122,6 +122,11 @@ _repo_version.py
 codegen/openapi.json
 codegen/python/
 
+# formal model artifacts
+formal/traces/
+formal/**/traces/
+_apalache-out/
+
 # es
 data
 pythonenv*
