@@ -123,6 +123,9 @@ class AuthorizationCodeGrantType(GrantTypeBase):
         if not authorization_code:
             raise InvalidGrantError(request=request)
 
+        if authorization_code.redirect_uri != request.post.redirect_uri:
+            raise InvalidGrantError(request=request)
+
         if (
             authorization_code.code_challenge
             and authorization_code.code_challenge_method
@@ -214,6 +217,21 @@ class RefreshTokenGrantType(GrantTypeBase):
         if not old_token or old_token.revoked or old_token.refresh_token_expired:
             raise InvalidGrantError(request=request)
 
+        # new token should have at max the same scope as the old token
+        # (see https://www.oauth.com/oauth2-servers/making-authenticated-requests/refreshing-an-access-token/)
+        new_scope = old_token.scope
+        if request.post.scope:
+            old_scope_list = enforce_list(old_token.scope)
+            old_scope_set = set(old_scope_list)
+            requested_scope_set = set(enforce_list(request.post.scope))
+            if requested_scope_set - old_scope_set:
+                raise InvalidScopeError(request=request)
+
+            # restrict requested tokens to requested scopes in the old token
+            new_scope = enforce_str(
+                [scope for scope in old_scope_list if scope in requested_scope_set]
+            )
+
         # Revoke old token
         await self.storage.revoke_token(
             request=request,
@@ -222,18 +240,6 @@ class RefreshTokenGrantType(GrantTypeBase):
             token_type="refresh_token",
             access_token=None,
         )
-
-        # new token should have at max the same scope as the old token
-        # (see https://www.oauth.com/oauth2-servers/making-authenticated-requests/refreshing-an-access-token/)
-        new_scope = old_token.scope
-        if request.post.scope:
-            # restrict requested tokens to requested scopes in the old token
-            new_scope = enforce_str(
-                list(
-                    set(enforce_list(old_token.scope))
-                    & set(enforce_list(request.post.scope))
-                )
-            )
 
         token = await self.storage.create_token(
             request=request,

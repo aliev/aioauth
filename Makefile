@@ -1,4 +1,4 @@
-.PHONY: clean clean-test clean-pyc clean-build docs help
+.PHONY: clean clean-test clean-pyc clean-build docs help formal formal-traces formal-replay
 .DEFAULT_GOAL := help
 
 define BROWSER_PYSCRIPT
@@ -52,6 +52,16 @@ lint: ## check style with flake8
 
 test: ## run tests quickly with the default Python
 	pytest --cov --junitxml=junit.xml -o junit_family=legacy
+
+formal: ## run Quint bounded model checks
+	JAVA_HOME=/opt/homebrew/opt/openjdk/libexec/openjdk.jdk/Contents/Home PATH=/opt/homebrew/opt/openjdk/bin:$$PATH quint verify formal/rfc6749/authorization_code_pkce.qnt --invariant=authorizationCodeSafety
+	JAVA_HOME=/opt/homebrew/opt/openjdk/libexec/openjdk.jdk/Contents/Home PATH=/opt/homebrew/opt/openjdk/bin:$$PATH quint verify formal/rfc6749/refresh_token_rotation.qnt --invariant=refreshTokenSafety
+
+formal-traces: ## generate Quint model-based testing traces
+	python -m tests.formal_bridge.generate
+
+formal-replay: ## replay generated Quint traces against aioauth
+	python -m tests.formal_bridge.replay
 
 release: dist ## package and upload a release
 	twine upload dist/*
